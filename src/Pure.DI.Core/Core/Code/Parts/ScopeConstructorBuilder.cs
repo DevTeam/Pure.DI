@@ -59,14 +59,14 @@ sealed class ScopeConstructorBuilder(
                 code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ChildScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ChildScopeArgName}));");
                 if (composition.Singletons.Length > 0)
                 {
-                    code.AppendLine($"{destination}{Names.RootFieldName} = {Names.ParentScopeArgName};");
+                    code.AppendLine($"{destination}{Names.RootFieldName} = {Names.ParentScopeArgName}.{Names.RootFieldName} ?? {Names.ParentScopeArgName};");
                 }
             }
             else
             {
                 if (composition.Singletons.Length > 0)
                 {
-                    code.AppendLine($"{destination}{Names.RootFieldName} = {source}{Names.RootFieldName};");
+                    code.AppendLine($"{destination}{Names.RootFieldName} = {source}{Names.RootFieldName} ?? {Names.ParentScopeArgName};");
                 }
             }
 

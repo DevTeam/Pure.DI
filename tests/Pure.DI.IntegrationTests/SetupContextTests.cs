@@ -447,6 +447,153 @@ public class SetupContextTests
     }
 
     [Fact]
+    public async Task ShouldShareSingletonAcrossNestedScopes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ISingleton
+                               {
+                                   Guid Id { get; }
+                               }
+
+                               sealed class Singleton : ISingleton
+                               {
+                                   public Guid Id { get; } = Guid.NewGuid();
+                               }
+
+                               interface IService
+                               {
+                                   ISingleton Singleton { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(ISingleton singleton)
+                                   {
+                                       Singleton = singleton;
+                                   }
+
+                                   public ISingleton Singleton { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
+                                       .Bind<ISingleton>().As(Lifetime.Singleton).To<Singleton>()
+                                       .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                       .Root<IService>("Service");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var rootSingleton = composition.Service.Singleton;
+                                       var scope1 = Composition.SetupScope(composition, new Composition());
+                                       var scope1Singleton = scope1.Service.Singleton;
+                                       var scope2 = Composition.SetupScope(scope1, new Composition());
+                                       var scope2Singleton = scope2.Service.Singleton;
+                                       Console.WriteLine(rootSingleton == scope1Singleton);
+                                       Console.WriteLine(scope1Singleton == scope2Singleton);
+                                       Console.WriteLine(rootSingleton == scope2Singleton);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepSingletonAvailableForNestedScopeAfterIntermediateScopeDispose()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ISingleton
+                               {
+                                   Guid Id { get; }
+                               }
+
+                               sealed class Singleton : ISingleton, IDisposable
+                               {
+                                   public Guid Id { get; } = Guid.NewGuid();
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface IService
+                               {
+                                   ISingleton Singleton { get; }
+                               }
+
+                               sealed class Service : IService
+                               {
+                                   public Service(ISingleton singleton)
+                                   {
+                                       Singleton = singleton;
+                                   }
+
+                                   public ISingleton Singleton { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ScopeMethodName, "SetupScope")
+                                       .Bind<ISingleton>().As(Lifetime.Singleton).To<Singleton>()
+                                       .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+                                       .Root<IService>("Service");
+                               }
+
+                               class Program
+                               {
+                                   static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var scope1 = Composition.SetupScope(composition, new Composition());
+                                       var scope1Singleton = (Singleton)scope1.Service.Singleton;
+                                       var scope2 = Composition.SetupScope(scope1, new Composition());
+                                       var scope2SingletonBeforeDispose = (Singleton)scope2.Service.Singleton;
+                                       scope1.Dispose();
+                                       var scope2SingletonAfterDispose = (Singleton)scope2.Service.Singleton;
+                                       Console.WriteLine(scope1Singleton == scope2SingletonBeforeDispose);
+                                       Console.WriteLine(scope2SingletonBeforeDispose == scope2SingletonAfterDispose);
+                                       Console.WriteLine(scope2SingletonAfterDispose.IsDisposed);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["True", "True", "False"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportRootArgumentWithSimpleFactory()
     {
         // Given
