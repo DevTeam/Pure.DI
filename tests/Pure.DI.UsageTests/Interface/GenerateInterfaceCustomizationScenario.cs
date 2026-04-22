@@ -22,7 +22,7 @@ namespace Contracts
     public partial interface IWorker;
 
     [GenerateInterface(namespaceName: "Contracts", interfaceName: "IWorker")]
-    public partial class Worker : IWorker
+    public class Worker : IWorker
     {
         public string Message => "custom";
     }
@@ -47,7 +47,7 @@ namespace Pure.DI.UsageTests.Interface.GenerateInterfaceCustomizationScenario
         {
             // {
             DI.Setup(nameof(Composition))
-                .Bind<IWorker>().To<Worker>()
+                .Bind().To<Worker>()
                 .Root<App>(nameof(App));
 
             var composition = new Composition();

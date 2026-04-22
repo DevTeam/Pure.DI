@@ -33,7 +33,7 @@ public class Scenario
     {
         // {
         DI.Setup(nameof(Composition))
-            .Bind<IService>().To<Service>()
+            .Bind().To<Service>()
             .Root<App>(nameof(App));
 
         var composition = new Composition();
@@ -50,7 +50,7 @@ public class Scenario
 public partial interface IService;
 
 [GenerateInterface]
-public partial class Service : IService
+public class Service : IService
 {
     public string Name => "visible";
 

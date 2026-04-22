@@ -16,7 +16,7 @@ public class SourceGenerator : IIncrementalGenerator
         // Run Rider as administrator
         DebugHelper.DebugIfNeeded();
         var generator = new Generator();
-        var interfaceGenerator = new InterfaceGenerator();
+        var interfaceGenerator = generator.InterfaceGenerator;
 
         context.RegisterPostInitializationOutput(initializationContext => {
             foreach (var apiSource in generator.Api)
@@ -57,19 +57,11 @@ public class SourceGenerator : IIncrementalGenerator
 
         var interfaceUpdates = context.SyntaxProvider
             .CreateSyntaxProvider(
-                static (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 },
-                static (syntaxContext, _) => syntaxContext)
-            .Where(static syntaxContext => HasGenerateInterfaceAttribute((ClassDeclarationSyntax)syntaxContext.Node))
+                (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 },
+                (syntaxContext, _) => syntaxContext)
+            .Where(syntaxContext => interfaceGenerator.HasGenerateInterfaceAttribute((ClassDeclarationSyntax)syntaxContext.Node))
             .Collect();
 
-        context.RegisterSourceOutput(interfaceUpdates, (sourceProductionContext, updates) =>
-        {
-            interfaceGenerator.Generate(sourceProductionContext, updates);
-        });
+        context.RegisterSourceOutput(interfaceUpdates, interfaceGenerator.Generate);
     }
-
-    private static bool HasGenerateInterfaceAttribute(ClassDeclarationSyntax classSyntax) =>
-        classSyntax.AttributeLists
-            .SelectMany(list => list.Attributes)
-            .Any(attribute => attribute.Name.ToString().Contains(InterfaceGenerator.GenerateInterfaceAttributeName));
 }

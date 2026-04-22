@@ -34,7 +34,7 @@ public class Scenario
     {
         // {
         DI.Setup(nameof(Composition))
-            .Bind<IFormatter>().To<Formatter>()
+            .Bind().To<Formatter>()
             .Bind<App>().To<App>()
             .Root<App>(nameof(App));
 
@@ -53,7 +53,7 @@ public class Scenario
 public partial interface IFormatter;
 
 [GenerateInterface]
-public partial class Formatter : IFormatter
+public class Formatter : IFormatter
 {
     public string? Title { get; set; } = "demo";
 

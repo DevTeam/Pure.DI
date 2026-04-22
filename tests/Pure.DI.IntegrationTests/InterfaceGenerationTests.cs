@@ -2,6 +2,7 @@ namespace Pure.DI.IntegrationTests;
 
 using System;
 using System.Linq;
+using InterfaceGeneration;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -31,13 +32,44 @@ public class InterfaceGenerationTests
                     where T : class
                     => value ?? string.Empty;
             }
-            """);
+            """,
+            "IService");
 
         generated.ShouldContain("public partial interface IService");
         generated.ShouldContain("string Name { get; set; }");
         generated.ShouldContain("Changed");
         generated.ShouldContain("GetText<T>");
         generated.ShouldNotContain("Hidden");
+    }
+
+    [Fact]
+    public void ShouldGenerateInterfaceForGenericType()
+    {
+        var generated = GenerateInterfaceSource("""
+            using System;
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IRepository<TItem>;
+
+            [GenerateInterface]
+            public partial class Repository<TItem>
+                where TItem : class, new()
+            {
+                public TItem? Current { get; set; }
+
+                public event EventHandler<TItem>? Created;
+
+                public TItem Create() => new();
+            }
+            """,
+            "IRepository");
+
+        generated.ShouldContain("public partial interface IRepository<TItem>");
+        generated.ShouldContain("where TItem : class, new()");
+        generated.ShouldContain("TItem? Current { get; set; }");
+        generated.ShouldContain("EventHandler<TItem>");
     }
 
     [Fact]
@@ -80,8 +112,9 @@ public class InterfaceGenerationTests
             }
             """;
 
-        var interfaceGenerator = new InterfaceGenerator();
-        var generatedInterface = GenerateInterfaceSource(code);
+        var generator = new Generator();
+        var interfaceGenerator = generator.InterfaceGenerator;
+        var generatedInterface = GenerateInterfaceSource(code, "IService");
         var result = await interfaceGenerator.Api
             .Select(source => source.SourceText.ToString())
             .Append(code)
@@ -94,7 +127,7 @@ public class InterfaceGenerationTests
         result.StdOut.ShouldContain("ok");
     }
 
-    private static string GenerateInterfaceSource(string code)
+    private static string GenerateInterfaceSource(string code, string interfaceName)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(code);
         var references = AppDomain
@@ -120,7 +153,7 @@ public class InterfaceGenerationTests
 
         return outputCompilation.SyntaxTrees
             .Select(tree => tree.ToString())
-            .FirstOrDefault(text => text.Contains("[global::System.CodeDom.Compiler.GeneratedCode(\"Pure.DI\"" ) && text.Contains("partial interface IService"))
+            .FirstOrDefault(text => text.Contains("[global::System.CodeDom.Compiler.GeneratedCode(\"Pure.DI\"" ) && text.Contains($"partial interface {interfaceName}"))
             ?? throw new InvalidOperationException(string.Join(Environment.NewLine + "---" + Environment.NewLine,
                 outputCompilation.SyntaxTrees.Select(tree => tree.ToString())));
     }

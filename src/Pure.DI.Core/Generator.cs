@@ -38,6 +38,7 @@ public sealed partial class Generator
         .Hint(Resolve, Off)
 
         .Root<IEnumerable<Source>>(nameof(Api))
+        .Root<IInterfaceGenerator>(nameof(InterfaceGenerator))
         .Root<IObserversRegistry>(nameof(Observers))
         .RootBind<Unit>(nameof(Generate), Internal)
             .To((IBuilder<IEnumerable<SyntaxUpdate>, Unit> generator, IEnumerable<SyntaxUpdate> updates) => generator.Build(updates))
@@ -48,7 +49,14 @@ public sealed partial class Generator
         .RootArg<IEnumerable<SyntaxUpdate>>(updates)
         .RootArg<CancellationToken>(cancellationToken)
 
-         // Transient
+        // Interface generator
+        .PerBlock<
+            InterfaceGeneration.InterfaceGenerator,
+            InterfaceGeneration.InterfaceAttributeSources,
+            InterfaceGeneration.RoslynSymbols,
+            InterfaceGeneration.InterfaceBuilder>()
+
+        // Transient
             .Transient(_ => GetType().Assembly)
             .Transient<IEqualityComparer<string>>(_ => InvariantCultureIgnoreCase)
             .Transient(ctx =>

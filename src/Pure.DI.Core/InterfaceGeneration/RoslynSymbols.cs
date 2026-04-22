@@ -1,12 +1,12 @@
-namespace Pure.DI;
+namespace Pure.DI.InterfaceGeneration;
 
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-internal static class RoslynExtensions
+sealed class RoslynSymbols : IRoslynSymbols
 {
-    public static IEnumerable<ISymbol> GetAllMembers(this ITypeSymbol type)
+    public IEnumerable<ISymbol> GetAllMembers(ITypeSymbol type)
     {
         var current = type;
         while (current != null)
@@ -20,7 +20,7 @@ internal static class RoslynExtensions
         }
     }
 
-    public static string GetWhereStatement(this ITypeParameterSymbol typeParameterSymbol, SymbolDisplayFormat typeDisplayFormat)
+    public string GetWhereStatement(ITypeParameterSymbol typeParameterSymbol, SymbolDisplayFormat typeDisplayFormat)
     {
         var constraints = new List<string>();
 
