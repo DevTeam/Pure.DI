@@ -1,6 +1,6 @@
 /*
 $v=true
-$p=9
+$p=1
 $d=Generate an interface from a class
 $h=This example shows how a concrete service can generate a matching interface and be consumed through Pure.DI.
 $f=The example shows how to:

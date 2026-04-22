@@ -106,10 +106,10 @@ partial class Composition
   public IService Service(BaseComposition baseContext)
   {
     if (baseContext is null) throw new ArgumentNullException(nameof(baseContext));
-    AppSettings transientAppSettings34;
+    AppSettings transientAppSettings36;
     BaseComposition localBaseContext = baseContext;
-    transientAppSettings34 = localBaseContext.Settings;
-    return new Service(transientAppSettings34);
+    transientAppSettings36 = localBaseContext.Settings;
+    return new Service(transientAppSettings36);
   }
 }
 ```

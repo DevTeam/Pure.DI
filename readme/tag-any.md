@@ -101,8 +101,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Queue transientQueue106 = new Queue("Audit");
-      return transientQueue106;
+      Queue transientQueue108 = new Queue("Audit");
+      return transientQueue108;
     }
   }
 
@@ -111,16 +111,16 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Queue transientQueue108 = new Queue("WorkItems");
-      Queue transientQueue110 = new Queue(null);
-      Func<IQueue> perBlockFunc109 = new Func<IQueue>(
+      Queue transientQueue110 = new Queue("WorkItems");
+      Queue transientQueue112 = new Queue(null);
+      Func<IQueue> perBlockFunc111 = new Func<IQueue>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Queue transientQueue111 = new Queue(42);
-        return transientQueue111;
+        Queue transientQueue113 = new Queue(42);
+        return transientQueue113;
       });
-      return new QueueService(transientQueue108, perBlockFunc109, transientQueue110);
+      return new QueueService(transientQueue110, perBlockFunc111, transientQueue112);
     }
   }
 }

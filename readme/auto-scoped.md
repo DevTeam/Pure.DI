@@ -146,7 +146,7 @@ partial class Composition
   internal Composition(Composition parentScope)
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
-    _root = parentScope._root;
+    _root = parentScope._root ?? parentScope;
     _lock = parentScope._lock;
   }
 
@@ -155,18 +155,18 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IListeningSession> perBlockFunc585 = new Func<IListeningSession>(
+      Func<IListeningSession> perBlockFunc593 = new Func<IListeningSession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        IListeningSession transientIListeningSession586;
+        IListeningSession transientIListeningSession594;
         Composition localParentScope = this;
         // Create a child scope so scoped services (PlaybackQueue) are unique per session.
         var localScope = new Composition(localParentScope);
-        transientIListeningSession586 = localScope.Session;
-        return transientIListeningSession586;
+        transientIListeningSession594 = localScope.Session;
+        return transientIListeningSession594;
       });
-      return new MusicApp(perBlockFunc585);
+      return new MusicApp(perBlockFunc593);
     }
   }
 

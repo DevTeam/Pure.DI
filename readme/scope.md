@@ -157,7 +157,7 @@ partial class Composition: IDisposable
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
     if (Object.ReferenceEquals(childScope, null)) throw new ArgumentNullException(nameof(childScope));
-    childScope._root = parentScope;
+    childScope._root = parentScope._root ?? parentScope;
     childScope._lock = parentScope._lock;
     childScope._disposables = new object[1];
     return childScope;

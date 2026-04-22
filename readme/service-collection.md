@@ -96,14 +96,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ISensor> perBlockFunc429 = new Func<ISensor>(
+      Func<ISensor> perBlockFunc431 = new Func<ISensor>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureTemperatureSensorLivingRoomExists();
         return _singletonTemperatureSensor62;
       });
-      Func<IThermostat> perBlockFunc430 = new Func<IThermostat>(
+      Func<IThermostat> perBlockFunc432 = new Func<IThermostat>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -112,8 +112,8 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        ISensor = perBlockFunc429,
-        IThermostat = perBlockFunc430
+        ISensor = perBlockFunc431,
+        IThermostat = perBlockFunc432
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureTemperatureSensorLivingRoomExists()
@@ -315,7 +315,7 @@ Class diagram:
 classDiagram
 	TemperatureSensor --|> ISensor : "LivingRoom" 
 	Thermostat --|> IThermostat
-	Composition ..> LightweightRoot : LightweightRoot LightRoot107d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot112d
 	Composition ..> Thermostat : IThermostat _
 	Composition ..> TemperatureSensor : ISensor _
 	Thermostat o-- "Singleton" TemperatureSensor : "LivingRoom"  ISensor
@@ -334,7 +334,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot107d
+		-LightweightRoot LightRoot112d
 		-ISensor _
 		-IThermostat _
 		+ T ResolveᐸTᐳ()

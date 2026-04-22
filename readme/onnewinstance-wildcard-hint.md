@@ -132,9 +132,9 @@ partial class Composition
             _singletonUserRepository62 = _singletonUserRepository62Temp;
           }
 
-      var transientOrderService555 = new OrderService(_singletonUserRepository62, new ConsoleLogger());
-      OnNewInstance<OrderService>(ref transientOrderService555, null, Lifetime.Transient);
-      return transientOrderService555;
+      var transientOrderService557 = new OrderService(_singletonUserRepository62, new ConsoleLogger());
+      OnNewInstance<OrderService>(ref transientOrderService557, null, Lifetime.Transient);
+      return transientOrderService557;
     }
   }
 

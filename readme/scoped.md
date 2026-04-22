@@ -160,7 +160,7 @@ partial class Composition: IDisposable
   internal Composition(Composition parentScope)
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
-    _root = parentScope._root;
+    _root = parentScope._root ?? parentScope;
     _lock = parentScope._lock;
     _disposables = new object[1];
   }
@@ -187,13 +187,13 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<RequestScope> perBlockFunc608 = new Func<RequestScope>(
+      Func<RequestScope> perBlockFunc616 = new Func<RequestScope>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new RequestScope(this);
       });
-      return new App(perBlockFunc608);
+      return new App(perBlockFunc616);
     }
   }
 

@@ -119,7 +119,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, string, IPerson> perBlockFunc404;
+      Func<int, string, IPerson> perBlockFunc406;
       Func<int, string, IPerson> localFactory2 = new Func<int, string, IPerson>((int localArg11, string localArg2) =>
       {
         lock (_lock)
@@ -136,8 +136,8 @@ partial class Composition
           return new Person(overriddenString2, _singletonClock62, overriddenInt32);
         }
       });
-      perBlockFunc404 = localFactory2;
-      return new Team(perBlockFunc404);
+      perBlockFunc406 = localFactory2;
+      return new Team(perBlockFunc406);
     }
   }
 }

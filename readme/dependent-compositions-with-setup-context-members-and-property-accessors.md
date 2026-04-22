@@ -150,9 +150,9 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      string transientString31 = ConnectionString;
-      int transientInt3232 = MaxConnections;
-      return new DatabaseService(transientString31, transientInt3232);
+      string transientString33 = ConnectionString;
+      int transientInt3234 = MaxConnections;
+      return new DatabaseService(transientString33, transientInt3234);
     }
   }
 

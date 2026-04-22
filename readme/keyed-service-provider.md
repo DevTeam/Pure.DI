@@ -118,14 +118,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IPaymentGateway> perBlockFunc413 = new Func<IPaymentGateway>(
+      Func<IPaymentGateway> perBlockFunc415 = new Func<IPaymentGateway>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsurePayPalGatewayPayPalExists();
         return _singletonPayPalGateway62;
       });
-      Func<IOrderService> perBlockFunc414 = new Func<IOrderService>(
+      Func<IOrderService> perBlockFunc416 = new Func<IOrderService>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -134,8 +134,8 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        IPaymentGateway = perBlockFunc413,
-        IOrderService = perBlockFunc414
+        IPaymentGateway = perBlockFunc415,
+        IOrderService = perBlockFunc416
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPayPalExists()
@@ -335,7 +335,7 @@ Class diagram:
 classDiagram
 	PayPalGateway --|> IPaymentGateway : "PayPal" 
 	OnlineOrderService --|> IOrderService : "Online" 
-	Composition ..> LightweightRoot : LightweightRoot LightRoot107d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot112d
 	Composition ..> OnlineOrderService : IOrderService _
 	Composition ..> PayPalGateway : IPaymentGateway _
 	OnlineOrderService o-- "Singleton" PayPalGateway : "PayPal"  IPaymentGateway
@@ -354,7 +354,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.KeyedServiceProviderScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot107d
+		-LightweightRoot LightRoot112d
 		-IPaymentGateway _
 		-IOrderService _
 		+ T ResolveᐸTᐳ()

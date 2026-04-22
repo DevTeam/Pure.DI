@@ -85,11 +85,11 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      ValueTask<IConnection> transientValueTask462;
+      ValueTask<IConnection> transientValueTask464;
       IConnection localValue40 = new CloudConnection();
       // Initializes a new instance of the ValueTask class using the supplied instance
-      transientValueTask462 = new ValueTask<IConnection>(localValue40);
-      return new DataProcessor(transientValueTask462);
+      transientValueTask464 = new ValueTask<IConnection>(localValue40);
+      return new DataProcessor(transientValueTask464);
     }
   }
 }

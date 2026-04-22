@@ -113,38 +113,38 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwned162 = new Owned();
-      Func<Owned<IDbConnection>> perBlockFunc161 = new Func<Owned<IDbConnection>>(
+      var perBlockOwned164 = new Owned();
+      Func<Owned<IDbConnection>> perBlockFunc163 = new Func<Owned<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-        Owned<IDbConnection> perBlockOwned163;
+        Owned<IDbConnection> perBlockOwned165;
         // Creates the owner of an instance
-        Owned transientOwned164;
-        Owned localOwned5 = perBlockOwned162;
-        transientOwned164 = localOwned5;
+        Owned transientOwned166;
+        Owned localOwned5 = perBlockOwned164;
+        transientOwned166 = localOwned5;
         lock (_lock)
         {
-          perBlockOwned162.Add(transientOwned164);
+          perBlockOwned164.Add(transientOwned166);
         }
 
-        IOwned localOwned4 = transientOwned164;
-        var transientDbConnection165 = new DbConnection();
+        IOwned localOwned4 = transientOwned166;
+        var transientDbConnection167 = new DbConnection();
         lock (_lock)
         {
-          perBlockOwned162.Add(transientDbConnection165);
+          perBlockOwned164.Add(transientDbConnection167);
         }
 
-        IDbConnection localValue9 = transientDbConnection165;
-        perBlockOwned163 = new Owned<IDbConnection>(localValue9, localOwned4);
+        IDbConnection localValue9 = transientDbConnection167;
+        perBlockOwned165 = new Owned<IDbConnection>(localValue9, localOwned4);
         lock (_lock)
         {
-          perBlockOwned162.Add(perBlockOwned163);
+          perBlockOwned164.Add(perBlockOwned165);
         }
 
-        return perBlockOwned163;
+        return perBlockOwned165;
       });
-      return new Transaction(perBlockFunc161);
+      return new Transaction(perBlockFunc163);
     }
   }
 }

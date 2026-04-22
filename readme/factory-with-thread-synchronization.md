@@ -97,7 +97,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IMessageBus transientIMessageBus56;
+      IMessageBus transientIMessageBus58;
       // Initialization logic requiring synchronization
       // of the overall composition flow.
       // For example, connecting to a message broker.
@@ -106,14 +106,14 @@ partial class Composition
         MessageBus localBus = new MessageBus();
         localBus.Connect();
         {
-          transientIMessageBus56 = localBus;
-          goto transientIMessageBus56Finish;
+          transientIMessageBus58 = localBus;
+          goto transientIMessageBus58Finish;
         }
       }
 
-      transientIMessageBus56Finish:
+      transientIMessageBus58Finish:
         ;
-      return new NotificationService(transientIMessageBus56);
+      return new NotificationService(transientIMessageBus58);
     }
   }
 }

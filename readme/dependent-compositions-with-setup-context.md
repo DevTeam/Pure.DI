@@ -109,8 +109,8 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      AppSettings transientAppSettings23 = baseContext.Settings;
-      return new Service(transientAppSettings23);
+      AppSettings transientAppSettings25 = baseContext.Settings;
+      return new Service(transientAppSettings25);
     }
   }
 

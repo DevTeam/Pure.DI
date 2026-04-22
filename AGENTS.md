@@ -7137,6 +7137,192 @@ To run the above code, the following NuGet packages must be added:
 
 For more hints, see [this](../README.md#setup-hints) page.
 
+## Customize the generated interface
+
+This example shows how to place a generated contract in a dedicated Contracts namespace.
+
+```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<InvoiceGenerator>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.InvoiceId.ShouldBe("INV-0042");
+
+public class App(IMyInvoiceGenerator generator)
+{
+    public string InvoiceId { get; } = generator.Format(42);
+}
+
+namespace Contracts
+{
+    public partial interface IMyInvoiceGenerator;
+
+    [GenerateInterface(namespaceName: "Contracts", interfaceName: nameof(IMyInvoiceGenerator))]
+    public class InvoiceGenerator : IMyInvoiceGenerator
+    {
+        public string Format(int number) => $"INV-{number:0000}";
+    }
+}
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+The example shows how to:
+- Generate an interface into a custom namespace
+- Rename the generated interface
+- Keep the contract separate from implementation details
+
+## Generate an interface from a class
+
+This example shows how a concrete service can generate a matching interface and be consumed through Pure.DI.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<EmailSender>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.Provider.ShouldBe("smtp");
+app.Result.ShouldBe("sent:ops@contoso.com");
+
+public partial interface IEmailSender;
+
+[GenerateInterface]
+public class EmailSender : IEmailSender
+{
+    public string Provider => "smtp";
+
+    public string Send(string address) => $"sent:{address}";
+}
+
+public class App(IEmailSender sender)
+{
+    public string Provider { get; } = sender.Provider;
+
+    public string Result { get; } = sender.Send("ops@contoso.com");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Generate an interface from a class
+- Bind the generated contract in Pure.DI
+- Resolve a consumer that depends on the interface
+
+## Generate interfaces with generics
+
+This example shows how generic members, nullable annotations, and events are preserved in a reporting scenario.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<ReportFormatter>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.Formatted.ShouldBe("Order #42");
+app.Title.ShouldBe("Daily Report");
+
+public partial interface IReportFormatter;
+
+[GenerateInterface]
+public class ReportFormatter : IReportFormatter
+{
+    public string? Title { get; set; } = "Daily Report";
+
+    public event EventHandler? Changed;
+
+    public string? Format<T>(T value)
+        where T : class
+        => value?.ToString();
+
+    [IgnoreInterface]
+    public void Hidden() { }
+}
+
+public class App(IReportFormatter formatter)
+{
+    public string Title { get; } = formatter.Title ?? string.Empty;
+
+    public string Formatted { get; } = formatter.Format(new Order(42)) ?? string.Empty;
+}
+
+public class Order(int id)
+{
+    public override string ToString() => $"Order #{id}";
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Generate an interface for generic members
+- Preserve nullable annotations
+- Preserve events and generic constraints
+
+## Ignore members in the generated interface
+
+This example shows how to exclude internal-only members from a generated interface.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<ApiClient>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.Endpoint.ShouldBe("https://api.contoso.com");
+
+public partial interface IApiClient;
+
+[GenerateInterface]
+public class ApiClient : IApiClient
+{
+    public string Endpoint => "https://api.contoso.com";
+
+    [IgnoreInterface]
+    public string GetAccessToken() => "internal-token";
+}
+
+public class App(IApiClient client)
+{
+    public string Endpoint { get; } = client.Endpoint;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Mark members with IgnoreInterface
+- Keep only the intended contract surface
+- Use the generated interface in Pure.DI
+
 ## Composition root kinds
 
 Demonstrates different kinds of composition roots that can be created: public methods, private partial methods, and static roots. Each kind serves different use cases for accessing composition roots with appropriate visibility and lifetime semantics.

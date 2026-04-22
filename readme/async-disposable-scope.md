@@ -147,7 +147,7 @@ partial class Composition: IDisposable, IAsyncDisposable
   internal Composition(Composition parentScope)
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
-    _root = parentScope._root;
+    _root = parentScope._root ?? parentScope;
     _lock = parentScope._lock;
     _disposables = new object[1];
   }
@@ -174,13 +174,13 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<Session> perBlockFunc577 = new Func<Session>(
+      Func<Session> perBlockFunc585 = new Func<Session>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new Session(this);
       });
-      return new Program(perBlockFunc577);
+      return new Program(perBlockFunc585);
     }
   }
 

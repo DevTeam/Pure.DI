@@ -103,14 +103,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<ILogger> perBlockFunc434 = new Func<ILogger>(
+      Func<ILogger> perBlockFunc436 = new Func<ILogger>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConsoleLoggerExists();
         return _singletonConsoleLogger62;
       });
-      Func<IOrderService> perBlockFunc435 = new Func<IOrderService>(
+      Func<IOrderService> perBlockFunc437 = new Func<IOrderService>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -119,8 +119,8 @@ partial class Composition
       });
       return new LightweightRoot()
       {
-        ILogger1 = perBlockFunc434,
-        IOrderService1 = perBlockFunc435
+        ILogger1 = perBlockFunc436,
+        IOrderService1 = perBlockFunc437
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConsoleLoggerExists()
@@ -320,7 +320,7 @@ Class diagram:
 classDiagram
 	ConsoleLogger --|> ILogger
 	OrderService --|> IOrderService
-	Composition ..> LightweightRoot : LightweightRoot LightRoot107d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot112d
 	Composition ..> OrderService : IOrderService _
 	Composition ..> ConsoleLogger : ILogger _
 	OrderService o-- "Singleton" ConsoleLogger : ILogger
@@ -339,7 +339,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot107d
+		-LightweightRoot LightRoot112d
 		-ILogger _
 		-IOrderService _
 		+ T ResolveᐸTᐳ()

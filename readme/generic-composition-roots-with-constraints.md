@@ -96,10 +96,10 @@ partial class Composition
   public IDataProcessor<T2, bool> GetSpecializedProcessor<T2>()
     where T2: IDisposable
   {
-    SpecializedDataProcessor<T2> transientSpecializedDataProcessor512;
+    SpecializedDataProcessor<T2> transientSpecializedDataProcessor514;
     IStreamSource<T2> localSource = new StreamSource<T2>();
-    transientSpecializedDataProcessor512 = new SpecializedDataProcessor<T2>(localSource);
-    return transientSpecializedDataProcessor512;
+    transientSpecializedDataProcessor514 = new SpecializedDataProcessor<T2>(localSource);
+    return transientSpecializedDataProcessor514;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

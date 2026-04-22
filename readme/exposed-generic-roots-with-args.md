@@ -83,7 +83,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program GetProgram(int id)
   {
-    OtherAssembly.IMyGenericService<int> transientIMyGenericService40;
+    OtherAssembly.IMyGenericService<int> transientIMyGenericService42;
     int localId = id;
     if (_singletonCompositionWithGenericRootsAndArgsInOtherProject63 is null)
       lock (_lock)
@@ -93,8 +93,8 @@ partial class Composition
         }
 
     OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D1271 = _singletonCompositionWithGenericRootsAndArgsInOtherProject63;
-    transientIMyGenericService40 = localInstance_1182D1271.GetMyService<int>(localId);
-    return new Program(transientIMyGenericService40);
+    transientIMyGenericService42 = localInstance_1182D1271.GetMyService<int>(localId);
+    return new Program(transientIMyGenericService42);
   }
 }
 ```

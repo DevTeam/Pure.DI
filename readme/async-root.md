@@ -76,29 +76,29 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Task<IBackupService> GetBackupServiceAsync(CancellationToken cancellationToken)
   {
-    Task<IBackupService> transientTask219;
+    Task<IBackupService> transientTask221;
     // Injects an instance factory
-    Func<IBackupService> perBlockFunc220 = new Func<IBackupService>(
+    Func<IBackupService> perBlockFunc222 = new Func<IBackupService>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
       return new BackupService(new FileStore());
     });
-    Func<IBackupService> localFactory = perBlockFunc220;
+    Func<IBackupService> localFactory = perBlockFunc222;
     // Injects a task factory creating and scheduling task objects
-    TaskFactory<IBackupService> perBlockTaskFactory221;
+    TaskFactory<IBackupService> perBlockTaskFactory223;
     CancellationToken localCancellationToken = cancellationToken;
-    TaskCreationOptions transientTaskCreationOptions225 = TaskCreationOptions.None;
-    TaskCreationOptions localTaskCreationOptions = transientTaskCreationOptions225;
-    TaskContinuationOptions transientTaskContinuationOptions226 = TaskContinuationOptions.None;
-    TaskContinuationOptions localTaskContinuationOptions = transientTaskContinuationOptions226;
-    TaskScheduler transientTaskScheduler227 = TaskScheduler.Default;
-    TaskScheduler localTaskScheduler = transientTaskScheduler227;
-    perBlockTaskFactory221 = new TaskFactory<IBackupService>(localCancellationToken, localTaskCreationOptions, localTaskContinuationOptions, localTaskScheduler);
-    TaskFactory<IBackupService> localTaskFactory = perBlockTaskFactory221;
+    TaskCreationOptions transientTaskCreationOptions227 = TaskCreationOptions.None;
+    TaskCreationOptions localTaskCreationOptions = transientTaskCreationOptions227;
+    TaskContinuationOptions transientTaskContinuationOptions228 = TaskContinuationOptions.None;
+    TaskContinuationOptions localTaskContinuationOptions = transientTaskContinuationOptions228;
+    TaskScheduler transientTaskScheduler229 = TaskScheduler.Default;
+    TaskScheduler localTaskScheduler = transientTaskScheduler229;
+    perBlockTaskFactory223 = new TaskFactory<IBackupService>(localCancellationToken, localTaskCreationOptions, localTaskContinuationOptions, localTaskScheduler);
+    TaskFactory<IBackupService> localTaskFactory = perBlockTaskFactory223;
     // Creates and starts a task using the instance factory
-    transientTask219 = localTaskFactory.StartNew(localFactory);
-    return transientTask219;
+    transientTask221 = localTaskFactory.StartNew(localFactory);
+    return transientTask221;
   }
 }
 ```

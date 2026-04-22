@@ -1,6 +1,6 @@
 /*
 $v=true
-$p=9
+$p=3
 $d=Generate interfaces with generics
 $h=This example shows how generic members, nullable annotations, and events are preserved in a reporting scenario.
 $f=The example shows how to:

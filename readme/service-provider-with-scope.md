@@ -150,7 +150,7 @@ partial class Composition: IDisposable
   internal Composition(Composition parentScope)
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
-    _root = parentScope._root;
+    _root = parentScope._root ?? parentScope;
     _lock = parentScope._lock;
     _disposables = new object[1];
   }
@@ -161,14 +161,14 @@ partial class Composition: IDisposable
     get
     {
       var root = _root ?? this;
-      Func<IConfiguration> perBlockFunc439 = new Func<IConfiguration>(
+      Func<IConfiguration> perBlockFunc441 = new Func<IConfiguration>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         EnsureConfigurationExists();
         return root._singletonConfiguration62;
       });
-      Func<ISession> perBlockFunc440 = new Func<ISession>(
+      Func<ISession> perBlockFunc442 = new Func<ISession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
@@ -177,8 +177,8 @@ partial class Composition: IDisposable
       });
       return new LightweightRoot()
       {
-        IConfiguration = perBlockFunc439,
-        ISession = perBlockFunc440
+        IConfiguration = perBlockFunc441,
+        ISession = perBlockFunc442
       };
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
@@ -426,7 +426,7 @@ classDiagram
 	Composition --|> IDisposable
 	Configuration --|> IConfiguration
 	Session --|> ISession
-	Composition ..> LightweightRoot : LightweightRoot LightRoot107d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot112d
 	Composition ..> Session : ISession _
 	Composition ..> Configuration : IConfiguration _
 	Session o-- "Singleton" Configuration : IConfiguration
@@ -445,7 +445,7 @@ classDiagram
 	namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario {
 		class Composition {
 		<<partial>>
-		-LightweightRoot LightRoot107d
+		-LightweightRoot LightRoot112d
 		-IConfiguration _
 		-ISession _
 		+ T ResolveᐸTᐳ()

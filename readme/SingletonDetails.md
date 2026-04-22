@@ -91,7 +91,7 @@ partial class Singleton
   internal Singleton(Singleton parentScope)
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
-    _root = parentScope._root;
+    _root = parentScope._root ?? parentScope;
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]

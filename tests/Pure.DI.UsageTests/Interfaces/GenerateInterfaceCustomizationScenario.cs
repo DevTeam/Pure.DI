@@ -1,6 +1,6 @@
 /*
 $v=true
-$p=9
+$p=4
 $d=Customize the generated interface
 $h=This example shows how to place a generated contract in a dedicated Contracts namespace.
 $f=The example shows how to:
@@ -21,10 +21,6 @@ namespace Pure.DI.UsageTests.Interfaces.GenerateInterfaceCustomizationScenario
 {
     using Contracts;
     using Xunit;
-
-    // {
-    //# using Pure.DI;
-    // }
 
     public class Scenario
     {

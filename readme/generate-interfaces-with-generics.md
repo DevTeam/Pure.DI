@@ -1,40 +1,49 @@
-#### Ref dependencies
+#### Generate interfaces with generics
 
-Demonstrates how to use `ref` and `out` parameters in dependency injection for scenarios where you need to pass values by reference.
+This example shows how generic members, nullable annotations, and events are preserved in a reporting scenario.
 
 
 ```c#
 using Shouldly;
 using Pure.DI;
 
-DI.Setup("Composition")
-    // Represents a large data set or buffer
-    .Bind().To<int[]>(() => [10, 20, 30])
-    .Root<Service>("MyService");
+DI.Setup(nameof(Composition))
+    .Bind().To<ReportFormatter>()
+    .Root<App>(nameof(App));
 
 var composition = new Composition();
-var service = composition.MyService;
-service.Sum.ShouldBe(60);
+var app = composition.App;
 
-class Service
+app.Formatted.ShouldBe("Order #42");
+app.Title.ShouldBe("Daily Report");
+
+public partial interface IReportFormatter;
+
+[GenerateInterface]
+public class ReportFormatter : IReportFormatter
 {
-    public int Sum { get; private set; }
+    public string? Title { get; set; } = "Daily Report";
 
-    // Ref structs cannot be fields, so they are injected via a method
-    // with the [Ordinal] attribute. This allows working with
-    // high-performance types like Span<T> or other ref structs.
-    [Ordinal]
-    public void Initialize(ref Data data) =>
-        Sum = data.Sum();
+    public event EventHandler? Changed;
+
+    public string? Format<T>(T value)
+        where T : class
+        => value?.ToString();
+
+    [IgnoreInterface]
+    public void Hidden() { }
 }
 
-// A ref struct that holds a reference to the data
-// to process it without additional memory allocations
-readonly ref struct Data(ref int[] data)
+public class App(IReportFormatter formatter)
 {
-    private readonly ref int[] _dep = ref data;
+    public string Title { get; } = formatter.Title ?? string.Empty;
 
-    public int Sum() => _dep.Sum();
+    public string Formatted { get; } = formatter.Format(new Order(42)) ?? string.Empty;
+}
+
+public class Order(int id)
+{
+    public override string ToString() => $"Order #{id}";
 }
 ```
 
@@ -65,25 +74,22 @@ dotnet run
 
 </details>
 
->[!NOTE]
->`ref` dependencies are useful for scenarios where you need to return multiple values or modify parameters during injection.
+The example shows how to:
+- Generate an interface for generic members
+- Preserve nullable annotations
+- Preserve events and generic constraints
 
 The following partial class will be generated:
 
 ```c#
 partial class Composition
 {
-  public Service MyService
+  public App App
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      int[] transient322 = [10, 20, 30];
-      int[] transient322_ref = transient322;
-      var transientService320 = new Service();
-      Data transientData321_ref = new Data(ref transient322_ref);
-      transientService320.Initialize(ref transientData321_ref);
-      return transientService320;
+      return new App(new ReportFormatter());
     }
   }
 
@@ -161,13 +167,13 @@ partial class Composition
   static Composition()
   {
     var valResolver_0000 = new Resolver_0000();
-    Resolver<Service>.Value = valResolver_0000;
+    Resolver<App>.Value = valResolver_0000;
     _buckets = Buckets<IResolver<Composition, object>>.Create(
       1,
       out _bucketSize,
       new Pair<IResolver<Composition, object>>[1]
       {
-         new Pair<IResolver<Composition, object>>(typeof(Service), valResolver_0000)
+         new Pair<IResolver<Composition, object>>(typeof(App), valResolver_0000)
       });
   }
 
@@ -189,25 +195,30 @@ partial class Composition
     }
   }
 
-  private sealed class Resolver_0000: Resolver<Service>
+  private sealed class Resolver_0000: Resolver<App>
   {
-    public override Service Resolve(Composition composition)
+    public override App Resolve(Composition composition)
     {
-      return composition.MyService;
+      return composition.App;
     }
 
-    public override Service ResolveByTag(Composition composition, object tag)
+    public override App ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
-          return composition.MyService;
+          return composition.App;
 
         default:
           return base.ResolveByTag(composition, tag);
       }
     }
   }
+}
+```
+The following partial class will be generated:
+
+```c#
 }
 ```
 
@@ -222,29 +233,28 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	Composition ..> Service : Service MyService
-	Service *--  Data : Data
-	Data *--  ArrayᐸInt32ᐳ : ArrayᐸInt32ᐳ
-	class ArrayᐸInt32ᐳ {
-			<<array>>
-	}
-	namespace Pure.DI.UsageTests.Basics.RefDependenciesScenario {
+	ReportFormatter --|> IReportFormatter
+	Composition ..> App : App App
+	App *--  ReportFormatter : IReportFormatter
+	namespace Pure.DI.UsageTests.Interfaces.GenerateInterfaceGenericsScenario {
+		class App {
+				<<class>>
+			+App(IReportFormatter formatter)
+		}
 		class Composition {
 		<<partial>>
-		+Service MyService
+		+App App
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 		}
-		class Data {
-				<<struct>>
-			+Data(ArrayᐸInt32ᐳ data)
+		class IReportFormatter {
+			<<interface>>
 		}
-		class Service {
+		class ReportFormatter {
 				<<class>>
-			+Service()
-			+Initialize(Data data) : Void
+			+ReportFormatter()
 		}
 	}
 ```

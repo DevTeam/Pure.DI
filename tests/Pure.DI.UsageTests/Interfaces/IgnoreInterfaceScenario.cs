@@ -1,6 +1,6 @@
 /*
 $v=true
-$p=9
+$p=2
 $d=Ignore members in the generated interface
 $h=This example shows how to exclude internal-only members from a generated interface.
 $f=The example shows how to:

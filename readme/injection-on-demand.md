@@ -93,13 +93,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<IEnemy> perBlockFunc296 = new Func<IEnemy>(
+      Func<IEnemy> perBlockFunc298 = new Func<IEnemy>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         return new Enemy();
       });
-      return new GameLevel(perBlockFunc296);
+      return new GameLevel(perBlockFunc298);
     }
   }
 }

@@ -153,13 +153,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Func<int, int, IOrderHandler> transientFunc141 =
+      Func<int, int, IOrderHandler> transientFunc143 =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (localOrderId, localCustomerId) =>
       {
         // Retrieves a global processing token to be passed to the handler
-        ProcessingToken transientProcessingToken142 = new ProcessingToken("TOKEN-123");
-        ProcessingToken localToken = transientProcessingToken142;
+        ProcessingToken transientProcessingToken144 = new ProcessingToken("TOKEN-123");
+        ProcessingToken localToken = transientProcessingToken144;
         // The factory is invoked in parallel, so we must lock
         // the context to safely perform overrides for the specific graph
         lock (_lock)
@@ -183,7 +183,7 @@ partial class Composition
           return new OrderHandler(overriddenString2, _singletonTimeProvider63, overriddenInt32, overriddenInt321, overriddenProcessingToken3);
         }
       };
-      return new OrderBatchProcessor(transientFunc141);
+      return new OrderBatchProcessor(transientFunc143);
     }
   }
 }

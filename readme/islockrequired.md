@@ -100,7 +100,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      Service transientService63;
+      Service transientService65;
       // In a thread-safe context, IsLockRequired is true
       // Use it to conditionally lock the context
       if (true)
@@ -108,16 +108,16 @@ partial class Composition
         lock (_lock)
         {
           {
-            transientService63 = new Service(true);
-            goto transientService63Finish;
+            transientService65 = new Service(true);
+            goto transientService65Finish;
           }
         }
       }
 
-      transientService63 = new Service(true);
-      transientService63Finish:
+      transientService65 = new Service(true);
+      transientService65Finish:
         ;
-      return transientService63;
+      return transientService65;
     }
   }
 
@@ -130,7 +130,7 @@ partial class Composition
         lock (_lock)
           if (_singletonIService63 is null)
           {
-            Service transientService62;
+            Service transientService64;
             // In a thread-safe context, IsLockRequired is true
             // Use it to conditionally lock the context
             if (false)
@@ -138,16 +138,16 @@ partial class Composition
               lock (_lock)
               {
                 {
-                  transientService62 = new Service(false);
-                  goto transientService62Finish;
+                  transientService64 = new Service(false);
+                  goto transientService64Finish;
                 }
               }
             }
 
-            transientService62 = new Service(false);
-            transientService62Finish:
+            transientService64 = new Service(false);
+            transientService64Finish:
               ;
-            IService localService = transientService62;
+            IService localService = transientService64;
             _singletonIService63 = localService;
           }
 
