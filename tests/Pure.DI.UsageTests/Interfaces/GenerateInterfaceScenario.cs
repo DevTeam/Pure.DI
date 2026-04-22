@@ -2,11 +2,11 @@
 $v=true
 $p=9
 $d=Generate an interface from a class
-$h=This example shows how a public class can generate a matching interface and be used through Pure.DI.
+$h=This example shows how a concrete service can generate a matching interface and be consumed through Pure.DI.
 $f=The example shows how to:
 $f=- Generate an interface from a class
 $f=- Bind the generated contract in Pure.DI
-$f=- Resolve the consumer from a composition root
+$f=- Resolve a consumer that depends on the interface
 $r=Shouldly
 */
 
@@ -15,11 +15,8 @@ $r=Shouldly
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace Pure.DI.UsageTests.Interface.GenerateInterfaceScenario;
+namespace Pure.DI.UsageTests.Interfaces.GenerateInterfaceScenario;
 
-using Pure.DI.UsageTests;
-using Pure.DI;
-using Shouldly;
 using Xunit;
 
 // {
@@ -33,14 +30,14 @@ public class Scenario
     {
         // {
         DI.Setup(nameof(Composition))
-            .Bind().To<Service>()
+            .Bind().To<EmailSender>()
             .Root<App>(nameof(App));
 
         var composition = new Composition();
         var app = composition.App;
 
-        app.Message.ShouldBe("ok");
-        app.Text.ShouldBe("pong");
+        app.Provider.ShouldBe("smtp");
+        app.Result.ShouldBe("sent:ops@contoso.com");
         // }
 
         composition.SaveClassDiagram();
@@ -48,20 +45,20 @@ public class Scenario
 }
 
 // {
-public partial interface IService;
+public partial interface IEmailSender;
 
 [GenerateInterface]
-public class Service : IService
+public class EmailSender : IEmailSender
 {
-    public string Message => "ok";
+    public string Provider => "smtp";
 
-    public string Ping() => "pong";
+    public string Send(string address) => $"sent:{address}";
 }
 
-public class App(IService service)
+public class App(IEmailSender sender)
 {
-    public string Message { get; } = service.Message;
+    public string Provider { get; } = sender.Provider;
 
-    public string Text { get; } = service.Ping();
+    public string Result { get; } = sender.Send("ops@contoso.com");
 }
 // }

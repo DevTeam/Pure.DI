@@ -2,12 +2,12 @@
 $v=true
 $p=9
 $d=Customize the generated interface
-$h=This example shows how to change the generated interface name, namespace, and accessibility.
+$h=This example shows how to place a generated contract in a dedicated Contracts namespace.
 $f=The example shows how to:
 $f=- Generate an interface into a custom namespace
 $f=- Rename the generated interface
-$f=- Make the generated interface internal
-$r=Shouldly
+$f=- Keep the contract separate from implementation details
+$i=false
 */
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -17,23 +17,9 @@ $r=Shouldly
 
 using Pure.DI;
 
-namespace Contracts
+namespace Pure.DI.UsageTests.Interfaces.GenerateInterfaceCustomizationScenario
 {
-    public partial interface IWorker;
-
-    [GenerateInterface(namespaceName: "Contracts", interfaceName: "IWorker")]
-    public class Worker : IWorker
-    {
-        public string Message => "custom";
-    }
-}
-
-namespace Pure.DI.UsageTests.Interface.GenerateInterfaceCustomizationScenario
-{
-    using Pure.DI.UsageTests;
     using Contracts;
-    using Pure.DI;
-    using Shouldly;
     using Xunit;
 
     // {
@@ -47,21 +33,36 @@ namespace Pure.DI.UsageTests.Interface.GenerateInterfaceCustomizationScenario
         {
             // {
             DI.Setup(nameof(Composition))
-                .Bind().To<Worker>()
+                .Bind().To<InvoiceGenerator>()
                 .Root<App>(nameof(App));
 
             var composition = new Composition();
             var app = composition.App;
 
-            app.Message.ShouldBe("custom");
+            app.InvoiceId.ShouldBe("INV-0042");
             // }
 
             composition.SaveClassDiagram();
         }
     }
 
-    public class App(IWorker worker)
+    // {
+    public class App(IMyInvoiceGenerator generator)
     {
-        public string Message { get; } = worker.Message;
+        public string InvoiceId { get; } = generator.Format(42);
+    }
+    // }
+}
+
+// {
+namespace Contracts
+{
+    public partial interface IMyInvoiceGenerator;
+
+    [GenerateInterface(namespaceName: "Contracts", interfaceName: nameof(IMyInvoiceGenerator))]
+    public class InvoiceGenerator : IMyInvoiceGenerator
+    {
+        public string Format(int number) => $"INV-{number:0000}";
     }
 }
+// }

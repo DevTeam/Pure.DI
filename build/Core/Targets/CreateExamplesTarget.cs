@@ -28,6 +28,7 @@ class CreateExamplesTarget(
         "Attributes",
         "Interception",
         "Hints",
+        "Interfaces",
         "Advanced",
         "UseCases",
         "Unity"

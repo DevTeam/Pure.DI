@@ -7,6 +7,7 @@ namespace Build.Core.Targets;
 class TestExamplesTarget(
     Commands commands,
     Env env,
+    Properties properties,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget)
     : IInitializable, ITarget<int>
 {
@@ -31,6 +32,7 @@ class TestExamplesTarget(
             var appDir = Path.Combine(tempDir, "App");
             File.Copy(Path.Combine(solutionDir, "tests", "Pure.DI.UsageTests", "Test.props"), Path.Combine(appDir, "Directory.Build.props"));
             var programFile = Path.Combine(appDir, "Program.cs");
+            var example = properties["example"];
             foreach (var (_, groupExamples) in examples)
             {
                 foreach (var vars in groupExamples)
@@ -41,6 +43,12 @@ class TestExamplesTarget(
                     }
 
                     var description = vars[CreateExamplesTarget.DescriptionKey];
+                    if (!string.IsNullOrWhiteSpace(example)
+                        && !string.Equals(example, description, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        continue;
+                    }
+
                     var code = vars[CreateExamplesTarget.BodyKey];
                     await File.WriteAllTextAsync(programFile, code, cancellationToken);
                     var result = new DotNetBuild()

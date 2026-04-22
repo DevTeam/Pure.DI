@@ -1,11 +1,11 @@
 /*
 $v=true
 $p=9
-$d=Ignore members in generated interface
-$h=This example shows how to exclude selected members from the generated interface.
+$d=Ignore members in the generated interface
+$h=This example shows how to exclude internal-only members from a generated interface.
 $f=The example shows how to:
 $f=- Mark members with IgnoreInterface
-$f=- Keep only the public contract surface
+$f=- Keep only the intended contract surface
 $f=- Use the generated interface in Pure.DI
 $r=Shouldly
 */
@@ -15,11 +15,8 @@ $r=Shouldly
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace Pure.DI.UsageTests.Interface.IgnoreInterfaceScenario;
+namespace Pure.DI.UsageTests.Interfaces.IgnoreInterfaceScenario;
 
-using Pure.DI.UsageTests;
-using Pure.DI;
-using Shouldly;
 using Xunit;
 
 // {
@@ -33,13 +30,13 @@ public class Scenario
     {
         // {
         DI.Setup(nameof(Composition))
-            .Bind().To<Service>()
+            .Bind().To<ApiClient>()
             .Root<App>(nameof(App));
 
         var composition = new Composition();
         var app = composition.App;
 
-        app.Name.ShouldBe("visible");
+        app.Endpoint.ShouldBe("https://api.contoso.com");
         // }
 
         composition.SaveClassDiagram();
@@ -47,19 +44,19 @@ public class Scenario
 }
 
 // {
-public partial interface IService;
+public partial interface IApiClient;
 
 [GenerateInterface]
-public class Service : IService
+public class ApiClient : IApiClient
 {
-    public string Name => "visible";
+    public string Endpoint => "https://api.contoso.com";
 
     [IgnoreInterface]
-    public string Secret() => "hidden";
+    public string GetAccessToken() => "internal-token";
 }
 
-public class App(IService service)
+public class App(IApiClient client)
 {
-    public string Name { get; } = service.Name;
+    public string Endpoint { get; } = client.Endpoint;
 }
 // }

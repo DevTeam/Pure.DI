@@ -2,7 +2,7 @@
 $v=true
 $p=9
 $d=Generate interfaces with generics
-$h=This example shows that generic members, nullable annotations, and events are preserved in the generated interface.
+$h=This example shows how generic members, nullable annotations, and events are preserved in a reporting scenario.
 $f=The example shows how to:
 $f=- Generate an interface for generic members
 $f=- Preserve nullable annotations
@@ -15,12 +15,9 @@ $r=Shouldly
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 
-namespace Pure.DI.UsageTests.Interface.GenerateInterfaceGenericsScenario;
+#pragma warning disable CS0067
+namespace Pure.DI.UsageTests.Interfaces.GenerateInterfaceGenericsScenario;
 
-using System;
-using Pure.DI.UsageTests;
-using Pure.DI;
-using Shouldly;
 using Xunit;
 
 // {
@@ -34,15 +31,14 @@ public class Scenario
     {
         // {
         DI.Setup(nameof(Composition))
-            .Bind().To<Formatter>()
-            .Bind<App>().To<App>()
+            .Bind().To<ReportFormatter>()
             .Root<App>(nameof(App));
 
         var composition = new Composition();
         var app = composition.App;
 
-        app.Formatted.ShouldBe("demo");
-        app.Title.ShouldBe("demo");
+        app.Formatted.ShouldBe("Order #42");
+        app.Title.ShouldBe("Daily Report");
         // }
 
         composition.SaveClassDiagram();
@@ -50,16 +46,14 @@ public class Scenario
 }
 
 // {
-public partial interface IFormatter;
+public partial interface IReportFormatter;
 
 [GenerateInterface]
-public class Formatter : IFormatter
+public class ReportFormatter : IReportFormatter
 {
-    public string? Title { get; set; } = "demo";
+    public string? Title { get; set; } = "Daily Report";
 
-#pragma warning disable CS0067
     public event EventHandler? Changed;
-#pragma warning restore CS0067
 
     public string? Format<T>(T value)
         where T : class
@@ -69,10 +63,15 @@ public class Formatter : IFormatter
     public void Hidden() { }
 }
 
-public class App(IFormatter formatter)
+public class App(IReportFormatter formatter)
 {
     public string Title { get; } = formatter.Title ?? string.Empty;
 
-    public string Formatted { get; } = formatter.Format("demo") ?? string.Empty;
+    public string Formatted { get; } = formatter.Format(new Order(42)) ?? string.Empty;
+}
+
+public class Order(int id)
+{
+    public override string ToString() => $"Order #{id}";
 }
 // }
