@@ -8,7 +8,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-sealed class InterfaceBuilder(IRoslynSymbols roslynSymbols) : IInterfaceBuilder
+sealed class InterfaceBuilder(
+    IRoslynSymbols roslynSymbols,
+    ITypes types): IInterfaceBuilder
 {
     private static readonly SymbolDisplayFormat FullyQualifiedDisplayFormat = new(
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
@@ -26,7 +28,7 @@ sealed class InterfaceBuilder(IRoslynSymbols roslynSymbols) : IInterfaceBuilder
         globalNamespaceStyle: FullyQualifiedDisplayFormat.GlobalNamespaceStyle,
         miscellaneousOptions: FullyQualifiedDisplayFormat.MiscellaneousOptions);
 
-    public string BuildInterfaceFor(ITypeSymbol typeSymbol, ClassDeclarationSyntax classSyntax)
+    public string BuildInterfaceFor(SemanticModel semanticModel, ITypeSymbol typeSymbol, ClassDeclarationSyntax classSyntax)
     {
         if (typeSymbol is not INamedTypeSymbol namedTypeSymbol)
         {
@@ -49,18 +51,18 @@ sealed class InterfaceBuilder(IRoslynSymbols roslynSymbols) : IInterfaceBuilder
             .ToList();
 
         AddPropertiesToInterface(members, interfaceGenerator);
-        AddMethodsToInterface(members, interfaceGenerator);
+        AddMethodsToInterface(semanticModel, members, interfaceGenerator);
         AddEventsToInterface(members, interfaceGenerator);
 
         return interfaceGenerator.Build();
     }
 
-    private void AddMethodsToInterface(List<ISymbol> members, InterfaceCodeBuilder codeGenerator)
+    private void AddMethodsToInterface(SemanticModel semanticModel, List<ISymbol> members, InterfaceCodeBuilder codeGenerator)
     {
         members.Where(x => x.Kind == SymbolKind.Method)
             .OfType<IMethodSymbol>()
-            .Where(x => x.MethodKind == MethodKind.Ordinary)
-            .Where(x => x.ContainingType.Name != nameof(Object))
+            .Where(x => x.MethodKind is MethodKind.Ordinary)
+            .Where(x => !types.TypeEquals(x.ContainingType, semanticModel.Compilation.GetSpecialType(SpecialType.System_Object)))
             .Where(x => !HasIgnoreAttribute(x))
             .GroupBy(x => x.ToDisplayString(FullyQualifiedDisplayFormatForGrouping))
             .Select(g => g.First())

@@ -50,7 +50,7 @@ sealed class InterfaceGenerator : IInterfaceGenerator
                 continue;
             }
 
-            var code = _interfaceBuilder.BuildInterfaceFor(typeSymbol, classSyntax);
+            var code = _interfaceBuilder.BuildInterfaceFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
             if (string.IsNullOrWhiteSpace(code))
             {
                 continue;

@@ -2,5 +2,8 @@
 
 interface IInterfaceBuilder
 {
-    string BuildInterfaceFor(ITypeSymbol typeSymbol, ClassDeclarationSyntax classSyntax);
+    string BuildInterfaceFor(
+        SemanticModel semanticModel,
+        ITypeSymbol typeSymbol,
+        ClassDeclarationSyntax classSyntax);
 }
