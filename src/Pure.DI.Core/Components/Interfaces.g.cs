@@ -6,16 +6,42 @@
 namespace Pure.DI
 {
     /// <summary>
-    /// Generates an interface from the attributed class.
+    /// Instructs Pure.DI to generate an interface for the attributed class.
     /// </summary>
+    /// <remarks>
+    /// Apply this attribute to a class declaration.
+    /// Generated interface members are based on the public API of the class,
+    /// excluding members marked with <see cref="IgnoreInterfaceAttribute"/>.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// [GenerateInterface(interfaceName: "IService")]
+    /// class Service
+    /// {
+    ///     public void Run() { }
+    /// }
+    /// </code>
+    /// </example>
     [global::System.AttributeUsage(global::System.AttributeTargets.Class)]
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class GenerateInterfaceAttribute : global::System.Attribute
     {
         /// <summary>
-        /// Generates an interface from the attributed class.
+        /// Initializes a new instance of the <see cref="GenerateInterfaceAttribute"/> class.
         /// </summary>
+        /// <param name="namespaceName">
+        /// Optional target namespace for the generated interface.
+        /// When not specified, the namespace is inferred by Pure.DI.
+        /// </param>
+        /// <param name="interfaceName">
+        /// Optional explicit name of the generated interface.
+        /// When not specified, Pure.DI uses the default naming convention.
+        /// </param>
+        /// <param name="asInternal">
+        /// Set to <see langword="true"/> to generate the interface with <c>internal</c> visibility;
+        /// otherwise the generated interface is public.
+        /// </param>
         internal GenerateInterfaceAttribute(
             string namespaceName = default(string),
             string interfaceName = default(string),
@@ -23,8 +49,25 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Ignores a class member when generating an interface.
+    /// Excludes a member from interface generation.
     /// </summary>
+    /// <remarks>
+    /// Apply this attribute to a method, property, or event that should not appear
+    /// in the interface generated for a class marked with
+    /// <see cref="GenerateInterfaceAttribute"/>.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// [GenerateInterface]
+    /// class Service
+    /// {
+    ///     public void Run() { }
+    ///
+    ///     [IgnoreInterface]
+    ///     public string InternalState => "hidden";
+    /// }
+    /// </code>
+    /// </example>
     [global::System.AttributeUsage(global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Event)]
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
