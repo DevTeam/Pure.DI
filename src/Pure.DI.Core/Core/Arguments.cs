@@ -6,63 +6,21 @@ sealed class Arguments : IArguments
 {
     public AttributeArgumentSyntax?[] GetArgs(
         AttributeArgumentListSyntax argumentListSyntax,
-        params string[] colons)
-    {
-        var args = new AttributeArgumentSyntax?[colons.Length];
-        for (var argIndex = 0; argIndex < argumentListSyntax.Arguments.Count; argIndex++)
-        {
-            var arg = argumentListSyntax.Arguments[argIndex];
-            if (arg.NameColon?.Name.Identifier.Text is {} colonName)
-            {
-                for (var colonIndex = 0; colonIndex < colons.Length; colonIndex++)
-                {
-                    if (colons[colonIndex] == colonName)
-                    {
-                        args[colonIndex] = arg;
-                    }
-                }
-            }
-            else
-            {
-                if (argIndex < args.Length)
-                {
-                    args[argIndex] = arg;
-                }
-            }
-        }
-
-        return args;
-    }
+        params string[] colons) =>
+        GetArgs(
+            argumentListSyntax.Arguments.Count,
+            i => argumentListSyntax.Arguments[i],
+            arg => arg.NameColon?.Name.Identifier.Text,
+            colons);
 
     public ArgumentSyntax?[] GetArgs(
         BaseArgumentListSyntax argumentListSyntax,
-        params string[] colons)
-    {
-        var args = new ArgumentSyntax[colons.Length];
-        for (var argIndex = 0; argIndex < argumentListSyntax.Arguments.Count; argIndex++)
-        {
-            var arg = argumentListSyntax.Arguments[argIndex];
-            if (arg.NameColon?.Name.Identifier.Text is {} colonName)
-            {
-                for (var colonIndex = 0; colonIndex < colons.Length; colonIndex++)
-                {
-                    if (colons[colonIndex] == colonName)
-                    {
-                        args[colonIndex] = arg;
-                    }
-                }
-            }
-            else
-            {
-                if (argIndex < args.Length)
-                {
-                    args[argIndex] = arg;
-                }
-            }
-        }
-
-        return args;
-    }
+        params string[] colons) =>
+        GetArgs(
+            argumentListSyntax.Arguments.Count,
+            i => argumentListSyntax.Arguments[i],
+            arg => arg.NameColon?.Name.Identifier.Text,
+            colons);
 
     public TypedConstant[] GetArgs(
         ImmutableArray<TypedConstant> attributeConstructorArguments,
@@ -89,6 +47,39 @@ sealed class Arguments : IArguments
             {
                 args[argIndex] = namedArgument.Value;
                 break;
+            }
+        }
+
+        return args;
+    }
+
+    private static TArg?[] GetArgs<TArg>(
+        int argsCount,
+        Func<int, TArg> argProvider,
+        Func<TArg, string?> nameProvider,
+        string[] colons)
+        where TArg : class
+    {
+        var args = new TArg?[colons.Length];
+        for (var argIndex = 0; argIndex < argsCount; argIndex++)
+        {
+            var arg = argProvider(argIndex);
+            if (nameProvider(arg) is { } colonName)
+            {
+                for (var colonIndex = 0; colonIndex < colons.Length; colonIndex++)
+                {
+                    if (colons[colonIndex] == colonName)
+                    {
+                        args[colonIndex] = arg;
+                    }
+                }
+
+                continue;
+            }
+
+            if (argIndex < args.Length)
+            {
+                args[argIndex] = arg;
             }
         }
 
