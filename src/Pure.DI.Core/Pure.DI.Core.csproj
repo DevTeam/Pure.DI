@@ -15,16 +15,12 @@
         </PackageReference>
         <PackageReference Include="IndexRange" Version="1.1.1" />
         <Compile Update="Components\Api.g.cs">
-            <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
-            <Generator>TextTemplatingFileGenerator</Generator>
             <AutoGen>True</AutoGen>
             <DesignTime>True</DesignTime>
             <DependentUpon>Api.g.tt</DependentUpon>
         </Compile>
         <EmbeddedResource Include="Components\Api.g.cs" />
         <Compile Update="Components\GenericTypeArguments.g.cs">
-            <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
-            <Generator>TextTemplatingFileGenerator</Generator>
             <AutoGen>True</AutoGen>
             <DesignTime>True</DesignTime>
             <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
@@ -44,6 +40,17 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Strings.resx</DependentUpon>
         </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Components\Api.g.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>Api.g.cs</LastGenOutput>
+      </None>
+      <None Update="Components\GenericTypeArguments.g.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
+      </None>
     </ItemGroup>
     
 </Project>
