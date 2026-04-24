@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using CoreNames = Pure.DI.Core.Names;
 
 sealed class InterfaceBuilder(
     IRoslynSymbols roslynSymbols,
@@ -39,8 +40,13 @@ sealed class InterfaceBuilder(
             return new Lines();
         }
 
+        var generateInterfaceAttributeFullName = $"{CoreNames.GlobalNamespacePrefix}{CoreNames.GenerateInterfaceAttributeFullName}";
         var generationAttribute = typeSymbol.GetAttributes().FirstOrDefault(x =>
-            x.AttributeClass != null && x.AttributeClass.Name.Contains(Names.GenerateInterfaceAttributeName, StringComparison.Ordinal));
+            x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == generateInterfaceAttributeFullName);
+        if (generationAttribute == null)
+        {
+            return new Lines();
+        }
 
         var symbolDetails = new GeneratedInterfaceDetails(semanticModel, generationAttribute, typeSymbol, classSyntax)
         {
@@ -54,15 +60,15 @@ sealed class InterfaceBuilder(
             .Where(x => !HasIgnoreAttribute(x))
             .ToList();
 
-        var hasNullable = false;
-        symbolDetails.PropertyInfos = GetProperties(members, ref hasNullable);
-        symbolDetails.MethodInfos = GetMethods(semanticModel, members, ref hasNullable);
-        symbolDetails.Events = GetEvents(members, ref hasNullable);
+        var nullableContextEnabled = semanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
+        symbolDetails.PropertyInfos = GetProperties(members);
+        symbolDetails.MethodInfos = GetMethods(semanticModel, members, nullableContextEnabled);
+        symbolDetails.Events = GetEvents(members);
 
         return interfaceCodeBuilderFactory().Build(symbolDetails);
     }
 
-    private ImmutableArray<MethodInfo> GetMethods(SemanticModel semanticModel, List<ISymbol> members, ref bool hasNullable)
+    private ImmutableArray<MethodInfo> GetMethods(SemanticModel semanticModel, List<ISymbol> members, bool nullableContextEnabled)
     {
         var methods = new List<MethodInfo>();
         foreach (var method in members.Where(x => x.Kind == SymbolKind.Method)
@@ -73,20 +79,18 @@ sealed class InterfaceBuilder(
                      .GroupBy(x => x.ToDisplayString(FullyQualifiedDisplayFormatForGrouping))
                      .Select(g => g.First()))
         {
-            methods.Add(GetMethodInfo(method, ref hasNullable));
+            methods.Add(GetMethodInfo(method, nullableContextEnabled));
         }
 
         return methods.ToImmutableArray();
     }
 
-    private MethodInfo GetMethodInfo(IMethodSymbol method, ref bool hasNullable)
+    private MethodInfo GetMethodInfo(IMethodSymbol method, bool nullableContextEnabled)
     {
-        ActivateNullableIfNeeded(ref hasNullable, method);
-
-        var paramResult = new HashSet<string>();
+        var paramResult = new List<string>();
         foreach (var methodParameter in method.Parameters)
         {
-            var parameter = GetParameterDisplayString(methodParameter, hasNullable);
+            var parameter = GetParameterDisplayString(methodParameter, nullableContextEnabled);
             paramResult.Add(parameter);
         }
 
@@ -106,46 +110,6 @@ sealed class InterfaceBuilder(
     {
         var prefix = method.ReturnsByRefReadonly ? "ref readonly " : method.ReturnsByRef ? "ref " : string.Empty;
         return prefix + method.ReturnType.ToDisplayString(FullyQualifiedDisplayFormat);
-    }
-
-    private static void ActivateNullableIfNeeded(ref bool hasNullable, ITypeSymbol typeSymbol)
-    {
-        if (IsNullable(typeSymbol))
-        {
-            hasNullable = true;
-        }
-    }
-
-    private static void ActivateNullableIfNeeded(ref bool hasNullable, IMethodSymbol method)
-    {
-        if (method.Parameters.Any(x => IsNullable(x.Type)) || IsNullable(method.ReturnType))
-        {
-            hasNullable = true;
-        }
-    }
-
-    private static bool IsNullable(ITypeSymbol typeSymbol)
-    {
-        if (typeSymbol.NullableAnnotation == NullableAnnotation.Annotated)
-        {
-            return true;
-        }
-
-        if (typeSymbol is not INamedTypeSymbol named)
-        {
-            return false;
-        }
-
-        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var param in named.TypeArguments)
-        {
-            if (IsNullable(param))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static string GetParameterDisplayString(IParameterSymbol param, bool nullableContextEnabled)
@@ -182,7 +146,7 @@ sealed class InterfaceBuilder(
         return typeSb.Append(restSb).ToString();
     }
 
-    private static ImmutableArray<EventInfo> GetEvents(List<ISymbol> members, ref bool hasNullable)
+    private static ImmutableArray<EventInfo> GetEvents(List<ISymbol> members)
     {
         var events = new List<EventInfo>();
         foreach (var evt in members.Where(x => x.Kind == SymbolKind.Event)
@@ -190,14 +154,13 @@ sealed class InterfaceBuilder(
                      .GroupBy(x => x.ToDisplayString(FullyQualifiedDisplayFormatForGrouping))
                      .Select(g => g.First()))
         {
-            ActivateNullableIfNeeded(ref hasNullable, evt.Type);
             events.Add(new EventInfo(evt.Name, evt.Type.ToDisplayString(FullyQualifiedDisplayFormat), InheritDoc(evt)));
         }
 
         return events.ToImmutableArray();
     }
 
-    private static ImmutableArray<PropertyInfo> GetProperties(List<ISymbol> members, ref bool hasNullable)
+    private static ImmutableArray<PropertyInfo> GetProperties(List<ISymbol> members)
     {
         var properties = new List<PropertyInfo>();
         foreach (var prop in members.Where(x => x.Kind == SymbolKind.Property)
@@ -206,8 +169,6 @@ sealed class InterfaceBuilder(
                      .GroupBy(x => x.Name)
                      .Select(g => g.First()))
         {
-            ActivateNullableIfNeeded(ref hasNullable, prop.Type);
-
             properties.Add(new PropertyInfo(
                 prop.Name,
                 prop.Type.ToDisplayString(FullyQualifiedDisplayFormat),
@@ -228,8 +189,11 @@ sealed class InterfaceBuilder(
             _ => setMethodSymbol is { DeclaredAccessibility: Accessibility.Public } ? PropertySetKind.Always : PropertySetKind.NoSet
         };
 
-    private static bool HasIgnoreAttribute(ISymbol x) =>
-        x.GetAttributes().Any(a => a.AttributeClass != null && a.AttributeClass.Name.Contains(Names.IgnoreInterfaceAttributeName, StringComparison.Ordinal));
+    private static bool HasIgnoreAttribute(ISymbol x)
+    {
+        var ignoreInterfaceAttributeFullName = $"{CoreNames.GlobalNamespacePrefix}{CoreNames.IgnoreInterfaceAttributeFullName}";
+        return x.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == ignoreInterfaceAttributeFullName);
+    }
 
     private static string GetDocumentationForClass(CSharpSyntaxNode classSyntax)
     {

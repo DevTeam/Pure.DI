@@ -17,12 +17,12 @@ sealed class GeneratedInterfaceDetails(
 
     public string InterfaceName { get; } = PrepareValue(
         generationAttribute,
-        Names.InterfaceParameterName,
+        Names.InterfaceNameParameterName,
         $"I{classSyntax.Identifier.Text}");
 
     public string AccessLevel { get; } = PrepareValue(
         generationAttribute,
-        Names.AsInternalParameterName,
+        Names.InterfaceAsInternalParameterName,
         false)
         ? "internal"
         : "public";
@@ -38,7 +38,7 @@ sealed class GeneratedInterfaceDetails(
     public ImmutableArray<EventInfo> Events { get; set; } = ImmutableArray<EventInfo>.Empty;
 
     private static string PrepareNamespaceValue(AttributeData? generationAttribute, string defaultValue) =>
-        PrepareValue(generationAttribute, Names.NamespaceParameterName, defaultValue);
+        PrepareValue(generationAttribute, Names.InterfaceNamespaceParameterName, defaultValue);
 
     private static T PrepareValue<T>(AttributeData? generationAttribute, string key, T defaultValue)
     {

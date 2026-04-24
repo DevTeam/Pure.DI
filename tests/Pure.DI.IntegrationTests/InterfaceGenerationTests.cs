@@ -139,4 +139,107 @@ public class InterfaceGenerationTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldContain("ok");
     }
+
+    [Fact]
+    public async Task ShouldPreserveMethodParameterOrder()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IService
+            {
+            }
+
+            [GenerateInterface]
+            public partial class Service
+            {
+                public void Configure(int first, string second, double third)
+                {
+                }
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+
+        result.GeneratedCode.ShouldContain("void Configure(int first, string second, double third);");
+    }
+
+    [Fact]
+    public async Task ShouldNotGenerateInterfaceForSimilarAttributeName()
+    {
+        var result = await """
+            using System;
+            using Pure.DI;
+
+            namespace Demo;
+
+            [AttributeUsage(AttributeTargets.Class)]
+            public sealed class GenerateInterfaceLikeAttribute : Attribute
+            {
+            }
+
+            [GenerateInterfaceLike]
+            public partial class Service
+            {
+                public string Name => "demo";
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+
+        result.GeneratedCode.ShouldNotContain("partial interface IService");
+    }
+
+    [Fact]
+    public async Task ShouldNotIgnoreMembersForSimilarIgnoreAttributeName()
+    {
+        var result = await """
+            using System;
+            using Pure.DI;
+
+            namespace Demo;
+
+            [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Event)]
+            public sealed class IgnoreInterfaceLikeAttribute : Attribute
+            {
+            }
+
+            public partial interface IService
+            {
+            }
+
+            [GenerateInterface]
+            public partial class Service
+            {
+                [IgnoreInterfaceLike]
+                public void ShouldStay()
+                {
+                }
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+
+        result.GeneratedCode.ShouldContain("void ShouldStay();");
+    }
 }

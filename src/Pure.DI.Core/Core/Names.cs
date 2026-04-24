@@ -20,6 +20,12 @@ static class Names
     // Attributes
     public const string MethodImplAttributeName = $"{SystemNamespace}Runtime.CompilerServices.MethodImpl";
     public const string MethodImplOptionsName = $"{SystemNamespace}Runtime.CompilerServices.{nameof(MethodImplOptions)}";
+    public const string GenerateInterfaceAttributeName = "GenerateInterface";
+    public const string GenerateInterfaceAttributeFullName = $"{GeneratorName}.GenerateInterfaceAttribute";
+    public const string IgnoreInterfaceAttributeFullName = $"{GeneratorName}.IgnoreInterfaceAttribute";
+    public const string InterfaceNamespaceParameterName = "namespaceName";
+    public const string InterfaceNameParameterName = "interfaceName";
+    public const string InterfaceAsInternalParameterName = "asInternal";
 
     // Messages
     public const string CannotResolveMessage = "Cannot resolve composition root";
