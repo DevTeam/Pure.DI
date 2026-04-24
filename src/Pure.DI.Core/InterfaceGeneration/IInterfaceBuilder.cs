@@ -2,7 +2,7 @@
 
 interface IInterfaceBuilder
 {
-    string BuildInterfaceFor(
+    Lines BuildInterfaceFor(
         SemanticModel semanticModel,
         ITypeSymbol typeSymbol,
         ClassDeclarationSyntax classSyntax);

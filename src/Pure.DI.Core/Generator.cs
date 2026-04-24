@@ -16,6 +16,7 @@ using static StringComparer;
 using static Tag;
 using static Unit;
 using Metadata = Core.Metadata;
+using Interfaces = InterfaceGeneration;
 
 // @formatter:off
 public sealed partial class Generator
@@ -51,9 +52,11 @@ public sealed partial class Generator
 
         // Interface generator
         .PerBlock<
-            InterfaceGeneration.InterfaceGenerator,
-            InterfaceGeneration.RoslynSymbols,
-            InterfaceGeneration.InterfaceBuilder>()
+            Interfaces.InterfaceGenerator,
+            Interfaces.RoslynSymbols,
+            Interfaces.InterfaceBuilder>()
+
+        .Transient<Interfaces.InterfaceCodeBuilder>()
 
         // Transient
             .Transient(_ => GetType().Assembly)
@@ -82,7 +85,7 @@ public sealed partial class Generator
                 NodeTools, LocalFunctions, ExceptionHandler, WildcardMatcher, InjectionSiteFactory, Semantic, Attributes, Compilations, GraphWalker<TT, TT1>,
                 LifetimeAnalyzer, InstanceDpProvider, Injections, NameFormatter, BindingsFactory, NodesFactory, LocationProvider,
                 CycleTools, LifetimeProvider, VarDeclarationTools, ContractTagComparer,
-                CodeNameProvider, DependencyNodePrioritizer>()
+                CodeNameProvider, DependencyNodePrioritizer, FileHeader>()
             .PerBlock<LifetimesValidatorVisitor, CyclicDependencyValidatorVisitor, RootArgsVisitor, RootStatisticsVisitor>()
             .PerBlock<GraphOverrider>(Overrider)
             .PerBlock<GraphCleaner>(Cleaner)

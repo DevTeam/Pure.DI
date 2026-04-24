@@ -1,7 +1,9 @@
+// ReSharper disable LoopCanBeConvertedToQuery
 namespace Pure.DI.InterfaceGeneration;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -10,7 +12,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 sealed class InterfaceBuilder(
     IRoslynSymbols roslynSymbols,
-    ITypes types): IInterfaceBuilder
+    ITypes types,
+    Func<IBuilder<GeneratedInterfaceDetails, Lines>> interfaceCodeBuilderFactory)
+    : IInterfaceBuilder
 {
     private static readonly SymbolDisplayFormat FullyQualifiedDisplayFormat = new(
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
@@ -28,21 +32,21 @@ sealed class InterfaceBuilder(
         globalNamespaceStyle: FullyQualifiedDisplayFormat.GlobalNamespaceStyle,
         miscellaneousOptions: FullyQualifiedDisplayFormat.MiscellaneousOptions);
 
-    public string BuildInterfaceFor(SemanticModel semanticModel, ITypeSymbol typeSymbol, ClassDeclarationSyntax classSyntax)
+    public Lines BuildInterfaceFor(SemanticModel semanticModel, ITypeSymbol typeSymbol, ClassDeclarationSyntax classSyntax)
     {
         if (typeSymbol is not INamedTypeSymbol namedTypeSymbol)
         {
-            return string.Empty;
+            return new Lines();
         }
 
         var generationAttribute = typeSymbol.GetAttributes().FirstOrDefault(x =>
             x.AttributeClass != null && x.AttributeClass.Name.Contains(Names.GenerateInterfaceAttributeName, StringComparison.Ordinal));
 
-        var symbolDetails = new GeneratedInterfaceDetails(generationAttribute, typeSymbol, classSyntax);
-        var interfaceGenerator = new InterfaceCodeBuilder(symbolDetails.NamespaceName, symbolDetails.InterfaceName, symbolDetails.AccessLevel);
-
-        interfaceGenerator.AddClassDocumentation(GetDocumentationForClass(classSyntax));
-        interfaceGenerator.AddGeneric(GetGeneric(classSyntax, namedTypeSymbol));
+        var symbolDetails = new GeneratedInterfaceDetails(semanticModel, generationAttribute, typeSymbol, classSyntax)
+        {
+            ClassDocumentation = GetDocumentationForClass(classSyntax),
+            GenericType = GetGeneric(classSyntax, namedTypeSymbol)
+        };
 
         var members = roslynSymbols.GetAllMembers(typeSymbol)
             .Where(x => x.DeclaredAccessibility == Accessibility.Public)
@@ -50,33 +54,39 @@ sealed class InterfaceBuilder(
             .Where(x => !HasIgnoreAttribute(x))
             .ToList();
 
-        AddPropertiesToInterface(members, interfaceGenerator);
-        AddMethodsToInterface(semanticModel, members, interfaceGenerator);
-        AddEventsToInterface(members, interfaceGenerator);
+        var hasNullable = false;
+        symbolDetails.PropertyInfos = GetProperties(members, ref hasNullable);
+        symbolDetails.MethodInfos = GetMethods(semanticModel, members, ref hasNullable);
+        symbolDetails.Events = GetEvents(members, ref hasNullable);
 
-        return interfaceGenerator.Build();
+        return interfaceCodeBuilderFactory().Build(symbolDetails);
     }
 
-    private void AddMethodsToInterface(SemanticModel semanticModel, List<ISymbol> members, InterfaceCodeBuilder codeGenerator)
+    private ImmutableArray<MethodInfo> GetMethods(SemanticModel semanticModel, List<ISymbol> members, ref bool hasNullable)
     {
-        members.Where(x => x.Kind == SymbolKind.Method)
-            .OfType<IMethodSymbol>()
-            .Where(x => x.MethodKind is MethodKind.Ordinary)
-            .Where(x => !types.TypeEquals(x.ContainingType, semanticModel.Compilation.GetSpecialType(SpecialType.System_Object)))
-            .Where(x => !HasIgnoreAttribute(x))
-            .GroupBy(x => x.ToDisplayString(FullyQualifiedDisplayFormatForGrouping))
-            .Select(g => g.First())
-            .ToList()
-            .ForEach(method => AddMethod(codeGenerator, method));
+        var methods = new List<MethodInfo>();
+        foreach (var method in members.Where(x => x.Kind == SymbolKind.Method)
+                     .OfType<IMethodSymbol>()
+                     .Where(x => x.MethodKind is MethodKind.Ordinary)
+                     .Where(x => !types.TypeEquals(x.ContainingType, semanticModel.Compilation.GetSpecialType(SpecialType.System_Object)))
+                     .Where(x => !HasIgnoreAttribute(x))
+                     .GroupBy(x => x.ToDisplayString(FullyQualifiedDisplayFormatForGrouping))
+                     .Select(g => g.First()))
+        {
+            methods.Add(GetMethodInfo(method, ref hasNullable));
+        }
+
+        return methods.ToImmutableArray();
     }
 
-    private void AddMethod(InterfaceCodeBuilder codeGenerator, IMethodSymbol method)
+    private MethodInfo GetMethodInfo(IMethodSymbol method, ref bool hasNullable)
     {
-        ActivateNullableIfNeeded(codeGenerator, method);
+        ActivateNullableIfNeeded(ref hasNullable, method);
 
         var paramResult = new HashSet<string>();
-        foreach (var parameter in method.Parameters.Select(p => GetParameterDisplayString(p, codeGenerator.HasNullable)))
+        foreach (var methodParameter in method.Parameters)
         {
+            var parameter = GetParameterDisplayString(methodParameter, hasNullable);
             paramResult.Add(parameter);
         }
 
@@ -84,12 +94,12 @@ sealed class InterfaceBuilder(
             .Select(arg => (arg.ToDisplayString(FullyQualifiedDisplayFormat), roslynSymbols.GetWhereStatement(arg, FullyQualifiedDisplayFormat)))
             .ToList();
 
-        codeGenerator.AddMethodToInterface(
+        return new MethodInfo(
             method.Name,
             GetMethodReturnType(method),
             InheritDoc(method),
-            paramResult,
-            typedArgs);
+            paramResult.ToImmutableArray(),
+            typedArgs.ToImmutableArray());
     }
 
     private static string GetMethodReturnType(IMethodSymbol method)
@@ -98,19 +108,19 @@ sealed class InterfaceBuilder(
         return prefix + method.ReturnType.ToDisplayString(FullyQualifiedDisplayFormat);
     }
 
-    private static void ActivateNullableIfNeeded(InterfaceCodeBuilder codeGenerator, ITypeSymbol typeSymbol)
+    private static void ActivateNullableIfNeeded(ref bool hasNullable, ITypeSymbol typeSymbol)
     {
         if (IsNullable(typeSymbol))
         {
-            codeGenerator.HasNullable = true;
+            hasNullable = true;
         }
     }
 
-    private static void ActivateNullableIfNeeded(InterfaceCodeBuilder codeGenerator, IMethodSymbol method)
+    private static void ActivateNullableIfNeeded(ref bool hasNullable, IMethodSymbol method)
     {
         if (method.Parameters.Any(x => IsNullable(x.Type)) || IsNullable(method.ReturnType))
         {
-            codeGenerator.HasNullable = true;
+            hasNullable = true;
         }
     }
 
@@ -172,40 +182,42 @@ sealed class InterfaceBuilder(
         return typeSb.Append(restSb).ToString();
     }
 
-    private static void AddEventsToInterface(List<ISymbol> members, InterfaceCodeBuilder codeGenerator)
+    private static ImmutableArray<EventInfo> GetEvents(List<ISymbol> members, ref bool hasNullable)
     {
-        members.Where(x => x.Kind == SymbolKind.Event)
-            .OfType<IEventSymbol>()
-            .GroupBy(x => x.ToDisplayString(FullyQualifiedDisplayFormatForGrouping))
-            .Select(g => g.First())
-            .ToList()
-            .ForEach(evt =>
-            {
-                ActivateNullableIfNeeded(codeGenerator, evt.Type);
-                codeGenerator.AddEventToInterface(evt.Name, evt.Type.ToDisplayString(FullyQualifiedDisplayFormat), InheritDoc(evt));
-            });
+        var events = new List<EventInfo>();
+        foreach (var evt in members.Where(x => x.Kind == SymbolKind.Event)
+                     .OfType<IEventSymbol>()
+                     .GroupBy(x => x.ToDisplayString(FullyQualifiedDisplayFormatForGrouping))
+                     .Select(g => g.First()))
+        {
+            ActivateNullableIfNeeded(ref hasNullable, evt.Type);
+            events.Add(new EventInfo(evt.Name, evt.Type.ToDisplayString(FullyQualifiedDisplayFormat), InheritDoc(evt)));
+        }
+
+        return events.ToImmutableArray();
     }
 
-    private static void AddPropertiesToInterface(List<ISymbol> members, InterfaceCodeBuilder interfaceGenerator)
+    private static ImmutableArray<PropertyInfo> GetProperties(List<ISymbol> members, ref bool hasNullable)
     {
-        members.Where(x => x.Kind == SymbolKind.Property)
-            .OfType<IPropertySymbol>()
-            .Where(x => !x.IsIndexer)
-            .GroupBy(x => x.Name)
-            .Select(g => g.First())
-            .ToList()
-            .ForEach(prop =>
-            {
-                ActivateNullableIfNeeded(interfaceGenerator, prop.Type);
+        var properties = new List<PropertyInfo>();
+        foreach (var prop in members.Where(x => x.Kind == SymbolKind.Property)
+                     .OfType<IPropertySymbol>()
+                     .Where(x => !x.IsIndexer)
+                     .GroupBy(x => x.Name)
+                     .Select(g => g.First()))
+        {
+            ActivateNullableIfNeeded(ref hasNullable, prop.Type);
 
-                interfaceGenerator.AddPropertyToInterface(
-                    prop.Name,
-                    prop.Type.ToDisplayString(FullyQualifiedDisplayFormat),
-                    prop.GetMethod?.DeclaredAccessibility == Accessibility.Public,
-                    GetSetKind(prop.SetMethod),
-                    prop.ReturnsByRef,
-                    InheritDoc(prop));
-            });
+            properties.Add(new PropertyInfo(
+                prop.Name,
+                prop.Type.ToDisplayString(FullyQualifiedDisplayFormat),
+                prop.GetMethod?.DeclaredAccessibility == Accessibility.Public,
+                GetSetKind(prop.SetMethod),
+                prop.ReturnsByRef,
+                InheritDoc(prop)));
+        }
+
+        return properties.ToImmutableArray();
     }
 
     private static PropertySetKind GetSetKind(IMethodSymbol? setMethodSymbol) =>

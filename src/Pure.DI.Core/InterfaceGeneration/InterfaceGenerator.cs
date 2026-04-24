@@ -33,12 +33,13 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
             }
 
             var code = interfaceBuilder.BuildInterfaceFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
-            if (string.IsNullOrWhiteSpace(code))
+            if (code.Count == 0)
             {
                 continue;
             }
 
-            context.AddSource(GetHintName(typeSymbol), SourceText.From(code, Encoding.UTF8));
+            using var rent = code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
+            context.AddSource(GetHintName(typeSymbol), SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
         }
     }
 
