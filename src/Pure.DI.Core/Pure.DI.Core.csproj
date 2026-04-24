@@ -30,6 +30,7 @@
             <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
         </Compile>
         <EmbeddedResource Include="Components\GenericTypeArguments.g.cs" />
+        <EmbeddedResource Include="Components\Interfaces.g.cs"/>
         <EmbeddedResource Include="Features\Default.g.cs"/>
         <EmbeddedResource Update="Strings.resx">
             <Generator>ResXFileCodeGenerator</Generator>
@@ -43,12 +44,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Strings.resx</DependentUpon>
         </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="Components\Api.g.tt">
-        <Generator>TextTemplatingFileGenerator</Generator>
-      </None>
     </ItemGroup>
     
 </Project>

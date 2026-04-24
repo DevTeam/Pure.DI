@@ -1,6 +1,5 @@
 namespace Pure.DI.InterfaceGeneration;
 
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -8,25 +7,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Pure.DI;
 
-sealed class InterfaceGenerator : IInterfaceGenerator
+sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterfaceGenerator
 {
-    private readonly IInterfaceBuilder _interfaceBuilder;
-    private readonly IInterfaceAttributeSources _attributeSources;
-
-    internal InterfaceGenerator(
-        IInterfaceBuilder interfaceBuilder,
-        IInterfaceAttributeSources attributeSources)
-    {
-        _interfaceBuilder = interfaceBuilder;
-        _attributeSources = attributeSources;
-    }
-
-    public IEnumerable<Source> Api =>
-    [
-        new($"{Names.GenerateInterfaceAttributeName}.Attribute.g.cs", SourceText.From(_attributeSources.GenerateInterfaceAttributeSource, Encoding.UTF8)),
-        new($"{Names.IgnoreInterfaceAttributeName}.Attribute.g.cs", SourceText.From(_attributeSources.IgnoreInterfaceAttributeSource, Encoding.UTF8))
-    ];
-
     public bool HasGenerateInterfaceAttribute(ClassDeclarationSyntax classSyntax) => classSyntax.AttributeLists
         .SelectMany(list => list.Attributes)
         .Any(attribute => attribute.Name.ToString().Contains(Names.GenerateInterfaceAttributeName, StringComparison.Ordinal));
@@ -50,7 +32,7 @@ sealed class InterfaceGenerator : IInterfaceGenerator
                 continue;
             }
 
-            var code = _interfaceBuilder.BuildInterfaceFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
+            var code = interfaceBuilder.BuildInterfaceFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
             if (string.IsNullOrWhiteSpace(code))
             {
                 continue;

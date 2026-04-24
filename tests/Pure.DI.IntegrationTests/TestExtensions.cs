@@ -147,6 +147,11 @@ public static class TestExtensions
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
         generator.Generate(contextOptions.Object, sources.Object, contextDiagnostic.Object, [..updates], CancellationToken.None);
 
+        if (sourceList.Any(source => source.Contains("GenerateInterface", StringComparison.Ordinal)))
+        {
+            generatedSources.AddRange(GenerateInterfaceSources(compilation));
+        }
+
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();
         var warnings = logs.Where(i => i.Severity == DiagnosticSeverity.Warning).ToImmutableArray();
@@ -258,6 +263,23 @@ public static class TestExtensions
     {
         var rootNode = syntaxTree.GetRoot();
         return new SyntaxUpdate(rootNode, compilation.GetSemanticModel(syntaxTree));
+    }
+
+    private static IEnumerable<Source> GenerateInterfaceSources(CSharpCompilation compilation)
+    {
+        var parseOptions = compilation.SyntaxTrees.FirstOrDefault()?.Options as CSharpParseOptions;
+        var driver = CSharpGeneratorDriver.Create([new Pure.DI.SourceGenerator().AsSourceGenerator()], parseOptions: parseOptions);
+        var runResult = driver.RunGenerators(compilation).GetRunResult();
+        foreach (var result in runResult.Results)
+        {
+            foreach (var generated in result.GeneratedSources)
+            {
+                if (generated.HintName.EndsWith(".Interface.g.cs", StringComparison.Ordinal))
+                {
+                    yield return new Source(generated.HintName, generated.SourceText);
+                }
+            }
+        }
     }
 
     private static CSharpCompilation CreateCompilation() =>

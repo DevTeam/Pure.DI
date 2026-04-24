@@ -23,11 +23,6 @@ public class SourceGenerator : IIncrementalGenerator
             {
                 initializationContext.AddSource(apiSource.HintName, apiSource.SourceText);
             }
-
-            foreach (var apiSource in interfaceGenerator.Api)
-            {
-                initializationContext.AddSource(apiSource.HintName, apiSource.SourceText);
-            }
         });
 
         var setupContexts = context.SyntaxProvider

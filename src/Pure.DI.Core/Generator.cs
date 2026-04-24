@@ -52,7 +52,6 @@ public sealed partial class Generator
         // Interface generator
         .PerBlock<
             InterfaceGeneration.InterfaceGenerator,
-            InterfaceGeneration.InterfaceAttributeSources,
             InterfaceGeneration.RoslynSymbols,
             InterfaceGeneration.InterfaceBuilder>()
 
