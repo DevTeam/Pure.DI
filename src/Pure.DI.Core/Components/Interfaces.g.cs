@@ -64,7 +64,7 @@ namespace Pure.DI
     ///     public void Run() { }
     ///
     ///     [IgnoreInterface]
-    ///     public string InternalState => "hidden";
+    ///     public string InternalState => "excluded";
     /// }
     /// </code>
     /// </example>
