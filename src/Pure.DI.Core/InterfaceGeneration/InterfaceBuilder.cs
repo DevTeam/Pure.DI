@@ -9,11 +9,11 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using CoreNames = Pure.DI.Core.Names;
 
 sealed class InterfaceBuilder(
     IRoslynSymbols roslynSymbols,
     ITypes types,
+    IArguments arguments,
     Func<IBuilder<GeneratedInterfaceDetails, Lines>> interfaceCodeBuilderFactory)
     : IInterfaceBuilder
 {
@@ -40,7 +40,7 @@ sealed class InterfaceBuilder(
             return new Lines();
         }
 
-        var generateInterfaceAttributeFullName = $"{CoreNames.GlobalNamespacePrefix}{CoreNames.GenerateInterfaceAttributeFullName}";
+        var generateInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.GenerateInterfaceAttributeFullName}";
         var generationAttribute = typeSymbol.GetAttributes().FirstOrDefault(x =>
             x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == generateInterfaceAttributeFullName);
         if (generationAttribute == null)
@@ -48,7 +48,18 @@ sealed class InterfaceBuilder(
             return new Lines();
         }
 
-        var symbolDetails = new GeneratedInterfaceDetails(semanticModel, generationAttribute, typeSymbol, classSyntax)
+        var defaultNamespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
+        var defaultInterfaceName = $"I{classSyntax.Identifier.Text}";
+        var defaultAsInternal = false;
+        var (namespaceName, interfaceName, asInternal) = GetInterfaceGenerationSettings(
+            semanticModel,
+            classSyntax,
+            generationAttribute,
+            defaultNamespaceName,
+            defaultInterfaceName,
+            defaultAsInternal);
+
+        var symbolDetails = new GeneratedInterfaceDetails(semanticModel, namespaceName, interfaceName, asInternal)
         {
             ClassDocumentation = GetDocumentationForClass(classSyntax),
             GenericType = GetGeneric(classSyntax, namedTypeSymbol)
@@ -191,7 +202,7 @@ sealed class InterfaceBuilder(
 
     private static bool HasIgnoreAttribute(ISymbol x)
     {
-        var ignoreInterfaceAttributeFullName = $"{CoreNames.GlobalNamespacePrefix}{CoreNames.IgnoreInterfaceAttributeFullName}";
+        var ignoreInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.IgnoreInterfaceAttributeFullName}";
         return x.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == ignoreInterfaceAttributeFullName);
     }
 
@@ -227,4 +238,110 @@ sealed class InterfaceBuilder(
 
     private static string InheritDoc(ISymbol source) =>
         $"/// <inheritdoc cref=\"{source.ToDisplayString().Replace("<", "{").Replace(">", "}").Replace("params ", string.Empty)}\" />";
+
+    private (string namespaceName, string interfaceName, bool asInternal) GetInterfaceGenerationSettings(
+        SemanticModel semanticModel,
+        ClassDeclarationSyntax classSyntax,
+        AttributeData generationAttribute,
+        string defaultNamespaceName,
+        string defaultInterfaceName,
+        bool defaultAsInternal)
+    {
+        var settingsFromSyntax = TryGetSettingsFromSyntax(
+            semanticModel,
+            classSyntax,
+            defaultNamespaceName,
+            defaultInterfaceName,
+            defaultAsInternal);
+        if (settingsFromSyntax.HasValue)
+        {
+            return settingsFromSyntax.Value;
+        }
+
+        var args = arguments.GetArgs(
+            generationAttribute.ConstructorArguments,
+            generationAttribute.NamedArguments,
+            Names.InterfaceNamespaceParameterName,
+            Names.InterfaceNameParameterName,
+            Names.InterfaceAsInternalParameterName);
+
+        return (
+            GetArgValue(args, 0, defaultNamespaceName),
+            GetArgValue(args, 1, defaultInterfaceName),
+            GetArgValue(args, 2, defaultAsInternal));
+    }
+
+    private (string namespaceName, string interfaceName, bool asInternal)? TryGetSettingsFromSyntax(
+        SemanticModel semanticModel,
+        ClassDeclarationSyntax classSyntax,
+        string defaultNamespaceName,
+        string defaultInterfaceName,
+        bool defaultAsInternal)
+    {
+        var generateInterfaceAttribute = classSyntax.AttributeLists
+            .SelectMany(i => i.Attributes)
+            .FirstOrDefault(attribute => IsGenerateInterfaceAttributeName(attribute.Name.ToString()));
+        if (generateInterfaceAttribute?.ArgumentList == null)
+        {
+            return null;
+        }
+
+        var syntaxArgs = arguments.GetArgs(
+            generateInterfaceAttribute.ArgumentList,
+            Names.InterfaceNamespaceParameterName,
+            Names.InterfaceNameParameterName,
+            Names.InterfaceAsInternalParameterName);
+
+        return (
+            GetArgValue(semanticModel, syntaxArgs, 0, defaultNamespaceName),
+            GetArgValue(semanticModel, syntaxArgs, 1, defaultInterfaceName),
+            GetArgValue(semanticModel, syntaxArgs, 2, defaultAsInternal));
+    }
+
+    private static bool IsGenerateInterfaceAttributeName(string attributeName)
+    {
+        var shortName = attributeName;
+        var namespaceSeparator = shortName.LastIndexOf('.');
+        if (namespaceSeparator >= 0)
+        {
+            shortName = shortName[(namespaceSeparator + 1)..];
+        }
+
+        var globalNamespaceSeparator = shortName.LastIndexOf("::", StringComparison.Ordinal);
+        if (globalNamespaceSeparator >= 0)
+        {
+            shortName = shortName[(globalNamespaceSeparator + 2)..];
+        }
+
+        return string.Equals(shortName, Names.GenerateInterfaceAttributeName, StringComparison.Ordinal)
+               || string.Equals(shortName, $"{Names.GenerateInterfaceAttributeName}Attribute", StringComparison.Ordinal);
+    }
+
+    private static T GetArgValue<T>(IReadOnlyList<TypedConstant> args, int index, T defaultValue)
+    {
+        if (index >= args.Count)
+        {
+            return defaultValue;
+        }
+
+        var value = args[index].Value;
+        return value is T typedValue ? typedValue : defaultValue;
+    }
+
+    private static T GetArgValue<T>(SemanticModel semanticModel, IReadOnlyList<AttributeArgumentSyntax?> args, int index, T defaultValue)
+    {
+        if (index >= args.Count)
+        {
+            return defaultValue;
+        }
+
+        var arg = args[index];
+        if (arg == null)
+        {
+            return defaultValue;
+        }
+
+        var value = semanticModel.GetConstantValue(arg.Expression);
+        return value is { HasValue: true, Value: T typedValue } ? typedValue : defaultValue;
+    }
 }

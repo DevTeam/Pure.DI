@@ -2,6 +2,10 @@
 
 interface IArguments
 {
+    AttributeArgumentSyntax?[] GetArgs(
+        AttributeArgumentListSyntax argumentListSyntax,
+        params string[] colons);
+
     ArgumentSyntax?[] GetArgs(
         BaseArgumentListSyntax argumentListSyntax,
         params string[] colons);

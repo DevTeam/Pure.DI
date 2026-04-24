@@ -1,29 +1,21 @@
 namespace Pure.DI.InterfaceGeneration;
 
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 sealed class GeneratedInterfaceDetails(
     SemanticModel semanticModel,
-    AttributeData? generationAttribute,
-    ITypeSymbol typeSymbol,
-    ClassDeclarationSyntax classSyntax)
+    string namespaceName,
+    string interfaceName,
+    bool asInternal)
 {
     public SemanticModel SemanticModel { get; } = semanticModel;
 
-    public string NamespaceName { get; } = PrepareNamespaceValue(generationAttribute, typeSymbol.ContainingNamespace.ToDisplayString());
+    public string NamespaceName { get; } = namespaceName;
 
-    public string InterfaceName { get; } = PrepareValue(
-        generationAttribute,
-        Names.InterfaceNameParameterName,
-        $"I{classSyntax.Identifier.Text}");
+    public string InterfaceName { get; } = interfaceName;
 
-    public string AccessLevel { get; } = PrepareValue(
-        generationAttribute,
-        Names.InterfaceAsInternalParameterName,
-        false)
+    public string AccessLevel { get; } = asInternal
         ? "internal"
         : "public";
 
@@ -36,25 +28,4 @@ sealed class GeneratedInterfaceDetails(
     public ImmutableArray<MethodInfo> MethodInfos { get; set; } = ImmutableArray<MethodInfo>.Empty;
 
     public ImmutableArray<EventInfo> Events { get; set; } = ImmutableArray<EventInfo>.Empty;
-
-    private static string PrepareNamespaceValue(AttributeData? generationAttribute, string defaultValue) =>
-        PrepareValue(generationAttribute, Names.InterfaceNamespaceParameterName, defaultValue);
-
-    private static T PrepareValue<T>(AttributeData? generationAttribute, string key, T defaultValue)
-    {
-        var parameterSymbol = generationAttribute?.AttributeConstructor?.Parameters.SingleOrDefault(x => x.Name == key);
-        if (parameterSymbol == null)
-        {
-            return defaultValue;
-        }
-
-        var index = generationAttribute!.AttributeConstructor!.Parameters.IndexOf(parameterSymbol);
-        var result = generationAttribute.ConstructorArguments[index].Value;
-        if (result != null)
-        {
-            return (T)result;
-        }
-
-        return defaultValue;
-    }
 }

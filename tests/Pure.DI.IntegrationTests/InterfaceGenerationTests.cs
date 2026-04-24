@@ -242,4 +242,58 @@ public class InterfaceGenerationTests
 
         result.GeneratedCode.ShouldContain("void ShouldStay();");
     }
+
+    [Fact]
+    public async Task ShouldSupportNamedGenerateInterfaceArgumentsInAnyOrder()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            [GenerateInterface(interfaceName: "IMyService", namespaceName: "Demo.Contracts", asInternal: true)]
+            public partial class Service
+            {
+                public string Value => "ok";
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("namespace Demo.Contracts");
+        result.GeneratedCode.ShouldContain("internal partial interface IMyService");
+        result.GeneratedCode.ShouldContain("string Value { get; }");
+    }
+
+    [Fact]
+    public async Task ShouldSupportNamedGenerateInterfaceArgumentsInDifferentOrder()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            [GenerateInterface(asInternal: true, namespaceName: "Demo.Contracts", interfaceName: "IMyService2")]
+            public partial class Service2
+            {
+                public int Count => 7;
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("namespace Demo.Contracts");
+        result.GeneratedCode.ShouldContain("internal partial interface IMyService2");
+        result.GeneratedCode.ShouldContain("int Count { get; }");
+    }
 }
