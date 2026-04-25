@@ -23,8 +23,10 @@ namespace Pure.DI
     /// </code>
     /// </example>
     [global::System.AttributeUsage(global::System.AttributeTargets.Class)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal sealed class GenerateInterfaceAttribute : global::System.Attribute
     {
         /// <summary>
@@ -69,8 +71,10 @@ namespace Pure.DI
     /// </code>
     /// </example>
     [global::System.AttributeUsage(global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Event)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
     internal sealed class IgnoreInterfaceAttribute : global::System.Attribute
     {
     }

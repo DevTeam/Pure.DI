@@ -1,4 +1,4 @@
-﻿// ReSharper disable ArgumentsStyleStringLiteral
+// ReSharper disable ArgumentsStyleStringLiteral
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable EmptyGeneralCatchClause
@@ -10,7 +10,6 @@ namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;
 
-[ExcludeFromCodeCoverage]
 static class Disposables
 {
     public static readonly IDisposable Empty = EmptyDisposable.Shared;

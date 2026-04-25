@@ -1,4 +1,4 @@
-﻿// ReSharper disable RedundantUsingDirective
+// ReSharper disable RedundantUsingDirective
 namespace Pure.DI.Abstractions;
 
 using System;

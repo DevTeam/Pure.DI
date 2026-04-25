@@ -1,4 +1,4 @@
-﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable InvalidXmlDocComment

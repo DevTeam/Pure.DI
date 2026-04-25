@@ -1,4 +1,4 @@
-﻿// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedMember.Local
 // ReSharper disable RedundantUsingDirective
 namespace Pure.DI.Abstractions;
 

@@ -24,6 +24,7 @@ namespace Pure.DI.MS
     /// </summary>
     /// <typeparam name="TComposition">Composition class type.</typeparam>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
     public class ServiceProviderFactory<TComposition>: IServiceProviderFactory<IServiceCollection>
@@ -74,7 +75,7 @@ namespace Pure.DI.MS
                 {
                     if (_instanceResolver is not null)
                     {
-                        throw new InvalidOperationException("The service provider haы already been defined.");
+                        throw new InvalidOperationException("The service provider has already been defined.");
                     }
 
                     _serviceProvider = value;
