@@ -2,7 +2,7 @@
 
 interface IInterfaceBuilder
 {
-    Lines BuildInterfaceFor(
+    ImmutableArray<GeneratedInterfaceSource> BuildInterfacesFor(
         SemanticModel semanticModel,
         ITypeSymbol typeSymbol,
         ClassDeclarationSyntax classSyntax);

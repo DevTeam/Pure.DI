@@ -17,6 +17,8 @@ sealed class InterfaceBuilder(
     Func<IBuilder<GeneratedInterfaceDetails, Lines>> interfaceCodeBuilderFactory)
     : IInterfaceBuilder
 {
+    private readonly record struct InterfaceKey(string NamespaceName, string InterfaceName);
+
     private static readonly SymbolDisplayFormat FullyQualifiedDisplayFormat = new(
         genericsOptions: SymbolDisplayGenericsOptions.IncludeTypeParameters,
         memberOptions: SymbolDisplayMemberOptions.IncludeParameters | SymbolDisplayMemberOptions.IncludeContainingType,
@@ -33,50 +35,128 @@ sealed class InterfaceBuilder(
         globalNamespaceStyle: FullyQualifiedDisplayFormat.GlobalNamespaceStyle,
         miscellaneousOptions: FullyQualifiedDisplayFormat.MiscellaneousOptions);
 
-    public Lines BuildInterfaceFor(SemanticModel semanticModel, ITypeSymbol typeSymbol, ClassDeclarationSyntax classSyntax)
+    public ImmutableArray<GeneratedInterfaceSource> BuildInterfacesFor(
+        SemanticModel semanticModel,
+        ITypeSymbol typeSymbol,
+        ClassDeclarationSyntax classSyntax)
     {
         if (typeSymbol is not INamedTypeSymbol namedTypeSymbol)
         {
-            return new Lines();
+            return ImmutableArray<GeneratedInterfaceSource>.Empty;
         }
 
         var generateInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.GenerateInterfaceAttributeFullName}";
-        var generationAttribute = typeSymbol.GetAttributes().FirstOrDefault(x =>
-            x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == generateInterfaceAttributeFullName);
-        if (generationAttribute == null)
-        {
-            return new Lines();
-        }
-
         var defaultNamespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
         var defaultInterfaceName = $"I{classSyntax.Identifier.Text}";
         var defaultAsInternal = false;
-        var (namespaceName, interfaceName, asInternal) = GetInterfaceGenerationSettings(
-            semanticModel,
-            classSyntax,
-            generationAttribute,
-            defaultNamespaceName,
-            defaultInterfaceName,
-            defaultAsInternal);
 
-        var symbolDetails = new GeneratedInterfaceDetails(semanticModel, namespaceName, interfaceName, asInternal)
+        var settingsByInterface = new Dictionary<InterfaceKey, (bool AsInternal, bool HasClassAttribute)>();
+        var selectiveInterfaces = new HashSet<InterfaceKey>();
+        var selectedMembersByInterface = new Dictionary<InterfaceKey, HashSet<ISymbol>>();
+
+        var classGenerateAttributes = typeSymbol.GetAttributes()
+            .Where(x => x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == generateInterfaceAttributeFullName)
+            .ToList();
+
+        foreach (var classGenerateAttribute in classGenerateAttributes)
         {
-            ClassDocumentation = GetDocumentationForClass(classSyntax),
-            GenericType = GetGeneric(classSyntax, namedTypeSymbol)
-        };
+            var settings = GetInterfaceGenerationSettings(
+                semanticModel.Compilation,
+                classGenerateAttribute,
+                defaultNamespaceName,
+                defaultInterfaceName,
+                defaultAsInternal);
+            var key = new InterfaceKey(settings.namespaceName, settings.interfaceName);
+            if (!settingsByInterface.TryGetValue(key, out var existing))
+            {
+                settingsByInterface[key] = (settings.asInternal, true);
+                continue;
+            }
+
+            settingsByInterface[key] = (existing.AsInternal, true);
+        }
 
         var members = roslynSymbols.GetAllMembers(typeSymbol)
             .Where(x => x.DeclaredAccessibility == Accessibility.Public)
             .Where(x => !x.IsStatic)
-            .Where(x => !HasIgnoreAttribute(x))
             .ToList();
 
-        var nullableContextEnabled = semanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
-        symbolDetails.PropertyInfos = GetProperties(members);
-        symbolDetails.MethodInfos = GetMethods(semanticModel, members, nullableContextEnabled);
-        symbolDetails.Events = GetEvents(members);
+        foreach (var member in members)
+        {
+            var generationAttributes = member.GetAttributes()
+                .Where(x => x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == generateInterfaceAttributeFullName)
+                .ToList();
+            if (generationAttributes.Count == 0)
+            {
+                continue;
+            }
 
-        return interfaceCodeBuilderFactory().Build(symbolDetails);
+            foreach (var generationAttribute in generationAttributes)
+            {
+                var settings = GetInterfaceGenerationSettings(
+                    semanticModel.Compilation,
+                    generationAttribute,
+                    defaultNamespaceName,
+                    defaultInterfaceName,
+                    defaultAsInternal);
+                var key = new InterfaceKey(settings.namespaceName, settings.interfaceName);
+                selectiveInterfaces.Add(key);
+
+                if (!settingsByInterface.TryGetValue(key, out var existing))
+                {
+                    settingsByInterface[key] = (settings.asInternal, false);
+                }
+
+                if (HasIgnoreAttribute(member))
+                {
+                    continue;
+                }
+
+                if (!selectedMembersByInterface.TryGetValue(key, out var selectedMembers))
+                {
+                    selectedMembers = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+                    selectedMembersByInterface.Add(key, selectedMembers);
+                }
+
+                selectedMembers.Add(member);
+            }
+        }
+
+        if (settingsByInterface.Count == 0)
+        {
+            return ImmutableArray<GeneratedInterfaceSource>.Empty;
+        }
+
+        var nullableContextEnabled = semanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
+        var generatedSources = ImmutableArray.CreateBuilder<GeneratedInterfaceSource>();
+        foreach (var pair in settingsByInterface)
+        {
+            var key = pair.Key;
+            var settings = pair.Value;
+            var interfaceMembers = selectiveInterfaces.Contains(key)
+                ? selectedMembersByInterface.TryGetValue(key, out var selectedMembers)
+                    ? members.Where(selectedMembers.Contains).ToList()
+                    : []
+                : settings.HasClassAttribute
+                    ? members.Where(x => !HasIgnoreAttribute(x)).ToList()
+                    : [];
+
+            var symbolDetails = new GeneratedInterfaceDetails(semanticModel, key.NamespaceName, key.InterfaceName, settings.AsInternal)
+            {
+                ClassDocumentation = GetDocumentationForClass(classSyntax),
+                GenericType = GetGeneric(classSyntax, namedTypeSymbol),
+                PropertyInfos = GetProperties(interfaceMembers),
+                MethodInfos = GetMethods(semanticModel, interfaceMembers, nullableContextEnabled),
+                Events = GetEvents(interfaceMembers)
+            };
+
+            generatedSources.Add(new GeneratedInterfaceSource(
+                key.NamespaceName,
+                key.InterfaceName,
+                interfaceCodeBuilderFactory().Build(symbolDetails)));
+        }
+
+        return generatedSources.ToImmutable();
     }
 
     private ImmutableArray<MethodInfo> GetMethods(SemanticModel semanticModel, List<ISymbol> members, bool nullableContextEnabled)
@@ -240,22 +320,20 @@ sealed class InterfaceBuilder(
         $"/// <inheritdoc cref=\"{source.ToDisplayString().Replace("<", "{").Replace(">", "}").Replace("params ", string.Empty)}\" />";
 
     private (string namespaceName, string interfaceName, bool asInternal) GetInterfaceGenerationSettings(
-        SemanticModel semanticModel,
-        ClassDeclarationSyntax classSyntax,
+        Compilation compilation,
         AttributeData generationAttribute,
         string defaultNamespaceName,
         string defaultInterfaceName,
         bool defaultAsInternal)
     {
-        var settingsFromSyntax = TryGetSettingsFromSyntax(
-            semanticModel,
-            classSyntax,
-            defaultNamespaceName,
-            defaultInterfaceName,
-            defaultAsInternal);
-        if (settingsFromSyntax.HasValue)
+        if (TryGetSettingsFromSyntax(
+                compilation,
+                generationAttribute,
+                defaultNamespaceName,
+                defaultInterfaceName,
+                defaultAsInternal) is { } settingsFromSyntax)
         {
-            return settingsFromSyntax.Value;
+            return settingsFromSyntax;
         }
 
         var args = arguments.GetArgs(
@@ -272,49 +350,29 @@ sealed class InterfaceBuilder(
     }
 
     private (string namespaceName, string interfaceName, bool asInternal)? TryGetSettingsFromSyntax(
-        SemanticModel semanticModel,
-        ClassDeclarationSyntax classSyntax,
+        Compilation compilation,
+        AttributeData generationAttribute,
         string defaultNamespaceName,
         string defaultInterfaceName,
         bool defaultAsInternal)
     {
-        var generateInterfaceAttribute = classSyntax.AttributeLists
-            .SelectMany(i => i.Attributes)
-            .FirstOrDefault(attribute => IsGenerateInterfaceAttributeName(attribute.Name.ToString()));
-        if (generateInterfaceAttribute?.ArgumentList == null)
+        if (generationAttribute.ApplicationSyntaxReference?.GetSyntax() is not AttributeSyntax attributeSyntax
+            || attributeSyntax.ArgumentList == null)
         {
             return null;
         }
 
         var syntaxArgs = arguments.GetArgs(
-            generateInterfaceAttribute.ArgumentList,
+            attributeSyntax.ArgumentList,
             Names.InterfaceNamespaceParameterName,
             Names.InterfaceNameParameterName,
             Names.InterfaceAsInternalParameterName);
+        var semanticModel = compilation.GetSemanticModel(attributeSyntax.SyntaxTree);
 
         return (
             GetArgValue(semanticModel, syntaxArgs, 0, defaultNamespaceName),
             GetArgValue(semanticModel, syntaxArgs, 1, defaultInterfaceName),
             GetArgValue(semanticModel, syntaxArgs, 2, defaultAsInternal));
-    }
-
-    private static bool IsGenerateInterfaceAttributeName(string attributeName)
-    {
-        var shortName = attributeName;
-        var namespaceSeparator = shortName.LastIndexOf('.');
-        if (namespaceSeparator >= 0)
-        {
-            shortName = shortName[(namespaceSeparator + 1)..];
-        }
-
-        var globalNamespaceSeparator = shortName.LastIndexOf("::", StringComparison.Ordinal);
-        if (globalNamespaceSeparator >= 0)
-        {
-            shortName = shortName[(globalNamespaceSeparator + 2)..];
-        }
-
-        return string.Equals(shortName, Names.GenerateInterfaceAttributeName, StringComparison.Ordinal)
-               || string.Equals(shortName, $"{Names.GenerateInterfaceAttributeName}Attribute", StringComparison.Ordinal);
     }
 
     private static T GetArgValue<T>(IReadOnlyList<TypedConstant> args, int index, T defaultValue)
@@ -344,4 +402,5 @@ sealed class InterfaceBuilder(
         var value = semanticModel.GetConstantValue(arg.Expression);
         return value is { HasValue: true, Value: T typedValue } ? typedValue : defaultValue;
     }
+
 }

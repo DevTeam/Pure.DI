@@ -52,7 +52,9 @@ public class SourceGenerator : IIncrementalGenerator
 
         var interfaceUpdates = context.SyntaxProvider
             .CreateSyntaxProvider(
-                (node, _) => node is ClassDeclarationSyntax { AttributeLists.Count: > 0 },
+                static (node, _) => node is ClassDeclarationSyntax classSyntax
+                    && (classSyntax.AttributeLists.Count > 0
+                        || classSyntax.Members.Any(member => member.AttributeLists.Count > 0)),
                 (syntaxContext, _) => syntaxContext)
             .Where(syntaxContext => interfaceGenerator.HasGenerateInterfaceAttribute((ClassDeclarationSyntax)syntaxContext.Node))
             .Collect();

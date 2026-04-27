@@ -296,4 +296,142 @@ public class InterfaceGenerationTests
         result.GeneratedCode.ShouldContain("internal partial interface IMyService2");
         result.GeneratedCode.ShouldContain("int Count { get; }");
     }
+
+    [Fact]
+    public async Task ShouldGenerateSeveralInterfacesWithSelectiveMembers()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IReadService
+            {
+            }
+
+            public partial interface IWriteService
+            {
+            }
+
+            [GenerateInterface(interfaceName: nameof(IReadService))]
+            public partial class Service
+            {
+                [GenerateInterface(interfaceName: nameof(IReadService))]
+                public string Read() => "ok";
+
+                [GenerateInterface(interfaceName: nameof(IWriteService))]
+                public void Write(string value)
+                {
+                }
+
+                [GenerateInterface(interfaceName: nameof(IReadService))]
+                [GenerateInterface(interfaceName: nameof(IWriteService))]
+                public int Shared => 42;
+
+                public string Unmarked => "hidden";
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("public partial interface IReadService");
+        result.GeneratedCode.ShouldContain("public partial interface IWriteService");
+        result.GeneratedCode.ShouldContain("string Read()");
+        result.GeneratedCode.ShouldContain("void Write(string value);");
+        result.GeneratedCode.ShouldContain("int Shared { get; }");
+        result.GeneratedCode.ShouldNotContain("string Unmarked { get; }");
+    }
+
+    [Fact]
+    public async Task ShouldGenerateInterfacesFromMemberAttributesWithoutClassAttribute()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IAuditReader
+            {
+            }
+
+            public partial interface IAuditWriter
+            {
+            }
+
+            public partial class AuditService
+            {
+                [GenerateInterface(interfaceName: nameof(IAuditReader))]
+                public string Read() => "audit";
+
+                [GenerateInterface(interfaceName: nameof(IAuditWriter))]
+                public void Write(string message)
+                {
+                }
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("public partial interface IAuditReader");
+        result.GeneratedCode.ShouldContain("public partial interface IAuditWriter");
+        result.GeneratedCode.ShouldContain("string Read()");
+        result.GeneratedCode.ShouldContain("void Write(string message);");
+    }
+
+    [Fact]
+    public async Task ShouldPrioritizeIgnoreInterfaceWhenMemberMarkedForSeveralInterfaces()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IAlpha
+            {
+            }
+
+            public partial interface IBeta
+            {
+            }
+
+            [GenerateInterface(interfaceName: nameof(IAlpha))]
+            [GenerateInterface(interfaceName: nameof(IBeta))]
+            public partial class Service
+            {
+                [GenerateInterface(interfaceName: nameof(IAlpha))]
+                [GenerateInterface(interfaceName: nameof(IBeta))]
+                [IgnoreInterface]
+                public string HiddenForAll => "x";
+
+                [GenerateInterface(interfaceName: nameof(IAlpha))]
+                public int VisibleForAlpha => 1;
+
+                [GenerateInterface(interfaceName: nameof(IBeta))]
+                public int VisibleForBeta => 2;
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("public partial interface IAlpha");
+        result.GeneratedCode.ShouldContain("public partial interface IBeta");
+        result.GeneratedCode.ShouldContain("int VisibleForAlpha { get; }");
+        result.GeneratedCode.ShouldContain("int VisibleForBeta { get; }");
+        result.GeneratedCode.ShouldNotContain("HiddenForAll");
+    }
 }

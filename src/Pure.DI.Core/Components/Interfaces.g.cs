@@ -9,7 +9,8 @@ namespace Pure.DI
     /// Instructs Pure.DI to generate an interface for the attributed class.
     /// </summary>
     /// <remarks>
-    /// Apply this attribute to a class declaration.
+    /// Apply this attribute to a class declaration and/or its public members.
+    /// The attribute can be used multiple times.
     /// Generated interface members are based on the public API of the class,
     /// excluding members marked with <see cref="IgnoreInterfaceAttribute"/>.
     /// </remarks>
@@ -22,7 +23,7 @@ namespace Pure.DI
     /// }
     /// </code>
     /// </example>
-    [global::System.AttributeUsage(global::System.AttributeTargets.Class)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Event, AllowMultiple = true, Inherited = false)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -70,7 +71,7 @@ namespace Pure.DI
     /// }
     /// </code>
     /// </example>
-    [global::System.AttributeUsage(global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Event)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Event, AllowMultiple = false, Inherited = false)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]

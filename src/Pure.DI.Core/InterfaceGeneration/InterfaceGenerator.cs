@@ -12,6 +12,10 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
 {
     public bool HasGenerateInterfaceAttribute(ClassDeclarationSyntax classSyntax) => classSyntax.AttributeLists
         .SelectMany(list => list.Attributes)
+        .Concat(
+            classSyntax.Members
+                .SelectMany(member => member.AttributeLists)
+                .SelectMany(list => list.Attributes))
         .Any(attribute => IsGenerateInterfaceAttributeName(attribute.Name.ToString()));
 
     public void Generate(SourceProductionContext context, ImmutableArray<GeneratorSyntaxContext> syntaxContexts)
@@ -33,14 +37,24 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
                 continue;
             }
 
-            var code = interfaceBuilder.BuildInterfaceFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
-            if (code.Count == 0)
+            var generatedInterfaces = interfaceBuilder.BuildInterfacesFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
+            if (generatedInterfaces.IsDefaultOrEmpty)
             {
                 continue;
             }
 
-            using var rent = code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
-            context.AddSource(GetHintName(typeSymbol), SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
+            foreach (var generatedInterface in generatedInterfaces)
+            {
+                if (generatedInterface.Code.Count == 0)
+                {
+                    continue;
+                }
+
+                using var rent = generatedInterface.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
+                context.AddSource(
+                    GetHintName(typeSymbol, generatedInterface.NamespaceName, generatedInterface.InterfaceName),
+                    SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
+            }
         }
     }
 
@@ -63,7 +77,7 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
                || string.Equals(shortName, $"{CoreNames.GenerateInterfaceAttributeName}Attribute", StringComparison.Ordinal);
     }
 
-    private static string GetHintName(INamedTypeSymbol typeSymbol)
+    private static string GetHintName(INamedTypeSymbol typeSymbol, string namespaceName, string interfaceName)
     {
         var fullName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
             .Replace("global::", string.Empty)
@@ -73,6 +87,18 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
             .Replace(' ', '_')
             .Replace(':', '_');
 
-        return $"{fullName}.Interface.g.cs";
+        var ns = SanitizeFileNamePart(namespaceName);
+        var iface = SanitizeFileNamePart(interfaceName);
+        return $"{fullName}.{ns}.{iface}.Interface.g.cs";
     }
+
+    private static string SanitizeFileNamePart(string value) => string.IsNullOrWhiteSpace(value)
+        ? "Global"
+        : value
+            .Replace("global::", string.Empty)
+            .Replace('<', '{')
+            .Replace('>', '}')
+            .Replace(',', '_')
+            .Replace(' ', '_')
+            .Replace(':', '_');
 }
