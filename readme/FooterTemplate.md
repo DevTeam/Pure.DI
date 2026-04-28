@@ -1446,6 +1446,63 @@ flowchart TD
 
 </details>
 
+<details>
+<summary>Interface generation</summary>
+
+### Interface generation
+
+Pure.DI can generate interfaces from concrete classes, so a class can remain the implementation while consumers depend on a generated contract. Declare a partial interface and mark the implementation or individual members with `GenerateInterface`:
+
+```c#
+public partial interface IEmailSender;
+
+[GenerateInterface]
+public class EmailSender : IEmailSender
+{
+    public string Provider => "smtp";
+
+    public string Send(string address) => $"sent:{address}";
+}
+
+public class App(IEmailSender sender);
+```
+
+The generated interface preserves the public contract surface, including properties, methods, events, nullable annotations, generic members, and generic constraints. Members marked with `IgnoreInterface` are excluded from every generated interface:
+
+```c#
+[GenerateInterface]
+public class ApiClient : IApiClient
+{
+    public string Endpoint => "https://api.contoso.com";
+
+    [IgnoreInterface]
+    public string GetAccessToken() => "internal-token";
+}
+```
+
+The generated contract can also be customized with `namespaceName` and `interfaceName`, or split into several interfaces from one implementation:
+
+```c#
+public class Gateway : IReadGateway, IWriteGateway
+{
+    [GenerateInterface(interfaceName: nameof(IReadGateway))]
+    public string Get(string path) => $"GET:{path}";
+
+    [GenerateInterface(interfaceName: nameof(IWriteGateway))]
+    public void Post(string path) {}
+}
+```
+
+See also:
+- [Generate an interface from a class](readme/generate-an-interface-from-a-class.md)
+- [Ignore members in the generated interface](readme/ignore-members-in-the-generated-interface.md)
+- [Generate interfaces with generics](readme/generate-interfaces-with-generics.md)
+- [Customize the generated interface](readme/customize-the-generated-interface.md)
+- [Generate several interfaces from one class](readme/generate-several-interfaces-from-one-class.md)
+- [Control generated interfaces by members](readme/control-generated-interfaces-by-members.md)
+
+</details>
+
 ## Project template
 
 Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)
