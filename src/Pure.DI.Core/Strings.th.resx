@@ -1,346 +1,364 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="Warning_NoRoots" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Warning_NoRoots" xml:space="preserve">
         <value>ไม่มีการประกาศ Composition Root ใดๆ โปรดเพิ่มอย่างน้อยหนึ่งรูท</value>
     </data>
-    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+  <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
         <value>ชื่อประเภท composition "{0}" ไม่ถูกต้อง</value>
     </data>
-    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+  <data name="Error_Template_InvalidRootName" xml:space="preserve">
         <value>ชื่อรูท "{0}" ไม่ถูกต้อง</value>
     </data>
-    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+  <data name="Error_Template_RootDuplicate" xml:space="preserve">
         <value>Composition Root "{0}" ซ้ำกับรูท "{1}" ที่ประกาศไว้ก่อนหน้านี้</value>
     </data>
-    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>ประเภท Accumulator ไม่สามารถอ้างอิงจาก generic type marker ได้</value>
     </data>
-    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
         <value>Accumulator ไม่สามารถสะสมอินสแตนซ์ที่อ้างอิงจาก generic type marker ได้</value>
     </data>
-    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+  <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>ชื่ออาร์กิวเมนต์ "{0}" ไม่ถูกต้อง</value>
     </data>
-    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>ประเภทอาร์กิวเมนต์ของ composition ไม่สามารถอ้างอิงจาก generic type marker ได้</value>
     </data>
-    <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>ประเภทพิเศษไม่สามารถอ้างอิงตามตัวทำเครื่องหมายประเภททั่วไปได้</value>
     </data>
-    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+  <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>Binding ไม่ถูกต้องเนื่องจากข้อผิดพลาดในการคอมไพล์</value>
     </data>
-    <data name="Error_Template_NotImplement" xml:space="preserve">
+  <data name="Error_Template_NotImplement" xml:space="preserve">
         <value>{0} ไม่ได้ใช้ {1}</value>
     </data>
-    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+  <data name="Error_Template_CyclicDependency" xml:space="preserve">
         <value>พบการพึ่งพาแบบวงกลม: {0}</value>
     </data>
-    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+  <data name="Error_Template_UnableToResolve" xml:space="preserve">
         <value>ไม่สามารถแก้ไข "{0}" ใน {1} ได้</value>
     </data>
-    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
         <value>ไม่สามารถสร้าง Dependency Graph ได้</value>
     </data>
-    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+  <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
         <value>นิพจน์ระบุขอบเขต (regular expression) ไม่ถูกต้อง {0}: "{1}"</value>
     </data>
-    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+  <data name="Error_Template_InvalidWildcard" xml:space="preserve">
         <value>Wildcard ไม่ถูกต้อง {0}: "{1}"</value>
     </data>
-    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+  <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
         <value>ประเภท {0} ที่มี Lifetime {1} จำเป็นต้องมีการ injection โดยตรงหรือแบบส่งต่อของประเภท {2} ที่มี Lifetime {3} ซึ่งอาจนำไปสู่การรั่วไหลของข้อมูลหรือพฤติกรรมที่ไม่คาดคิด</value>
     </data>
-    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+  <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
         <value>เกินจำนวนรอบการทำงานสูงสุด {0} ขณะสร้าง Dependency Graph ที่เหมาะสมที่สุด โปรดปรับปรุง Dependency Graph</value>
     </data>
-    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+  <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
         <value>ไม่สามารถสร้าง Dependency Graph ได้</value>
     </data>
-    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Lifetime {0} ไม่รองรับการพึ่งพาแบบวงกลม</value>
     </data>
-    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
         <value>จำนวนตัวเริ่มต้นไม่ถูกต้อง</value>
     </data>
-    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+  <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
         <value>ไม่สามารถใช้ "{0}" โดยตรงได้ สามารถเข้าถึงได้เฉพาะเมธอดหรือคุณสมบัติของมันเท่านั้น</value>
     </data>
-    <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
+  <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
         <value>จำเป็นต้องระบุชื่อบริบทการตั้งค่าสำหรับ DependsOn</value>
     </data>
-    <data name="Error_InvalidRootType" xml:space="preserve">
+  <data name="Error_InvalidRootType" xml:space="preserve">
         <value>ประเภทรูทไม่ถูกต้อง</value>
     </data>
-    <data name="Error_InvalidRootsRype" xml:space="preserve">
+  <data name="Error_InvalidRootsRype" xml:space="preserve">
         <value>ประเภทรูทไม่ถูกต้อง</value>
     </data>
-    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+  <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>ไม่พบประเภทที่สืบทอดจาก {0} ที่มีชื่อตรงกับตัวกรอง "{1}"</value>
     </data>
-    <data name="Error_InvalidBuildersType" xml:space="preserve">
+  <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>ประเภทตัวสร้าง (builders) ไม่ถูกต้อง</value>
     </data>
-    <data name="Error_InvalidBuilderType" xml:space="preserve">
+  <data name="Error_InvalidBuilderType" xml:space="preserve">
         <value>ประเภทตัวสร้าง (builder) ไม่ถูกต้อง</value>
     </data>
-    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+  <data name="Error_TooManyTypeParameters" xml:space="preserve">
         <value>มีพารามิเตอร์ประเภทมากเกินไป</value>
     </data>
-    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+  <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
         <value>ไม่รองรับ Factory แบบอะซิงโครนัสที่ใช้คีย์เวิร์ด 'async'</value>
     </data>
-    <data name="Error_Template_NotSupported" xml:space="preserve">
+  <data name="Error_Template_NotSupported" xml:space="preserve">
         <value>ไม่รองรับ {0}</value>
     </data>
-    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+  <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
         <value>{0} ต้องเป็นค่าที่ไม่ใช่ค่าว่างของประเภท {1}</value>
     </data>
-    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+  <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
         <value>ตัวระบุไม่ถูกต้อง "{0}"</value>
     </data>
-    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
         <value>ตำแหน่งอาร์กิวเมนต์ {0} ของ attribute {1} อยู่นอกช่วง [0..{2}]</value>
     </data>
-    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>{0} ของประเภท {1} ไม่สามารถประมวลผลได้ เนื่องจากมีการระบุ attribute ที่ขัดแย้งกันหลายรายการ</value>
     </data>
-    <data name="Error_InvalidBinding" xml:space="preserve">
+  <data name="Error_InvalidBinding" xml:space="preserve">
         <value>มีการกำหนด Binding ไม่ถูกต้อง</value>
     </data>
-    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+  <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition มีขนาดใหญ่เกินไป หยุดที่การพึ่งพาที่ #{0}</value>
     </data>
-    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+  <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
         <value>ไม่สามารถสร้างอินสแตนซ์ของ {0} ได้เนื่องจากเป็นประเภทนามธรรม</value>
     </data>
-    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
         <value>ไม่สามารถสร้างอินสแตนซ์ของ {0} ได้เนื่องจากไม่มีคอนสตรัคเตอร์ที่เข้าถึงได้</value>
     </data>
-    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+  <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
         <value>{0} ไม่รองรับ C# {1} โปรดใช้เวอร์ชันภาษา {2} หรือใหม่กว่า</value>
     </data>
-    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+  <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>ไม่พบการตั้งค่า "{0}"</value>
     </data>
-    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
         <value>ไม่พบคอนสตรัคเตอร์ที่ไม่ใช่สแตติกที่เข้าถึงได้ของประเภท {0} ที่มีอาร์กิวเมนต์ตรงกับ "{1}"</value>
     </data>
-    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
         <value>ไม่พบเมธอดที่ไม่ใช่สแตติกที่เข้าถึงได้ของประเภท {0} ที่มีชื่อ "{1}" และอาร์กิวเมนต์ตรงกับ "{2}"</value>
     </data>
-    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
         <value>ไม่พบฟิลด์หรือคุณสมบัติที่ไม่ใช่สแตติกที่เข้าถึงได้ของประเภท {1} ที่ตรงกับ "{0}"</value>
     </data>
-    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+  <data name="Error_Template_MustBeApiCall" xml:space="preserve">
         <value>{0} ต้องเป็นค่าคงที่ของประเภท {1} หรือเป็นการเรียกใช้ API พิเศษ</value>
     </data>
-    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+  <data name="Warning_BindingIsNotUsed" xml:space="preserve">
         <value>ไม่มีการใช้ Binding</value>
     </data>
-    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+  <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
         <value>ไม่สามารถแก้ไขรูท {0} ด้วยเมธอด Resolve ได้เนื่องจากอาร์กิวเมนต์ {1} ดังนั้นจะมีการข้อยกเว้นเกิดขึ้นเมื่อพยายามดำเนินการ</value>
     </data>
-    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+  <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
         <value>แท็ก "{0}" ที่ตำแหน่ง injection ไม่ได้ถูกใช้งาน</value>
     </data>
-    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+  <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
         <value>Binding สำหรับ {0} ถูกเขียนทับ</value>
     </data>
-    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+  <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>การสร้างโค้ดถูกยกเลิก</value>
     </data>
-    <data name="Error_UnhandledError" xml:space="preserve">
+  <data name="Error_UnhandledError" xml:space="preserve">
         <value>เกิดข้อผิดพลาดที่ไม่สามารถจัดการได้</value>
     </data>
-    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+  <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>ไม่สามารถระบุประเภทได้ โปรดลองระบุอย่างชัดเจน</value>
     </data>
-    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
+  <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
         <value>Static root {0} ของประเภท {1} ไม่สามารถใช้ Lifetime {2} โดยตรงหรือผ่านการพึ่งพาได้</value>
     </data>
-    <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>Binding ใช้สมาชิกอินสแตนซ์ "{0}" จากการตั้งค่า "{1}" ที่ใช้ผ่าน DependsOn หรือ CompositionKind.Internal/Global สมาชิกนี้จะไม่มีอยู่ใน composition ที่พึ่งพา โปรดใช้ Arg/RootArg หรือออบเจกต์บริบทแยกต่างหาก</value>
     </data>
-    <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
+  <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
         <value>DependsOn ต้องใช้ชื่อบริบทการตั้งค่าเมื่อใช้ชนิดบริบทการตั้งค่า</value>
     </data>
-    <data name="Description_ErrorUnableToResolve" xml:space="preserve">
+  <data name="Description_ErrorUnableToResolve" xml:space="preserve">
         <value>ไม่สามารถแก้ไขการพึ่งพาในกราฟออบเจกต์ได้</value>
     </data>
-    <data name="Description_ErrorInvalidBinding" xml:space="preserve">
+  <data name="Description_ErrorInvalidBinding" xml:space="preserve">
         <value>ไม่สามารถสร้าง Binding ได้เนื่องจากขาด metadata ของ Binding</value>
     </data>
-    <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
+  <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
         <value>Binding ไม่ถูกต้องเนื่องจากคอมไพเลอร์รายงานข้อผิดพลาด</value>
     </data>
-    <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
+  <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
         <value>ชื่อประเภท composition ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorInvalidRootName" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootName" xml:space="preserve">
         <value>ชื่อ Root ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
+  <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
         <value>พบชื่อ Root ซ้ำ</value>
     </data>
-    <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
+  <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
         <value>ชื่ออาร์กิวเมนต์ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
         <value>ประเภทอาร์กิวเมนต์ของ composition อ้างอิงจาก generic marker</value>
     </data>
-    <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
         <value>ประเภท Accumulator อ้างอิงจาก generic marker</value>
     </data>
-    <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
         <value>Accumulator ไม่สามารถสะสม generic marker ได้</value>
     </data>
-    <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
         <value>ประเภทพิเศษไม่สามารถเป็น generic marker ได้</value>
     </data>
-    <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
+  <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
         <value>การนำไปใช้งานไม่ได้นำสัญญาไปใช้</value>
     </data>
-    <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
         <value>ตำแหน่งอาร์กิวเมนต์ของ attribute ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>ไม่สามารถประมวลผลสมาชิก attribute ได้</value>
     </data>
-    <data name="Description_ErrorInvalidRootType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootType" xml:space="preserve">
         <value>ประเภท Root ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
         <value>ประเภท Roots ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
+  <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
         <value>ไม่พบประเภทที่ตรงกับตัวกรอง wildcard</value>
     </data>
-    <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
         <value>ประเภท Builders ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
         <value>ประเภท Builder ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
+  <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
         <value>มีการระบุพารามิเตอร์ประเภทมากเกินไป</value>
     </data>
-    <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
+  <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
         <value>ไม่รองรับ async factories</value>
     </data>
-    <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
         <value>ไวยากรณ์ที่ไม่รองรับใน DI API</value>
     </data>
-    <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
+  <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
         <value>ค่าต้องเป็นประเภทเฉพาะ</value>
     </data>
-    <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
+  <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
         <value>ตัวระบุไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
+  <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
         <value>มีการใช้บริบทโดยตรงในที่ที่ไม่ได้รับอนุญาต</value>
     </data>
-    <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
         <value>จำนวนตัวเริ่มต้นไม่ตรงกัน</value>
     </data>
-    <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Lifetime ไม่รองรับการพึ่งพาแบบวงกลม</value>
     </data>
-    <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
+  <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
         <value>Composition มีขนาดใหญ่เกินไปที่จะสร้าง</value>
     </data>
-    <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
+  <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
         <value>ไม่สามารถสร้างประเภทนามธรรมได้</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
         <value>ไม่พบคอนสตรัคเตอร์ที่เข้าถึงได้</value>
     </data>
-    <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
         <value>ไม่สามารถสร้าง Dependency Graph ได้</value>
     </data>
-    <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
+  <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
         <value>ถึงจำนวนรอบการทำงานสูงสุดแล้ว</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
         <value>ไม่พบคอนสตรัคเตอร์ที่เข้าถึงได้สำหรับ Tag.On</value>
     </data>
-    <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
         <value>ไม่พบเมธอดที่เข้าถึงได้สำหรับ Tag.On</value>
     </data>
-    <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
         <value>ไม่พบฟิลด์หรือคุณสมบัติที่เข้าถึงได้สำหรับ Tag.On</value>
     </data>
-    <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
+  <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
         <value>นิพจน์ต้องเป็นการเรียก API ที่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
+  <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
         <value>นิพจน์ระบุขอบเขต (regular expression) ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
+  <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
         <value>Wildcard ไม่ถูกต้อง</value>
     </data>
-    <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
+  <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
         <value>ไม่พบการตั้งค่า DI</value>
     </data>
-    <data name="Description_ErrorCyclicDependency" xml:space="preserve">
+  <data name="Description_ErrorCyclicDependency" xml:space="preserve">
         <value>ตรวจพบการพึ่งพาแบบวงกลม</value>
     </data>
-    <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
         <value>เวอร์ชันภาษาไม่ได้รับการรองรับ</value>
     </data>
-    <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
         <value>ข้อผิดพลาดในการตรวจสอบ Lifetime</value>
     </data>
-    <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
+  <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
         <value>ไม่สามารถอนุมานประเภทได้</value>
     </data>
-    <data name="Description_WarningOverriddenBinding" xml:space="preserve">
+  <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding ถูกเขียนทับ</value>
     </data>
-    <data name="Description_WarningNoRoots" xml:space="preserve">
+  <data name="Description_WarningNoRoots" xml:space="preserve">
         <value>ไม่มีการกำหนด Composition Roots</value>
     </data>
-    <data name="Description_WarningNotImplementedContract" xml:space="preserve">
+  <data name="Description_WarningNotImplementedContract" xml:space="preserve">
         <value>การนำไปใช้งานไม่ได้นำสัญญาไปใช้</value>
     </data>
-    <data name="Description_WarningBindingNotUsed" xml:space="preserve">
+  <data name="Description_WarningBindingNotUsed" xml:space="preserve">
         <value>ไม่มีการใช้ Binding</value>
     </data>
-    <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
+  <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
         <value>Injection site ของ Tag.On ไม่ได้ถูกใช้งาน</value>
     </data>
-    <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
         <value>เมธอด Resolve ไม่เข้ากันได้กับอาร์กิวเมนต์ Root</value>
     </data>
-    <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
         <value>เมธอด Resolve ไม่เข้ากันได้กับอาร์กิวเมนต์ประเภท</value>
     </data>
-    <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn ใช้สมาชิกอินสแตนซ์</value>
     </data>
-    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>การสร้างถูกขัดจังหวะ</value>
     </data>
-    <data name="Description_InfoNotImplementedContract" xml:space="preserve">
+  <data name="Description_InfoNotImplementedContract" xml:space="preserve">
         <value>การนำไปใช้งานไม่ได้นำสัญญาไปใช้</value>
     </data>
-    <data name="Description_ErrorUnhandled" xml:space="preserve">
+  <data name="Description_ErrorUnhandled" xml:space="preserve">
         <value>ข้อผิดพลาดของเครื่องมือสร้างที่ไม่ได้รับการจัดการ</value>
     </data>
+  <data name="Warning_Template_GenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>การสร้างอินเทอร์เฟซแบบเลือกสำหรับ "{0}" ทำให้อินเทอร์เฟซว่าง เนื่องจากไม่เหลือองค์ประกอบที่เข้าเกณฑ์</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>การสร้างอินเทอร์เฟซแบบเลือกทำให้อินเทอร์เฟซว่าง</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>แอตทริบิวต์ [GenerateInterface] บนองค์ประกอบ "{0}" ถูกละเว้นสำหรับอินเทอร์เฟซ "{1}" เนื่องจากองค์ประกอบไม่เป็น public</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>แอตทริบิวต์ [GenerateInterface] บนองค์ประกอบ "{0}" ถูกละเว้นสำหรับอินเทอร์เฟซ "{1}" เนื่องจากองค์ประกอบเป็น static</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>มีการใช้ GenerateInterface กับองค์ประกอบแบบ static</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>มีการใช้ GenerateInterface กับองค์ประกอบที่ไม่เป็นสาธารณะ</value>
+  </data>
 </root>

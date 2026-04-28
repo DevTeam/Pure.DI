@@ -178,6 +178,15 @@
     <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>В привязке используется член экземпляра "{0}" из setup "{1}", который применяется через DependsOn или CompositionKind.Internal/Global. В зависимой композиции такого члена не будет. Перенесите значение в Arg/RootArg или отдельный контекст.</value>
     </data>
+    <data name="Warning_Template_GenerateInterfaceOnNonPublicMember" xml:space="preserve">
+        <value>Атрибут [GenerateInterface] на элементе "{0}" для интерфейса "{1}" игнорируется, потому что элемент не является public.</value>
+    </data>
+    <data name="Warning_Template_GenerateInterfaceOnStaticMember" xml:space="preserve">
+        <value>Атрибут [GenerateInterface] на элементе "{0}" для интерфейса "{1}" игнорируется, потому что элемент является static.</value>
+    </data>
+    <data name="Warning_Template_GenerateInterfaceSelectiveEmpty" xml:space="preserve">
+        <value>Выборочная генерация интерфейса "{0}" привела к пустому интерфейсу, так как не осталось подходящих элементов.</value>
+    </data>
     <data name="Description_ErrorUnableToResolve" xml:space="preserve">
         <value>Не удалось разрешить зависимость в графе объектов.</value>
     </data>
@@ -333,6 +342,15 @@
     </data>
     <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn использует член экземпляра.</value>
+    </data>
+    <data name="Description_WarningGenerateInterfaceOnNonPublicMember" xml:space="preserve">
+        <value>GenerateInterface применён к непубличному элементу.</value>
+    </data>
+    <data name="Description_WarningGenerateInterfaceOnStaticMember" xml:space="preserve">
+        <value>GenerateInterface применён к статическому элементу.</value>
+    </data>
+    <data name="Description_WarningGenerateInterfaceSelectiveEmpty" xml:space="preserve">
+        <value>Выборочная генерация интерфейса привела к пустому интерфейсу.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Генерация была прервана.</value>

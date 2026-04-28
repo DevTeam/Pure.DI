@@ -1,346 +1,364 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="Warning_NoRoots" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Warning_NoRoots" xml:space="preserve">
         <value>Composition root が宣言されていません。少なくとも 1 つの root を追加してください。</value>
     </data>
-    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+  <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
         <value>Composition 型名 "{0}" が無効です。</value>
     </data>
-    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+  <data name="Error_Template_InvalidRootName" xml:space="preserve">
         <value>Root 名 "{0}" が無効です。</value>
     </data>
-    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+  <data name="Error_Template_RootDuplicate" xml:space="preserve">
         <value>Composition root "{0}" は、以前に宣言された root "{1}" と重複しています。</value>
     </data>
-    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>Accumulator 型は generic type marker に基づくことはできません。</value>
     </data>
-    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
         <value>Accumulator は generic type marker に基づくインスタンスを蓄積することはできません。</value>
     </data>
-    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+  <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>Argument 名 "{0}" が無効です。</value>
     </data>
-    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>Composition argument 型は generic type marker にすることはできません。</value>
     </data>
-    <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>特殊な型は、ジェネリック型のマーカーに基づくことはできません。</value>
     </data>
-    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+  <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>コンパイルエラーのため、Binding が無効です。</value>
     </data>
-    <data name="Error_Template_NotImplement" xml:space="preserve">
+  <data name="Error_Template_NotImplement" xml:space="preserve">
         <value>{0} は {1} を実装していません。</value>
     </data>
-    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+  <data name="Error_Template_CyclicDependency" xml:space="preserve">
         <value>循環依存関係が検出されました: {0}。</value>
     </data>
-    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+  <data name="Error_Template_UnableToResolve" xml:space="preserve">
         <value>{1} 内で "{0}" を解決できません。</value>
     </data>
-    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
         <value>Dependency graph を構築できません。</value>
     </data>
-    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+  <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
         <value>無効な正規表現 {0}: "{1}"。</value>
     </data>
-    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+  <data name="Error_Template_InvalidWildcard" xml:space="preserve">
         <value>無効なワイルドカード {0}: "{1}"。</value>
     </data>
-    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+  <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
         <value>Lifetime {1} を持つ型 {0} には、Lifetime {3} を持つ型 {2} の直接的または推移的な Injection が必要ですが、これはデータ漏洩や予期しない動作につながる可能性があります。</value>
     </data>
-    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+  <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
         <value>最適な dependency graph の構築中に最大反復回数 {0} を超えました。Dependency graph を詳細に指定してください。</value>
     </data>
-    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+  <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
         <value>Dependency graph を構築できません。</value>
     </data>
-    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Lifetime {0} は循環依存関係をサポートしていません。</value>
     </data>
-    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
         <value>初期化子の数が無効です。</value>
     </data>
-    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+  <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
         <value>"{0}" を直接使用することはできません。そのメソッドまたはプロパティのみがアクセス可能です。</value>
     </data>
-    <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
+  <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
         <value>DependsOn にはセットアップ コンテキスト名の指定が必要です。</value>
     </data>
-    <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
+  <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
         <value>セットアップコンテキストタイプを使用する場合、DependsOn はセットアップコンテキスト名を必要とします。</value>
     </data>
-    <data name="Error_InvalidRootType" xml:space="preserve">
+  <data name="Error_InvalidRootType" xml:space="preserve">
         <value>Root 型が無効です。</value>
     </data>
-    <data name="Error_InvalidRootsRype" xml:space="preserve">
+  <data name="Error_InvalidRootsRype" xml:space="preserve">
         <value>Roots 型が無効です。</value>
     </data>
-    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+  <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>{0} を継承し、名前がフィルタ "{1}" に一致する型が見つかりませんでした。</value>
     </data>
-    <data name="Error_InvalidBuildersType" xml:space="preserve">
+  <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>Builders 型が無効です。</value>
     </data>
-    <data name="Error_InvalidBuilderType" xml:space="preserve">
+  <data name="Error_InvalidBuilderType" xml:space="preserve">
         <value>Builder 型が無効です。</value>
     </data>
-    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+  <data name="Error_TooManyTypeParameters" xml:space="preserve">
         <value>型パラメータが多すぎます。</value>
     </data>
-    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+  <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
         <value>async キーワードを使用した非同期ファクトリはサポートされていません。</value>
     </data>
-    <data name="Error_Template_NotSupported" xml:space="preserve">
+  <data name="Error_Template_NotSupported" xml:space="preserve">
         <value>{0} はサポートされていません。</value>
     </data>
-    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+  <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
         <value>{0} は型 {1} の null ではない値である必要があります。</value>
     </data>
-    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+  <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
         <value>識別子 "{0}" が無効です。</value>
     </data>
-    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
         <value>属性 {1} の引数の位置 {0} が範囲 [0..{2}] 外です。</value>
     </data>
-    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>型 {1} の {0} は、複数の相互に排他的な属性でマークされているため、処理できません。</value>
     </data>
-    <data name="Error_InvalidBinding" xml:space="preserve">
+  <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding が正しく定義されていません。</value>
     </data>
-    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+  <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition が大きすぎます。依存関係番号 {0} で停止しました。</value>
     </data>
-    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+  <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
         <value>{0} は抽象型であるため、インスタンスを作成できません。</value>
     </data>
-    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
         <value>アクセス可能なコンストラクタがないため、{0} のインスタンスを作成できません。</value>
     </data>
-    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+  <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
         <value>{0} は C# {1} をサポートしていません。言語バージョン {2} 以降を使用してください。</value>
     </data>
-    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+  <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>セットアップ "{0}" が見つかりませんでした。</value>
     </data>
-    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
         <value>"{1}" に一致する引数を持つ、アクセス可能な型 {0} の非静的コンストラクタが見つかりませんでした。</value>
     </data>
-    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
         <value>名前 "{1}" および "{2}" に一致する引数を持つ、アクセス可能な型 {0} の非静的メソッドが見つかりませんでした。</value>
     </data>
-    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
         <value>"{0}" に一致する、アクセス可能な型 {1} の非静的フィールドまたはプロパティが見つかりませんでした。</value>
     </data>
-    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+  <data name="Error_Template_MustBeApiCall" xml:space="preserve">
         <value>{0} は型 {1} の定数値、または特別な API 呼び出しである必要があります。</value>
     </data>
-    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+  <data name="Warning_BindingIsNotUsed" xml:space="preserve">
         <value>Binding は使用されていません。</value>
     </data>
-    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+  <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
         <value>引数 {1} があるため、Root {0} を Resolve メソッドで解決できません。試行すると例外がスローされます。</value>
     </data>
-    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+  <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
         <value>Injection site のタグ "{0}" は使用されていません。</value>
     </data>
-    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+  <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
         <value>{0} の Binding がオーバーライドされました。</value>
     </data>
-    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+  <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>コード生成が中止されました。</value>
     </data>
-    <data name="Error_UnhandledError" xml:space="preserve">
+  <data name="Error_UnhandledError" xml:space="preserve">
         <value>処理されないエラーが発生しました。</value>
     </data>
-    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+  <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>型を特定できません。明示的に指定してみてください。</value>
     </data>
-    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
+  <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
         <value>型 {1} の静的な root {0} は、直接または依存関係を介して Lifetime {2} を使用することはできません。</value>
     </data>
-    <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>バインディングは、DependsOn または CompositionKind.Internal/Global を通じて適用される setup "{1}" からインスタンスメンバー "{0}" を使用しています。このメンバーは、依存関係のあるコンポジションには存在しません。Arg/RootArg または別のコンテキストオブジェクトを使用してください。</value>
     </data>
-    <data name="Description_ErrorUnableToResolve" xml:space="preserve">
+  <data name="Description_ErrorUnableToResolve" xml:space="preserve">
         <value>オブジェクトグラフ内で依存関係を解決できませんでした。</value>
     </data>
-    <data name="Description_ErrorInvalidBinding" xml:space="preserve">
+  <data name="Description_ErrorInvalidBinding" xml:space="preserve">
         <value>バインディングメタデータが不足しているため、バインディングを作成できません。</value>
     </data>
-    <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
+  <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
         <value>コンパイラがエラーを報告したため、バインディングが無効です。</value>
     </data>
-    <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
+  <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
         <value>Composition 型名が無効です。</value>
     </data>
-    <data name="Description_ErrorInvalidRootName" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootName" xml:space="preserve">
         <value>Root 名が無効です。</value>
     </data>
-    <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
+  <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
         <value>重複する Root 名が検出されました。</value>
     </data>
-    <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
+  <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
         <value>引数名が無効です。</value>
     </data>
-    <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
         <value>Composition 引数型は generic type marker に基づいています。</value>
     </data>
-    <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
         <value>Accumulator 型は generic type marker に基づいています。</value>
     </data>
-    <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
         <value>Accumulator は generic type marker を蓄積できません。</value>
     </data>
-    <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
         <value>特殊な型は generic type marker にできません。</value>
     </data>
-    <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
+  <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
         <value>実装がコントラクトを実装していません。</value>
     </data>
-    <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
         <value>属性の引数の位置が無効です。</value>
     </data>
-    <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>属性メンバーを処理できません。</value>
     </data>
-    <data name="Description_ErrorInvalidRootType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootType" xml:space="preserve">
         <value>Root 型が無効です。</value>
     </data>
-    <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
         <value>Roots 型が無効です。</value>
     </data>
-    <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
+  <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
         <value>ワイルドカードフィルターに一致する型がありませんでした。</value>
     </data>
-    <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
         <value>Builders 型が無効です。</value>
     </data>
-    <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
         <value>Builder 型が無効です。</value>
     </data>
-    <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
+  <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
         <value>指定された型パラメーターが多すぎます。</value>
     </data>
-    <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
+  <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
         <value>非同期ファクトリはサポートされていません。</value>
     </data>
-    <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
         <value>DI API でサポートされていない構文です。</value>
     </data>
-    <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
+  <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
         <value>値は特定の型である必要があります。</value>
     </data>
-    <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
+  <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
         <value>識別子が無効です。</value>
     </data>
-    <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
+  <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
         <value>許可されていない場所でコンテキストが直接使用されています。</value>
     </data>
-    <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
         <value>初期化子の数が一致しません。</value>
     </data>
-    <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Lifetime は循環依存関係をサポートしていません。</value>
     </data>
-    <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
+  <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
         <value>Composition が大きすぎて作成できません。</value>
     </data>
-    <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
+  <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
         <value>抽象型を作成できません。</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
         <value>アクセス可能なコンストラクターが見つかりませんでした。</value>
     </data>
-    <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
         <value>Dependency graph を構築できません。</value>
     </data>
-    <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
+  <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
         <value>最大反復回数に達しました。</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
         <value>Tag.On 用のアクセス可能なコンストラクターが見つかりませんでした。</value>
     </data>
-    <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
         <value>Tag.On 用のアクセス可能なメソッドが見つかりませんでした。</value>
     </data>
-    <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
         <value>Tag.On 用のアクセス可能なフィールドまたはプロパティが見つかりませんでした。</value>
     </data>
-    <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
+  <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
         <value>式は有効な API 呼び出しである必要があります。</value>
     </data>
-    <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
+  <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
         <value>正規表現が無効です。</value>
     </data>
-    <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
+  <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
         <value>ワイルドカードが無効です。</value>
     </data>
-    <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
+  <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
         <value>DI セットアップが見つかりませんでした。</value>
     </data>
-    <data name="Description_ErrorCyclicDependency" xml:space="preserve">
+  <data name="Description_ErrorCyclicDependency" xml:space="preserve">
         <value>循環依存関係が検出されました。</value>
     </data>
-    <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
         <value>言語バージョンがサポートされていません。</value>
     </data>
-    <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
         <value>Lifetime 検証エラーです。</value>
     </data>
-    <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
+  <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
         <value>型を推論できません。</value>
     </data>
-    <data name="Description_WarningOverriddenBinding" xml:space="preserve">
+  <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>バインディングがオーバーライドされました。</value>
     </data>
-    <data name="Description_WarningNoRoots" xml:space="preserve">
+  <data name="Description_WarningNoRoots" xml:space="preserve">
         <value>Composition root が定義されていません。</value>
     </data>
-    <data name="Description_WarningNotImplementedContract" xml:space="preserve">
+  <data name="Description_WarningNotImplementedContract" xml:space="preserve">
         <value>実装がコントラクトを実装していません。</value>
     </data>
-    <data name="Description_WarningBindingNotUsed" xml:space="preserve">
+  <data name="Description_WarningBindingNotUsed" xml:space="preserve">
         <value>バインディングが使用されていません。</value>
     </data>
-    <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
+  <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
         <value>Tag.On の注入サイトが使用されていません。</value>
     </data>
-    <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
         <value>Resolve メソッドは root 引数と互換性がありません。</value>
     </data>
-    <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
         <value>Resolve メソッドは型引数と互換性がありません。</value>
     </data>
-    <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn はインスタンスメンバーを使用しています。</value>
     </data>
-    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成が中断されました。</value>
     </data>
-    <data name="Description_InfoNotImplementedContract" xml:space="preserve">
+  <data name="Description_InfoNotImplementedContract" xml:space="preserve">
         <value>実装がコントラクトを実装していません。</value>
     </data>
-    <data name="Description_ErrorUnhandled" xml:space="preserve">
+  <data name="Description_ErrorUnhandled" xml:space="preserve">
         <value>未処理のジェネレーターエラーです。</value>
     </data>
+  <data name="Warning_Template_GenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>インターフェイス "{0}" の選択的生成で、対象となる要素が残っていないため空のインターフェイスが生成されました。</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>選択的インターフェイス生成により空のインターフェイスが生成されました。</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>要素 "{0}" の [GenerateInterface] 属性は、要素が public ではないため、インターフェイス "{1}" では無視されます。</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>要素 "{0}" の [GenerateInterface] 属性は、要素が static であるため、インターフェイス "{1}" では無視されます。</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>GenerateInterface が static 要素に適用されています。</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>GenerateInterface が non-public 要素に適用されています。</value>
+  </data>
 </root>

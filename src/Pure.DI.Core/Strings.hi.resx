@@ -1,346 +1,364 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="Warning_NoRoots" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Warning_NoRoots" xml:space="preserve">
         <value>कोई भी composition roots घोषित नहीं किया गया है। कम से कम एक root जोड़ें।</value>
     </data>
-    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+  <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
         <value>अमान्य composition type नाम "{0}"।</value>
     </data>
-    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+  <data name="Error_Template_InvalidRootName" xml:space="preserve">
         <value>अमान्य root नाम "{0}"।</value>
     </data>
-    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+  <data name="Error_Template_RootDuplicate" xml:space="preserve">
         <value>Composition root "{0}" पहले से घोषित root "{1}" की पुनरावृत्ति करता है।</value>
     </data>
-    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>Accumulator प्रकार generic type marker पर आधारित नहीं हो सकता।</value>
     </data>
-    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
         <value>Accumulator generic type marker पर आधारित instances को संचित नहीं कर सकता।</value>
     </data>
-    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+  <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>अमान्य argument नाम "{0}"।</value>
     </data>
-    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>Composition argument प्रकार generic type marker नहीं हो सकता।</value>
     </data>
-    <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>विशेष प्रकार जेнеरिक प्रकार मार्कर पर आधारित नहीं हो सकता।</value>
     </data>
-    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+  <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>compilation त्रुटि के कारण अमान्य binding।</value>
     </data>
-    <data name="Error_Template_NotImplement" xml:space="preserve">
+  <data name="Error_Template_NotImplement" xml:space="preserve">
         <value>{0}, {1} को लागू (implement) नहीं करता है।</value>
     </data>
-    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+  <data name="Error_Template_CyclicDependency" xml:space="preserve">
         <value>चक्रीय निर्भरता (cyclic dependency) पाई गई: {0}।</value>
     </data>
-    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+  <data name="Error_Template_UnableToResolve" xml:space="preserve">
         <value>{1} में "{0}" को हल करने में असमर्थ।</value>
     </data>
-    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
         <value>Dependency graph बनाना संभव नहीं है।</value>
     </data>
-    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+  <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
         <value>अमान्य regular expression {0}: "{1}"।</value>
     </data>
-    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+  <data name="Error_Template_InvalidWildcard" xml:space="preserve">
         <value>अमान्य wildcard {0}: "{1}"।</value>
     </data>
-    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+  <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
         <value>Lifetime {1} वाले प्रकार {0} को Lifetime {3} वाले प्रकार {2} के प्रत्यक्ष या सक्रामक (transitive) injection की आवश्यकता है, जिससे डेटा रिसाव या अप्रत्याशित व्यवहार हो सकता है।</value>
     </data>
-    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+  <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
         <value>इष्टतम dependency graph बनाते समय पुनरावृत्तियों (iterations) की अधिकतम संख्या {0} पार हो गई है। कृपया dependency graph को स्पष्ट करें।</value>
     </data>
-    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+  <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
         <value>Dependency graph बनाना संभव नहीं है।</value>
     </data>
-    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Lifetime {0} चक्रीय निर्भरता का समर्थन नहीं करता है।</value>
     </data>
-    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
         <value>initializers की अमान्य संख्या।</value>
     </data>
-    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+  <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
         <value>"{0}" का सीधे उपयोग करना संभव नहीं है। केवल इसके methods या properties ही उपलब्ध हैं।</value>
     </data>
-    <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
+  <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
         <value>DependsOn के लिए सेटअप संदर्भ का नाम निर्दिष्ट करना आवश्यक है।</value>
     </data>
-    <data name="Error_InvalidRootType" xml:space="preserve">
+  <data name="Error_InvalidRootType" xml:space="preserve">
         <value>अमान्य root प्रकार।</value>
     </data>
-    <data name="Error_InvalidRootsRype" xml:space="preserve">
+  <data name="Error_InvalidRootsRype" xml:space="preserve">
         <value>अमान्य roots प्रकार।</value>
     </data>
-    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+  <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>{0} से विरासत में मिला कोई प्रकार नहीं मिला जिसका नाम फ़िल्टर "{1}" से मेल खाता हो।</value>
     </data>
-    <data name="Error_InvalidBuildersType" xml:space="preserve">
+  <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>अमान्य builders प्रकार।</value>
     </data>
-    <data name="Error_InvalidBuilderType" xml:space="preserve">
+  <data name="Error_InvalidBuilderType" xml:space="preserve">
         <value>अमान्य builder प्रकार।</value>
     </data>
-    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+  <data name="Error_TooManyTypeParameters" xml:space="preserve">
         <value>बहुत अधिक type parameters।</value>
     </data>
-    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+  <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
         <value>async कीवर्ड के साथ असिंक्रोनस फ़ैक्टरी (asynchronous factory) समर्थित नहीं है।</value>
     </data>
-    <data name="Error_Template_NotSupported" xml:space="preserve">
+  <data name="Error_Template_NotSupported" xml:space="preserve">
         <value>{0} समर्थित नहीं है।</value>
     </data>
-    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+  <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
         <value>{0} प्रकार {1} का एक non-null मान होना चाहिए।</value>
     </data>
-    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+  <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
         <value>अमान्य identifier "{0}"।</value>
     </data>
-    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
         <value>Attribute {1} की Argument स्थिति {0} रेंज [0..{2}] से बाहर है।</value>
     </data>
-    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>प्रकार {1} के {0} को संसाधित नहीं किया जा सकता क्योंकि यह कई परस्पर अनन्य (mutually exclusive) attributes के साथ चिह्नित है।</value>
     </data>
-    <data name="Error_InvalidBinding" xml:space="preserve">
+  <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding गलत तरीके से परिभाषित की गई है।</value>
     </data>
-    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+  <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition बहुत बड़ी है। निर्भरता संख्या {0} पर रुक गया।</value>
     </data>
-    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+  <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
         <value>{0} का instance नहीं बनाया जा सकता क्योंकि यह एक abstract प्रकार है।</value>
     </data>
-    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
         <value>{0} का instance नहीं बनाया जा सकता क्योंकि कोई सुलभ constructor उपलब्ध नहीं है।</value>
     </data>
-    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+  <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
         <value>{0}, C# {1} का समर्थन नहीं करता है। कृपया भाषा संस्करण {2} या नया उपयोग करें।</value>
     </data>
-    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+  <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>सेटअप "{0}" नहीं मिला।</value>
     </data>
-    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
         <value>"{1}" से मेल खाने वाले argument के साथ प्रकार {0} का कोई सुलभ गैर-स्थिर (non-static) constructor नहीं मिला।</value>
     </data>
-    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
         <value>नाम "{1}" और argument "{2}" के साथ मेल खाने वाले प्रकार {0} का कोई सुलभ गैर-स्थिर (non-static) method नहीं मिला।</value>
     </data>
-    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
         <value>प्रकार {1} का कोई सुलभ गैर-स्थिर field या property नहीं मिली जो "{0}" से मेल खाती हो।</value>
     </data>
-    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+  <data name="Error_Template_MustBeApiCall" xml:space="preserve">
         <value>{0} प्रकार {1} का एक constant मान या एक विशेष API कॉल होना चाहिए।</value>
     </data>
-    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+  <data name="Warning_BindingIsNotUsed" xml:space="preserve">
         <value>Binding का उपयोग नहीं किया गया है।</value>
     </data>
-    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+  <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
         <value>Arguments {1} के कारण Root {0} को Resolve विधियों द्वारा हल नहीं किया जा सकता है; प्रयास करने पर एक अपवाद (exception) फेंका जाएगा।</value>
     </data>
-    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+  <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
         <value>Injection site पर टैग "{0}" का उपयोग नहीं किया गया है।</value>
     </data>
-    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+  <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
         <value>{0} के लिए Binding ओवरराइड कर दी गई है।</value>
     </data>
-    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+  <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>कोड जनरेशन रद्द कर दिया गया।</value>
     </data>
-    <data name="Error_UnhandledError" xml:space="preserve">
+  <data name="Error_UnhandledError" xml:space="preserve">
         <value>एक अनहैंडल्ड त्रुटि हुई।</value>
     </data>
-    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+  <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>प्रकार निर्धारित नहीं किया जा सकता। इसे स्पष्ट रूप से निर्दिष्ट करने का प्रयास करें।</value>
     </data>
-    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
+  <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
         <value>प्रकार {1} का स्थिर root {0} सीधे या किसी निर्भरता के माध्यम से Lifetime {2} का उपयोग नहीं कर सकता है।</value>
     </data>
-    <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>Binding सेटअप "{1}" से instance member "{0}" का उपयोग करता है जो DependsOn या CompositionKind.Internal/Global के माध्यम से लागू होता है। यह member निर्भर composition में मौजूद नहीं होगा। Arg/RootArg या एक अलग context object का उपयोग करें।</value>
     </data>
-    <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
+  <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
         <value>जब सेटअप संदर्भ प्रकार का उपयोग किया जाता है, तो DependsOn को सेटअप संदर्भ का नाम चाहिए।</value>
     </data>
-    <data name="Description_ErrorUnableToResolve" xml:space="preserve">
+  <data name="Description_ErrorUnableToResolve" xml:space="preserve">
         <value>ऑब्जेक्ट ग्राफ में निर्भरता को हल नहीं किया जा सकता।</value>
     </data>
-    <data name="Description_ErrorInvalidBinding" xml:space="preserve">
+  <data name="Description_ErrorInvalidBinding" xml:space="preserve">
         <value>Binding metadata की कमी के कारण Binding बनाया नहीं जा सकता।</value>
     </data>
-    <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
+  <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
         <value>Binding अमान्य है क्योंकि compiler ने त्रुटियां रिपोर्ट की हैं।</value>
     </data>
-    <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
+  <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
         <value>Composition type नाम अमान्य है।</value>
     </data>
-    <data name="Description_ErrorInvalidRootName" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootName" xml:space="preserve">
         <value>Root नाम अमान्य है।</value>
     </data>
-    <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
+  <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
         <value>डुप्लिकेट root नाम पाए गए।</value>
     </data>
-    <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
+  <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
         <value>Argument नाम अमान्य है।</value>
     </data>
-    <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
         <value>Composition argument प्रकार generic marker पर आधारित है।</value>
     </data>
-    <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
         <value>Accumulator प्रकार generic marker पर आधारित है।</value>
     </data>
-    <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
         <value>Accumulator generic marker को संचित नहीं कर सकता।</value>
     </data>
-    <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
         <value>विशेष प्रकार generic marker नहीं हो सकता।</value>
     </data>
-    <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
+  <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
         <value>कार्यान्वयन (implementation) contract को लागू नहीं करता है।</value>
     </data>
-    <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
         <value>Attribute argument स्थिति अमान्य है।</value>
     </data>
-    <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>Attribute member को संसाधित नहीं किया जा सकता।</value>
     </data>
-    <data name="Description_ErrorInvalidRootType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootType" xml:space="preserve">
         <value>Root प्रकार अमान्य है।</value>
     </data>
-    <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
         <value>Roots प्रकार अमान्य है।</value>
     </data>
-    <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
+  <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
         <value>कोई प्रकार wildcard filter से मेल नहीं खाता।</value>
     </data>
-    <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
         <value>Builders प्रकार अमान्य है।</value>
     </data>
-    <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
         <value>Builder प्रकार अमान्य है।</value>
     </data>
-    <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
+  <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
         <value>बहुत अधिक type parameters प्रदान किए गए।</value>
     </data>
-    <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
+  <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
         <value>Async factories समर्थित नहीं हैं।</value>
     </data>
-    <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
         <value>DI API में असमर्थित syntax।</value>
     </data>
-    <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
+  <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
         <value>मान किसी विशिष्ट प्रकार का होना चाहिए।</value>
     </data>
-    <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
+  <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
         <value>Identifier अमान्य है।</value>
     </data>
-    <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
+  <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
         <value>Context का उपयोग वहां सीधे किया जा रहा है जहां यह अनुमति नहीं है।</value>
     </data>
-    <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
         <value>Initializers की संख्या मेल नहीं खाती।</value>
     </data>
-    <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Lifetime चक्रीय निर्भरताओं का समर्थन नहीं करता है।</value>
     </data>
-    <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
+  <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
         <value>Composition बनाने के लिए बहुत बड़ी है।</value>
     </data>
-    <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
+  <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
         <value>Abstract प्रकार का निर्माण नहीं किया जा सकता।</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
         <value>कोई सुलभ constructor नहीं मिला।</value>
     </data>
-    <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
         <value>Dependency graph बनाया नहीं जा सकता।</value>
     </data>
-    <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
+  <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
         <value>पुनरावृत्तियों की अधिकतम संख्या तक पहुंच गया।</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
         <value>Tag.On के लिए कोई सुलभ constructor नहीं मिला।</value>
     </data>
-    <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
         <value>Tag.On के लिए कोई सुलभ method नहीं मिला।</value>
     </data>
-    <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
         <value>Tag.On के लिए कोई सुलभ field या property नहीं मिला।</value>
     </data>
-    <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
+  <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
         <value>व्यंजक (expression) एक वैध API कॉल होना चाहिए।</value>
     </data>
-    <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
+  <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
         <value>Regular expression अमान्य है।</value>
     </data>
-    <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
+  <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
         <value>Wildcard अमान्य है।</value>
     </data>
-    <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
+  <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
         <value>DI सेटअप नहीं मिला।</value>
     </data>
-    <data name="Description_ErrorCyclicDependency" xml:space="preserve">
+  <data name="Description_ErrorCyclicDependency" xml:space="preserve">
         <value>चक्रीय निर्भरता का पता चला।</value>
     </data>
-    <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
         <value>भाषा संस्करण समर्थित नहीं है।</value>
     </data>
-    <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
         <value>Lifetime सत्यापन त्रुटि।</value>
     </data>
-    <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
+  <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
         <value>प्रकार का अनुमान नहीं लगाया जा सकता।</value>
     </data>
-    <data name="Description_WarningOverriddenBinding" xml:space="preserve">
+  <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding ओवरराइड कर दी गई है।</value>
     </data>
-    <data name="Description_WarningNoRoots" xml:space="preserve">
+  <data name="Description_WarningNoRoots" xml:space="preserve">
         <value>कोई composition roots परिभाषित नहीं हैं।</value>
     </data>
-    <data name="Description_WarningNotImplementedContract" xml:space="preserve">
+  <data name="Description_WarningNotImplementedContract" xml:space="preserve">
         <value>कार्यान्वयन (implementation) contract को लागू नहीं करता है।</value>
     </data>
-    <data name="Description_WarningBindingNotUsed" xml:space="preserve">
+  <data name="Description_WarningBindingNotUsed" xml:space="preserve">
         <value>Binding का उपयोग नहीं किया गया है।</value>
     </data>
-    <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
+  <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
         <value>Tag.On injection site का उपयोग नहीं किया गया है।</value>
     </data>
-    <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
         <value>Resolve विधियां root arguments के साथ असंगत हैं।</value>
     </data>
-    <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
         <value>Resolve विधियां type arguments के साथ असंगत हैं।</value>
     </data>
-    <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn instance member का उपयोग करता है।</value>
     </data>
-    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>जनरेशन रुका दिया गया था।</value>
     </data>
-    <data name="Description_InfoNotImplementedContract" xml:space="preserve">
+  <data name="Description_InfoNotImplementedContract" xml:space="preserve">
         <value>कार्यान्वयन (implementation) contract को लागू नहीं करता है।</value>
     </data>
-    <data name="Description_ErrorUnhandled" xml:space="preserve">
+  <data name="Description_ErrorUnhandled" xml:space="preserve">
         <value>अनहैंडल्ड जनरेटर त्रुटि।</value>
     </data>
+  <data name="Warning_Template_GenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>इंटरफ़ेस "{0}" के लिए selective interface generation से खाली इंटरफ़ेस बना, क्योंकि कोई योग्य तत्व नहीं बचा।</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>Selective interface generation से खाली इंटरफ़ेस बना।</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>तत्व "{0}" पर [GenerateInterface] एट्रिब्यूट को इंटरफ़ेस "{1}" के लिए अनदेखा किया गया, क्योंकि यह तत्व public नहीं है।</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>तत्व "{0}" पर [GenerateInterface] एट्रिब्यूट को इंटरफ़ेस "{1}" के लिए अनदेखा किया गया, क्योंकि यह तत्व static है।</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>GenerateInterface को static तत्व पर लागू किया गया है।</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>GenerateInterface को non-public तत्व पर लागू किया गया है।</value>
+  </data>
 </root>

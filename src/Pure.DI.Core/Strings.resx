@@ -178,6 +178,15 @@
     <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>The binding uses instance member "{0}" from setup "{1}" that is applied via DependsOn or CompositionKind.Internal/Global. This member will not exist in the dependent composition. Use Arg/RootArg or a separate context object.</value>
     </data>
+    <data name="Warning_Template_GenerateInterfaceOnNonPublicMember" xml:space="preserve">
+        <value>The [GenerateInterface] attribute on element "{0}" is ignored for interface "{1}" because the element is not public.</value>
+    </data>
+    <data name="Warning_Template_GenerateInterfaceOnStaticMember" xml:space="preserve">
+        <value>The [GenerateInterface] attribute on element "{0}" is ignored for interface "{1}" because the element is static.</value>
+    </data>
+    <data name="Warning_Template_GenerateInterfaceSelectiveEmpty" xml:space="preserve">
+        <value>Selective interface generation for "{0}" produced an empty interface because no eligible elements remained.</value>
+    </data>
     <data name="Description_ErrorUnableToResolve" xml:space="preserve">
         <value>Unable to resolve a dependency in the object graph.</value>
     </data>
@@ -333,6 +342,15 @@
     </data>
     <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn uses an instance member.</value>
+    </data>
+    <data name="Description_WarningGenerateInterfaceOnNonPublicMember" xml:space="preserve">
+        <value>GenerateInterface is applied to a non-public element.</value>
+    </data>
+    <data name="Description_WarningGenerateInterfaceOnStaticMember" xml:space="preserve">
+        <value>GenerateInterface is applied to a static element.</value>
+    </data>
+    <data name="Description_WarningGenerateInterfaceSelectiveEmpty" xml:space="preserve">
+        <value>Selective interface generation produced an empty interface.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generation was interrupted.</value>

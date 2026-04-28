@@ -376,6 +376,27 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - See: [dependent-compositions](readme/dependent-compositions.md).
 - Examples: Binding in a dependent setup uses instance field/property.
 
+### DIW008
+- Description: GenerateInterface is applied to a non-public element.
+- Problem: `[GenerateInterface]` was placed on a non-public method/property/event.
+- Fix: Make the element `public` or remove the attribute from that element.
+- See: [generate-interface](readme/generate-interface.md).
+- Examples: `[GenerateInterface]` on `private` or `internal` property.
+
+### DIW009
+- Description: GenerateInterface is applied to a static element.
+- Problem: `[GenerateInterface]` was placed on a `static` method/property/event.
+- Fix: Move the contract element to an instance member or remove the attribute.
+- See: [generate-interface](readme/generate-interface.md).
+- Examples: `[GenerateInterface]` on `public static` method.
+
+### DIW010
+- Description: Selective interface generation produced an empty interface.
+- Problem: Selective mode was enabled for an interface, but no eligible elements remained after filtering.
+- Fix: Mark at least one `public` instance element for that interface, or remove selective member annotations.
+- See: [generate-interface](readme/generate-interface.md).
+- Examples: All selected elements are `IgnoreInterface`, non-public, or static.
+
 ## Info
 
 ### DII000

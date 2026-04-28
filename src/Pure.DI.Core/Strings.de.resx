@@ -1,347 +1,364 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-        </xsd:element>
-    </xsd:schema>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="Warning_NoRoots" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Warning_NoRoots" xml:space="preserve">
         <value>Es wurden keine Composition Roots deklariert. Fügen Sie mindestens einen Root hinzu.</value>
     </data>
-    <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
+  <data name="Error_Template_InvalidCompositionTypeName" xml:space="preserve">
         <value>Ungültiger Name für den Composition-Typ "{0}".</value>
     </data>
-    <data name="Error_Template_InvalidRootName" xml:space="preserve">
+  <data name="Error_Template_InvalidRootName" xml:space="preserve">
         <value>Ungültiger Root-Name "{0}".</value>
     </data>
-    <data name="Error_Template_RootDuplicate" xml:space="preserve">
+  <data name="Error_Template_RootDuplicate" xml:space="preserve">
         <value>Der Composition Root "{0}" dupliziert einen zuvor deklarierten Root "{1}".</value>
     </data>
-    <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>Der Accumulator-Typ kann nicht auf einem Generic Type Marker basieren.</value>
     </data>
-    <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
+  <data name="Error_AccumulatorCannotAccumulateGenericTypeMarker" xml:space="preserve">
         <value>Der Accumulator kann keine Instanzen akkumulieren, die auf einem Generic Type Marker basieren.</value>
     </data>
-    <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
+  <data name="Error_Template_InvalidArgumentName" xml:space="preserve">
         <value>Ungültiger Argumentname "{0}".</value>
     </data>
-    <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_CompositionArgumentTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>Der Composition-Argumenttyp kann kein Generic Type Marker sein.</value>
     </data>
-    <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
+  <data name="Error_SpecialTypeCannotBeGenericTypeMarker" xml:space="preserve">
         <value>Der spezielle Typ kann nicht auf einem Generic Type Marker basieren.</value>
     </data>
-    <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
+  <data name="Error_InvalidBindingDueToCompilationError" xml:space="preserve">
         <value>Ungültiges Binding aufgrund eines Kompilierungsfehlers.</value>
     </data>
-    <data name="Error_Template_NotImplement" xml:space="preserve">
+  <data name="Error_Template_NotImplement" xml:space="preserve">
         <value>{0} implementiert nicht {1}.</value>
     </data>
-    <data name="Error_Template_CyclicDependency" xml:space="preserve">
+  <data name="Error_Template_CyclicDependency" xml:space="preserve">
         <value>Zyklische Abhängigkeit gefunden: {0}.</value>
     </data>
-    <data name="Error_Template_UnableToResolve" xml:space="preserve">
+  <data name="Error_Template_UnableToResolve" xml:space="preserve">
         <value>"{0}" in {1} konnte nicht aufgelöst werden.</value>
     </data>
-    <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Error_CannotBuildDependencyGraph" xml:space="preserve">
         <value>Der Dependency Graph kann nicht erstellt werden.</value>
     </data>
-    <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
+  <data name="Error_Template_InvalidRegularExpression" xml:space="preserve">
         <value>Ungültiger regulärer Ausdruck {0}: "{1}".</value>
     </data>
-    <data name="Error_Template_InvalidWildcard" xml:space="preserve">
+  <data name="Error_Template_InvalidWildcard" xml:space="preserve">
         <value>Ungültiges Wildcard {0}: "{1}".</value>
     </data>
-    <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
+  <data name="Error_Template_TypeWithLifetimeRequiresDirectOrTransitiveInjection" xml:space="preserve">
         <value>Der Typ {0} mit dem Lifetime {1} erfordert die direkte oder transitive Injection des Typs {2} mit dem Lifetime {3}, was zu Datenlecks oder unerwartetem Verhalten führen kann.</value>
     </data>
-    <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
+  <data name="Error_Template_MaximumNumberOfIterations" xml:space="preserve">
         <value>Die maximale Anzahl von Iterationen {0} wurde beim Erstellen des optimalen Dependency Graphs überschritten. Verfeinern Sie den Dependency Graph.</value>
     </data>
-    <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
+  <data name="Error_DependencyGraphConstractionFailure" xml:space="preserve">
         <value>Der Dependency Graph kann nicht erstellt werden.</value>
     </data>
-    <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Error_Template_LifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Das Lifetime {0} unterstützt keine zyklischen Abhängigkeiten.</value>
     </data>
-    <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Error_InvalidNumberOfInitializers" xml:space="preserve">
         <value>Ungültige Anzahl von Initialisierern.</value>
     </data>
-    <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
+  <data name="Error_Template_CannotUseContextDirectly" xml:space="preserve">
         <value>"{0}" kann nicht direkt verwendet werden. Nur seine Methoden oder Eigenschaften sind zugänglich.</value>
     </data>
-    <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
+  <data name="Error_SetupContextNameIsRequired" xml:space="preserve">
         <value>Für DependsOn muss ein Setup-Kontextname angegeben werden.</value>
     </data>
-
-    <data name="Error_InvalidRootType" xml:space="preserve">
+  <data name="Error_InvalidRootType" xml:space="preserve">
         <value>Ungültiger Root-Typ.</value>
     </data>
-    <data name="Error_InvalidRootsRype" xml:space="preserve">
+  <data name="Error_InvalidRootsRype" xml:space="preserve">
         <value>Ungültiger Roots-Typ.</value>
     </data>
-    <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
+  <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>Kein von {0} erbender Typ gefunden, dessen Name dem Filter "{1}" entspricht.</value>
     </data>
-    <data name="Error_InvalidBuildersType" xml:space="preserve">
+  <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>Ungültiger Builders-Typ.</value>
     </data>
-    <data name="Error_InvalidBuilderType" xml:space="preserve">
+  <data name="Error_InvalidBuilderType" xml:space="preserve">
         <value>Ungültiger Builder-Typ.</value>
     </data>
-    <data name="Error_TooManyTypeParameters" xml:space="preserve">
+  <data name="Error_TooManyTypeParameters" xml:space="preserve">
         <value>Zu viele Typparameter.</value>
     </data>
-    <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
+  <data name="Error_AsynchronousFactoryWithAsyncNotSupported" xml:space="preserve">
         <value>Asynchrone Factorys mit dem Schlüsselwort async werden nicht unterstützt.</value>
     </data>
-    <data name="Error_Template_NotSupported" xml:space="preserve">
+  <data name="Error_Template_NotSupported" xml:space="preserve">
         <value>{0} wird nicht unterstützt.</value>
     </data>
-    <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
+  <data name="Error_Template_MustBeValueOfType" xml:space="preserve">
         <value>{0} muss ein Wert vom Typ {1} sein, der nicht null ist.</value>
     </data>
-    <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
+  <data name="Error_Template_InvalidIdentifier" xml:space="preserve">
         <value>Ungültiger Bezeichner "{0}".</value>
     </data>
-    <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Error_Template_InvalidAttributeArgumentPosition" xml:space="preserve">
         <value>Die Argumentposition {0} des Attributs {1} liegt außerhalb des Bereichs [0..{2}].</value>
     </data>
-    <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Error_Template_AttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>{0} vom Typ {1} kann nicht verarbeitet werden, da er mit mehreren sich gegenseitig ausschließenden Attributen markiert ist.</value>
     </data>
-    <data name="Error_InvalidBinding" xml:space="preserve">
+  <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Das Binding ist falsch definiert.</value>
     </data>
-    <data name="Error_Template_TooLargeComposition" xml:space="preserve">
+  <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Die Composition ist zu groß. Gestoppt bei Abhängigkeit Nr. {0}.</value>
     </data>
-    <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
+  <data name="Error_Template_CannotConstructAbstractType" xml:space="preserve">
         <value>Instanz von {0} kann nicht erstellt werden, da es ein abstrakter Typ ist.</value>
     </data>
-    <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_CannotBeInstantiatedNoAccessibleConstructor" xml:space="preserve">
         <value>Instanz von {0} kann nicht erstellt werden, da kein zugänglicher Konstruktor verfügbar ist.</value>
     </data>
-    <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
+  <data name="Error_Template_UnsupportLanguage" xml:space="preserve">
         <value>{0} unterstützt C# {1} nicht. Bitte verwenden Sie Sprachversion {2} oder neuer.</value>
     </data>
-    <data name="Error_Template_CannotFindSetup" xml:space="preserve">
+  <data name="Error_Template_CannotFindSetup" xml:space="preserve">
         <value>Setup "{0}" konnte nicht gefunden werden.</value>
     </data>
-    <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleConstructor" xml:space="preserve">
         <value>Kein zugänglicher nicht-statischer Konstruktor des Typs {0} mit einem Argument gefunden, das "{1}" entspricht.</value>
     </data>
-    <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleMethod" xml:space="preserve">
         <value>Keine zugängliche nicht-statische Methode des Typs {0} mit dem Namen "{1}" und einem Argument gefunden, das "{2}" entspricht.</value>
     </data>
-    <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
+  <data name="Error_Template_NoAccessibleFieldOrProperty" xml:space="preserve">
         <value>Kein zugängliches nicht-statisches Feld oder Eigenschaft des Typs {1} gefunden, das "{0}" entspricht.</value>
     </data>
-    <data name="Error_Template_MustBeApiCall" xml:space="preserve">
+  <data name="Error_Template_MustBeApiCall" xml:space="preserve">
         <value>{0} muss ein konstanter Wert des Typs {1} oder ein spezieller API-Aufruf sein.</value>
     </data>
-    <data name="Warning_BindingIsNotUsed" xml:space="preserve">
+  <data name="Warning_BindingIsNotUsed" xml:space="preserve">
         <value>Binding wird nicht verwendet.</value>
     </data>
-    <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
+  <data name="Warning_Template_RootCannotBeResolvedByResolveMethods" xml:space="preserve">
         <value>Root {0} kann aufgrund der Argumente {1} nicht mit Resolve-Methoden aufgelöst werden; beim Versuch wird eine Ausnahme ausgelöst.</value>
     </data>
-    <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
+  <data name="Warning_Template_InjectionSiteIsNotUsed" xml:space="preserve">
         <value>Das Tag "{0}" an der Injection Site wird nicht verwendet.</value>
     </data>
-    <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
+  <data name="Warning_Template_BindingHasBeenOverridden" xml:space="preserve">
         <value>Das Binding für {0} wurde überschrieben.</value>
     </data>
-    <data name="Info_CodeGenerationAborted" xml:space="preserve">
+  <data name="Info_CodeGenerationAborted" xml:space="preserve">
         <value>Codegenerierung wurde abgebrochen.</value>
     </data>
-    <data name="Error_UnhandledError" xml:space="preserve">
+  <data name="Error_UnhandledError" xml:space="preserve">
         <value>Ein unbehandelter Fehler ist aufgetreten.</value>
     </data>
-    <data name="Error_TypeCannotBeInferred" xml:space="preserve">
+  <data name="Error_TypeCannotBeInferred" xml:space="preserve">
         <value>Typ kann nicht ermittelt werden. Versuchen Sie, ihn explizit anzugeben.</value>
     </data>
-    <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
+  <data name="Error_Template_StaticRootCannotUseLifetime" xml:space="preserve">
         <value>Statischer Root {0} vom Typ {1} kann Lifetime {2} nicht direkt oder über eine Abhängigkeit verwenden.</value>
     </data>
-    <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Warning_Template_InstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>Das Binding verwendet ein Instanzmember "{0}" aus dem Setup "{1}", das über DependsOn oder CompositionKind.Internal/Global angewendet wird. Dieses Member wird in der abhängigen Composition nicht existieren. Verwenden Sie Arg/RootArg oder ein separates Kontextobjekt.</value>
     </data>
-    <data name="Description_ErrorUnableToResolve" xml:space="preserve">
+  <data name="Description_ErrorUnableToResolve" xml:space="preserve">
         <value>Eine Abhängigkeit im Objektgraph konnte nicht aufgelöst werden.</value>
     </data>
-    <data name="Description_ErrorInvalidBinding" xml:space="preserve">
+  <data name="Description_ErrorInvalidBinding" xml:space="preserve">
         <value>Binding kann aufgrund fehlender Binding-Metadaten nicht erstellt werden.</value>
     </data>
-    <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
+  <data name="Description_ErrorInvalidBindingDueToCompilation" xml:space="preserve">
         <value>Binding ist ungültig, da der Compiler Fehler gemeldet hat.</value>
     </data>
-    <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
+  <data name="Description_ErrorInvalidCompositionTypeName" xml:space="preserve">
         <value>Name des Composition-Typs ist ungültig.</value>
     </data>
-    <data name="Description_ErrorInvalidRootName" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootName" xml:space="preserve">
         <value>Root-Name ist ungültig.</value>
     </data>
-    <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
+  <data name="Description_ErrorDuplicateRootName" xml:space="preserve">
         <value>Doppelte Root-Namen erkannt.</value>
     </data>
-    <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
+  <data name="Description_ErrorInvalidArgumentName" xml:space="preserve">
         <value>Argumentname ist ungültig.</value>
     </data>
-    <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorCompositionArgGenericMarker" xml:space="preserve">
         <value>Composition-Argumenttyp basiert auf einem Generic-Marker.</value>
     </data>
-    <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorTypeGenericMarker" xml:space="preserve">
         <value>Accumulator-Typ basiert auf einem Generic-Marker.</value>
     </data>
-    <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorAccumulatorCannotAccumulateGenericMarker" xml:space="preserve">
         <value>Accumulator kann keinen Generic-Marker akkumulieren.</value>
     </data>
-    <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
+  <data name="Description_ErrorSpecialTypeGenericMarker" xml:space="preserve">
         <value>Spezieller Typ kann kein Generic-Marker sein.</value>
     </data>
-    <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
+  <data name="Description_ErrorNotImplementedContract" xml:space="preserve">
         <value>Implementierung implementiert den Vertrag nicht.</value>
     </data>
-    <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
+  <data name="Description_ErrorInvalidAttributeArgumentPosition" xml:space="preserve">
         <value>Position des Attributarguments ist ungültig.</value>
     </data>
-    <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
+  <data name="Description_ErrorAttributeMemberCannotBeProcessed" xml:space="preserve">
         <value>Attributmember kann nicht verarbeitet werden.</value>
     </data>
-    <data name="Description_ErrorInvalidRootType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootType" xml:space="preserve">
         <value>Root-Typ ist ungültig.</value>
     </data>
-    <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
+  <data name="Description_ErrorInvalidRootsType" xml:space="preserve">
         <value>Roots-Typ ist ungültig.</value>
     </data>
-    <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
+  <data name="Description_ErrorNoTypeForWildcard" xml:space="preserve">
         <value>Kein Typ hat dem Wildcard-Filter entsprochen.</value>
     </data>
-    <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuildersType" xml:space="preserve">
         <value>Builders-Typ ist ungültig.</value>
     </data>
-    <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
+  <data name="Description_ErrorInvalidBuilderType" xml:space="preserve">
         <value>Builder-Typ ist ungültig.</value>
     </data>
-    <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
+  <data name="Description_ErrorTooManyTypeParameters" xml:space="preserve">
         <value>Zu viele Typparameter angegeben.</value>
     </data>
-    <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
+  <data name="Description_ErrorAsyncFactoryNotSupported" xml:space="preserve">
         <value>Asynchrone Factorys werden nicht unterstützt.</value>
     </data>
-    <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedSyntax" xml:space="preserve">
         <value>Ununterstützte Syntax in DI-API.</value>
     </data>
-    <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
+  <data name="Description_ErrorMustBeValueOfType" xml:space="preserve">
         <value>Wert muss von einem bestimmten Typ sein.</value>
     </data>
-    <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
+  <data name="Description_ErrorInvalidIdentifier" xml:space="preserve">
         <value>Bezeichner ist ungültig.</value>
     </data>
-    <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
+  <data name="Description_ErrorCannotUseContextDirectly" xml:space="preserve">
         <value>Kontext wird direkt verwendet, wo dies nicht zulässig ist.</value>
     </data>
-    <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
+  <data name="Description_ErrorSetupContextNameIsRequired" xml:space="preserve">
         <value>DependsOn erfordert einen Setup-Kontextnamen, wenn ein Setup-Kontexttyp verwendet wird.</value>
     </data>
-    <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
+  <data name="Description_ErrorInvalidNumberOfInitializers" xml:space="preserve">
         <value>Anzahl der Initialisierer stimmt nicht überein.</value>
     </data>
-    <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDoesNotSupportCyclicDependencies" xml:space="preserve">
         <value>Lifetime unterstützt keine zyklischen Abhängigkeiten.</value>
     </data>
-    <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
+  <data name="Description_ErrorTooLargeComposition" xml:space="preserve">
         <value>Composition ist zu groß zum Erstellen.</value>
     </data>
-    <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
+  <data name="Description_ErrorCannotConstructAbstractType" xml:space="preserve">
         <value>Abstrakter Typ kann nicht erstellt werden.</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructor" xml:space="preserve">
         <value>Kein zugänglicher Konstruktor gefunden.</value>
     </data>
-    <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
+  <data name="Description_ErrorCannotBuildDependencyGraph" xml:space="preserve">
         <value>Dependency Graph kann nicht erstellt werden.</value>
     </data>
-    <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
+  <data name="Description_ErrorMaximumNumberOfIterations" xml:space="preserve">
         <value>Maximale Anzahl von Iterationen erreicht.</value>
     </data>
-    <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleConstructorForTagOn" xml:space="preserve">
         <value>Kein zugänglicher Konstruktor für Tag.On gefunden.</value>
     </data>
-    <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleMethodForTagOn" xml:space="preserve">
         <value>Keine zugängliche Methode für Tag.On gefunden.</value>
     </data>
-    <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
+  <data name="Description_ErrorNoAccessibleFieldOrPropertyForTagOn" xml:space="preserve">
         <value>Kein zugängliches Feld oder Eigenschaft für Tag.On gefunden.</value>
     </data>
-    <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
+  <data name="Description_ErrorMustBeApiCall" xml:space="preserve">
         <value>Ausdruck muss ein gültiger API-Aufruf sein.</value>
     </data>
-    <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
+  <data name="Description_ErrorInvalidRegularExpression" xml:space="preserve">
         <value>Regulärer Ausdruck ist ungültig.</value>
     </data>
-    <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
+  <data name="Description_ErrorInvalidWildcard" xml:space="preserve">
         <value>Wildcard ist ungültig.</value>
     </data>
-    <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
+  <data name="Description_ErrorCannotFindSetup" xml:space="preserve">
         <value>DI-Setup konnte nicht gefunden werden.</value>
     </data>
-    <data name="Description_ErrorCyclicDependency" xml:space="preserve">
+  <data name="Description_ErrorCyclicDependency" xml:space="preserve">
         <value>Zyklische Abhängigkeit erkannt.</value>
     </data>
-    <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
+  <data name="Description_ErrorNotSupportedLanguageVersion" xml:space="preserve">
         <value>Sprachversion wird nicht unterstützt.</value>
     </data>
-    <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
+  <data name="Description_ErrorLifetimeDefect" xml:space="preserve">
         <value>Lebensdauer-Validierungsfehler.</value>
     </data>
-    <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
+  <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
         <value>Typ kann nicht abgeleitet werden.</value>
     </data>
-    <data name="Description_WarningOverriddenBinding" xml:space="preserve">
+  <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding wurde überschrieben.</value>
     </data>
-    <data name="Description_WarningNoRoots" xml:space="preserve">
+  <data name="Description_WarningNoRoots" xml:space="preserve">
         <value>Keine Composition Roots definiert.</value>
     </data>
-    <data name="Description_WarningNotImplementedContract" xml:space="preserve">
+  <data name="Description_WarningNotImplementedContract" xml:space="preserve">
         <value>Implementierung implementiert den Vertrag nicht.</value>
     </data>
-    <data name="Description_WarningBindingNotUsed" xml:space="preserve">
+  <data name="Description_WarningBindingNotUsed" xml:space="preserve">
         <value>Binding wird nicht verwendet.</value>
     </data>
-    <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
+  <data name="Description_WarningInjectionSiteNotUsed" xml:space="preserve">
         <value>Tag.On-Injection Site wird nicht verwendet.</value>
     </data>
-    <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningRootArgInResolveMethod" xml:space="preserve">
         <value>Resolve-Methoden sind mit Root-Argumenten inkompatibel.</value>
     </data>
-    <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
+  <data name="Description_WarningTypeArgInResolveMethod" xml:space="preserve">
         <value>Resolve-Methoden sind mit Typ-Argumenten inkompatibel.</value>
     </data>
-    <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
+  <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn verwendet einen Instanzmember.</value>
     </data>
-    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generierung wurde unterbrochen.</value>
     </data>
-    <data name="Description_InfoNotImplementedContract" xml:space="preserve">
+  <data name="Description_InfoNotImplementedContract" xml:space="preserve">
         <value>Implementierung implementiert den Vertrag nicht.</value>
     </data>
-    <data name="Description_ErrorUnhandled" xml:space="preserve">
+  <data name="Description_ErrorUnhandled" xml:space="preserve">
         <value>Unbehandelter Generatorfehler.</value>
     </data>
+  <data name="Warning_Template_GenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>Die selektive Schnittstellengenerierung für "{0}" hat eine leere Schnittstelle erzeugt, da keine geeigneten Elemente übrig geblieben sind.</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceSelectiveEmpty" xml:space="preserve">
+    <value>Die selektive Schnittstellengenerierung hat eine leere Schnittstelle erzeugt.</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>Das Attribut [GenerateInterface] für das Element "{0}" wird für die Schnittstelle "{1}" ignoriert, da das Element nicht public ist.</value>
+  </data>
+  <data name="Warning_Template_GenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>Das Attribut [GenerateInterface] für das Element "{0}" wird für die Schnittstelle "{1}" ignoriert, da das Element static ist.</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnStaticMember" xml:space="preserve">
+    <value>GenerateInterface wird auf ein statisches Element angewendet.</value>
+  </data>
+  <data name="Description_WarningGenerateInterfaceOnNonPublicMember" xml:space="preserve">
+    <value>GenerateInterface wird auf ein nicht-öffentliches Element angewendet.</value>
+  </data>
 </root>

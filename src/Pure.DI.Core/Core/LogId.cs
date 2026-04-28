@@ -111,6 +111,12 @@ static class LogId
     public const string WarningTypeArgInResolveMethod = "DIW006";
     // DependsOn uses an instance member.
     public const string WarningInstanceMemberInDependsOnSetup = "DIW007";
+    // GenerateInterface attribute is used on a non-public element.
+    public const string WarningGenerateInterfaceOnNonPublicMember = "DIW008";
+    // GenerateInterface attribute is used on a static element.
+    public const string WarningGenerateInterfaceOnStaticMember = "DIW009";
+    // Selective interface generation produced an empty interface.
+    public const string WarningGenerateInterfaceSelectiveEmpty = "DIW010";
 
     // Info
     // Generation was interrupted.

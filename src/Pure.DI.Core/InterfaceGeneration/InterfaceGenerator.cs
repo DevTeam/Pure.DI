@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Pure.DI;
 using CoreNames = Pure.DI.Core.Names;
+using static Pure.DI.Core.LogMetadata;
 
 sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterfaceGenerator
 {
@@ -37,7 +38,13 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
                 continue;
             }
 
-            var generatedInterfaces = interfaceBuilder.BuildInterfacesFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
+            var generatedInterfacesResult = interfaceBuilder.BuildInterfacesFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
+            foreach (var warning in generatedInterfacesResult.Warnings)
+            {
+                ReportWarning(context, warning);
+            }
+
+            var generatedInterfaces = generatedInterfacesResult.Sources;
             if (generatedInterfaces.IsDefaultOrEmpty)
             {
                 continue;
@@ -101,4 +108,19 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
             .Replace(',', '_')
             .Replace(' ', '_')
             .Replace(':', '_');
+
+    private static void ReportWarning(SourceProductionContext context, GeneratedInterfaceWarning warning)
+    {
+        var descriptor = new DiagnosticDescriptor(
+            warning.Id,
+            "WRN",
+            warning.Message,
+            GetCategory(warning.Id),
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true,
+            description: GetDescription(warning.Id),
+            helpLinkUri: GetHelpLink(warning.Id));
+        var properties = ImmutableDictionary<string, string?>.Empty.Add("puredi.messageKey", warning.MessageKey);
+        context.ReportDiagnostic(Diagnostic.Create(descriptor, warning.Location, properties));
+    }
 }

@@ -14,6 +14,7 @@ sealed class InterfaceBuilder(
     IRoslynSymbols roslynSymbols,
     ITypes types,
     IArguments arguments,
+    ILocationProvider locationProvider,
     Func<IBuilder<GeneratedInterfaceDetails, Lines>> interfaceCodeBuilderFactory)
     : IInterfaceBuilder
 {
@@ -35,14 +36,16 @@ sealed class InterfaceBuilder(
         globalNamespaceStyle: FullyQualifiedDisplayFormat.GlobalNamespaceStyle,
         miscellaneousOptions: FullyQualifiedDisplayFormat.MiscellaneousOptions);
 
-    public ImmutableArray<GeneratedInterfaceSource> BuildInterfacesFor(
+    public GeneratedInterfacesResult BuildInterfacesFor(
         SemanticModel semanticModel,
         ITypeSymbol typeSymbol,
         ClassDeclarationSyntax classSyntax)
     {
         if (typeSymbol is not INamedTypeSymbol namedTypeSymbol)
         {
-            return ImmutableArray<GeneratedInterfaceSource>.Empty;
+            return new GeneratedInterfacesResult(
+                ImmutableArray<GeneratedInterfaceSource>.Empty,
+                ImmutableArray<GeneratedInterfaceWarning>.Empty);
         }
 
         var generateInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.GenerateInterfaceAttributeFullName}";
@@ -53,6 +56,8 @@ sealed class InterfaceBuilder(
         var settingsByInterface = new Dictionary<InterfaceKey, (bool AsInternal, bool HasClassAttribute)>();
         var selectiveInterfaces = new HashSet<InterfaceKey>();
         var selectedMembersByInterface = new Dictionary<InterfaceKey, HashSet<ISymbol>>();
+        var selectiveInterfaceLocations = new Dictionary<InterfaceKey, Location>();
+        var warnings = new List<GeneratedInterfaceWarning>();
 
         var classGenerateAttributes = typeSymbol.GetAttributes()
             .Where(x => x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == generateInterfaceAttributeFullName)
@@ -76,12 +81,15 @@ sealed class InterfaceBuilder(
             settingsByInterface[key] = (existing.AsInternal, true);
         }
 
-        var members = roslynSymbols.GetAllMembers(typeSymbol)
+        var allMembers = roslynSymbols.GetAllMembers(typeSymbol)
+            .Where(x => x.Kind is SymbolKind.Method or SymbolKind.Property or SymbolKind.Event)
+            .ToList();
+        var eligibleMembers = allMembers
             .Where(x => x.DeclaredAccessibility == Accessibility.Public)
             .Where(x => !x.IsStatic)
             .ToList();
 
-        foreach (var member in members)
+        foreach (var member in allMembers)
         {
             var generationAttributes = member.GetAttributes()
                 .Where(x => x.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == generateInterfaceAttributeFullName)
@@ -101,10 +109,36 @@ sealed class InterfaceBuilder(
                     defaultAsInternal);
                 var key = new InterfaceKey(settings.namespaceName, settings.interfaceName);
                 selectiveInterfaces.Add(key);
+                if (!selectiveInterfaceLocations.ContainsKey(key))
+                {
+                    selectiveInterfaceLocations.Add(key, GetLocation(member, generationAttribute));
+                }
 
                 if (!settingsByInterface.TryGetValue(key, out var existing))
                 {
                     settingsByInterface[key] = (settings.asInternal, false);
+                }
+
+                var memberName = member.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+                var interfaceDisplayName = GetInterfaceDisplayName(key);
+                if (member.IsStatic)
+                {
+                    warnings.Add(new GeneratedInterfaceWarning(
+                        LogId.WarningGenerateInterfaceOnStaticMember,
+                        string.Format(Strings.Warning_Template_GenerateInterfaceOnStaticMember, memberName, interfaceDisplayName),
+                        nameof(Strings.Warning_Template_GenerateInterfaceOnStaticMember),
+                        GetLocation(member, generationAttribute)));
+                    continue;
+                }
+
+                if (member.DeclaredAccessibility != Accessibility.Public)
+                {
+                    warnings.Add(new GeneratedInterfaceWarning(
+                        LogId.WarningGenerateInterfaceOnNonPublicMember,
+                        string.Format(Strings.Warning_Template_GenerateInterfaceOnNonPublicMember, memberName, interfaceDisplayName),
+                        nameof(Strings.Warning_Template_GenerateInterfaceOnNonPublicMember),
+                        GetLocation(member, generationAttribute)));
+                    continue;
                 }
 
                 if (HasIgnoreAttribute(member))
@@ -124,7 +158,9 @@ sealed class InterfaceBuilder(
 
         if (settingsByInterface.Count == 0)
         {
-            return ImmutableArray<GeneratedInterfaceSource>.Empty;
+            return new GeneratedInterfacesResult(
+                ImmutableArray<GeneratedInterfaceSource>.Empty,
+                warnings.ToImmutableArray());
         }
 
         var nullableContextEnabled = semanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
@@ -135,11 +171,21 @@ sealed class InterfaceBuilder(
             var settings = pair.Value;
             var interfaceMembers = selectiveInterfaces.Contains(key)
                 ? selectedMembersByInterface.TryGetValue(key, out var selectedMembers)
-                    ? members.Where(selectedMembers.Contains).ToList()
+                    ? eligibleMembers.Where(selectedMembers.Contains).ToList()
                     : []
                 : settings.HasClassAttribute
-                    ? members.Where(x => !HasIgnoreAttribute(x)).ToList()
+                    ? eligibleMembers.Where(x => !HasIgnoreAttribute(x)).ToList()
                     : [];
+            if (selectiveInterfaces.Contains(key)
+                && interfaceMembers.Count == 0
+                && selectiveInterfaceLocations.TryGetValue(key, out var selectiveLocation))
+            {
+                warnings.Add(new GeneratedInterfaceWarning(
+                    LogId.WarningGenerateInterfaceSelectiveEmpty,
+                    string.Format(Strings.Warning_Template_GenerateInterfaceSelectiveEmpty, GetInterfaceDisplayName(key)),
+                    nameof(Strings.Warning_Template_GenerateInterfaceSelectiveEmpty),
+                    selectiveLocation));
+            }
 
             var symbolDetails = new GeneratedInterfaceDetails(semanticModel, key.NamespaceName, key.InterfaceName, settings.AsInternal)
             {
@@ -156,7 +202,7 @@ sealed class InterfaceBuilder(
                 interfaceCodeBuilderFactory().Build(symbolDetails)));
         }
 
-        return generatedSources.ToImmutable();
+        return new GeneratedInterfacesResult(generatedSources.ToImmutable(), warnings.ToImmutableArray());
     }
 
     private ImmutableArray<MethodInfo> GetMethods(SemanticModel semanticModel, List<ISymbol> members, bool nullableContextEnabled)
@@ -402,5 +448,20 @@ sealed class InterfaceBuilder(
         var value = semanticModel.GetConstantValue(arg.Expression);
         return value is { HasValue: true, Value: T typedValue } ? typedValue : defaultValue;
     }
+
+    private Location GetLocation(ISymbol member, AttributeData attribute)
+    {
+        if (attribute.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax attributeSyntax)
+        {
+            return locationProvider.GetLocation(attributeSyntax);
+        }
+
+        return member.Locations.FirstOrDefault() ?? Location.None;
+    }
+
+    private static string GetInterfaceDisplayName(InterfaceKey key) =>
+        string.IsNullOrWhiteSpace(key.NamespaceName)
+            ? key.InterfaceName
+            : $"{key.NamespaceName}.{key.InterfaceName}";
 
 }

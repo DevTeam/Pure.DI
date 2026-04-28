@@ -61,6 +61,9 @@ static class LogMetadata
             LogId.WarningRootArgInResolveMethod => $"{HelpLinkBaseUrl}#diw005",
             LogId.WarningTypeArgInResolveMethod => $"{HelpLinkBaseUrl}#diw006",
             LogId.WarningInstanceMemberInDependsOnSetup => $"{HelpLinkBaseUrl}#diw007",
+            LogId.WarningGenerateInterfaceOnNonPublicMember => $"{HelpLinkBaseUrl}#diw008",
+            LogId.WarningGenerateInterfaceOnStaticMember => $"{HelpLinkBaseUrl}#diw009",
+            LogId.WarningGenerateInterfaceSelectiveEmpty => $"{HelpLinkBaseUrl}#diw010",
             LogId.InfoGenerationInterrupted => $"{HelpLinkBaseUrl}#dii000",
             LogId.InfoNotImplementedContract => $"{HelpLinkBaseUrl}#dii001",
             _ => null
@@ -125,6 +128,9 @@ static class LogMetadata
             LogId.ErrorInvalidAttributeArgumentPosition => "Validation",
             LogId.ErrorAttributeMemberCannotBeProcessed => "Validation",
             LogId.WarningInjectionSiteNotUsed => "Validation",
+            LogId.WarningGenerateInterfaceOnNonPublicMember => "Validation",
+            LogId.WarningGenerateInterfaceOnStaticMember => "Validation",
+            LogId.WarningGenerateInterfaceSelectiveEmpty => "Validation",
 
             // ReSharper disable once RedundantSwitchExpressionArms
             LogId.InfoGenerationInterrupted => "General",
@@ -188,6 +194,9 @@ static class LogMetadata
             LogId.WarningRootArgInResolveMethod => Strings.Description_WarningRootArgInResolveMethod,
             LogId.WarningTypeArgInResolveMethod => Strings.Description_WarningTypeArgInResolveMethod,
             LogId.WarningInstanceMemberInDependsOnSetup => Strings.Description_WarningInstanceMemberInDependsOnSetup,
+            LogId.WarningGenerateInterfaceOnNonPublicMember => Strings.Description_WarningGenerateInterfaceOnNonPublicMember,
+            LogId.WarningGenerateInterfaceOnStaticMember => Strings.Description_WarningGenerateInterfaceOnStaticMember,
+            LogId.WarningGenerateInterfaceSelectiveEmpty => Strings.Description_WarningGenerateInterfaceSelectiveEmpty,
             LogId.InfoGenerationInterrupted => Strings.Description_InfoGenerationInterrupted,
             LogId.InfoNotImplementedContract => Strings.Description_InfoNotImplementedContract,
             LogId.ErrorUnhandled => Strings.Description_ErrorUnhandled,

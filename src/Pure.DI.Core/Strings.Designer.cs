@@ -517,6 +517,33 @@ namespace Pure.DI {
                 return ResourceManager.GetString("Warning_Template_InstanceMemberInDependsOnSetup", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The [GenerateInterface] attribute on element &quot;{0}&quot; is ignored for interface &quot;{1}&quot; because the element is not public..
+        /// </summary>
+        internal static string Warning_Template_GenerateInterfaceOnNonPublicMember {
+            get {
+                return ResourceManager.GetString("Warning_Template_GenerateInterfaceOnNonPublicMember", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The [GenerateInterface] attribute on element &quot;{0}&quot; is ignored for interface &quot;{1}&quot; because the element is static..
+        /// </summary>
+        internal static string Warning_Template_GenerateInterfaceOnStaticMember {
+            get {
+                return ResourceManager.GetString("Warning_Template_GenerateInterfaceOnStaticMember", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Selective interface generation for &quot;{0}&quot; produced an empty interface because no eligible elements remained..
+        /// </summary>
+        internal static string Warning_Template_GenerateInterfaceSelectiveEmpty {
+            get {
+                return ResourceManager.GetString("Warning_Template_GenerateInterfaceSelectiveEmpty", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to The binding for {0} has been overridden..
@@ -1010,6 +1037,33 @@ namespace Pure.DI {
         internal static string Description_WarningInstanceMemberInDependsOnSetup {
             get {
                 return ResourceManager.GetString("Description_WarningInstanceMemberInDependsOnSetup", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GenerateInterface is applied to a non-public element..
+        /// </summary>
+        internal static string Description_WarningGenerateInterfaceOnNonPublicMember {
+            get {
+                return ResourceManager.GetString("Description_WarningGenerateInterfaceOnNonPublicMember", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to GenerateInterface is applied to a static element..
+        /// </summary>
+        internal static string Description_WarningGenerateInterfaceOnStaticMember {
+            get {
+                return ResourceManager.GetString("Description_WarningGenerateInterfaceOnStaticMember", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Selective interface generation produced an empty interface..
+        /// </summary>
+        internal static string Description_WarningGenerateInterfaceSelectiveEmpty {
+            get {
+                return ResourceManager.GetString("Description_WarningGenerateInterfaceSelectiveEmpty", resourceCulture);
             }
         }
         

@@ -434,4 +434,103 @@ public class InterfaceGenerationTests
         result.GeneratedCode.ShouldContain("int VisibleForBeta { get; }");
         result.GeneratedCode.ShouldNotContain("HiddenForAll");
     }
+
+    [Fact]
+    public async Task ShouldNotGenerateInterfaceFromNonPublicMemberAttributes()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IRestrictedApi
+            {
+            }
+
+            public partial class Service
+            {
+                [GenerateInterface(interfaceName: nameof(IRestrictedApi))]
+                private string PrivateData => "secret";
+
+                [GenerateInterface(interfaceName: nameof(IRestrictedApi))]
+                protected string ProtectedData => "secret";
+
+                [GenerateInterface(interfaceName: nameof(IRestrictedApi))]
+                internal string InternalData => "secret";
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("public partial interface IRestrictedApi");
+        result.GeneratedCode.ShouldNotContain("PrivateData");
+        result.GeneratedCode.ShouldNotContain("ProtectedData");
+        result.GeneratedCode.ShouldNotContain("InternalData");
+    }
+
+    [Fact]
+    public async Task ShouldNotGenerateInterfaceFromStaticMemberAttributes()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IStaticApi
+            {
+            }
+
+            public partial class Service
+            {
+                [GenerateInterface(interfaceName: nameof(IStaticApi))]
+                public static string Name => "static";
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("public partial interface IStaticApi");
+        result.GeneratedCode.ShouldNotContain("string Name { get; }");
+    }
+
+    [Fact]
+    public async Task ShouldIncludeOnlyEligibleMembersWhenIneligibleMembersAreMarked()
+    {
+        var result = await """
+            using Pure.DI;
+
+            namespace Demo;
+
+            public partial interface IMixedApi
+            {
+            }
+
+            public partial class Service
+            {
+                [GenerateInterface(interfaceName: nameof(IMixedApi))]
+                private string Hidden => "x";
+
+                [GenerateInterface(interfaceName: nameof(IMixedApi))]
+                public string Visible => "ok";
+            }
+
+            public class Program
+            {
+                public static void Main() { }
+            }
+            """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("public partial interface IMixedApi");
+        result.GeneratedCode.ShouldContain("string Visible { get; }");
+        result.GeneratedCode.ShouldNotContain("Hidden");
+    }
 }
