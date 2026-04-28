@@ -2,6 +2,7 @@
 
 namespace Pure.DI.Core.Code;
 
+using Microsoft.CodeAnalysis;
 using Parts;
 using static LinesExtensions;
 using static Tag;
@@ -41,7 +42,7 @@ sealed class CompositionClassBuilder(
 
         classCommenter.AddComments(composition, Unit.Shared);
         code.AppendLine(new Line(int.MinValue, "#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1 // Code coverage"));
-        code.AppendLine($"[{Names.SystemNamespace}CodeDom.Compiler.GeneratedCode(\"Pure.DI\", \"\")]");
+        code.AppendLine($"[{Names.SystemNamespace}CodeDom.Compiler.GeneratedCode({SymbolDisplay.FormatLiteral(information.Name, true)}, {SymbolDisplay.FormatLiteral(information.Version, true)})]");
         code.AppendLine($"[{Names.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
         code.AppendLine(new Line(int.MinValue, "#endif // Code coverage"));
         var implementingInterfaces = new List<string>();

@@ -286,6 +286,7 @@ class ReadmeTarget(
                         return !(
                             line.StartsWith("///")
                             || line.StartsWith("[global::System.Diagnostics.")
+                            || line.StartsWith("[global::System.CodeDom.Compiler.")
                             || line.EndsWith(" // Code coverage")
                             || line.EndsWith(" // Pure method")
                             || line.StartsWith("#region")

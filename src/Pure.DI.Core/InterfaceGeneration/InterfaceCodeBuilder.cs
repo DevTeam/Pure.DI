@@ -6,8 +6,11 @@ using System.Linq;
 using System.Text;
 using Core;
 using Core.Code.Parts;
+using Microsoft.CodeAnalysis;
 
-sealed class InterfaceCodeBuilder(IFileHeader fileHeader)
+sealed class InterfaceCodeBuilder(
+    IFileHeader fileHeader,
+    IInformation information)
     : IBuilder<GeneratedInterfaceDetails, Lines>
 {
     public Lines Build(GeneratedInterfaceDetails ctx)
@@ -30,7 +33,7 @@ sealed class InterfaceCodeBuilder(IFileHeader fileHeader)
         var accessLevel = ctx.AccessLevel;
         var interfaceName = ctx.InterfaceName;
         lines.AppendLine("#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1");
-        lines.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCode(\"{Core.Names.GeneratorName}\", \"\")]");
+        lines.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCode({SymbolDisplay.FormatLiteral(information.Name, true)}, {SymbolDisplay.FormatLiteral(information.Version, true)})]");
         lines.AppendLine("#endif");
         lines.AppendLine($"{accessLevel} partial interface {interfaceName}{ctx.GenericType}");
         lines.AppendLine("{");

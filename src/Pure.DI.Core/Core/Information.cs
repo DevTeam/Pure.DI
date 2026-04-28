@@ -4,10 +4,13 @@ using System.Reflection;
 
 sealed class Information(Assembly assembly) : IInformation
 {
-    private readonly Lazy<string> _description = new(() => {
-        var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
-        return !string.IsNullOrWhiteSpace(version) ? $"{Names.GeneratorName} {version}" : Names.GeneratorName;
-    });
+    private readonly Lazy<string> _version = new(() => GetVersion(assembly));
+
+    private readonly Lazy<string> _description = new(() => GetDescription(assembly));
+
+    public string Name => Names.GeneratorName;
+
+    public string Version => _version.Value;
 
     public string ShortDescription
     {
@@ -19,4 +22,13 @@ sealed class Information(Assembly assembly) : IInformation
     }
 
     public string Description => _description.Value;
+
+    private static string GetDescription(Assembly assembly)
+    {
+        var version = GetVersion(assembly);
+        return !string.IsNullOrWhiteSpace(version) ? $"{Names.GeneratorName} {version}" : Names.GeneratorName;
+    }
+
+    private static string GetVersion(Assembly assembly) =>
+        assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "";
 }
