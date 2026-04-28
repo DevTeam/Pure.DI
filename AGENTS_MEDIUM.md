@@ -3301,3 +3301,91 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
+
+## Generate an interface from a class
+
+This example shows how a concrete service can generate a matching interface and be consumed through Pure.DI.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<EmailSender>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.Provider.ShouldBe("smtp");
+app.Result.ShouldBe("sent:ops@contoso.com");
+
+public partial interface IEmailSender;
+
+[GenerateInterface]
+public class EmailSender : IEmailSender
+{
+    public string Provider => "smtp";
+
+    public string Send(string address) => $"sent:{address}";
+}
+
+public class App(IEmailSender sender)
+{
+    public string Provider { get; } = sender.Provider;
+
+    public string Result { get; } = sender.Send("ops@contoso.com");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Generate an interface from a class
+- Bind the generated contract in Pure.DI
+- Resolve a consumer that depends on the interface
+
+## Ignore members in the generated interface
+
+This example shows how to exclude internal-only members from a generated interface.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<ApiClient>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.Endpoint.ShouldBe("https://api.contoso.com");
+
+public partial interface IApiClient;
+
+[GenerateInterface]
+public class ApiClient : IApiClient
+{
+    public string Endpoint => "https://api.contoso.com";
+
+    [IgnoreInterface]
+    public string GetAccessToken() => "internal-token";
+}
+
+public class App(IApiClient client)
+{
+    public string Endpoint { get; } = client.Endpoint;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Mark members with IgnoreInterface
+- Keep only the intended contract surface
+- Use the generated interface in Pure.DI

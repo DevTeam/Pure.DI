@@ -7137,47 +7137,6 @@ To run the above code, the following NuGet packages must be added:
 
 For more hints, see [this](../README.md#setup-hints) page.
 
-## Customize the generated interface
-
-This example shows how to place a generated contract in a dedicated Contracts namespace.
-
-```c#
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind().To<InvoiceGenerator>()
-    .Root<App>(nameof(App));
-
-var composition = new Composition();
-var app = composition.App;
-
-app.InvoiceId.ShouldBe("INV-0042");
-
-public class App(IMyInvoiceGenerator generator)
-{
-    public string InvoiceId { get; } = generator.Format(42);
-}
-
-namespace Contracts
-{
-    public partial interface IMyInvoiceGenerator;
-
-    [GenerateInterface(namespaceName: "Contracts", interfaceName: nameof(IMyInvoiceGenerator))]
-    public class InvoiceGenerator : IMyInvoiceGenerator
-    {
-        public string Format(int number) => $"INV-{number:0000}";
-    }
-}
-```
-
-To run the above code, the following NuGet package must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-
-The example shows how to:
-- Generate an interface into a custom namespace
-- Rename the generated interface
-- Keep the contract separate from implementation details
-
 ## Generate an interface from a class
 
 This example shows how a concrete service can generate a matching interface and be consumed through Pure.DI.
@@ -7222,6 +7181,49 @@ The example shows how to:
 - Generate an interface from a class
 - Bind the generated contract in Pure.DI
 - Resolve a consumer that depends on the interface
+
+## Ignore members in the generated interface
+
+This example shows how to exclude internal-only members from a generated interface.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<ApiClient>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.Endpoint.ShouldBe("https://api.contoso.com");
+
+public partial interface IApiClient;
+
+[GenerateInterface]
+public class ApiClient : IApiClient
+{
+    public string Endpoint => "https://api.contoso.com";
+
+    [IgnoreInterface]
+    public string GetAccessToken() => "internal-token";
+}
+
+public class App(IApiClient client)
+{
+    public string Endpoint { get; } = client.Endpoint;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Mark members with IgnoreInterface
+- Keep only the intended contract surface
+- Use the generated interface in Pure.DI
 
 ## Generate interfaces with generics
 
@@ -7280,48 +7282,150 @@ The example shows how to:
 - Preserve nullable annotations
 - Preserve events and generic constraints
 
-## Ignore members in the generated interface
+## Customize the generated interface
 
-This example shows how to exclude internal-only members from a generated interface.
+This example shows how to place a generated contract in a dedicated Contracts namespace.
 
 ```c#
-using Shouldly;
-using Pure.DI;
-
 DI.Setup(nameof(Composition))
-    .Bind().To<ApiClient>()
+    .Bind().To<InvoiceGenerator>()
     .Root<App>(nameof(App));
 
 var composition = new Composition();
 var app = composition.App;
 
-app.Endpoint.ShouldBe("https://api.contoso.com");
+app.InvoiceId.ShouldBe("INV-0042");
 
-public partial interface IApiClient;
-
-[GenerateInterface]
-public class ApiClient : IApiClient
+public class App(IMyInvoiceGenerator generator)
 {
-    public string Endpoint => "https://api.contoso.com";
-
-    [IgnoreInterface]
-    public string GetAccessToken() => "internal-token";
+    public string InvoiceId { get; } = generator.Format(42);
 }
 
-public class App(IApiClient client)
+namespace Contracts
 {
-    public string Endpoint { get; } = client.Endpoint;
+    public partial interface IMyInvoiceGenerator;
+
+    [GenerateInterface(namespaceName: "Contracts", interfaceName: nameof(IMyInvoiceGenerator))]
+    public class InvoiceGenerator : IMyInvoiceGenerator
+    {
+        public string Format(int number) => $"INV-{number:0000}";
+    }
 }
 ```
 
-To run the above code, the following NuGet packages must be added:
+To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The example shows how to:
-- Mark members with IgnoreInterface
-- Keep only the intended contract surface
-- Use the generated interface in Pure.DI
+- Generate an interface into a custom namespace
+- Rename the generated interface
+- Keep the contract separate from implementation details
+
+## Generate several interfaces from one class
+
+This example shows how one implementation can generate multiple interfaces with shared and selective members.
+
+```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Gateway>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.ReadResult.ShouldBe("GET:/orders");
+app.SharedResult.ShouldBe("ok");
+
+public partial interface IReadGateway;
+
+public partial interface IWriteGateway;
+
+[GenerateInterface(interfaceName: nameof(IReadGateway))]
+[GenerateInterface(interfaceName: nameof(IWriteGateway))]
+public class Gateway : IReadGateway, IWriteGateway
+{
+    [GenerateInterface(interfaceName: nameof(IReadGateway))]
+    public string Get(string path) => $"GET:{path}";
+
+    [GenerateInterface(interfaceName: nameof(IWriteGateway))]
+    public void Post(string path)
+    {
+    }
+
+    [GenerateInterface(interfaceName: nameof(IReadGateway))]
+    [GenerateInterface(interfaceName: nameof(IWriteGateway))]
+    public string Ping() => "ok";
+}
+
+public class App(IReadGateway readGateway, IWriteGateway writeGateway)
+{
+    public string ReadResult { get; } = readGateway.Get("/orders");
+
+    public string SharedResult { get; } = writeGateway.Ping();
+}
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+The example shows how to:
+- Generate multiple interfaces from one class
+- Select members per interface using member attributes
+- Reuse one member in several generated interfaces
+
+## Control generated interfaces by members
+
+This example shows selective member inclusion and IgnoreInterface priority when generating interfaces.
+
+```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<ProfileService>()
+    .Root<App>(nameof(App));
+
+var composition = new Composition();
+var app = composition.App;
+
+app.Summary.ShouldBe("42:Ada");
+
+public partial interface IProfileReader;
+
+public partial interface IProfileWriter;
+
+public class ProfileService : IProfileReader, IProfileWriter
+{
+    [GenerateInterface(interfaceName: nameof(IProfileReader))]
+    public int GetId() => 42;
+
+    [GenerateInterface(interfaceName: nameof(IProfileWriter))]
+    public void Rename(string name)
+    {
+    }
+
+    [GenerateInterface(interfaceName: nameof(IProfileWriter))]
+    [IgnoreInterface]
+    public string Secret() => "hidden";
+
+    [GenerateInterface(interfaceName: nameof(IProfileReader))]
+    public string GetName() => "Ada";
+}
+
+public class App(IProfileReader reader)
+{
+    public string Summary { get; } = $"{reader.GetId()}:{reader.GetName()}";
+}
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+The example shows how to:
+- Generate interface members selectively
+- Keep class-level generation settings
+- Exclude explicitly ignored members from all generated interfaces
 
 ## Composition root kinds
 

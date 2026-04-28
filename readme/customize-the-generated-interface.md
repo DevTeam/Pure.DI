@@ -4,8 +4,6 @@ This example shows how to place a generated contract in a dedicated Contracts na
 
 
 ```c#
-using Pure.DI;
-
 DI.Setup(nameof(Composition))
     .Bind().To<InvoiceGenerator>()
     .Root<App>(nameof(App));
@@ -63,42 +61,4 @@ The example shows how to:
 - Keep the contract separate from implementation details
 
 
-Class diagram:
-
-```mermaid
----
- config:
-  maxTextSize: 2147483647
-  maxEdges: 2147483647
-  class:
-   hideEmptyMembersBox: true
----
-classDiagram
-	InvoiceGenerator --|> IInvoiceGenerator
-	Composition ..> App : App App
-	App *--  InvoiceGenerator : IInvoiceGenerator
-	namespace Contracts {
-		class IInvoiceGenerator {
-			<<interface>>
-		}
-		class InvoiceGenerator {
-				<<class>>
-			+InvoiceGenerator()
-		}
-	}
-	namespace Pure.DI.UsageTests.Interfaces.GenerateInterfaceCustomizationScenario {
-		class App {
-				<<class>>
-			+App(IInvoiceGenerator generator)
-		}
-		class Composition {
-		<<partial>>
-		+App App
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-		}
-	}
-```
 

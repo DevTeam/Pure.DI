@@ -396,10 +396,12 @@ dotnet run
 - [ToString hint](readme/tostring-hint.md)
 - [Check for a root](readme/check-for-a-root.md)
 ### Interfaces
-- [Customize the generated interface](readme/customize-the-generated-interface.md)
 - [Generate an interface from a class](readme/generate-an-interface-from-a-class.md)
-- [Generate interfaces with generics](readme/generate-interfaces-with-generics.md)
 - [Ignore members in the generated interface](readme/ignore-members-in-the-generated-interface.md)
+- [Generate interfaces with generics](readme/generate-interfaces-with-generics.md)
+- [Customize the generated interface](readme/customize-the-generated-interface.md)
+- [Generate several interfaces from one class](readme/generate-several-interfaces-from-one-class.md)
+- [Control generated interfaces by members](readme/control-generated-interfaces-by-members.md)
 ### Advanced
 - [Composition root kinds](readme/composition-root-kinds.md)
 - [Factory with thread synchronization](readme/factory-with-thread-synchronization.md)
@@ -2042,8 +2044,8 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 62KB | 16K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 106KB | 27K |
-| [AGENTS.md](AGENTS.md) | 391KB | 100K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 108KB | 27K |
+| [AGENTS.md](AGENTS.md) | 394KB | 101K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

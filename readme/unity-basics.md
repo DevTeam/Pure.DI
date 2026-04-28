@@ -135,20 +135,20 @@ partial class Scope: IDisposable
   public Clock BuildUp(Clock buildingInstance)
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
-    Clock transientClock636;
+    Clock transientClock641;
     Clock localBuildingInstance13 = buildingInstance;
     if (_singletonClockService63 is null)
       lock (_lock)
         if (_singletonClockService63 is null)
         {
-          ClockConfig transientClockConfig639 = clockConfig;
-          _singletonClockService63 = new ClockService(transientClockConfig639);
+          ClockConfig transientClockConfig644 = clockConfig;
+          _singletonClockService63 = new ClockService(transientClockConfig644);
           _disposables[_disposeIndex++] = _singletonClockService63;
         }
 
     localBuildingInstance13.ClockService = _singletonClockService63;
-    transientClock636 = localBuildingInstance13;
-    return transientClock636;
+    transientClock641 = localBuildingInstance13;
+    return transientClock641;
   }
 
   #pragma warning disable CS0162
@@ -244,36 +244,4 @@ partial class Scope: IDisposable
 }
 ```
 
-Class diagram:
-
-```mermaid
----
- config:
-  maxTextSize: 2147483647
-  maxEdges: 2147483647
-  class:
-   hideEmptyMembersBox: true
----
-classDiagram
-	ClockService --|> IClockService
-	Composition ..> Clock : Clock BuildUp(Pure.DI.UsageTests.Unity.UnityBasicScenario.Clock buildingInstance)
-	Clock o-- "Singleton" ClockService : IClockService
-	namespace Pure.DI.UsageTests.Unity.UnityBasicScenario {
-		class Clock {
-				<<class>>
-			-IClockService ClockService
-		}
-		class ClockService {
-				<<class>>
-			+ClockService()
-		}
-		class Composition {
-		<<partial>>
-		+Clock BuildUp(Pure.DI.UsageTests.Unity.UnityBasicScenario.Clock buildingInstance)
-		}
-		class IClockService {
-			<<interface>>
-		}
-	}
-```
 
