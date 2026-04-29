@@ -2119,6 +2119,89 @@ public class SetupContextTests
     }
 
     [Fact]
+    public async Task ShouldThrowWhenScopeMethodReceivesSameParentAndChild()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface ISingleton : IDisposable
+                               {
+                               }
+
+                               sealed class Singleton : ISingleton
+                               {
+                                   public void Dispose()
+                                   {
+                                   }
+                               }
+
+                               interface IScoped : IDisposable
+                               {
+                               }
+
+                               sealed class Scoped : IScoped
+                               {
+                                   public void Dispose()
+                                   {
+                                   }
+                               }
+
+                               sealed class Service
+                               {
+                                   public Service(ISingleton singleton, IScoped scoped)
+                                   {
+                                   }
+                               }
+
+                               internal partial class Composition
+                               {
+                                   private void Setup()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ScopeMethodName, "SetupScope")
+                                           .Bind<ISingleton>().As(Lifetime.Singleton).To<Singleton>()
+                                           .Bind<IScoped>().As(Lifetime.Scoped).To<Scoped>()
+                                           .Bind().To<Service>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       try
+                                       {
+                                           Composition.SetupScope(composition, composition);
+                                       }
+                                       catch (ArgumentException exception)
+                                       {
+                                           Console.WriteLine(exception.ParamName);
+                                       }
+
+                                       using var scope = Composition.SetupScope(composition, new Composition());
+                                       _ = scope.Service;
+                                       Console.WriteLine("OK");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["childScope", "OK"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportSingletonInRootScopeWhenScopeFactory()
     {
         // Given

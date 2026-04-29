@@ -57,6 +57,7 @@ sealed class ScopeConstructorBuilder(
             if (composition.IsScopeMethod)
             {
                 code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ChildScopeArgName}, null)) throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ChildScopeArgName}));");
+                code.AppendLine($"if ({Names.ObjectTypeName}.ReferenceEquals({Names.ParentScopeArgName}, {Names.ChildScopeArgName})) throw new {Names.SystemNamespace}ArgumentException(\"The parent and child scopes must be different instances.\", nameof({Names.ChildScopeArgName}));");
                 if (composition.Singletons.Length > 0)
                 {
                     code.AppendLine($"{destination}{Names.RootFieldName} = {Names.ParentScopeArgName}.{Names.RootFieldName} ?? {Names.ParentScopeArgName};");
