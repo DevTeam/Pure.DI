@@ -14,6 +14,16 @@ sealed class RootMethodsCommenter(
 
         var rootComments = root.Source.Comments;
         var code = composition.Code;
+        if (rootComments.Count > 0 && comments.IsXml(rootComments))
+        {
+            foreach (var comment in comments.FormatXml(rootComments))
+            {
+                code.AppendLine(comment);
+            }
+
+            return;
+        }
+
         code.AppendLine("/// <summary>");
         try
         {

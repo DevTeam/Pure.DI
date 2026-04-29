@@ -40,14 +40,12 @@ sealed class ApiInvocationProcessor(
         if (prevInvocation is null)
         {
             invocationComments = comments.GetComments(
-                invocation.GetLeadingTrivia()
-                    .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))).ToList();
+                invocation.GetLeadingTrivia()).ToList();
         }
         else
         {
             invocationComments = comments.GetComments(
-                invocation.DescendantTrivia(node => node != prevInvocation, true)
-                    .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))).ToList();
+                invocation.DescendantTrivia(node => node != prevInvocation, true)).ToList();
         }
 
         switch (name)

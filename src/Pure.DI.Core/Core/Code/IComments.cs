@@ -10,7 +10,13 @@ interface IComments
 
     string Escape(string text);
 
+    string GetText(string comment);
+
+    bool IsXml(IEnumerable<string> comments);
+
     IEnumerable<string> Format(IEnumerable<string> comments, bool escape);
+
+    IEnumerable<string> FormatXml(IEnumerable<string> comments);
 
     IEnumerable<string> FormatList(
         string title,

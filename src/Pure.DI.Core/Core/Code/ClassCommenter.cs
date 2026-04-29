@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 
+// ReSharper disable ConvertIfStatementToSwitchStatement
 namespace Pure.DI.Core.Code;
 
 sealed class ClassCommenter(
@@ -20,6 +21,16 @@ sealed class ClassCommenter(
 
         var classComments = composition.Setup.Comments;
         var code = composition.Code;
+        if (classComments.Count > 0 && comments.IsXml(classComments))
+        {
+            foreach (var comment in comments.FormatXml(classComments))
+            {
+                code.AppendLine(comment);
+            }
+
+            return;
+        }
+
         if (classComments.Count <= 0 && composition.PublicRoots.Length <= 0)
         {
             return;
@@ -124,7 +135,7 @@ sealed class ClassCommenter(
 
                 IReadOnlyCollection<string> CreateRootDescriptions(Root root) =>
                     root.Source.Comments.Count > 0
-                        ? root.Source.Comments.Select(comments.Escape).ToList()
+                        ? root.Source.Comments.Select(comment => comments.Escape(comments.GetText(comment))).ToList()
                         : [$"Provides a composition root of type {formatter.FormatRef(root.Node.Type)}."];
             }
 

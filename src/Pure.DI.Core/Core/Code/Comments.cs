@@ -7,28 +7,30 @@ using System.Xml.Linq;
 
 sealed class Comments : IComments
 {
-    private static readonly Regex CommentRegex = new(@"//\s*(.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+    private const string XmlCommentPrefix = "\u001Fxml:";
+    private static readonly Regex CommentRegex = new(@"^\s*(///?)\s*(.+)", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
     private static readonly Regex HintCommentRegex = new($@"\s*({string.Join("|", Enum.GetNames(typeof(Hint)))})\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
     public IEnumerable<string> GetComments(IEnumerable<SyntaxTrivia> comments) =>
         from trivia in comments
-        select trivia.ToFullString().Trim()
+        from comment in trivia.ToFullString().Split(["\r\n", "\r", "\n"], StringSplitOptions.None)
+        select comment.Trim()
         into comment
         select CommentRegex.Match(comment)
         into match
         where match.Success
-        let commentValue = match.Groups[1].Value
+        let commentValue = match.Groups[2].Value
         where commentValue.Any(char.IsLetterOrDigit)
-        select commentValue;
+        select match.Groups[1].Value.Length == 3 ? $"{XmlCommentPrefix}{commentValue}" : commentValue;
 
     public IEnumerable<string> FilterHints(IEnumerable<string> comments) =>
-        comments.Where(i => !HintCommentRegex.IsMatch(i));
+        comments.Where(i => !HintCommentRegex.IsMatch(GetText(i)));
 
     public IHints GetHints(IEnumerable<string> comments)
     {
         var hints =
             from comment in comments
-            select HintCommentRegex.Match(comment)
+            select HintCommentRegex.Match(GetText(comment))
             into match
             where match.Success
             select match;
@@ -53,7 +55,7 @@ sealed class Comments : IComments
         var count = allComments.Count;
         for (var i = 0; i < count; i++)
         {
-            var comment = allComments[i];
+            var comment = GetText(allComments[i]);
             if (escape)
             {
                 comment = Escape(comment);
@@ -69,6 +71,15 @@ sealed class Comments : IComments
             }
         }
     }
+
+    public bool IsXml(IEnumerable<string> comments) =>
+        comments.Any(IsXml);
+
+    public IEnumerable<string> FormatXml(IEnumerable<string> comments) =>
+        comments.Select(comment => $"/// {UnmarkXml(comment)}");
+
+    public string GetText(string comment) =>
+        UnmarkXml(comment);
 
     public string Escape(string text) => new XText(text).ToString();
 
@@ -105,4 +116,10 @@ sealed class Comments : IComments
         yield return "/// </list>";
         yield return "/// </para>";
     }
+
+    private static bool IsXml(string comment) =>
+        comment.StartsWith(XmlCommentPrefix, StringComparison.Ordinal);
+
+    private static string UnmarkXml(string comment) =>
+        IsXml(comment) ? comment[XmlCommentPrefix.Length..] : comment;
 }
