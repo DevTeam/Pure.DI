@@ -2193,7 +2193,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: Clock Scene Additive
   loadOnStart: 1
-  loadedSceneOffset: {x: 10, y: 0, z: 0}
 --- !u!4 &1653097959
 Transform:
   m_ObjectHideFlags: 0

@@ -12,9 +12,15 @@ public class Clock : MonoBehaviour
     [Dependency]
     public IClockService ClockService { private get; set; }
 
+    [Dependency]
+    public IClockSession ClockSession { private get; set; }
+
     void Awake()
     {
+        scope.EnsureReady();
         scope.BuildUp(this);
+        Debug.Log(
+            $"Clock '{name}' in scene '{gameObject.scene.name}' uses Pure.DI scope {ClockSession.Id}.");
     }
 
     void Update()

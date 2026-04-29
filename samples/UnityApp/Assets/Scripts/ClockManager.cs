@@ -6,15 +6,20 @@ public class ClockManager : IDisposable
 {
     private readonly Scope _scope;
     private readonly IClockConfig _config;
+    private readonly IClockSession _session;
 
-    public ClockManager(Scope scope, IClockConfig config)
+    public ClockManager(Scope scope, IClockConfig config, IClockSession session)
     {
         _scope = scope;
         _config = config;
+        _session = session;
     }
 
     public void Start()
     {
+        Debug.Log(
+            $"Scene '{_scope.gameObject.scene.name}' starts with Pure.DI scope {_session.Id}.");
+
         if (_config.ShowDigital)
         {
             _scope.BuildUp(Object.Instantiate(_config.ClockDigitalPrefab));
