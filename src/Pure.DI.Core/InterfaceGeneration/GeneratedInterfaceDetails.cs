@@ -19,13 +19,13 @@ sealed class GeneratedInterfaceDetails(
         ? "internal"
         : "public";
 
-    public string ClassDocumentation { get; set; } = string.Empty;
+    public string ClassDocumentation { get; init; } = string.Empty;
 
-    public string GenericType { get; set; } = string.Empty;
+    public string GenericType { get; init; } = string.Empty;
 
-    public ImmutableArray<PropertyInfo> PropertyInfos { get; set; } = ImmutableArray<PropertyInfo>.Empty;
+    public ImmutableArray<PropertyInfo> PropertyInfos { get; init; }
 
-    public ImmutableArray<MethodInfo> MethodInfos { get; set; } = ImmutableArray<MethodInfo>.Empty;
+    public ImmutableArray<MethodInfo> MethodInfos { get; init; }
 
-    public ImmutableArray<EventInfo> Events { get; set; } = ImmutableArray<EventInfo>.Empty;
+    public ImmutableArray<EventInfo> Events { get; init; }
 }

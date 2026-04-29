@@ -88,51 +88,49 @@ public class InterfaceGenerationTests
     [Fact]
     public async Task ShouldUseGeneratedInterfaceWithPureDi()
     {
-        var code = """
-            using Pure.DI;
+        var result = await """
+                           using Pure.DI;
 
-            namespace Demo;
+                           namespace Demo;
 
-            public partial interface IService
-            {
-            }
+                           public partial interface IService
+                           {
+                           }
 
-            [GenerateInterface]
-            public partial class Service : IService
-            {
-                public string Message => "ok";
-            }
+                           [GenerateInterface]
+                           public partial class Service : IService
+                           {
+                               public string Message => "ok";
+                           }
 
-            public partial class Consumer
-            {
-                public Consumer(IService service)
-                {
-                    Message = service.Message;
-                }
+                           public partial class Consumer
+                           {
+                               public Consumer(IService service)
+                               {
+                                   Message = service.Message;
+                               }
 
-                public string Message { get; }
-            }
+                               public string Message { get; }
+                           }
 
-            partial class Setup
-            {
-                private static void Configure() =>
-                    DI.Setup(nameof(Composition))
-                        .Bind<IService>().To<Service>()
-                        .Root<Consumer>(nameof(Consumer));
-            }
+                           partial class Setup
+                           {
+                               private static void Configure() =>
+                                   DI.Setup(nameof(Composition))
+                                       .Bind<IService>().To<Service>()
+                                       .Root<Consumer>(nameof(Consumer));
+                           }
 
-            public class Program
-            {
-                public static void Main()
-                {
-                    var composition = new Composition();
-                    var consumer = composition.Consumer;
-                    System.Console.WriteLine(consumer.Message);
-                }
-            }
-            """;
-
-        var result = await code.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+                           public class Program
+                           {
+                               public static void Main()
+                               {
+                                   var composition = new Composition();
+                                   var consumer = composition.Consumer;
+                                   System.Console.WriteLine(consumer.Message);
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
 
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Count.ShouldBe(0, result);

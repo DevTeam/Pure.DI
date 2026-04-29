@@ -48,10 +48,9 @@ sealed class InterfaceBuilder(
                 ImmutableArray<GeneratedInterfaceWarning>.Empty);
         }
 
-        var generateInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.GenerateInterfaceAttributeFullName}";
+        const string generateInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.GenerateInterfaceAttributeFullName}";
         var defaultNamespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
         var defaultInterfaceName = $"I{classSyntax.Identifier.Text}";
-        var defaultAsInternal = false;
 
         var settingsByInterface = new Dictionary<InterfaceKey, (bool AsInternal, bool HasClassAttribute)>();
         var selectiveInterfaces = new HashSet<InterfaceKey>();
@@ -70,7 +69,7 @@ sealed class InterfaceBuilder(
                 classGenerateAttribute,
                 defaultNamespaceName,
                 defaultInterfaceName,
-                defaultAsInternal);
+                false);
             var key = new InterfaceKey(settings.namespaceName, settings.interfaceName);
             if (!settingsByInterface.TryGetValue(key, out var existing))
             {
@@ -106,7 +105,7 @@ sealed class InterfaceBuilder(
                     generationAttribute,
                     defaultNamespaceName,
                     defaultInterfaceName,
-                    defaultAsInternal);
+                    false);
                 var key = new InterfaceKey(settings.namespaceName, settings.interfaceName);
                 selectiveInterfaces.Add(key);
                 if (!selectiveInterfaceLocations.ContainsKey(key))
@@ -114,7 +113,7 @@ sealed class InterfaceBuilder(
                     selectiveInterfaceLocations.Add(key, GetLocation(member, generationAttribute));
                 }
 
-                if (!settingsByInterface.TryGetValue(key, out var existing))
+                if (!settingsByInterface.TryGetValue(key, out _))
                 {
                     settingsByInterface[key] = (settings.asInternal, false);
                 }
@@ -224,12 +223,7 @@ sealed class InterfaceBuilder(
 
     private MethodInfo GetMethodInfo(IMethodSymbol method, bool nullableContextEnabled)
     {
-        var paramResult = new List<string>();
-        foreach (var methodParameter in method.Parameters)
-        {
-            var parameter = GetParameterDisplayString(methodParameter, nullableContextEnabled);
-            paramResult.Add(parameter);
-        }
+        var parameters = method.Parameters.Select(methodParameter => GetParameterDisplayString(methodParameter, nullableContextEnabled)).ToList();
 
         var typedArgs = method.TypeParameters
             .Select(arg => (arg.ToDisplayString(FullyQualifiedDisplayFormat), roslynSymbols.GetWhereStatement(arg, FullyQualifiedDisplayFormat)))
@@ -239,7 +233,7 @@ sealed class InterfaceBuilder(
             method.Name,
             GetMethodReturnType(method),
             InheritDoc(method),
-            paramResult.ToImmutableArray(),
+            parameters.ToImmutableArray(),
             typedArgs.ToImmutableArray());
     }
 
@@ -328,7 +322,7 @@ sealed class InterfaceBuilder(
 
     private static bool HasIgnoreAttribute(ISymbol x)
     {
-        var ignoreInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.IgnoreInterfaceAttributeFullName}";
+        const string ignoreInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.IgnoreInterfaceAttributeFullName}";
         return x.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) == ignoreInterfaceAttributeFullName);
     }
 

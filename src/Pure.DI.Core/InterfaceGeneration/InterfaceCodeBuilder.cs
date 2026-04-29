@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using Core;
 using Core.Code.Parts;
-using Microsoft.CodeAnalysis;
 
 sealed class InterfaceCodeBuilder(
     IFileHeader fileHeader,

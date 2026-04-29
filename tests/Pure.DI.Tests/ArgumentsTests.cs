@@ -100,7 +100,7 @@ public class ArgumentsTests
         args[2].Value.ShouldBe(true);
     }
 
-    private static BaseArgumentListSyntax ParseInvocationArgumentList(string invocationStatement)
+    private static ArgumentListSyntax ParseInvocationArgumentList(string invocationStatement)
     {
         var tree = CSharpSyntaxTree.ParseText($$"""
             class C
@@ -138,7 +138,7 @@ public class ArgumentsTests
             .DescendantNodes()
             .OfType<ClassDeclarationSyntax>()
             .Single(x => x.Identifier.Text == "C");
-        return ((INamedTypeSymbol)semanticModel.GetDeclaredSymbol(classSymbol)!)
+        return semanticModel.GetDeclaredSymbol(classSymbol)!
             .GetAttributes()
             .Single();
     }

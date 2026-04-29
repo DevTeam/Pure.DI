@@ -193,8 +193,8 @@ class CompositionBuilder(
                                   || setupContextMembersToCopy.Length > 0
                                   || isLockRequired
                                   || totalDisposablesCount > 0;
-        var ScopeMethodName = graph.Source.Hints.ScopeMethodName;
-        var isScopeMethod = requiresParentScope && !string.IsNullOrWhiteSpace(ScopeMethodName);
+        var scopeMethodName = graph.Source.Hints.ScopeMethodName;
+        var isScopeMethod = requiresParentScope && !string.IsNullOrWhiteSpace(scopeMethodName);
         var composition = new CompositionCode(
             graph,
             new Lines(),
@@ -211,7 +211,7 @@ class CompositionBuilder(
             setupContextMembers,
             setupContextArgsToCopy,
             setupContextMembersToCopy,
-            ScopeMethodName,
+            scopeMethodName,
             isScopeMethod,
             isLockRequired);
 
@@ -225,6 +225,7 @@ class CompositionBuilder(
     private static ImmutableArray<string> GetSetupContextMembersToCopy(ImmutableArray<SetupContextMembers> setupContextMembers)
     {
         var memberNames = new HashSet<string>(StringComparer.Ordinal);
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var setupContext in setupContextMembers)
         {
             foreach (var member in setupContext.Members)
@@ -232,6 +233,7 @@ class CompositionBuilder(
                 switch (member)
                 {
                     case FieldDeclarationSyntax { Declaration: { } declaration }:
+                        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
                         foreach (var variable in declaration.Variables)
                         {
                             if (!variable.Identifier.IsKind(SyntaxKind.None))

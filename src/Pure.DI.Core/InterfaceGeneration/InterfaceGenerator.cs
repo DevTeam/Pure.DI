@@ -6,8 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Pure.DI;
-using CoreNames = Pure.DI.Core.Names;
-using static Pure.DI.Core.LogMetadata;
+using static LogMetadata;
 
 sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterfaceGenerator
 {
@@ -50,6 +49,7 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
                 continue;
             }
 
+            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (var generatedInterface in generatedInterfaces)
             {
                 if (generatedInterface.Code.Count == 0)
@@ -80,8 +80,8 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
             shortName = shortName[(globalNamespaceSeparator + 2)..];
         }
 
-        return string.Equals(shortName, CoreNames.GenerateInterfaceAttributeName, StringComparison.Ordinal)
-               || string.Equals(shortName, $"{CoreNames.GenerateInterfaceAttributeName}Attribute", StringComparison.Ordinal);
+        return string.Equals(shortName, Names.GenerateInterfaceAttributeName, StringComparison.Ordinal)
+               || string.Equals(shortName, $"{Names.GenerateInterfaceAttributeName}Attribute", StringComparison.Ordinal);
     }
 
     private static string GetHintName(INamedTypeSymbol typeSymbol, string namespaceName, string interfaceName)

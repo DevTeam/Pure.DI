@@ -268,17 +268,14 @@ public static class TestExtensions
     private static IEnumerable<Source> GenerateInterfaceSources(CSharpCompilation compilation)
     {
         var parseOptions = compilation.SyntaxTrees.FirstOrDefault()?.Options as CSharpParseOptions;
-        var driver = CSharpGeneratorDriver.Create([new Pure.DI.SourceGenerator().AsSourceGenerator()], parseOptions: parseOptions);
+        var driver = CSharpGeneratorDriver.Create([new SourceGenerator().AsSourceGenerator()], parseOptions: parseOptions);
         var runResult = driver.RunGenerators(compilation).GetRunResult();
-        foreach (var result in runResult.Results)
+        foreach (var generated in from result in runResult.Results
+                 from generated in result.GeneratedSources
+                 where generated.HintName.EndsWith(".Interface.g.cs", StringComparison.Ordinal)
+                 select generated)
         {
-            foreach (var generated in result.GeneratedSources)
-            {
-                if (generated.HintName.EndsWith(".Interface.g.cs", StringComparison.Ordinal))
-                {
-                    yield return new Source(generated.HintName, generated.SourceText);
-                }
-            }
+            yield return new Source(generated.HintName, generated.SourceText);
         }
     }
 
