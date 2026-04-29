@@ -7,6 +7,7 @@ $f=The example shows how to:
 $f=- Generate interface members selectively
 $f=- Keep class-level generation settings
 $f=- Exclude explicitly ignored members from all generated interfaces
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Global

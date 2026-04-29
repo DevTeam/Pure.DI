@@ -7,6 +7,7 @@ $f=The example shows how to:
 $f=- Generate multiple interfaces from one class
 $f=- Select members per interface using member attributes
 $f=- Reuse one member in several generated interfaces
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Global

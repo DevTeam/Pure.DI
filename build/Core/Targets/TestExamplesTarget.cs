@@ -33,6 +33,7 @@ class TestExamplesTarget(
             File.Copy(Path.Combine(solutionDir, "tests", "Pure.DI.UsageTests", "Test.props"), Path.Combine(appDir, "Directory.Build.props"));
             var programFile = Path.Combine(appDir, "Program.cs");
             var example = properties["example"];
+            var failures = 0;
             foreach (var (_, groupExamples) in examples)
             {
                 foreach (var vars in groupExamples)
@@ -60,6 +61,7 @@ class TestExamplesTarget(
 
                     if (result.ExitCode != 0)
                     {
+                        failures++;
                         WriteLine($"Test \"{description}\"", Color.Header);
                         foreach (var line in code.Split([Environment.NewLine], StringSplitOptions.None))
                         {
@@ -67,6 +69,11 @@ class TestExamplesTarget(
                         }
                     }
                 }
+            }
+
+            if (failures > 0)
+            {
+                return 1;
             }
         }
         finally

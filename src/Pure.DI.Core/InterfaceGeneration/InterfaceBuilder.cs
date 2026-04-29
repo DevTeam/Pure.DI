@@ -49,7 +49,7 @@ sealed class InterfaceBuilder(
         }
 
         const string generateInterfaceAttributeFullName = $"{Names.GlobalNamespacePrefix}{Names.GenerateInterfaceAttributeFullName}";
-        var defaultNamespaceName = typeSymbol.ContainingNamespace.ToDisplayString();
+        var defaultNamespaceName = GetNamespaceName(typeSymbol.ContainingNamespace);
         var defaultInterfaceName = $"I{classSyntax.Identifier.Text}";
 
         var settingsByInterface = new Dictionary<InterfaceKey, (bool AsInternal, bool HasClassAttribute)>();
@@ -457,5 +457,8 @@ sealed class InterfaceBuilder(
         string.IsNullOrWhiteSpace(key.NamespaceName)
             ? key.InterfaceName
             : $"{key.NamespaceName}.{key.InterfaceName}";
+
+    private static string GetNamespaceName(INamespaceSymbol namespaceSymbol) =>
+        namespaceSymbol.IsGlobalNamespace ? string.Empty : namespaceSymbol.ToDisplayString();
 
 }

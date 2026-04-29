@@ -139,6 +139,39 @@ public class InterfaceGenerationTests
     }
 
     [Fact]
+    public async Task ShouldGenerateInterfaceInGlobalNamespace()
+    {
+        var result = await """
+                           using Pure.DI;
+
+                           public partial interface IService
+                           {
+                           }
+
+                           [GenerateInterface]
+                           public partial class Service : IService
+                           {
+                               public string Message => "ok";
+                           }
+
+                           public class Program
+                           {
+                               public static void Main()
+                               {
+                                   IService service = new Service();
+                                   System.Console.WriteLine(service.Message);
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10, CheckCompilationErrors: false));
+
+        result.Errors.Count.ShouldBe(0, result);
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.ShouldNotContain("namespace {global_namespace}");
+        result.GeneratedCode.ShouldContain("public partial interface IService");
+        result.StdOut.ShouldContain("ok");
+    }
+
+    [Fact]
     public async Task ShouldPreserveMethodParameterOrder()
     {
         var result = await """
