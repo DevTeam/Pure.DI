@@ -48,6 +48,8 @@ class TemplateTarget(
                 .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
             var targetPackage = Path.Combine(packagesDirectory, $"{ProjectName}.{packageVersion}.nupkg");
+            await SmokeTestTemplatePackageAsync(targetPackage, cancellationToken);
+
             artifactsWriter.PublishArtifact($"{targetPackage} => .");
 
             if (string.IsNullOrWhiteSpace(settings.NuGetKey))
@@ -68,6 +70,68 @@ class TemplateTarget(
         {
             await UpdateJsonFileWithVersion(jsonConfigs, packageVersionStr, "$(version)", cancellationToken);
         }
+    }
+
+    private async Task SmokeTestTemplatePackageAsync(string packagePath, CancellationToken cancellationToken)
+    {
+        Summary("Smoke testing template package ", packagePath.WithColor(Color.Details));
+
+        var tempDirectory = env.GetPath(PathType.TempDirectory);
+        var hiveDirectory = Path.Combine(tempDirectory, "hive");
+        var outputDirectory = Path.Combine(tempDirectory, "out");
+        var consoleAppDirectory = Path.Combine(outputDirectory, "SmokeConsole");
+        var classLibraryDirectory = Path.Combine(outputDirectory, "SmokeLib");
+
+        try
+        {
+            Directory.CreateDirectory(hiveDirectory);
+            Directory.CreateDirectory(outputDirectory);
+
+            await new DotNetNewInstall()
+                .WithPackage(Path.GetFullPath(packagePath))
+                .AddArgs("--debug:custom-hive", hiveDirectory)
+                .WithShortName("installing the template package into a custom hive")
+                .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+            await CreateAndBuildTemplateProjectAsync("di", "SmokeConsole", consoleAppDirectory, hiveDirectory, cancellationToken);
+            await CreateAndBuildTemplateProjectAsync("dilib", "SmokeLib", classLibraryDirectory, hiveDirectory, cancellationToken);
+        }
+        finally
+        {
+            if (Directory.Exists(tempDirectory))
+            {
+                Directory.Delete(tempDirectory, true);
+            }
+        }
+    }
+
+    private static async Task CreateAndBuildTemplateProjectAsync(
+        string templateName,
+        string projectName,
+        string outputDirectory,
+        string hiveDirectory,
+        CancellationToken cancellationToken)
+    {
+        await new DotNetNew()
+            .WithTemplateName(templateName)
+            .WithName(projectName)
+            .WithOutput(outputDirectory)
+            .WithForce(true)
+            .AddArgs("--debug:custom-hive", hiveDirectory)
+            .WithShortName($"creating a project from the {templateName} template")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+        var guidelinesPath = Path.Combine(outputDirectory, ".junie", "guidelines.md");
+        if (File.Exists(guidelinesPath))
+        {
+            Error($"The generated project contains unexpected file: {guidelinesPath}");
+            throw new InvalidOperationException($"The generated project contains unexpected file: {guidelinesPath}");
+        }
+
+        await new DotNetBuild()
+            .WithProject(Path.Combine(outputDirectory, $"{projectName}.csproj"))
+            .WithShortName($"building the project from the {templateName} template")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
     }
 
     private static async Task UpdateJsonFileWithVersion(
