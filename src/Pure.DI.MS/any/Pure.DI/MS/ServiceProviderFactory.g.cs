@@ -96,7 +96,7 @@ namespace Pure.DI.MS
                     TagParameter).Compile();
             }
 
-            return (type, tag) => serviceProvider.GetService(type);
+            return (type, tag) => tag == null ? serviceProvider.GetService(type) : null;
         }
 
         /// <summary>
