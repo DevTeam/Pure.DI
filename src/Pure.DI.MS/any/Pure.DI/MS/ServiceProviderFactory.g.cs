@@ -9,7 +9,16 @@ namespace Pure.DI.MS
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
-    /// A base class for a composition that can be used as a service provider factory <see cref="Microsoft.Extensions.DependencyInjection.IServiceProviderFactory{TContainerBuilder}"/>.
+    /// Base class for a Pure.DI composition that integrates with Microsoft dependency injection.
+    /// </summary>
+    /// <remarks>
+    /// Inherit a generated composition from this type to expose Pure.DI roots through
+    /// <see cref="IServiceProviderFactory{TContainerBuilder}"/> and to resolve external
+    /// Microsoft dependency injection services from the generated composition. Composition roots
+    /// are registered in the supplied <see cref="IServiceCollection"/> by <see cref="CreateBuilder"/>.
+    /// Untagged unresolved dependencies are resolved from the Microsoft <see cref="IServiceProvider"/>;
+    /// tagged unresolved dependencies require a provider that implements keyed services.
+    /// </remarks>
     /// <example>
     /// <code>
     /// partial class Composition: ServiceProviderFactory&lt;Composition&gt;
@@ -21,8 +30,7 @@ namespace Pure.DI.MS
     /// }
     /// </code>
     /// </example> 
-    /// </summary>
-    /// <typeparam name="TComposition">Composition class type.</typeparam>
+    /// <typeparam name="TComposition">The Pure.DI composition type.</typeparam>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -36,29 +44,36 @@ namespace Pure.DI.MS
         private static readonly ParameterExpression TagParameter = Expression.Parameter(typeof(object));
     
         /// <summary>
-        /// An instance of <see cref="ServiceCollectionFactory{TComposition}"/>.
+        /// Exports generated Pure.DI roots as Microsoft dependency injection service descriptors.
         /// </summary>
         private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new global::Pure.DI.MS.ServiceCollectionFactory<TComposition>();
 
         /// <summary>
-        /// Instance for thread synchronization.
+        /// Synchronizes access to the external service provider.
         /// </summary>
         private readonly global::System.Object _lock = new global::System.Object();
     
         /// <summary>
-        /// <see cref="System.IServiceProvider"/> instance for resolving external dependencies.
+        /// Delegate used to resolve external dependencies from the Microsoft dependency injection provider.
         /// </summary>
         private Func<Type, object, object?>? _instanceResolver;
 
         /// <summary>
-        ///  Defines a mechanism for retrieving a service object.
+        /// The Microsoft dependency injection provider used for unresolved external dependencies.
         /// </summary>
         private IServiceProvider _serviceProvider;
 
         /// <summary>
-        /// Allows getting or setting a service provider.
+        /// Gets or sets the Microsoft dependency injection provider used for unresolved external dependencies.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Throws an exception if the service provider is not yet defined when attempting to get it.</exception>
+        /// <remarks>
+        /// The provider can be assigned only once. If it supports keyed services, tagged unresolved
+        /// dependencies are resolved by key; otherwise only untagged unresolved dependencies are resolved.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when assigning <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the provider is requested before it is set, or when it is assigned more than once.
+        /// </exception>
         public IServiceProvider ServiceProvider
         {
             get
@@ -120,10 +135,11 @@ namespace Pure.DI.MS
         }
 
         /// <summary>
-        /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on the registered composition.
+        /// Creates an <see cref="IServiceCollection"/> containing descriptors for generated Pure.DI roots.
         /// </summary>
-        /// <param name="composition">An instance of composition.</param>
-        /// <returns>An instance of <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.</returns>
+        /// <param name="composition">The Pure.DI composition instance.</param>
+        /// <returns>An <see cref="IServiceCollection"/> with descriptors for the generated roots.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="composition"/> is <see langword="null"/>.</exception>
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
         [global::System.Diagnostics.Contracts.Pure]
 #endif
@@ -134,6 +150,10 @@ namespace Pure.DI.MS
         }
 
         /// <inheritdoc />
+        /// <remarks>
+        /// Adds generated Pure.DI roots to the provided service collection and returns the same collection.
+        /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is <see langword="null"/>.</exception>
         public IServiceCollection CreateBuilder(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -142,8 +162,8 @@ namespace Pure.DI.MS
         }
 
         /// <inheritdoc />
-        /// <exception cref="ArgumentNullException">Throws an exception if the service collection is null.</exception>
-        /// <exception cref="InvalidOperationException">Throws an exception if services are already defined.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the service provider has already been set.</exception>
         public IServiceProvider CreateServiceProvider(IServiceCollection services)
         {
             if (services == null) throw new ArgumentNullException(nameof(services));
@@ -151,14 +171,16 @@ namespace Pure.DI.MS
         }
 
         /// <summary>
-        /// Used to resolve external dependencies using the service provider <see cref="System.IServiceProvider"/>.
+        /// Resolves an unresolved dependency from the Microsoft dependency injection provider.
         /// </summary>
-        /// <param name="tag">Dependency resolution tag.</param>
-        /// <param name="lifetime">Dependency resolution lifetime.</param>
-        /// <typeparam name="T">Dependency resolution type.</typeparam>
-        /// <returns>Resolved dependency instance.</returns>
-        /// <exception cref="InvalidOperationException">Throws an exception if the service provider is not yet defined when attempting to get it.</exception>
-        /// <exception cref="CannotResolveException">Will be thrown if the corresponding composition root was not specified.</exception>
+        /// <param name="tag">The dependency resolution tag, or <see langword="null"/> for the default service.</param>
+        /// <param name="lifetime">The requested dependency lifetime.</param>
+        /// <typeparam name="T">The dependency type.</typeparam>
+        /// <returns>The resolved dependency instance.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the service provider has not been set.</exception>
+        /// <exception cref="CannotResolveException">
+        /// Thrown when the dependency cannot be resolved, including tagged requests against providers without keyed service support.
+        /// </exception>
         internal T OnCannotResolve<T>(object? tag, Lifetime lifetime)
         {
             Func<Type, object, object?>? serviceProvider;
@@ -172,15 +194,15 @@ namespace Pure.DI.MS
         }
 
         /// <summary>
-        /// Registers a composition resolver for use in a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.
+        /// Registers a generated Pure.DI root for export to Microsoft dependency injection.
         /// </summary>
-        /// <param name="resolver">Instance resolver.</param>
-        /// <param name="name">The name of the composition root.</param>
-        /// <param name="tag">The tag of the composition root.</param>
+        /// <param name="resolver">The generated root resolver.</param>
+        /// <param name="name">The generated composition root name.</param>
+        /// <param name="tag">The composition root tag, or <see langword="null"/> for the default root.</param>
         /// <param name="lifetime">The lifetime of the composition root.</param>
         /// <typeparam name="TContract">The contract type of the composition root.</typeparam>
         /// <typeparam name="T">The implementation type of the composition root.</typeparam>
-        /// <exception cref="ArgumentNullException">Throws an exception if the instance resolver is null.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="resolver"/> is <see langword="null"/>.</exception>
         internal static void OnNewRoot<TContract, T>(
             IResolver<TComposition, TContract> resolver,
             string name, object tag, Lifetime lifetime)

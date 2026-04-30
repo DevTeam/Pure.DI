@@ -10,9 +10,18 @@ namespace Pure.DI.MS
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
-    /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based resolvers.
+    /// Creates <see cref="IServiceCollection"/> instances from Pure.DI composition roots.
     /// </summary>
-    /// <typeparam name="TComposition">The composition class itself.</typeparam>
+    /// <remarks>
+    /// Registered Pure.DI roots are exported as Microsoft dependency injection service descriptors.
+    /// Pure.DI lifetimes are mapped to the nearest <see cref="ServiceLifetime"/> values:
+    /// <see cref="Lifetime.Singleton"/> to <see cref="ServiceLifetime.Singleton"/>,
+    /// <see cref="Lifetime.Scoped"/> to <see cref="ServiceLifetime.Scoped"/>, and all other
+    /// lifetimes to <see cref="ServiceLifetime.Transient"/>.
+    /// When scoped roots are present, a child Pure.DI composition is created for each Microsoft
+    /// dependency injection scope.
+    /// </remarks>
+    /// <typeparam name="TComposition">The Pure.DI composition type.</typeparam>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -85,17 +94,18 @@ namespace Pure.DI.MS
         }
         
         /// <summary>
-        /// A list of instance resolvers, specifying the type of object that the resolver returns.
+        /// The registered root resolvers to expose through <see cref="IServiceCollection"/>.
         /// </summary>
         private readonly List<InstanceResolver> _resolvers = new List<InstanceResolver>();
     
         /// <summary>
-        /// Registers the resolver of a composition for use in a collection of services.
+        /// Registers a Pure.DI root resolver for export as a Microsoft dependency injection service.
         /// </summary>
-        /// <param name="resolver">Instance resolver.</param>
-        /// <param name="tag">The resolving tag.</param>
+        /// <param name="resolver">The Pure.DI root resolver.</param>
+        /// <param name="tag">The resolving tag, or <see langword="null"/> for the default root.</param>
         /// <param name="lifetime">The lifetime of the composition root.</param>
-        /// <typeparam name="TContract">The type of object that the resolver returns.</typeparam>
+        /// <typeparam name="TContract">The root contract type exposed to <see cref="IServiceCollection"/>.</typeparam>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="resolver"/> is <see langword="null"/>.</exception>
         internal void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default, Lifetime lifetime = Lifetime.Transient)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
@@ -118,10 +128,16 @@ namespace Pure.DI.MS
         }
 
         /// <summary>
-        /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on all previously registered resolvers.
+        /// Creates an <see cref="IServiceCollection"/> containing descriptors for all registered Pure.DI roots.
         /// </summary>
-        /// <param name="composition">An instance of composition.</param>
-        /// <returns>An instance of <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.</returns>
+        /// <remarks>
+        /// Keyed roots are exported as keyed service descriptors when the referenced Microsoft dependency
+        /// injection package provides keyed service support. Scoped Pure.DI roots are resolved from a
+        /// child composition that is tied to the current Microsoft dependency injection scope.
+        /// </remarks>
+        /// <param name="composition">The parent Pure.DI composition instance.</param>
+        /// <returns>An <see cref="IServiceCollection"/> with service descriptors for the registered roots.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="composition"/> is <see langword="null"/>.</exception>
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
         [global::System.Diagnostics.Contracts.Pure]
 #endif
@@ -138,10 +154,10 @@ namespace Pure.DI.MS
         }
 
         /// <summary>
-        /// Creates an enumeration of service descriptors based on all previously registered resolvers.
+        /// Creates descriptors for all registered Pure.DI root resolvers.
         /// </summary>
-        /// <param name="composition">An instance of composition.</param>
-        /// <returns>An enumeration of <see cref="Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/>.</returns>
+        /// <param name="composition">The parent Pure.DI composition instance.</param>
+        /// <returns>The service descriptors to add to an <see cref="IServiceCollection"/>.</returns>
         private IEnumerable<ServiceDescriptor> CreateDescriptors(TComposition composition)
         {
             return _resolvers.Select(resolver => ServiceDescriptorProvider(composition, resolver));
