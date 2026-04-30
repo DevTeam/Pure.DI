@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/MAUIApp)
 
-This example demonstrates the creation of a [MAUI application](https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui) in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a [MAUI application](https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui) with Pure.DI, sharing generated view-model roots with XAML resources and the MAUI container.
+
+> [!TIP]
+> The sample creates one `Composition` in `MauiProgram`, installs it with `ConfigureContainer`, and also places the same initialized instance into application resources for XAML bindings.
 
 The definition of the composition is in [Composition.cs](/samples/MAUIApp/Composition.cs). Do not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
@@ -15,6 +18,7 @@ namespace MAUIApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
         .Root<IAppViewModel>(nameof(App))
         .Root<IClockViewModel>(nameof(Clock))
@@ -29,7 +33,9 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+Remember to dispose the composition on platform shutdown events. The sample handles Windows and Android explicitly; add equivalent lifecycle hooks for other target platforms when they own disposable services.
+
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so view models shared with XAML are declared as named roots.
 
 The application entry point is in the [MauiProgram.cs](/samples/MAUIApp/MauiProgram.cs) file:
 

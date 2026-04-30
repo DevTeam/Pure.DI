@@ -7254,7 +7254,7 @@ public class ReportFormatter : IReportFormatter
 
     public string? Format<T>(T value)
         where T : class
-        => value?.ToString();
+        => value.ToString();
 
     [IgnoreInterface]
     public void Hidden() { }
@@ -7326,6 +7326,7 @@ The example shows how to:
 This example shows how one implementation can generate multiple interfaces with shared and selective members.
 
 ```c#
+using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
@@ -7367,8 +7368,9 @@ public class App(IReadGateway readGateway, IWriteGateway writeGateway)
 }
 ```
 
-To run the above code, the following NuGet package must be added:
+To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The example shows how to:
 - Generate multiple interfaces from one class
@@ -7380,6 +7382,7 @@ The example shows how to:
 This example shows selective member inclusion and IgnoreInterface priority when generating interfaces.
 
 ```c#
+using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
@@ -7419,8 +7422,9 @@ public class App(IProfileReader reader)
 }
 ```
 
-To run the above code, the following NuGet package must be added:
+To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The example shows how to:
 - Generate interface members selectively
@@ -10838,16 +10842,153 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >Prefab integration with DI requires careful handling of Unity's instantiation and component initialization phases.
 
+## Unity scene scopes
+
+Demonstrates Unity-style scoped lifetime boundaries where Unity creates MonoBehaviour instances and Pure.DI builds them up without constructors.
+Each loaded scene has its own scope, so scoped services are shared inside one scene and isolated from another scene.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using UnityEngine;
+using static Pure.DI.Lifetime;
+
+// Application scope: one root for shared singletons.
+var application = new Scope("Application");
+
+// Unity loads two scenes. Each scene has its own MonoBehaviour scope object.
+var menuScene = Scope.SetupScope(application, new Scope("Menu"));
+var levelScene = Scope.SetupScope(application, new Scope("Level"));
+
+// Unity creates MonoBehaviour instances. Pure.DI only builds them up.
+var menuClock1 = new Clock(menuScene);
+var menuClock2 = new Clock(menuScene);
+var levelClock = new Clock(levelScene);
+
+menuClock1.Awake();
+menuClock2.Awake();
+levelClock.Awake();
+
+// Same scene => same scoped dependency.
+menuClock1.Session.ShouldBe(menuClock2.Session);
+
+// Different scenes => different scoped dependencies.
+menuClock1.Session.ShouldNotBe(levelClock.Session);
+
+// Singleton dependency is still shared from the application scope.
+menuClock1.ClockService.ShouldBe(levelClock.ClockService);
+
+menuScene.Dispose();
+menuClock1.Session.IsDisposed.ShouldBeTrue();
+levelClock.Session.IsDisposed.ShouldBeFalse();
+
+levelScene.Dispose();
+levelClock.Session.IsDisposed.ShouldBeTrue();
+
+application.Dispose();
+menuClock1.ClockService.IsDisposed.ShouldBeTrue();
+
+public class Clock : MonoBehaviour
+{
+    [SerializeField] Scope scope;
+
+    [Dependency]
+    public IClockService ClockService { get; set; }
+
+    [Dependency]
+    public IClockSession Session { get; set; }
+
+    public void Awake()
+    {
+        scope.BuildUp(this);
+    }
+}
+
+public interface IClockConfig
+{
+    TimeSpan Offset { get; }
+}
+
+[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+public class ClockConfig : ScriptableObject, IClockConfig
+{
+    [SerializeField] int offsetHours;
+
+    public TimeSpan Offset => TimeSpan.FromHours(offsetHours);
+}
+
+public interface IClockService
+{
+    DateTime Now { get; }
+
+    bool IsDisposed { get; }
+}
+
+public class ClockService(IClockConfig config) : IClockService, IDisposable
+{
+    public DateTime Now => DateTime.UtcNow + config.Offset;
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+public interface IClockSession
+{
+    string SceneName { get; }
+
+    bool IsDisposed { get; }
+}
+
+public class ClockSession([Tag("scene name")] string sceneName) : IClockSession, IDisposable
+{
+    public string SceneName { get; } = sceneName;
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+public partial class Scope : MonoBehaviour
+{
+    [SerializeField] ClockConfig clockConfig;
+    [SerializeField] string sceneName;
+
+    void Setup() => DI.Setup()
+        .Hint(Hint.ScopeMethodName, "SetupScope")
+        .Bind().To(() => clockConfig)
+        .Bind("scene name").To(_ => sceneName)
+        .Bind<IClockService>().As(Singleton).To<ClockService>()
+        .Bind<IClockSession>().As(Scoped).To<ClockSession>()
+        .Builders<MonoBehaviour>();
+
+    void OnDestroy()
+    {
+        Dispose();
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>In a real Unity project the scene objects are created by Unity. The sample uses constructors only to simulate serialized references in a test.
+
 # Examples of using Pure.DI for different types of .NET projects.
 
 #### Avalonia application
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/AvaloniaApp)
 
-This example demonstrates the creation of an [Avalonia](https://avaloniaui.net/) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build an [Avalonia](https://avaloniaui.net/) application with Pure.DI, using generated composition roots for view models and infrastructure services instead of a runtime container.
+
+> [!TIP]
+> XAML binds to virtual composition roots such as `App` and `Clock`. `Hint.Resolve` is disabled because the sample uses explicit roots instead of generated service-locator methods.
 
 > [!NOTE]
-> [Another example](samples/SingleRootAvaloniaApp) with Avalonia shows how to create an application with a single composition root.
+> [Another example](/samples/SingleRootAvaloniaApp) with Avalonia shows how to create an application with a single composition root.
 
 The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Composition.cs). This class sets up how the object graphs will be created for the application. Do not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
@@ -10860,7 +11001,10 @@ namespace AvaloniaApp;
 
 partial class Composition
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
         .Root<IAppViewModel>(nameof(App), kind: Virtual)
         .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
@@ -10915,6 +11059,8 @@ This markup fragment
 ```
 
 creates a shared resource of type `Composition` with key _"Composition"_, which will be further used as a data context in the views.
+
+Dispose the composition when the Avalonia lifetime exits. This releases singleton and scoped disposable instances created by Pure.DI.
 
 The associated application [App.axaml.cs](/samples/AvaloniaApp/App.axaml.cs) class looks like:
 
@@ -11036,7 +11182,10 @@ It contains an additional reference to the NuGet package:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/BlazorServerApp)
 
-This example demonstrates the creation of a [Blazor Server](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-server) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a [Blazor Server](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-server) application with Pure.DI while still integrating with the ASP.NET Core hosting and service-provider pipeline.
+
+> [!NOTE]
+> The composition is installed as the host service-provider factory. Components can still use the standard Blazor/ASP.NET Core service infrastructure, while application view models come from generated Pure.DI roots.
 
 The composition setup file is [Composition.cs](/samples/BlazorServerApp/Composition.cs):
 
@@ -11049,7 +11198,8 @@ namespace BlazorServerApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Root<IAppViewModel>()
         .Root<IClockViewModel>()
 
@@ -11063,7 +11213,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so each view model consumed by the host must be listed with `Root`.
 
 The web application entry point is in the [Program.cs](/samples/BlazorServerApp/Program.cs) file:
 
@@ -11104,7 +11254,10 @@ It contains additional references to NuGet packages:
 
 [Here's an example](https://devteam.github.io/Pure.DI/) on GitHub Pages.
 
-This example demonstrates the creation of a [Blazor WebAssembly](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-webassembly) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a [Blazor WebAssembly](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-webassembly) application with Pure.DI, exposing generated roots through the WebAssembly host container.
+
+> [!NOTE]
+> WebAssembly uses `builder.ConfigureContainer(composition)` instead of `UseServiceProviderFactory`. Keep browser-specific services, such as `HttpClient`, registered in the normal Blazor service collection.
 
 The composition setup file is [Composition.cs](/samples/BlazorWebAssemblyApp/Composition.cs):
 
@@ -11117,7 +11270,8 @@ namespace BlazorWebAssemblyApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Root<IAppViewModel>()
         .Root<IClockViewModel>()
 
@@ -11131,7 +11285,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so each view model consumed by the host must be listed with `Root`.
 
 The web application entry point is in the [Program.cs](/samples/BlazorWebAssemblyApp/Program.cs) file:
 
@@ -11170,7 +11324,10 @@ It contains additional references to NuGet packages:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCatNativeAOT)
 
-This example is very similar to the [simple console application](ConsoleTemplate.md), except that this is a [native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/) application.
+This example shows how the simple console composition can be published as a [native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/) application. Pure.DI generates plain C# object creation code, so the dependency graph remains friendly to trimming and ahead-of-time compilation.
+
+> [!TIP]
+> Native AOT works best when construction is explicit and reflection-light. Prefer generated roots and bindings over runtime service-location patterns in AOT samples.
 
 The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.csproj) looks like this:
 
@@ -11197,7 +11354,10 @@ It contains an additional reference to the NuGet package:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCat)
 
-This example demonstrates the creation of a simple console application in the pure DI paradigm using the Pure.DI code generator. All code is in [one file](/samples/ShroedingersCat/Program.cs) for easy reading:
+This example shows the smallest Pure.DI console application: abstractions, implementations, bindings, and the composition root are kept in one place so the generated object graph is easy to inspect. All code is in [one file](/samples/ShroedingersCat/Program.cs) for easy reading:
+
+> [!TIP]
+> The `Setup` method is a compile-time hint for the generator. It is not called at runtime, so it can stay private and contain only composition configuration.
 
 ```c#
 using Pure.DI;
@@ -11298,7 +11458,10 @@ It contains an additional reference to the NuGet package:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCatTopLevelStatements)
 
-This example is very similar to the [simple console application](ConsoleTemplate.md), except that the composition is [defined](/samples/ShroedingersCatTopLevelStatements/Program.cs) as top-level statements and looks a little less verbose:
+This example shows the same object graph as the [simple console application](ConsolePageTemplate.md), but defines the composition directly in [Program.cs](/samples/ShroedingersCatTopLevelStatements/Program.cs) with top-level statements. It keeps the setup compact while still producing the same compile-time validated composition:
+
+> [!TIP]
+> Top-level statements are convenient for small samples. For larger applications, move setup into a partial composition class so roots, lifetimes, and infrastructure bindings are easier to navigate.
 
 ```c#
 using Pure.DI;
@@ -11384,7 +11547,10 @@ It contains an additional reference to the NuGet package:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/EF)
 
-This example demonstrates the creation of an Entity Framework application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to combine Pure.DI with Entity Framework services supplied by Microsoft dependency injection. Pure.DI builds the application graph, while the external service provider supplies the `DbContext` and EF infrastructure.
+
+> [!TIP]
+> `PersonsDbContext` is intentionally not bound in Pure.DI. It is requested from the external `ServiceProvider`, while Pure.DI owns the application root and factories such as `Func<Person>`.
 
 The composition setup file is [Composition.cs](/samples/EF/Composition.cs):
 
@@ -11397,6 +11563,7 @@ namespace EF;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
         .Root<Program>(nameof(Root))
 
@@ -11405,7 +11572,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. When Pure.DI cannot resolve framework services such as `DbContext`, `ServiceProviderFactory<T>` delegates those requests to the configured Microsoft dependency injection provider.
 
 The console application entry point is in the [Program.cs](/samples/EF/Program.cs) file:
 
@@ -11461,6 +11628,8 @@ partial class Program(
 }
 ```
 
+The external service provider should be configured before resolving `composition.Root`. If a required EF service is missing, Pure.DI will fail when the root is created instead of hiding the missing registration.
+
 The [project file](/samples/EF/EF.csproj) looks like this:
 
 ```xml
@@ -11488,7 +11657,10 @@ It contains additional references to NuGet packages:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/GrpcService)
 
-This example demonstrates the creation of a gRPC service in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a gRPC service with Pure.DI and ASP.NET Core hosting. The generated composition exposes the service and application dependencies through the Microsoft service-provider pipeline.
+
+> [!TIP]
+> The gRPC service type itself is a composition root. Keep the ASP.NET Core gRPC registration (`AddGrpc`) in `Program.cs`, and let Pure.DI create the service graph.
 
 The composition setup file is [Composition.cs](/samples/GrpcService/Composition.cs):
 
@@ -11501,7 +11673,7 @@ namespace GrpcService;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    private static void Setup() => DI.Setup()
         .Root<ClockService>()
 
         .Bind().As(Singleton).To<ClockViewModel>()
@@ -11514,7 +11686,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so the gRPC service type is declared as a root.
 
 The web application entry point is in the [Program.cs](/samples/GrpcService/Program.cs) file:
 
@@ -11556,7 +11728,10 @@ It contains additional references to NuGet packages:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/MAUIApp)
 
-This example demonstrates the creation of a [MAUI application](https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui) in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a [MAUI application](https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui) with Pure.DI, sharing generated view-model roots with XAML resources and the MAUI container.
+
+> [!TIP]
+> The sample creates one `Composition` in `MauiProgram`, installs it with `ConfigureContainer`, and also places the same initialized instance into application resources for XAML bindings.
 
 The definition of the composition is in [Composition.cs](/samples/MAUIApp/Composition.cs). Do not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
@@ -11569,6 +11744,7 @@ namespace MAUIApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
         .Root<IAppViewModel>(nameof(App))
         .Root<IClockViewModel>(nameof(Clock))
@@ -11583,7 +11759,9 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+Remember to dispose the composition on platform shutdown events. The sample handles Windows and Android explicitly; add equivalent lifecycle hooks for other target platforms when they own disposable services.
+
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so view models shared with XAML are declared as named roots.
 
 The application entry point is in the [MauiProgram.cs](/samples/MAUIApp/MauiProgram.cs) file:
 
@@ -11721,7 +11899,10 @@ It contains additional references to NuGet packages:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/MinimalWebAPI)
 
-This example demonstrates the creation of a Minimal Web API application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a Minimal Web API with Pure.DI, using generated roots for the application entry point while still allowing ASP.NET Core endpoint handlers to request services from Microsoft dependency injection.
+
+> [!TIP]
+> `Owned<Program>` is used as the application root so disposable dependencies created for that root are released deterministically. Endpoint handlers may still use `[FromServices]` for services supplied by ASP.NET Core.
 
 The composition setup file is [Composition.cs](/samples/MinimalWebAPI/Composition.cs):
 
@@ -11734,6 +11915,7 @@ namespace MinimalWebAPI;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
         // Owned is used here to dispose of all disposable instances associated with the root.
         .Root<Owned<Program>>(nameof(Root))
@@ -11749,7 +11931,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`; this sample also resolves the `Owned<Program>` root directly from the composition.
 
 The web application entry point is in the [Program.cs](/samples/MinimalWebAPI/Program.cs) file:
 
@@ -11813,7 +11995,10 @@ It contains additional references to NuGet packages:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/UnityApp)
 
-This example demonstrates the creation of a [Unity](https://unity.com/) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to use Pure.DI in a [Unity](https://unity.com/) application, including object graph generation for regular services and build-up support for `MonoBehaviour` instances managed by the engine.
+
+> [!TIP]
+> Unity creates `MonoBehaviour` instances itself, so Pure.DI uses `BuildUp` methods for scene objects and regular roots for services. The sample also shows parent/child scene scopes with scoped services.
 
 ![Unity](https://cdn.sanity.io/images/fuvbjjlp/production/01c082f3046cc45548249c31406aeffd0a9a738e-296x100.png)
 
@@ -11831,13 +12016,41 @@ internal class ClocksComposition
 
 public partial class Scope : MonoBehaviour
 {
+    [SerializeField] private Scope parentScope;
+
+    private bool isReady;
+
     void Setup() => DI.Setup()
+        .Hint(Hint.ScopeMethodName, "SetupScope")
         .DependsOn(nameof(ClocksComposition), SetupContextKind.Members)
+        .Bind<IClockSession>().As(Lifetime.Scoped).To<ClockSession>()
         .Root<ClockManager>(nameof(ClockManager))
         .Builders<MonoBehaviour>();
 
+    public void EnsureReady()
+    {
+        if (isReady)
+        {
+            return;
+        }
+
+        if (parentScope != null && !ReferenceEquals(parentScope, this))
+        {
+            parentScope.EnsureReady();
+            SetupScope(parentScope, this);
+        }
+
+        isReady = true;
+    }
+
+    void Awake()
+    {
+        EnsureReady();
+    }
+
     void Start()
     {
+        EnsureReady();
         ClockManager.Start();
     }
 
@@ -11847,6 +12060,8 @@ public partial class Scope : MonoBehaviour
     }
 }
 ```
+
+Use `EnsureReady()` before resolving or building scene objects. It initializes the parent scope first and prevents accidental self-parenting from creating recursive scope setup.
 
 Advantages over classical DI container libraries:
 - No performance impact or side effects when creating object graphs.
@@ -11921,7 +12136,10 @@ The Unity example uses the Unity editor version 6000.0.35f1
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WebAPI)
 
-This example demonstrates the creation of a Web API application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build an ASP.NET Core Web API with Pure.DI, registering controllers as generated roots while keeping compatibility with the Microsoft service-provider pipeline.
+
+> [!TIP]
+> Controller activation goes through `IServiceProvider`, so controllers have to be visible as composition roots. Pair `.Roots<ControllerBase>()` with `AddControllersAsServices()`.
 
 The composition setup file is [Composition.cs](/samples/WebAPI/Composition.cs):
 
@@ -11934,7 +12152,8 @@ namespace WebAPI;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Roots<ControllerBase>()
 
         .Bind().As(Singleton).To<ClockViewModel>()
@@ -11947,7 +12166,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, which is why controllers are registered with `.Roots<ControllerBase>()`.
 
 The web application entry point is in the [Program.cs](/samples/WebAPI/Program.cs) file:
 
@@ -11958,6 +12177,9 @@ using var composition = new Composition();
 
 // Uses Composition as an alternative IServiceProviderFactory
 builder.Host.UseServiceProviderFactory(composition);
+
+// It is required for controllers to be registered as regular services.
+builder.Services.AddMvc().AddControllersAsServices();
 ```
 
 The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
@@ -11987,7 +12209,10 @@ It contains additional references to NuGet packages:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WebApp)
 
-This example demonstrates the creation of a Web application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build an ASP.NET Core MVC web application with Pure.DI, registering controllers as generated roots while keeping compatibility with the Microsoft service-provider pipeline.
+
+> [!TIP]
+> Controllers must be registered both as ASP.NET Core services and as Pure.DI roots. The sample uses `.Roots<ControllerBase>()` in the composition and `AddControllersAsServices()` in `Program.cs`.
 
 The composition setup file is [Composition.cs](/samples/WebApp/Composition.cs):
 
@@ -12000,7 +12225,8 @@ namespace WebApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Roots<ControllerBase>()
 
         .Bind().As(Singleton).To<ClockViewModel>()
@@ -12013,7 +12239,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, which is why controllers are registered with `.Roots<ControllerBase>()`.
 
 The web application entry point is in the [Program.cs](/samples/WebApp/Program.cs) file:
 
@@ -12056,7 +12282,10 @@ It contains additional references to NuGet packages:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WinFormsAppNetCore)
 
-This example demonstrates the creation of a WinForms application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a modern .NET WinForms application with Pure.DI. The generated composition creates the main form, view models, and infrastructure services without a runtime container.
+
+> [!TIP]
+> The main form is created through the `Program` composition root. `Hint.Resolve` is disabled because the application uses explicit roots only.
 
 The composition definition is in the file [Composition.cs](/samples/WinFormsAppNetCore/Composition.cs). Remember to define all the necessary composition roots, for example, this could be a main form such as _FormMain_:
 
@@ -12068,7 +12297,10 @@ namespace WinFormsAppNetCore;
 
 partial class Composition
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
         .Root<Program>(nameof(Root))
 
         .Bind().As(Singleton).To<FormMain>()
@@ -12081,6 +12313,8 @@ partial class Composition
         .Bind().To<WinFormsDispatcher>();
 }
 ```
+
+Keep the composition in a `using` block around the WinForms message loop so Pure.DI-owned disposable services are released after the main form exits.
 
 A single instance of the _Composition_ class is defined in the _Main_ method of the [Program.cs](/samples/WinFormsAppNetCore/Program.cs) file:
 
@@ -12126,7 +12360,10 @@ It contains an additional reference to the NuGet package:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WinFormsApp)
 
-This example demonstrates the creation of a WinForms application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a classic WinForms application with Pure.DI. The generated composition creates the main form, view models, and infrastructure services without a runtime container.
+
+> [!TIP]
+> The main form is created through the `Program` composition root. `Hint.Resolve` is disabled because the application uses explicit roots only.
 
 The composition definition is in the file [Composition.cs](/samples/WinFormsApp/Composition.cs). Remember to define all the necessary composition roots, for example, this could be a main form such as _FormMain_:
 
@@ -12138,7 +12375,10 @@ namespace WinFormsApp;
 
 partial class Composition
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
         .Root<Program>(nameof(Root))
 
         .Bind().As(Singleton).To<FormMain>()
@@ -12151,6 +12391,8 @@ partial class Composition
         .Bind().To<WinFormsDispatcher>();
 }
 ```
+
+Keep the composition in a `using` block around the WinForms message loop so Pure.DI-owned disposable services are released after the main form exits.
 
 A single instance of the _Composition_ class is defined in the _Main_ method of the [Program.cs](/samples/WinFormsApp/Program.cs) file:
 
@@ -12199,7 +12441,10 @@ It contains an additional reference to the NuGet package:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WpfAppNetCore)
 
-This example demonstrates the creation of a WPF application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a WPF application with Pure.DI, exposing generated view-model roots through XAML resources while keeping object graph validation at compile time.
+
+> [!TIP]
+> `Hint.Resolve` is disabled because XAML uses named composition roots (`App`, `Clock`) directly. This keeps the generated API small and avoids service-locator-style access.
 
 The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/Composition.cs). This class sets up how the object graphs will be created for the application. Do not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
@@ -12211,7 +12456,10 @@ namespace WpfAppNetCore;
 
 partial class Composition
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
         .Root<IAppViewModel>(nameof(App))
         .Root<IClockViewModel>(nameof(Clock))
 
@@ -12259,6 +12507,8 @@ This markup fragment
 ```
 
 creates a shared resource of type `Composition` and with key _"Composition"_, which will be further used as a data context in the views.
+
+Dispose the shared composition from the WPF `Exit` event when the application closes, especially if singleton services implement `IDisposable`.
 
 Advantages over classical DI container libraries:
 - No explicit initialization of data contexts is required. Data contexts are configured directly in `\.xaml` files according to the MVVM approach.

@@ -267,7 +267,7 @@ classDiagram
 	Device --|> IDevice
 	TemperatureSensor --|> ISensor
 	HumiditySensor --|> ISensor : "Humidity" 
-	Composition ..> LightweightRoot : LightweightRoot LightRoot118d
+	Composition ..> LightweightRoot : LightweightRoot LightRoot120d
 	Composition ..> HumiditySensor : ISensor HumiditySensor
 	Composition ..> TemperatureSensor : ISensor _
 	TemperatureSensor *--  Device : IDevice
@@ -284,7 +284,7 @@ classDiagram
 		class Composition {
 		<<partial>>
 		+ISensor HumiditySensor
-		-LightweightRoot LightRoot118d
+		-LightweightRoot LightRoot120d
 		-ISensor _
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

@@ -2,10 +2,13 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/AvaloniaApp)
 
-This example demonstrates the creation of an [Avalonia](https://avaloniaui.net/) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build an [Avalonia](https://avaloniaui.net/) application with Pure.DI, using generated composition roots for view models and infrastructure services instead of a runtime container.
+
+> [!TIP]
+> XAML binds to virtual composition roots such as `App` and `Clock`. `Hint.Resolve` is disabled because the sample uses explicit roots instead of generated service-locator methods.
 
 > [!NOTE]
-> [Another example](samples/SingleRootAvaloniaApp) with Avalonia shows how to create an application with a single composition root.
+> [Another example](/samples/SingleRootAvaloniaApp) with Avalonia shows how to create an application with a single composition root.
 
 The definition of the composition is in [Composition.cs](/samples/AvaloniaApp/Composition.cs). This class sets up how the object graphs will be created for the application. Do not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
@@ -18,7 +21,10 @@ namespace AvaloniaApp;
 
 partial class Composition
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
         .Root<IAppViewModel>(nameof(App), kind: Virtual)
         .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
@@ -73,6 +79,8 @@ This markup fragment
 ```
 
 creates a shared resource of type `Composition` with key _"Composition"_, which will be further used as a data context in the views.
+
+Dispose the composition when the Avalonia lifetime exits. This releases singleton and scoped disposable instances created by Pure.DI.
 
 The associated application [App.axaml.cs](/samples/AvaloniaApp/App.axaml.cs) class looks like:
 

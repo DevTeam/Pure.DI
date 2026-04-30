@@ -28,7 +28,7 @@ public class ReportFormatter : IReportFormatter
 
     public string? Format<T>(T value)
         where T : class
-        => value?.ToString();
+        => value.ToString();
 
     [IgnoreInterface]
     public void Hidden() { }

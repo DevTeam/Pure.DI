@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/BlazorServerApp)
 
-This example demonstrates the creation of a [Blazor Server](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-server) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a [Blazor Server](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-server) application with Pure.DI while still integrating with the ASP.NET Core hosting and service-provider pipeline.
+
+> [!NOTE]
+> The composition is installed as the host service-provider factory. Components can still use the standard Blazor/ASP.NET Core service infrastructure, while application view models come from generated Pure.DI roots.
 
 The composition setup file is [Composition.cs](/samples/BlazorServerApp/Composition.cs):
 
@@ -15,7 +18,8 @@ namespace BlazorServerApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Root<IAppViewModel>()
         .Root<IClockViewModel>()
 
@@ -29,7 +33,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so each view model consumed by the host must be listed with `Root`.
 
 The web application entry point is in the [Program.cs](/samples/BlazorServerApp/Program.cs) file:
 

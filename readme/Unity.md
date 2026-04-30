@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/UnityApp)
 
-This example demonstrates the creation of a [Unity](https://unity.com/) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to use Pure.DI in a [Unity](https://unity.com/) application, including object graph generation for regular services and build-up support for `MonoBehaviour` instances managed by the engine.
+
+> [!TIP]
+> Unity creates `MonoBehaviour` instances itself, so Pure.DI uses `BuildUp` methods for scene objects and regular roots for services. The sample also shows parent/child scene scopes with scoped services.
 
 ![Unity](https://cdn.sanity.io/images/fuvbjjlp/production/01c082f3046cc45548249c31406aeffd0a9a738e-296x100.png)
 
@@ -20,13 +23,41 @@ internal class ClocksComposition
 
 public partial class Scope : MonoBehaviour
 {
+    [SerializeField] private Scope parentScope;
+
+    private bool isReady;
+
     void Setup() => DI.Setup()
+        .Hint(Hint.ScopeMethodName, "SetupScope")
         .DependsOn(nameof(ClocksComposition), SetupContextKind.Members)
+        .Bind<IClockSession>().As(Lifetime.Scoped).To<ClockSession>()
         .Root<ClockManager>(nameof(ClockManager))
         .Builders<MonoBehaviour>();
 
+    public void EnsureReady()
+    {
+        if (isReady)
+        {
+            return;
+        }
+
+        if (parentScope != null && !ReferenceEquals(parentScope, this))
+        {
+            parentScope.EnsureReady();
+            SetupScope(parentScope, this);
+        }
+
+        isReady = true;
+    }
+
+    void Awake()
+    {
+        EnsureReady();
+    }
+
     void Start()
     {
+        EnsureReady();
         ClockManager.Start();
     }
 
@@ -36,6 +67,8 @@ public partial class Scope : MonoBehaviour
     }
 }
 ```
+
+Use `EnsureReady()` before resolving or building scene objects. It initializes the parent scope first and prevents accidental self-parenting from creating recursive scope setup.
 
 Advantages over classical DI container libraries:
 - No performance impact or side effects when creating object graphs.

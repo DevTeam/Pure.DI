@@ -157,6 +157,7 @@ partial class Composition: IDisposable
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
     if (Object.ReferenceEquals(childScope, null)) throw new ArgumentNullException(nameof(childScope));
+    if (Object.ReferenceEquals(parentScope, childScope)) throw new ArgumentException("The parent and child scopes must be different instances.", nameof(childScope));
     childScope._root = parentScope._root ?? parentScope;
     childScope._lock = parentScope._lock;
     childScope._disposables = new object[1];

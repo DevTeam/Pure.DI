@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WebApp)
 
-This example demonstrates the creation of a Web application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build an ASP.NET Core MVC web application with Pure.DI, registering controllers as generated roots while keeping compatibility with the Microsoft service-provider pipeline.
+
+> [!TIP]
+> Controllers must be registered both as ASP.NET Core services and as Pure.DI roots. The sample uses `.Roots<ControllerBase>()` in the composition and `AddControllersAsServices()` in `Program.cs`.
 
 The composition setup file is [Composition.cs](/samples/WebApp/Composition.cs):
 
@@ -15,7 +18,8 @@ namespace WebApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Roots<ControllerBase>()
 
         .Bind().As(Singleton).To<ClockViewModel>()
@@ -28,7 +32,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, which is why controllers are registered with `.Roots<ControllerBase>()`.
 
 The web application entry point is in the [Program.cs](/samples/WebApp/Program.cs) file:
 

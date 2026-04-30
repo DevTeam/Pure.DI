@@ -451,6 +451,7 @@ dotnet run
 ### Unity
 - [Unity Basics](readme/unity-basics.md)
 - [Unity with prefabs](readme/unity-with-prefabs.md)
+- [Unity scene scopes](readme/unity-scene-scopes.md)
 ### Applications
 - Console
   - [Schrodinger's cat](readme/Console.md)
@@ -1864,42 +1865,6 @@ DI.Setup("Composition")
 </details>
 
 <details>
-<summary>Code generation workflow</summary>
-
-```mermaid
-flowchart TD
-    start@{ shape: circle, label: Start }
-    setups[fa:fa-search DI setups analysis]
-    types["`fa:fa-search Types analysis
-    constructors/methods/properties/fields`"]
-    subgraph dep[Dependency graph]
-    option[fa:fa-search Selecting a next dependency set]
-    creating[fa:fa-cog Creating a dependency graph variant]
-    verification{fa:fa-check-circle Verification}
-    end
-    codeGeneration[fa:fa-code Code generation]
-    compilation[fa:fa-cog Compilation]
-    failed@{ shape: dbl-circ, label: Compilation failed }
-    success@{ shape: dbl-circ, label: Success }
-
-    start ==> setups
-    setups -.->|Has problems| failed
-    setups ==> types
-    types -.-> |Has problems| failed
-    types ==> option
-    option ==> creating
-    option -.-> |There are no other options| failed
-    creating ==> verification
-    verification -->|Has problems| option
-    verification ==>|Correct| codeGeneration
-    codeGeneration ==> compilation
-    compilation -.-> |Has problems| failed
-    compilation ==> success
-```
-
-</details>
-
-<details>
 <summary>Interface generation</summary>
 
 ### Interface generation
@@ -1953,6 +1918,86 @@ See also:
 - [Customize the generated interface](readme/customize-the-generated-interface.md)
 - [Generate several interfaces from one class](readme/generate-several-interfaces-from-one-class.md)
 - [Control generated interfaces by members](readme/control-generated-interfaces-by-members.md)
+
+</details>
+
+<details>
+<summary>Comments</summary>
+
+Pure.DI can copy comments from setup calls into generated documentation comments for the composition class, composition arguments, and composition roots.
+
+Use regular `//` comments before API calls when you want Pure.DI to include the text in the generated documentation:
+
+```c#
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    // Provides the main service.
+    .Root<IService>("Service");
+```
+
+For `Setup(...)` and composition roots, XML documentation comments written with `///` replace the automatically generated documentation:
+
+```c#
+/// <summary>
+/// Application composition.
+/// </summary>
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    /// <summary>
+    /// Provides the main service.
+    /// </summary>
+    .Root<IService>("Service");
+```
+
+The generated root member keeps the user-defined XML documentation:
+
+```c#
+/// <summary>
+/// Provides the main service.
+/// </summary>
+public IService Service
+{
+    get { ... }
+}
+```
+
+For other setup calls, such as `Arg<T>(...)`, comments are used as documentation text in the generated constructor documentation. Use regular `//` comments there unless you want XML markup to be shown as text.
+
+</details>
+
+<details>
+<summary>Code generation workflow</summary>
+
+```mermaid
+flowchart TD
+    start@{ shape: circle, label: Start }
+    setups[fa:fa-search DI setups analysis]
+    types["`fa:fa-search Types analysis
+    constructors/methods/properties/fields`"]
+    subgraph dep[Dependency graph]
+    option[fa:fa-search Selecting a next dependency set]
+    creating[fa:fa-cog Creating a dependency graph variant]
+    verification{fa:fa-check-circle Verification}
+    end
+    codeGeneration[fa:fa-code Code generation]
+    compilation[fa:fa-cog Compilation]
+    failed@{ shape: dbl-circ, label: Compilation failed }
+    success@{ shape: dbl-circ, label: Success }
+
+    start ==> setups
+    setups -.->|Has problems| failed
+    setups ==> types
+    types -.-> |Has problems| failed
+    types ==> option
+    option ==> creating
+    option -.-> |There are no other options| failed
+    creating ==> verification
+    verification -->|Has problems| option
+    verification ==>|Correct| codeGeneration
+    codeGeneration ==> compilation
+    compilation -.-> |Has problems| failed
+    compilation ==> success
+```
 
 </details>
 
@@ -2102,7 +2147,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 62KB | 16K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 108KB | 27K |
-| [AGENTS.md](AGENTS.md) | 394KB | 101K |
+| [AGENTS.md](AGENTS.md) | 406KB | 104K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

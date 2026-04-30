@@ -4,7 +4,10 @@
 
 [Here's an example](https://devteam.github.io/Pure.DI/) on GitHub Pages.
 
-This example demonstrates the creation of a [Blazor WebAssembly](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-webassembly) application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a [Blazor WebAssembly](https://learn.microsoft.com/en-us/aspnet/core/blazor/hosting-models#blazor-webassembly) application with Pure.DI, exposing generated roots through the WebAssembly host container.
+
+> [!NOTE]
+> WebAssembly uses `builder.ConfigureContainer(composition)` instead of `UseServiceProviderFactory`. Keep browser-specific services, such as `HttpClient`, registered in the normal Blazor service collection.
 
 The composition setup file is [Composition.cs](/samples/BlazorWebAssemblyApp/Composition.cs):
 
@@ -17,7 +20,8 @@ namespace BlazorWebAssemblyApp;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Root<IAppViewModel>()
         .Root<IClockViewModel>()
 
@@ -31,7 +35,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so each view model consumed by the host must be listed with `Root`.
 
 The web application entry point is in the [Program.cs](/samples/BlazorWebAssemblyApp/Program.cs) file:
 
