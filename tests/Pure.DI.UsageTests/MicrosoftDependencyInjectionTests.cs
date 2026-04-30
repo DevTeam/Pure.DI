@@ -19,6 +19,15 @@ public class MicrosoftDependencyInjectionTests
 
         Should.Throw<CannotResolveException>(() => _ = composition.ExternalConsumer);
     }
+
+    [Fact]
+    public void ShouldRegisterValueTypeRootInServiceCollection()
+    {
+        var composition = new ValueTypeRootComposition();
+        var serviceProvider = composition.ServiceCollection.BuildServiceProvider();
+
+        serviceProvider.GetRequiredService<int>().ShouldBe(42);
+    }
 }
 
 internal interface IExternalConsumer
@@ -39,4 +48,15 @@ internal partial class TaggedExternalComposition : ServiceProviderFactory<Tagged
         DI.Setup()
             .Bind<IExternalConsumer>().To<ExternalConsumer>()
             .Root<IExternalConsumer>("ExternalConsumer");
+}
+
+internal partial class ValueTypeRootComposition : ServiceProviderFactory<ValueTypeRootComposition>
+{
+    public IServiceCollection ServiceCollection =>
+        CreateServiceCollection(this);
+
+    private static void Setup() =>
+        DI.Setup()
+            .Bind<int>().To(_ => 42)
+            .Root<int>("Number");
 }

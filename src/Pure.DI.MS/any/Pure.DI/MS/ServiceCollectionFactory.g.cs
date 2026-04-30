@@ -48,7 +48,7 @@ namespace Pure.DI.MS
                                 resolverType,
                                 Expression.Call(
                                     Expression.Field(resolverParameter, nameof(InstanceResolver.Resolver)),
-                                    typeof(IResolver<TComposition, object>).GetMethod(nameof(IResolver<TComposition, object>.ResolveByTag), BindingFlags.Instance | BindingFlags.Public),
+                                    typeof(IObjectResolver).GetMethod(nameof(IObjectResolver.ResolveByTag), BindingFlags.Instance | BindingFlags.Public),
                                     compositionParameter,
                                     Expression.Field(resolverParameter, nameof(InstanceResolver.Tag))),
                                 Expression.Parameter(typeof(IServiceProvider)),
@@ -82,7 +82,7 @@ namespace Pure.DI.MS
         internal void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
-            _resolvers.Add(new InstanceResolver(typeof(TContract), (IResolver<TComposition, object>)resolver, tag));
+            _resolvers.Add(new InstanceResolver(typeof(TContract), new ResolverAdapter<TContract>(resolver), tag));
         }
 
         /// <summary>
@@ -112,15 +112,36 @@ namespace Pure.DI.MS
         private struct InstanceResolver
         {
             public readonly Type Type;
-            public readonly IResolver<TComposition, object> Resolver;
+            public readonly IObjectResolver Resolver;
             public readonly object Tag;
 
-            public InstanceResolver(Type type, IResolver<TComposition, object> resolver, object tag)
+            public InstanceResolver(Type type, IObjectResolver resolver, object tag)
             {
                 Type = type;
                 Resolver = resolver;
                 Tag = tag;
             }
+        }
+
+        private interface IObjectResolver
+        {
+            object Resolve(TComposition composition);
+
+            object ResolveByTag(TComposition composition, object tag);
+        }
+
+        private class ResolverAdapter<TContract>: IObjectResolver
+        {
+            private readonly IResolver<TComposition, TContract> _resolver;
+
+            public ResolverAdapter(IResolver<TComposition, TContract> resolver)
+            {
+                _resolver = resolver;
+            }
+
+            public object Resolve(TComposition composition) => _resolver.Resolve(composition);
+
+            public object ResolveByTag(TComposition composition, object tag) => _resolver.ResolveByTag(composition, tag);
         }
     }
 }
