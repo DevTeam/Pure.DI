@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCatTopLevelStatements)
 
-This example is very similar to the [simple console application](ConsoleTemplate.md), except that the composition is [defined](/samples/ShroedingersCatTopLevelStatements/Program.cs) as top-level statements and looks a little less verbose:
+This example shows the same object graph as the [simple console application](ConsolePageTemplate.md), but defines the composition directly in [Program.cs](/samples/ShroedingersCatTopLevelStatements/Program.cs) with top-level statements. It keeps the setup compact while still producing the same compile-time validated composition:
+
+> [!TIP]
+> Top-level statements are convenient for small samples. For larger applications, move setup into a partial composition class so roots, lifetimes, and infrastructure bindings are easier to navigate.
 
 ```c#
 using Pure.DI;

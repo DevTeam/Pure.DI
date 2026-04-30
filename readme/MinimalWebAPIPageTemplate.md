@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/MinimalWebAPI)
 
-This example demonstrates the creation of a Minimal Web API application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a Minimal Web API with Pure.DI, using generated roots for the application entry point while still allowing ASP.NET Core endpoint handlers to request services from Microsoft dependency injection.
+
+> [!TIP]
+> `Owned<Program>` is used as the application root so disposable dependencies created for that root are released deterministically. Endpoint handlers may still use `[FromServices]` for services supplied by ASP.NET Core.
 
 The composition setup file is [Composition.cs](/samples/MinimalWebAPI/Composition.cs):
 
@@ -15,6 +18,7 @@ namespace MinimalWebAPI;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
         // Owned is used here to dispose of all disposable instances associated with the root.
         .Root<Owned<Program>>(nameof(Root))
@@ -30,7 +34,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`; this sample also resolves the `Owned<Program>` root directly from the composition.
 
 The web application entry point is in the [Program.cs](/samples/MinimalWebAPI/Program.cs) file:
 

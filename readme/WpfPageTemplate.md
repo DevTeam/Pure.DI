@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WpfAppNetCore)
 
-This example demonstrates the creation of a WPF application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a WPF application with Pure.DI, exposing generated view-model roots through XAML resources while keeping object graph validation at compile time.
+
+> [!TIP]
+> `Hint.Resolve` is disabled because XAML uses named composition roots (`App`, `Clock`) directly. This keeps the generated API small and avoids service-locator-style access.
 
 The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/Composition.cs). This class sets up how the object graphs will be created for the application. Do not forget to define any necessary composition roots, for example, these can be view models such as _ClockViewModel_:
 
@@ -14,7 +17,10 @@ namespace WpfAppNetCore;
 
 partial class Composition
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
         .Root<IAppViewModel>(nameof(App))
         .Root<IClockViewModel>(nameof(Clock))
 
@@ -62,6 +68,8 @@ This markup fragment
 ```
 
 creates a shared resource of type `Composition` and with key _"Composition"_, which will be further used as a data context in the views.
+
+Dispose the shared composition from the WPF `Exit` event when the application closes, especially if singleton services implement `IDisposable`.
 
 Advantages over classical DI container libraries:
 - No explicit initialization of data contexts is required. Data contexts are configured directly in `\.xaml` files according to the MVVM approach.

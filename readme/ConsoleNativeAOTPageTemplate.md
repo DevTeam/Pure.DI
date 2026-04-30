@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCatNativeAOT)
 
-This example is very similar to the [simple console application](ConsoleTemplate.md), except that this is a [native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/) application.
+This example shows how the simple console composition can be published as a [native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/) application. Pure.DI generates plain C# object creation code, so the dependency graph remains friendly to trimming and ahead-of-time compilation.
+
+> [!TIP]
+> Native AOT works best when construction is explicit and reflection-light. Prefer generated roots and bindings over runtime service-location patterns in AOT samples.
 
 The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.csproj) looks like this:
 

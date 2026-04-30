@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/EF)
 
-This example demonstrates the creation of an Entity Framework application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to combine Pure.DI with Entity Framework services supplied by Microsoft dependency injection. Pure.DI builds the application graph, while the external service provider supplies the `DbContext` and EF infrastructure.
+
+> [!TIP]
+> `PersonsDbContext` is intentionally not bound in Pure.DI. It is requested from the external `ServiceProvider`, while Pure.DI owns the application root and factories such as `Func<Person>`.
 
 The composition setup file is [Composition.cs](/samples/EF/Composition.cs):
 
@@ -15,6 +18,7 @@ namespace EF;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
+    [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
         .Root<Program>(nameof(Root))
 
@@ -23,7 +27,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. When Pure.DI cannot resolve framework services such as `DbContext`, `ServiceProviderFactory<T>` delegates those requests to the configured Microsoft dependency injection provider.
 
 The console application entry point is in the [Program.cs](/samples/EF/Program.cs) file:
 
@@ -78,6 +82,8 @@ partial class Program(
     }
 }
 ```
+
+The external service provider should be configured before resolving `composition.Root`. If a required EF service is missing, Pure.DI will fail when the root is created instead of hiding the missing registration.
 
 The [project file](/samples/EF/EF.csproj) looks like this:
 

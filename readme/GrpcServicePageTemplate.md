@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/GrpcService)
 
-This example demonstrates the creation of a gRPC service in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build a gRPC service with Pure.DI and ASP.NET Core hosting. The generated composition exposes the service and application dependencies through the Microsoft service-provider pipeline.
+
+> [!TIP]
+> The gRPC service type itself is a composition root. Keep the ASP.NET Core gRPC registration (`AddGrpc`) in `Program.cs`, and let Pure.DI create the service graph.
 
 The composition setup file is [Composition.cs](/samples/GrpcService/Composition.cs):
 
@@ -15,7 +18,7 @@ namespace GrpcService;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    private static void Setup() => DI.Setup()
         .Root<ClockService>()
 
         .Bind().As(Singleton).To<ClockViewModel>()
@@ -28,7 +31,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, so the gRPC service type is declared as a root.
 
 The web application entry point is in the [Program.cs](/samples/GrpcService/Program.cs) file:
 

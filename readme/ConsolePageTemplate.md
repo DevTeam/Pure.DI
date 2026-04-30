@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCat)
 
-This example demonstrates the creation of a simple console application in the pure DI paradigm using the Pure.DI code generator. All code is in [one file](/samples/ShroedingersCat/Program.cs) for easy reading:
+This example shows the smallest Pure.DI console application: abstractions, implementations, bindings, and the composition root are kept in one place so the generated object graph is easy to inspect. All code is in [one file](/samples/ShroedingersCat/Program.cs) for easy reading:
+
+> [!TIP]
+> The `Setup` method is a compile-time hint for the generator. It is not called at runtime, so it can stay private and contain only composition configuration.
 
 ```c#
 using Pure.DI;

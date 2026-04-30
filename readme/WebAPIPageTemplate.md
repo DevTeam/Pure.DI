@@ -2,7 +2,10 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WebAPI)
 
-This example demonstrates the creation of a Web API application in the pure DI paradigm using the Pure.DI code generator.
+This example shows how to build an ASP.NET Core Web API with Pure.DI, registering controllers as generated roots while keeping compatibility with the Microsoft service-provider pipeline.
+
+> [!TIP]
+> Controller activation goes through `IServiceProvider`, so controllers have to be visible as composition roots. Pair `.Roots<ControllerBase>()` with `AddControllersAsServices()`.
 
 The composition setup file is [Composition.cs](/samples/WebAPI/Composition.cs):
 
@@ -15,7 +18,8 @@ namespace WebAPI;
 
 partial class Composition : ServiceProviderFactory<Composition>
 {
-    private void Setup() => DI.Setup()
+    [System.Diagnostics.Conditional("DI")]
+    private static void Setup() => DI.Setup()
         .Roots<ControllerBase>()
 
         .Bind().As(Singleton).To<ClockViewModel>()
@@ -28,7 +32,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 }
 ```
 
-The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself.
+The composition class inherits from `ServiceProviderFactory<T>`, where `T` is the composition class itself. Only registered roots can be resolved through the Microsoft `IServiceProvider`, which is why controllers are registered with `.Roots<ControllerBase>()`.
 
 The web application entry point is in the [Program.cs](/samples/WebAPI/Program.cs) file:
 
@@ -39,6 +43,9 @@ using var composition = new Composition();
 
 // Uses Composition as an alternative IServiceProviderFactory
 builder.Host.UseServiceProviderFactory(composition);
+
+// It is required for controllers to be registered as regular services.
+builder.Services.AddMvc().AddControllersAsServices();
 ```
 
 The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
