@@ -186,7 +186,7 @@ namespace Pure.DI.MS
             string name, object tag, Lifetime lifetime)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
-            ServiceCollectionFactory.AddResolver(resolver, tag);
+            ServiceCollectionFactory.AddResolver(resolver, tag, lifetime);
         }
     }
 #pragma warning restore

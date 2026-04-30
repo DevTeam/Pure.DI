@@ -20,9 +20,24 @@ namespace Pure.DI.MS
     public class ServiceCollectionFactory<TComposition>
     {
         private static readonly Func<TComposition, InstanceResolver, ServiceDescriptor> ServiceDescriptorProvider;
+        private static readonly Func<TComposition, TComposition> ScopeFactory;
     
         static ServiceCollectionFactory()
         {
+            var scopeConstructor = typeof(TComposition).GetConstructor(
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                null,
+                new[] { typeof(TComposition) },
+                null);
+            if (scopeConstructor != null)
+            {
+                var parentScopeParameter = Expression.Parameter(typeof(TComposition));
+                ScopeFactory = Expression.Lambda<Func<TComposition, TComposition>>(
+                        Expression.New(scopeConstructor, parentScopeParameter),
+                        parentScopeParameter)
+                    .Compile();
+            }
+
             var resolverType = typeof(Func<IServiceProvider, object, object>);
             var ctorWithTag = (
                     from ctor in typeof(ServiceDescriptor).GetConstructors(BindingFlags.Instance | BindingFlags.Public)
@@ -39,6 +54,7 @@ namespace Pure.DI.MS
             {
                 var compositionParameter = Expression.Parameter(typeof(TComposition));
                 var resolverParameter = Expression.Parameter(typeof(InstanceResolver));
+                var serviceProviderParameter = Expression.Parameter(typeof(IServiceProvider));
                 ServiceDescriptorProvider = Expression.Lambda<Func<TComposition, InstanceResolver, ServiceDescriptor>>(
                         Expression.New(
                             ctorWithTag,
@@ -47,13 +63,13 @@ namespace Pure.DI.MS
                             Expression.Lambda(
                                 resolverType,
                                 Expression.Call(
-                                    Expression.Field(resolverParameter, nameof(InstanceResolver.Resolver)),
-                                    typeof(IObjectResolver).GetMethod(nameof(IObjectResolver.ResolveByTag), BindingFlags.Instance | BindingFlags.Public),
+                                    resolverParameter,
+                                    typeof(InstanceResolver).GetMethod(nameof(InstanceResolver.ResolveByTag), BindingFlags.Instance | BindingFlags.Public),
                                     compositionParameter,
-                                    Expression.Field(resolverParameter, nameof(InstanceResolver.Tag))),
-                                Expression.Parameter(typeof(IServiceProvider)),
+                                    serviceProviderParameter),
+                                serviceProviderParameter,
                                 Expression.Parameter(typeof(object))),
-                            Expression.Constant(ServiceLifetime.Transient)),
+                            Expression.Field(resolverParameter, nameof(InstanceResolver.Lifetime))),
                         compositionParameter,
                         resolverParameter)
                     .Compile();
@@ -63,8 +79,8 @@ namespace Pure.DI.MS
                 ServiceDescriptorProvider = new Func<TComposition, InstanceResolver, ServiceDescriptor>((composition, instanceResolver) => 
                     new ServiceDescriptor(
                         instanceResolver.Type,
-                        _ => instanceResolver.Resolver.Resolve(composition),
-                        ServiceLifetime.Transient));
+                        serviceProvider => instanceResolver.Resolve(composition, serviceProvider),
+                        instanceResolver.Lifetime));
             }
         }
         
@@ -78,11 +94,27 @@ namespace Pure.DI.MS
         /// </summary>
         /// <param name="resolver">Instance resolver.</param>
         /// <param name="tag">The resolving tag.</param>
+        /// <param name="lifetime">The lifetime of the composition root.</param>
         /// <typeparam name="TContract">The type of object that the resolver returns.</typeparam>
-        internal void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default)
+        internal void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default, Lifetime lifetime = Lifetime.Transient)
         {
             if (resolver == null) throw new ArgumentNullException(nameof(resolver));
-            _resolvers.Add(new InstanceResolver(typeof(TContract), new ResolverAdapter<TContract>(resolver), tag));
+            _resolvers.Add(new InstanceResolver(typeof(TContract), new ResolverAdapter<TContract>(resolver), tag, MapLifetime(lifetime)));
+        }
+
+        private static ServiceLifetime MapLifetime(Lifetime lifetime)
+        {
+            switch (lifetime)
+            {
+                case Lifetime.Singleton:
+                    return ServiceLifetime.Singleton;
+
+                case Lifetime.Scoped:
+                    return ServiceLifetime.Scoped;
+
+                default:
+                    return ServiceLifetime.Transient;
+            }
         }
 
         /// <summary>
@@ -96,7 +128,13 @@ namespace Pure.DI.MS
         public IServiceCollection CreateServiceCollection(TComposition composition)
         {
             if (composition == null) throw new ArgumentNullException(nameof(composition));
-            return new ServiceCollection().Add(CreateDescriptors(composition));
+            var serviceCollection = new ServiceCollection();
+            if (_resolvers.Any(resolver => resolver.Lifetime == ServiceLifetime.Scoped))
+            {
+                serviceCollection.Add(ServiceDescriptor.Scoped(typeof(ScopedCompositionHolder), serviceProvider => new ScopedCompositionHolder(composition)));
+            }
+            
+            return serviceCollection.Add(CreateDescriptors(composition));
         }
 
         /// <summary>
@@ -114,12 +152,31 @@ namespace Pure.DI.MS
             public readonly Type Type;
             public readonly IObjectResolver Resolver;
             public readonly object Tag;
+            public readonly ServiceLifetime Lifetime;
 
-            public InstanceResolver(Type type, IObjectResolver resolver, object tag)
+            public InstanceResolver(Type type, IObjectResolver resolver, object tag, ServiceLifetime lifetime)
             {
                 Type = type;
                 Resolver = resolver;
                 Tag = tag;
+                Lifetime = lifetime;
+            }
+
+            public object Resolve(TComposition composition, IServiceProvider serviceProvider)
+            {
+                return Resolver.Resolve(GetComposition(composition, serviceProvider));
+            }
+
+            public object ResolveByTag(TComposition composition, IServiceProvider serviceProvider)
+            {
+                return Resolver.ResolveByTag(GetComposition(composition, serviceProvider), Tag);
+            }
+
+            private TComposition GetComposition(TComposition composition, IServiceProvider serviceProvider)
+            {
+                return Lifetime == ServiceLifetime.Scoped
+                    ? ((ScopedCompositionHolder)serviceProvider.GetRequiredService(typeof(ScopedCompositionHolder))).Composition
+                    : composition;
             }
         }
 
@@ -142,6 +199,21 @@ namespace Pure.DI.MS
             public object Resolve(TComposition composition) => _resolver.Resolve(composition);
 
             public object ResolveByTag(TComposition composition, object tag) => _resolver.ResolveByTag(composition, tag);
+        }
+
+        private class ScopedCompositionHolder
+        {
+            public readonly TComposition Composition;
+
+            public ScopedCompositionHolder(TComposition parentComposition)
+            {
+                if (ScopeFactory == null)
+                {
+                    throw new InvalidOperationException($"The composition type {typeof(TComposition)} does not have a scope constructor.");
+                }
+
+                Composition = ScopeFactory(parentComposition);
+            }
         }
     }
 }
