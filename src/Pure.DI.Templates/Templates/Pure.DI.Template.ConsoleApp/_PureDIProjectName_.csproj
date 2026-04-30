@@ -13,7 +13,6 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <Content Include=".junie/guidelines.md" />
     </ItemGroup>
 
 </Project>
