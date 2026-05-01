@@ -142,6 +142,13 @@ sealed class BuildTools(
             }
         }
 
+        if (varInjection.Var.InstanceType.IsReferenceType
+            && varInjection.Var.InstanceType.NullableAnnotation == NullableAnnotation.Annotated
+            && varInjection.ContractType.NullableAnnotation != NullableAnnotation.Annotated)
+        {
+            variableCode = $"{variableCode}!";
+        }
+
         if (!ctx.RootContext.Graph.Source.Hints.IsOnDependencyInjectionEnabled)
         {
             return variableCode;

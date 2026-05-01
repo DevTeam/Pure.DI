@@ -36,7 +36,7 @@ sealed class TypeResolver(
                 }
                 else
                 {
-                    description = new TypeDescription(symbolNames.GetGlobalName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
+                    description = new TypeDescription(GetGlobalName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
                 }
 
                 break;
@@ -55,6 +55,17 @@ sealed class TypeResolver(
             }
                 break;
 
+            case INamedTypeSymbol
+            {
+                ConstructedFrom.SpecialType: Microsoft.CodeAnalysis.SpecialType.System_Nullable_T,
+                TypeArguments: [{} nullableValueType]
+            }:
+            {
+                var nullableValueTypeDescription = Resolve(setup, nullableValueType);
+                description = nullableValueTypeDescription with { Name = $"{nullableValueTypeDescription.Name}?" };
+            }
+                break;
+
             case INamedTypeSymbol namedTypeSymbol:
             {
                 var typeArgs = new List<string>();
@@ -66,7 +77,8 @@ sealed class TypeResolver(
                 }
 
                 var name = string.Join("", namedTypeSymbol.ToDisplayParts().TakeWhile(i => i.ToString() != "<"));
-                description = new TypeDescription($"{name}<{string.Join(", ", typeArgs)}>", args.Distinct().ToList(), typeParam);
+                var nullableSuffix = namedTypeSymbol is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated } ? "?" : "";
+                description = new TypeDescription($"{name}<{string.Join(", ", typeArgs)}>{nullableSuffix}", args.Distinct().ToList(), typeParam);
             }
                 break;
 
@@ -76,10 +88,14 @@ sealed class TypeResolver(
                 break;
 
             default:
-                description = new TypeDescription(symbolNames.GetGlobalName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
+                description = new TypeDescription(GetGlobalName(type), ImmutableArray<TypeDescription>.Empty, typeParam);
                 break;
         }
 
         return description;
     }
+
+    private string GetGlobalName(ITypeSymbol type) => type is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
+        ? $"{symbolNames.GetGlobalName(type)}?"
+        : symbolNames.GetGlobalName(type);
 }

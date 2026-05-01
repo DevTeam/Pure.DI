@@ -40,7 +40,7 @@ sealed class ParameterizedConstructorBuilder(
             foreach (var arg in classArgs)
             {
                 var nullCheck = "";
-                if (arg.InstanceType.IsReferenceType)
+                if (arg.InstanceType.IsReferenceType && arg.InstanceType.NullableAnnotation != NullableAnnotation.Annotated)
                 {
                     nullCheck = $" ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Node.Arg?.Source.ArgName}))";
                 }
@@ -55,7 +55,7 @@ sealed class ParameterizedConstructorBuilder(
             foreach (var arg in setupContextArgs)
             {
                 var nullCheck = "";
-                if (arg.Type.IsReferenceType)
+                if (arg.Type.IsReferenceType && arg.Type.NullableAnnotation != NullableAnnotation.Annotated)
                 {
                     nullCheck = $" ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Name}))";
                 }

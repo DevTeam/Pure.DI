@@ -120,7 +120,7 @@ sealed class RootMethodsBuilder(
             var indentToken = Disposables.Empty;
             if (root.IsMethod)
             {
-                foreach (var arg in root.RootArgs.Where(i => i.InstanceType.IsReferenceType))
+                foreach (var arg in root.RootArgs.Where(i => i.InstanceType.IsReferenceType && i.InstanceType.NullableAnnotation != NullableAnnotation.Annotated))
                 {
                     code.AppendLine($"if ({buildTools.NullCheck(composition.Compilation, arg.Name)}) throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Name}));");
                 }

@@ -1087,7 +1087,17 @@ sealed class ApiInvocationProcessor(
         if (genericName.TypeArgumentList.Arguments is [{} argTypeSyntax]
             && invocation.ArgumentList.Arguments is [{ Expression: {} nameArgExpression }, ..] args)
         {
-            var argType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, argTypeSyntax);
+            var argTypeInfo = semanticModel.GetTypeInfo(argTypeSyntax);
+            if ((argTypeInfo.Type ?? argTypeInfo.ConvertedType) is not INamedTypeSymbol argType)
+            {
+                argType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, argTypeSyntax);
+            }
+
+            if (argTypeSyntax is NullableTypeSyntax && argType.IsReferenceType)
+            {
+                argType = (INamedTypeSymbol)argType.WithNullableAnnotation(NullableAnnotation.Annotated);
+            }
+
             var tags = BuildTags(semanticModel, args.Skip(1));
             var name = GetName(
                 nameArgExpression,
