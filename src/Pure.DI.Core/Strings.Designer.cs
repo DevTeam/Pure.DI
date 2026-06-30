@@ -121,6 +121,15 @@ namespace Pure.DI {
                 return ResourceManager.GetString("Error_InvalidBinding", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The implementation type {0} has several binding lifetime attributes in the same attribute group..
+        /// </summary>
+        internal static string Error_Template_MultipleBindingLifetimes {
+            get {
+                return ResourceManager.GetString("Error_Template_MultipleBindingLifetimes", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid binding due to a compilation error..

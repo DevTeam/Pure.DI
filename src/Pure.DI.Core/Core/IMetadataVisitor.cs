@@ -36,6 +36,8 @@ interface IMetadataVisitor
 
     void VisitTagAttribute(in MdTagAttribute tagAttribute);
 
+    void VisitLifetimeAttribute(in MdLifetimeAttribute lifetimeAttribute);
+
     void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute);
 
     void VisitSpecialType(in MdSpecialType specialType);

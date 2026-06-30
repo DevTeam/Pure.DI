@@ -72,7 +72,7 @@ sealed class RootMethodsBuilder(
             buildTools.AddPureHeader(code);
         }
 
-        if ((root.Kind & RootKinds.Exposed) == RootKinds.Exposed)
+        if ((root.Kind & RootKinds.Exported) == RootKinds.Exported)
         {
             var tag = root.Injection.Tag;
             if (tag == MdTag.ContextTag)
@@ -82,17 +82,17 @@ sealed class RootMethodsBuilder(
 
             if (tag is not null)
             {
-                code.AppendLine($"[{Names.BindAttributeName}(typeof({GetAttributeType(composition, root)}), {Names.GeneratorName}.{nameof(Lifetime)}.{nameof(Lifetime.Transient)}, {tag.ValueToString()})]");
+                code.AppendLine($"[{Names.ExportAttributeName}(typeof({GetAttributeType(composition, root)}), {Names.GeneratorName}.{nameof(Lifetime)}.{nameof(Lifetime.Transient)}, {tag.ValueToString()})]");
             }
             else
             {
                 if (root.IsMethod && marker.IsMarkerBased(composition.Setup, root.Injection.Type))
                 {
-                    code.AppendLine($"[{Names.BindAttributeName}(typeof({GetAttributeType(composition, root)}))]");
+                    code.AppendLine($"[{Names.ExportAttributeName}(typeof({GetAttributeType(composition, root)}))]");
                 }
                 else
                 {
-                    code.AppendLine($"[{Names.BindAttributeName}]");
+                    code.AppendLine($"[{Names.ExportAttributeName}]");
                 }
             }
         }

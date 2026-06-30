@@ -1,4 +1,4 @@
-namespace Pure.DI.IntegrationTests;
+﻿namespace Pure.DI.IntegrationTests;
 
 /// <summary>
 /// Tests related to the accumulator feature, which allows collecting multiple instances into a single collection during the resolution process.
@@ -722,7 +722,7 @@ public class AccumulatorTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.Preview });
 
         // Then
         result.Success.ShouldBeTrue(result);

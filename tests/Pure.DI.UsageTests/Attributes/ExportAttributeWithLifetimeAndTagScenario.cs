@@ -1,10 +1,10 @@
 /*
 $v=true
 $p=14
-$d=Bind attribute with lifetime and tag
-$h=Demonstrates how to configure the Bind attribute with lifetime and tag parameters for more precise binding control.
+$d=Export attribute with lifetime and tag
+$h=Demonstrates how to configure the Export attribute with lifetime and tag parameters for more precise binding control.
 $f=>[!NOTE]
-$f=>Specifying lifetime and tag in the Bind attribute allows for fine-grained control over instance creation and binding resolution.
+$f=>Specifying lifetime and tag in the Export attribute allows for fine-grained control over instance creation and binding resolution.
 $r=Shouldly
 */
 
@@ -13,7 +13,7 @@ $r=Shouldly
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable LocalizableElement
-namespace Pure.DI.UsageTests.Basics.BindAttributeWithLifetimeAndTagScenario;
+namespace Pure.DI.UsageTests.Basics.ExportAttributeWithLifetimeAndTagScenario;
 
 using Xunit;
 
@@ -60,7 +60,7 @@ class GraphicsAdapter
     // Binds the property to the composition with the specified
     // lifetime and tag. This allows the "HighPerformance" GPU
     // to be injected into other components.
-    [Bind(lifetime: Lifetime.Singleton, tags: ["HighPerformance"])]
+    [Export(lifetime: Lifetime.Singleton, tags: ["HighPerformance"])]
     public IGpu HighPerfGpu { get; } = new DiscreteGpu();
 }
 

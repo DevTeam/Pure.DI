@@ -10,5 +10,5 @@ public partial class CompositionWithTagsInOtherProject
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
             .Bind("Some tag").To<MyService>()
-            .Root<IMyService>("MyService", "Some tag", RootKinds.Exposed);
+            .Root<IMyService>("MyService", "Some tag", RootKinds.Exported);
 }

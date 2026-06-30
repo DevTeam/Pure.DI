@@ -315,6 +315,7 @@ sealed class ApiInvocationProcessor(
                                 ImmutableArray<MdGenericTypeArgumentAttribute>.Empty,
                                 ImmutableArray<MdTypeAttribute>.Empty,
                                 ImmutableArray<MdTagAttribute>.Empty,
+                                ImmutableArray<MdLifetimeAttribute>.Empty,
                                 ImmutableArray<MdOrdinalAttribute>.Empty,
                                 ImmutableArray<MdSpecialType>.Empty,
                                 ImmutableArray<MdAccumulator>.Empty,
@@ -753,6 +754,19 @@ sealed class ApiInvocationProcessor(
                                 tagAttributeType,
                                 BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
                             metadataVisitor.VisitTagAttribute(attr);
+                        }
+
+                        break;
+
+                    case nameof(IConfiguration.LifetimeAttribute):
+                        if (TryGetAttributeType(genericName, semanticModel, out var lifetimeAttributeType))
+                        {
+                            var attr = new MdLifetimeAttribute(
+                                semanticModel,
+                                invocation,
+                                lifetimeAttributeType,
+                                BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0);
+                            metadataVisitor.VisitLifetimeAttribute(attr);
                         }
 
                         break;

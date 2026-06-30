@@ -1,4 +1,4 @@
-namespace Pure.DI.IntegrationTests;
+﻿namespace Pure.DI.IntegrationTests;
 
 using Core;
 
@@ -802,7 +802,7 @@ public class ArgsTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.Preview });
 
         // Then
         result.Success.ShouldBeTrue(result);

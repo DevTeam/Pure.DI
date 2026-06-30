@@ -1,4 +1,4 @@
-namespace Pure.DI.IntegrationTests;
+﻿namespace Pure.DI.IntegrationTests;
 
 /// <summary>
 /// Tests related to the usage of various attributes for customizing the DI process, such as [Tag], [Ordinal], etc.
@@ -698,7 +698,7 @@ public class AttributeTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -780,7 +780,7 @@ public class AttributeTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);

@@ -314,7 +314,7 @@ public class LifetimesTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);

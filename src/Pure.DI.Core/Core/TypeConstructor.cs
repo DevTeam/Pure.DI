@@ -196,7 +196,26 @@ sealed class TypeConstructor(
             }
         }
 
-        return _reversedMap.TryGetValue(type, out var result) ? result : type;
+        if (_reversedMap.TryGetValue(type, out var result))
+        {
+            return result;
+        }
+
+        switch (type)
+        {
+            case INamedTypeSymbol { IsGenericType: false }:
+                return type;
+
+            case INamedTypeSymbol namedType:
+            {
+                var args = namedType.TypeArguments.Select(ConstructReversed);
+                var constructed = namedType.OriginalDefinition.Construct(args.ToArray());
+                return constructed.WithNullableAnnotation(namedType.NullableAnnotation);
+            }
+
+            default:
+                return type;
+        }
     }
 
     private static bool IsNullableReferenceTypeCompatible(ITypeSymbol source, ITypeSymbol target) =>

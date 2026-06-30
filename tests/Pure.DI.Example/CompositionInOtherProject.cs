@@ -10,5 +10,5 @@ public partial class CompositionInOtherProject
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
             .Bind().To<MyService>()
-            .Root<IMyService>("MyService", kind: RootKinds.Exposed);
+            .Root<IMyService>("MyService", kind: RootKinds.Exported);
 }

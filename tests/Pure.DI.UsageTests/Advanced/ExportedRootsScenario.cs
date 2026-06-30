@@ -1,8 +1,8 @@
 /*
 $v=true
-$p=203
-$d=Exposed roots via root arg
-$h=Composition roots from other assemblies or projects can be used as a source of bindings passed through root arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
+$p=200
+$d=Exported roots
+$h=Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exported` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 $h=```c#
 $h=public partial class CompositionInOtherProject
 $h={
@@ -10,12 +10,11 @@ $h=    private static void Setup() =>
 $h=        DI.Setup()
 $h=            .Bind().As(Lifetime.Singleton).To<MyDependency>()
 $h=            .Bind().To<MyService>()
-$h=            .Root<IMyService>("MyService", kind: RootKinds.Exposed);
+$h=            .Root<IMyService>("MyService", kind: RootKinds.Exported);
 $h=}
 $h=```
 $f=>[!IMPORTANT]
 $f=>At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
-$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -26,14 +25,16 @@ $r=Shouldly
 
 // ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Advanced.ExposedRootsViaRootArgScenario;
+namespace Pure.DI.UsageTests.Advanced.ExportedRootsScenario;
 
 using OtherAssembly;
 using Pure.DI;
 using Xunit;
+using static Lifetime;
 
 // {
 //# using Pure.DI;
+//# using static Pure.DI.Lifetime;
 //# using OtherAssembly;
 // }
 
@@ -47,12 +48,11 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             // Binds to exposed composition roots from other project
-            .RootArg<CompositionInOtherProject>("baseComposition")
-            .Root<Program>("GetProgram");
+            .Bind().As(Singleton).To<CompositionInOtherProject>()
+            .Root<Program>("Program");
 
-        var baseComposition = new CompositionInOtherProject();
         var composition = new Composition();
-        var program = composition.GetProgram(baseComposition);
+        var program = composition.Program;
         program.DoSomething();
 // }
     }

@@ -18,6 +18,7 @@ record MdSetup(
     ImmutableArray<MdGenericTypeArgumentAttribute> GenericTypeArgumentAttributes,
     in ImmutableArray<MdTypeAttribute> TypeAttributes,
     in ImmutableArray<MdTagAttribute> TagAttributes,
+    in ImmutableArray<MdLifetimeAttribute> LifetimeAttributes,
     in ImmutableArray<MdOrdinalAttribute> OrdinalAttributes,
     in ImmutableArray<MdSpecialType> SpecialTypes,
     in ImmutableArray<MdAccumulator> Accumulators,

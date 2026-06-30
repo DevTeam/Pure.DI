@@ -46,7 +46,7 @@ static class Names
 
     // Attributes
     public const string OrdinalAttributeName = $"{ApiNamespace}{nameof(OrdinalAttribute)}";
-    public const string BindAttributeName = $"{ApiNamespace}{nameof(BindAttribute)}";
+    public const string ExportAttributeName = $"{ApiNamespace}{nameof(ExportAttribute)}";
 
     // Types
     public const string IDisposableTypeName = $"{SystemNamespace}{nameof(IDisposable)}";

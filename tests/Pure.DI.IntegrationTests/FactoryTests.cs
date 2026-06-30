@@ -1479,7 +1479,7 @@ public class FactoryTests
                                    }
                                }
                            }
-                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1605,7 +1605,7 @@ public class FactoryTests
                                    }
                                }
                            }
-                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1667,7 +1667,7 @@ public class FactoryTests
                                    }
                                }
                            }
-                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1793,7 +1793,7 @@ public class FactoryTests
                                    }
                                }
                            }
-                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#lifetime#", lifetime.ToString()).RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);

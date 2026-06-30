@@ -1,8 +1,8 @@
 /*
 $v=true
 $p=202
-$d=Exposed roots via arg
-$h=Composition roots from other assemblies or projects can be used as a source of bindings passed through composition arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
+$d=Exported roots via arg
+$h=Composition roots from other assemblies or projects can be used as a source of bindings passed through composition arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exported` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 $h=```c#
 $h=public partial class CompositionInOtherProject
 $h={
@@ -10,7 +10,7 @@ $h=    private static void Setup() =>
 $h=        DI.Setup()
 $h=            .Bind().As(Lifetime.Singleton).To<MyDependency>()
 $h=            .Bind().To<MyService>()
-$h=            .Root<IMyService>("MyService", kind: RootKinds.Exposed);
+$h=            .Root<IMyService>("MyService", kind: RootKinds.Exported);
 $h=}
 $h=```
 $f=>[!IMPORTANT]
@@ -26,7 +26,7 @@ $r=Shouldly
 
 // ReSharper disable PartialTypeWithSinglePart
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Advanced.ExposedRootsViaArgScenario;
+namespace Pure.DI.UsageTests.Advanced.ExportedRootsViaArgScenario;
 
 using OtherAssembly;
 using Pure.DI;

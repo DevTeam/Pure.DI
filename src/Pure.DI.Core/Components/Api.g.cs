@@ -1338,7 +1338,7 @@ namespace Pure.DI
     /// <seealso cref="DependencyAttribute"/>
     /// <seealso cref="OrdinalAttribute"/>
     /// <seealso cref="TypeAttribute"/>
-    [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Struct | global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = true)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1400,7 +1400,7 @@ namespace Pure.DI
     /// <seealso cref="DependencyAttribute"/>
     /// <seealso cref="TagAttribute"/>
     /// <seealso cref="OrdinalAttribute"/>
-    [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Struct | global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = true)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1415,6 +1415,70 @@ namespace Pure.DI
     }
 
     /// <summary>
+    /// Represents a lifetime attribute that overrides an implementation binding lifetime.
+    /// This attribute is part of the API, but you can use your own attribute and define it in any assembly or namespace.
+    /// </summary>
+    /// <seealso cref="IConfiguration.LifetimeAttribute{T}"/>
+    /// <seealso cref="TypeAttribute"/>
+    /// <seealso cref="TagAttribute"/>
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Struct, AllowMultiple = false)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
+    internal class LifetimeAttribute: global::System.Attribute
+    {
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <param name="lifetime">The implementation binding lifetime.</param>
+        public LifetimeAttribute(Pure.DI.Lifetime lifetime) { }
+    }
+
+    /// <summary>
+    /// Indicates that an implementation type can be automatically added as a binding.
+    /// </summary>
+    /// <seealso cref="IConfiguration.TypeAttribute{T}"/>
+    /// <seealso cref="IConfiguration.LifetimeAttribute{T}"/>
+    /// <seealso cref="IConfiguration.TagAttribute{T}"/>
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Struct, AllowMultiple = true)]
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
+    internal class BindAttribute: global::System.Attribute
+    {
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        public BindAttribute() { }
+
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <param name="type">The contract type.</param>
+        public BindAttribute(global::System.Type type) { }
+
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <param name="type">The contract type.</param>
+        /// <param name="lifetime">The implementation binding lifetime.</param>
+        public BindAttribute(global::System.Type type, Lifetime lifetime) { }
+
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <param name="type">The contract type.</param>
+        /// <param name="lifetime">The implementation binding lifetime.</param>
+        /// <param name="tags">The tags for the binding.</param>
+        public BindAttribute(global::System.Type type, Lifetime lifetime, params object[] tags) { }
+    }
+
+    /// <summary>
     /// Combines injection tagging and ordering in a single attribute.
     /// Allows simultaneous specification of both tag and ordinal for dependency injection points.
     /// </summary>
@@ -1422,7 +1486,7 @@ namespace Pure.DI
     /// <param name="ordinal">Determines injection order priority (lower values execute first).</param>
     /// <seealso cref="OrdinalAttribute"/>
     /// <seealso cref="TagAttribute"/>
-    [global::System.AttributeUsage(global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Struct | global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field)]
     #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -1438,43 +1502,43 @@ namespace Pure.DI
     };
 
     /// <summary>
-    /// Indicates that a property or method can be automatically added as a binding.
+    /// Indicates that a property or method can be automatically exported as a binding.
     /// <example>
     /// <code>
     /// internal class DependencyProvider
     /// {
-    ///     [Bind()]
+    ///     [Export()]
     ///     public Dependency Dep => new Dependency();
     /// }
     /// </code>
     /// <code>
     /// internal class DependencyProvider
     /// {
-    ///     [Bind(typeof(IDependency&lt;TT&gt;), Lifetime.Singleton)]
+    ///     [Export(typeof(IDependency&lt;TT&gt;), Lifetime.Singleton)]
     ///     public Dependency GetDep&lt;T&gt;() =&gt; new Dependency();
     /// }
     /// </code>
     /// <code>
     /// internal class DependencyProvider
     /// {
-    ///     [Bind(typeof(IDependency), Lifetime.PerResolve, "some tag")]
+    ///     [Export(typeof(IDependency), Lifetime.PerResolve, "some tag")]
     ///     public Dependency GetDep(int id) => new Dependency(id);
     /// }
     /// </code>
     /// </example>
     /// </summary>
-    /// <seealso cref="RootKinds.Exposed"/>
-    [global::System.AttributeUsage(global::System.AttributeTargets.Property | global::System.AttributeTargets.Method | global::System.AttributeTargets.Field, AllowMultiple = true)]
+    /// <seealso cref="RootKinds.Exported"/>
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Struct | global::System.AttributeTargets.Property | global::System.AttributeTargets.Method | global::System.AttributeTargets.Field, AllowMultiple = true)]
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal class BindAttribute: global::System.Attribute
+    internal class ExportAttribute: global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
-        public BindAttribute(global::System.Type type = default(global::System.Type), Lifetime lifetime = Lifetime.Transient, params object[] tags) { }
+        public ExportAttribute(global::System.Type type = default(global::System.Type), Lifetime lifetime = Lifetime.Transient, params object[] tags) { }
     }
 
     /// <summary>
@@ -1578,10 +1642,10 @@ namespace Pure.DI
         Partial = 1 << 6,
 
         /// <summary>
-        /// Exposes the root for external binding via attributes.
+        /// Exports the root for external binding via attributes.
         /// </summary>
-        /// <seealso cref="BindAttribute"/>
-        Exposed = 1 << 7,
+        /// <seealso cref="ExportAttribute"/>
+        Exported = 1 << 7,
 
         /// <summary>
         /// Specifies protected access for the composition root.
@@ -2365,6 +2429,29 @@ namespace Pure.DI
         /// <seealso cref="Pure.DI.TagAttribute"/>
         /// <seealso cref="IBinding.Tags"/>
         IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T: global::System.Attribute;
+
+        /// <summary>
+        /// Registers a custom attribute to override implementation binding lifetimes.
+        /// <example>
+        /// <code>
+        /// [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
+        /// class MyLifetimeAttribute: Attribute
+        /// {
+        ///     public MyLifetimeAttribute(Lifetime lifetime) { }
+        /// }
+        ///
+        /// DI.Setup("Composition")
+        ///     .LifetimeAttribute&lt;MyLifetimeAttribute&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="lifetimeArgumentPosition">Position of the lifetime parameter in the attribute constructor. Default: 0.</param>
+        /// <typeparam name="T">Custom attribute type.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <seealso cref="Pure.DI.LifetimeAttribute"/>
+        /// <seealso cref="TypeAttribute{T}"/>
+        /// <seealso cref="TagAttribute{T}"/>
+        IConfiguration LifetimeAttribute<T>(int lifetimeArgumentPosition = 0) where T: global::System.Attribute;
 
         /// <summary>
         /// Registers a custom attribute to override injection priority.
@@ -5927,6 +6014,13 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration TagAttribute<T>(int tagArgumentPosition)
+                where T: global::System.Attribute
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration LifetimeAttribute<T>(int lifetimeArgumentPosition)
                 where T: global::System.Attribute
             {
                 return this;

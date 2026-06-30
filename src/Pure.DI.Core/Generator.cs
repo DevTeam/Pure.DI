@@ -81,7 +81,7 @@ public sealed partial class Generator
             .Singleton<Cache<TT1, TT2>, ObserversRegistry, Metadata, Information, VariableTools, UniqueNameProvider>()
 
         // PerBlock
-            .PerBlock<Arguments, Comments, BuildTools, Resources, GlobalProperties, Marker, Variator<TT>, Profiler, BaseSymbolsProvider, Formatter,
+            .PerBlock<Arguments, Comments, BuildTools, Resources, GlobalProperties, Marker, MarkerTypeRewriter, Variator<TT>, Profiler, BaseSymbolsProvider, Formatter,
                 NodeTools, LocalFunctions, ExceptionHandler, WildcardMatcher, InjectionSiteFactory, Semantic, Attributes, Compilations, GraphWalker<TT, TT1>,
                 LifetimeAnalyzer, InstanceDpProvider, Injections, NameFormatter, BindingsFactory, NodesFactory, LocationProvider,
                 CycleTools, LifetimeProvider, VarDeclarationTools, ContractTagComparer, TypeSymbolComparer, InjectionComparer,

@@ -12,5 +12,5 @@ public partial class CompositionWithGenericRootsInOtherProject
             .Bind().To(_ => 99)
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
             .Bind().To<MyGenericService<TT>>()
-            .Root<IMyGenericService<TT>>("GetMyService", kind: RootKinds.Exposed);
+            .Root<IMyGenericService<TT>>("GetMyService", kind: RootKinds.Exported);
 }

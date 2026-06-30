@@ -18,6 +18,7 @@ sealed class MetadataBuilder(
     ICompilations compilations,
     IRegistryManager<int> bindingsRegistryManager,
     ILocationProvider locationProvider,
+    IExceptionHandler exceptionHandler,
     CancellationToken cancellationToken)
     : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
@@ -44,20 +45,9 @@ sealed class MetadataBuilder(
         var setups = new List<MdSetup>();
         foreach (var update in actualUpdates)
         {
-            var languageVersion = compilations.GetLanguageVersion(update.SemanticModel.Compilation);
-            if (languageVersion < LanguageVersion.CSharp8)
+            if (exceptionHandler.SafeRun(update, BuildSetups) is { } newSetups)
             {
-                throw new CompileErrorException(
-                    string.Format(Strings.Error_Template_UnsupportLanguage, Names.GeneratorName, languageVersion.ToDisplayString(), LanguageVersion.CSharp8.ToDisplayString()),
-                    ImmutableArray.Create(locationProvider.GetLocation(update.Node)),
-                    LogId.ErrorNotSupportedLanguageVersion,
-                    nameof(Strings.Error_Template_UnsupportLanguage));
-            }
-
-            var setupsBuilder = setupsBuilderFactory();
-            foreach (var newSetup in setupsBuilder.Build(update))
-            {
-                setups.Add(newSetup);
+                setups.AddRange(newSetups);
             }
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -80,15 +70,41 @@ sealed class MetadataBuilder(
         var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).OrderBy(i => i.Name.ClassName).ToList();
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public).OrderBy(i => i.Name))
         {
-            var setupsChain = globalSetups
-                .Select(i => new SetupDependency(i, null, null, SetupContextKind.Argument, null))
-                .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>()))
-                .Concat(Enumerable.Repeat(new SetupDependency(setup, null, null, SetupContextKind.Argument, null), 1));
-
-            MergeSetups(setupsChain, out var mergedSetup, true);
-            var setupFinalizer = setupFinalizerFactory();
-            yield return setupFinalizer.Finalize(mergedSetup, setupMap);
+            if (exceptionHandler.SafeRun((setup, setupMap, globalSetups), BuildSetup) is { } finalizedSetup)
+            {
+                yield return finalizedSetup;
+            }
         }
+    }
+
+    private IReadOnlyCollection<MdSetup> BuildSetups(SyntaxUpdate update)
+    {
+        var languageVersion = compilations.GetLanguageVersion(update.SemanticModel.Compilation);
+        if (languageVersion < LanguageVersion.CSharp8)
+        {
+            throw new CompileErrorException(
+                string.Format(Strings.Error_Template_UnsupportLanguage, Names.GeneratorName, languageVersion.ToDisplayString(), LanguageVersion.CSharp8.ToDisplayString()),
+                ImmutableArray.Create(locationProvider.GetLocation(update.Node)),
+                LogId.ErrorNotSupportedLanguageVersion,
+                nameof(Strings.Error_Template_UnsupportLanguage));
+        }
+
+        var setupsBuilder = setupsBuilderFactory();
+        return setupsBuilder.Build(update).ToArray();
+    }
+
+    private MdSetup BuildSetup(
+        (MdSetup Setup, Dictionary<CompositionName, MdSetup> SetupMap, List<MdSetup> GlobalSetups) state)
+    {
+        var (setup, setupMap, globalSetups) = state;
+        var setupsChain = globalSetups
+            .Select(i => new SetupDependency(i, null, null, SetupContextKind.Argument, null))
+            .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>()))
+            .Concat(Enumerable.Repeat(new SetupDependency(setup, null, null, SetupContextKind.Argument, null), 1));
+
+        MergeSetups(setupsChain, out var mergedSetup, true);
+        var setupFinalizer = setupFinalizerFactory();
+        return setupFinalizer.Finalize(mergedSetup, setupMap);
     }
 
     private IEnumerable<SetupDependency> ResolveDependencies(
@@ -148,6 +164,7 @@ sealed class MetadataBuilder(
         var genericTypeArgumentAttributesBuilder = ImmutableArray.CreateBuilder<MdGenericTypeArgumentAttribute>(1);
         var typeAttributesBuilder = ImmutableArray.CreateBuilder<MdTypeAttribute>(2);
         var tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>(2);
+        var lifetimeAttributesBuilder = ImmutableArray.CreateBuilder<MdLifetimeAttribute>(1);
         var specialTypeBuilder = ImmutableArray.CreateBuilder<MdSpecialType>(0);
         var ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>(2);
         var usingDirectives = ImmutableArray.CreateBuilder<MdUsingDirectives>(2);
@@ -218,6 +235,7 @@ sealed class MetadataBuilder(
             genericTypeArgumentAttributesBuilder.AddRange(setup.GenericTypeArgumentAttributes);
             typeAttributesBuilder.AddRange(setup.TypeAttributes);
             tagAttributesBuilder.AddRange(setup.TagAttributes);
+            lifetimeAttributesBuilder.AddRange(setup.LifetimeAttributes);
             ordinalAttributesBuilder.AddRange(setup.OrdinalAttributes);
             specialTypeBuilder.AddRange(setup.SpecialTypes);
             accumulators.AddRange(setup.Accumulators);
@@ -309,6 +327,7 @@ sealed class MetadataBuilder(
             genericTypeArgumentAttributesBuilder.ToImmutableArray(),
             typeAttributesBuilder.ToImmutable(),
             tagAttributesBuilder.ToImmutable(),
+            lifetimeAttributesBuilder.ToImmutable(),
             ordinalAttributesBuilder.ToImmutable(),
             specialTypeBuilder.ToImmutable(),
             accumulators.ToImmutable(),

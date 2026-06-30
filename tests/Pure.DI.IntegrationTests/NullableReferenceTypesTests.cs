@@ -5751,7 +5751,7 @@ public class NullableReferenceTypesTests
     }
 
     [Fact]
-    public async Task ShouldSupportNullableBindAttribute()
+    public async Task ShouldSupportNullableExportAttribute()
     {
         // Given
 
@@ -5765,10 +5765,10 @@ public class NullableReferenceTypesTests
 
                            class Bindings
                            {
-                               [Bind]
+                               [Export]
                                public string Required => "required";
 
-                               [Bind]
+                               [Export]
                                public string? Optional => null;
                            }
 

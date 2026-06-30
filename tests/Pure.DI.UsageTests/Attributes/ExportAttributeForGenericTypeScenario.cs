@@ -1,10 +1,10 @@
 /*
 $v=true
 $p=15
-$d=Bind attribute for a generic type
-$h=Demonstrates how to use the Bind attribute to configure bindings for generic types, allowing automatic registration without explicit binding declarations.
+$d=Export attribute for a generic type
+$h=Demonstrates how to use the Export attribute to configure bindings for generic types, allowing automatic registration without explicit binding declarations.
 $f=>[!NOTE]
-$f=>The Bind attribute provides a declarative way to specify bindings directly on types, reducing the need for manual composition setup.
+$f=>The Export attribute provides a declarative way to specify bindings directly on types, reducing the need for manual composition setup.
 $r=Shouldly
 */
 
@@ -16,7 +16,7 @@ $r=Shouldly
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable CA1822
-namespace Pure.DI.UsageTests.Basics.BindAttributeForGenericTypeScenario;
+namespace Pure.DI.UsageTests.Basics.ExportAttributeForGenericTypeScenario;
 
 using Xunit;
 
@@ -65,7 +65,7 @@ class CommentsFactory
     // The 'TT' type marker in the attribute indicates that this method
     // can produce 'IComments<T>' for any generic type 'T'.
     // This allows the factory to handle all requests for IComments<T>.
-    [Bind(typeof(IComments<TT>))]
+    [Export(typeof(IComments<TT>))]
     public IComments<T> Create<T>() => new Comments<T>();
 }
 

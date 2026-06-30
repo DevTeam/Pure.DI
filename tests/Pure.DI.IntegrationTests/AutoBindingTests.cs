@@ -1,4 +1,4 @@
-namespace Pure.DI.IntegrationTests;
+﻿namespace Pure.DI.IntegrationTests;
 
 /// <summary>
 /// Tests related to the auto-binding feature, where the library automatically tries to resolve types that are not explicitly bound.
@@ -269,7 +269,7 @@ public class AutoBindingTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.Preview });
 
         // Then
         result.Success.ShouldBeTrue(result);

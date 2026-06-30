@@ -12,12 +12,21 @@ sealed class SetupsBuilder(
     Func<ITypeConstructor> typeConstructorFactory,
     ISemantic semantic,
     ISymbolNames symbolNames,
+    ILogger logger,
+    IMarker marker,
+    MarkerTypeRewriter markerTypeRewriter,
     Func<ILocalVariableRenamingRewriter> localVariableRenamingRewriterFactory,
     IRegistryManager<int> bindingsRegistryManager,
     IEqualityComparer<(ITypeSymbol ContractType, object? Tag)> contractTagComparer,
     ITypeSymbolComparer typeSymbolComparer)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor, ISetupFinalizer
 {
+    private sealed record TypeAttributeBinding(
+        ITypeSymbol Type,
+        ImmutableArray<ITypeSymbol> Contracts,
+        ImmutableArray<object?> Tags,
+        Lifetime? Lifetime);
+
     private readonly List<MdAccumulator> _accumulators = [];
     private readonly List<MdBinding> _bindings = [];
     private readonly List<MdDependsOn> _dependsOn = [];
@@ -28,6 +37,7 @@ sealed class SetupsBuilder(
     private readonly List<MdRoot> _roots = [];
     private readonly List<MdSetup> _setups = [];
     private readonly List<SetupContextMembers> _setupContextMembers = [];
+    private readonly List<MdLifetimeAttribute> _lifetimeAttributes = [];
     private readonly List<MdTagAttribute> _tagAttributes = [];
     private readonly List<MdTypeAttribute> _typeAttributes = [];
     private readonly List<MdUsingDirectives> _usingDirectives = [];
@@ -128,6 +138,9 @@ sealed class SetupsBuilder(
     public void VisitTagAttribute(in MdTagAttribute tagAttribute) =>
         _tagAttributes.Add(tagAttribute);
 
+    public void VisitLifetimeAttribute(in MdLifetimeAttribute lifetimeAttribute) =>
+        _lifetimeAttributes.Add(lifetimeAttribute);
+
     public void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute) =>
         _ordinalAttributes.Add(ordinalAttribute);
 
@@ -169,6 +182,7 @@ sealed class SetupsBuilder(
         _genericTypeArgumentAttributes.AddRange(setup.GenericTypeArgumentAttributes);
         _typeAttributes.AddRange(setup.TypeAttributes);
         _tagAttributes.AddRange(setup.TagAttributes);
+        _lifetimeAttributes.AddRange(setup.LifetimeAttributes);
         _ordinalAttributes.AddRange(setup.OrdinalAttributes);
         _specialTypes.AddRange(setup.SpecialTypes);
         _usingDirectives.AddRange(setup.UsingDirectives);
@@ -178,6 +192,8 @@ sealed class SetupsBuilder(
         {
             _setupContextMembers.AddRange(setup.SetupContextMembers);
         }
+
+        AddTypeAttributeBindings(setup);
 
         foreach (var binding in setup.Bindings)
         {
@@ -245,7 +261,7 @@ sealed class SetupsBuilder(
                   && member is IFieldSymbol or IPropertySymbol or IMethodSymbol
             from attribute in member.GetAttributes()
             where attribute.AttributeClass is {} attributeClass
-                  && symbolNames.GetGlobalName(attributeClass) == Names.BindAttributeName
+                  && symbolNames.GetGlobalName(attributeClass) == Names.ExportAttributeName
             select (member, attribute.ConstructorArguments, attribute.NamedArguments))
             .ToList();
 
@@ -261,13 +277,13 @@ sealed class SetupsBuilder(
 
         var name = new CompositionName(className, typeNamespace, null);
 
-        var exposedRoots = ImmutableArray<MdRoot>.Empty;
+        var exportedRoots = ImmutableArray<MdRoot>.Empty;
         if (setupMap.TryGetValue(name, out var boundSetup))
         {
-            exposedRoots = boundSetup.Roots.Where(i => (i.Kind & RootKinds.Exposed) == RootKinds.Exposed).ToImmutableArray();
+            exportedRoots = boundSetup.Roots.Where(i => (i.Kind & RootKinds.Exported) == RootKinds.Exported).ToImmutableArray();
         }
 
-        if (membersToBind.Count == 0 && exposedRoots.Length == 0)
+        if (membersToBind.Count == 0 && exportedRoots.Length == 0)
         {
             return;
         }
@@ -470,9 +486,9 @@ sealed class SetupsBuilder(
             }
         }
 
-        // Adds bindings for exposed roots from related compositions.
-        // At this stage, exposed root members may not exist in semantic model yet, so we bind by member name.
-        foreach (var root in exposedRoots)
+        // Adds bindings for exported roots from related compositions.
+        // At this stage, exported root members may not exist in semantic model yet, so we bind by member name.
+        foreach (var root in exportedRoots)
         {
             if (string.IsNullOrWhiteSpace(root.Name))
             {
@@ -486,7 +502,7 @@ sealed class SetupsBuilder(
             }
 
             var rootContractType = SubstituteTypeParameters(root.RootContractType, typeParameterMap);
-            rootContractType = ReplaceTypeParametersWithMarkers(rootContractType);
+            rootContractType = markerTypeRewriter.ReplaceTypeParametersWithMarkers(semanticModel, rootContractType);
             if (boundMemberContracts.Contains((rootContractType, rootTagValue)))
             {
                 continue;
@@ -517,7 +533,7 @@ sealed class SetupsBuilder(
             var isStatic = (root.Kind & RootKinds.Static) == RootKinds.Static;
             if (!isStatic)
             {
-                resolvers.Add(CreateExposedResolver(typeConstructor, Names.DefaultInstanceValueName, compositionContractType, valueTag, ref position, namespaces));
+                resolvers.Add(CreateExportedResolver(typeConstructor, Names.DefaultInstanceValueName, compositionContractType, valueTag, ref position, namespaces));
             }
 
             VisitContract(
@@ -558,7 +574,7 @@ sealed class SetupsBuilder(
                     factoryExpr);
             }
 
-            var memberResolver = CreateExposedResolver(typeConstructor, Names.DefaultInstanceValueName, compositionContractType, valueTag, ref position, namespaces);
+            var memberResolver = CreateExportedResolver(typeConstructor, Names.DefaultInstanceValueName, compositionContractType, valueTag, ref position, namespaces);
             memberResolver = memberResolver with { MemberName = root.Name };
 
             VisitFactory(
@@ -580,7 +596,7 @@ sealed class SetupsBuilder(
 
         return;
 
-        MdResolver CreateExposedResolver(
+        MdResolver CreateExportedResolver(
             ITypeConstructor constructor,
             string paramName,
             ITypeSymbol injectedType,
@@ -681,53 +697,6 @@ sealed class SetupsBuilder(
 
         }
 
-        ITypeSymbol ReplaceTypeParametersWithMarkers(ITypeSymbol typeSymbol)
-        {
-            var map = new Dictionary<ITypeParameterSymbol, ITypeSymbol>(typeSymbolComparer.Runtime);
-
-            return Replace(typeSymbol);
-
-            ITypeSymbol Replace(ITypeSymbol symbol)
-            {
-                switch (symbol)
-                {
-                    case ITypeParameterSymbol typeParameter:
-                        if (map.TryGetValue(typeParameter, out var markerType))
-                        {
-                            return markerType;
-                        }
-
-                        var resolvedMarker = GetMarkerType(map.Count);
-                        markerType = resolvedMarker ?? (ITypeSymbol)typeParameter;
-                        map[typeParameter] = markerType;
-                        return markerType;
-
-                    case INamedTypeSymbol { IsGenericType: true } namedType:
-                    {
-                        var args = namedType.TypeArguments.Select(Replace).ToArray();
-                        var constructed = namedType.OriginalDefinition.Construct(args);
-                        return constructed.WithNullableAnnotation(namedType.NullableAnnotation);
-                    }
-
-                    case IArrayTypeSymbol arrayType:
-                    {
-                        var elementType = Replace(arrayType.ElementType);
-                        var result = semanticModel.Compilation.CreateArrayTypeSymbol(elementType, arrayType.Rank);
-                        return result.WithNullableAnnotation(arrayType.NullableAnnotation);
-                    }
-
-                    default:
-                        return symbol;
-                }
-            }
-        }
-
-        INamedTypeSymbol? GetMarkerType(int index)
-        {
-            var typeName = index == 0 ? "Pure.DI.TT" : $"Pure.DI.TT{index}";
-            return semanticModel.Compilation.GetTypeByMetadataName(typeName);
-        }
-
         void TrackMemberBindings(ITypeSymbol? memberContractType, List<object?> memberTags)
         {
             if (memberContractType is null)
@@ -764,6 +733,7 @@ sealed class SetupsBuilder(
             GenericTypeArgumentAttributes = _genericTypeArgumentAttributes.ToImmutableArray(),
             TypeAttributes = _typeAttributes.ToImmutableArray(),
             TagAttributes = _tagAttributes.ToImmutableArray(),
+            LifetimeAttributes = _lifetimeAttributes.ToImmutableArray(),
             OrdinalAttributes = _ordinalAttributes.ToImmutableArray(),
             SpecialTypes = _specialTypes.ToImmutableArray(),
             UsingDirectives = _usingDirectives.ToImmutableArray(),
@@ -793,6 +763,7 @@ sealed class SetupsBuilder(
         _genericTypeArguments.Clear();
         _genericTypeArgumentAttributes.Clear();
         _typeAttributes.Clear();
+        _lifetimeAttributes.Clear();
         _ordinalAttributes.Clear();
         _specialTypes.Clear();
         _usingDirectives.Clear();
@@ -801,6 +772,390 @@ sealed class SetupsBuilder(
         _setup = null;
         _bindingBuilder = bindingBuilderFactory();
         return setup;
+    }
+
+    private void AddTypeAttributeBindings(MdSetup setup)
+    {
+        var compilation = setup.SemanticModel.Compilation;
+        var processedTypes = new HashSet<ITypeSymbol>(typeSymbolComparer.Runtime);
+        foreach (var syntaxTree in compilation.SyntaxTrees)
+        {
+            var semanticModel = compilation.GetSemanticModel(syntaxTree);
+            var root = syntaxTree.GetRoot();
+            foreach (var typeDeclaration in root
+                         .DescendantNodes()
+                         .OfType<TypeDeclarationSyntax>()
+                         .Where(typeDeclaration => (typeDeclaration is ClassDeclarationSyntax or StructDeclarationSyntax or RecordDeclarationSyntax)
+                                                   && typeDeclaration.AttributeLists.Count > 0))
+            {
+                if (semanticModel.GetDeclaredSymbol(typeDeclaration) is not ITypeSymbol type || !processedTypes.Add(type))
+                {
+                    continue;
+                }
+
+                foreach (var binding in GetTypeAttributeBindings(setup, semanticModel, type))
+                {
+                    var builder = bindingBuilderFactory();
+                    foreach (var defaultLifetime in setup.DefaultLifetimes)
+                    {
+                        builder.AddDefaultLifetime(defaultLifetime);
+                    }
+
+                    foreach (var contract in binding.Contracts)
+                    {
+                        builder.AddContract(
+                            new MdContract(
+                                semanticModel,
+                                setup.Source,
+                                contract,
+                                ContractKind.Explicit,
+                                ImmutableArray<MdTag>.Empty));
+                    }
+
+                    if (binding.Contracts.IsDefaultOrEmpty)
+                    {
+                        builder.AddContract(
+                            new MdContract(
+                                semanticModel,
+                                setup.Source,
+                                null,
+                                ContractKind.Explicit,
+                                binding.Tags.Select((tag, index) => new MdTag(index, tag)).ToImmutableArray()));
+                    }
+
+                    if (binding.Lifetime is {} lifetime)
+                    {
+                        builder.Lifetime = new MdLifetime(semanticModel, setup.Source, lifetime);
+                    }
+
+                    for (var tagIndex = 0; tagIndex < binding.Tags.Length; tagIndex++)
+                    {
+                        builder.AddTag(new MdTag(tagIndex, binding.Tags[tagIndex]));
+                    }
+
+                    builder.Implementation = new MdImplementation(semanticModel, setup.Source, binding.Type);
+                    var mdBinding = builder.Build(setup);
+                    bindingsRegistryManager.Register(setup, mdBinding.Id);
+                    _bindings.Add(mdBinding);
+                }
+            }
+        }
+    }
+
+    private IEnumerable<TypeAttributeBinding> GetTypeAttributeBindings(
+        MdSetup setup,
+        SemanticModel semanticModel,
+        ITypeSymbol type)
+    {
+        var customBindings = new List<TypeAttributeBinding>();
+        var hasTypeAttributes = false;
+        foreach (var attributeGroup in GetAttributeGroups(type))
+        {
+            var groupBindings = new List<TypeAttributeBinding>();
+            var groupHasTypeAttributes = false;
+            foreach (var attributeData in attributeGroup)
+            {
+                if (attributeData.AttributeClass is not {} attributeClass)
+                {
+                    continue;
+                }
+
+                var typeAttributes = setup.TypeAttributes
+                    .Where(attribute => IsAttributeMatch(attributeClass, attribute.AttributeType))
+                    .ToImmutableArray();
+                var tagAttributes = setup.TagAttributes
+                    .Where(attribute => IsAttributeMatch(attributeClass, attribute.AttributeType))
+                    .ToImmutableArray();
+                var lifetimeAttributes = setup.LifetimeAttributes
+                    .Where(attribute => IsAttributeMatch(attributeClass, attribute.AttributeType))
+                    .ToImmutableArray();
+
+                var isBindingAttribute = !typeAttributes.IsDefaultOrEmpty
+                    || !tagAttributes.IsDefaultOrEmpty
+                    || !lifetimeAttributes.IsDefaultOrEmpty;
+                if (!isBindingAttribute)
+                {
+                    continue;
+                }
+
+                var contracts = typeAttributes
+                    .Select(attribute => GetTypeAttributeValue(attributeData, attribute.ArgumentPosition))
+                    .Where(contract => contract is not null)
+                    .Select(contract => contract!)
+                    .ToImmutableArray();
+
+                var tags = tagAttributes
+                    .SelectMany(attribute => GetTagAttributeValues(attributeData, attribute.ArgumentPosition))
+                    .ToImmutableArray();
+
+                var lifetime = lifetimeAttributes
+                    .Select(attribute => GetLifetimeAttributeValue(attributeData, attribute.ArgumentPosition))
+                    .FirstOrDefault(lifetime => lifetime is not null);
+
+                groupBindings.Add(new TypeAttributeBinding(type, contracts, tags, lifetime));
+                groupHasTypeAttributes |= !typeAttributes.IsDefaultOrEmpty;
+            }
+
+            if (groupBindings.Count == 0)
+            {
+                continue;
+            }
+
+            if (customBindings.Count > 0 && hasTypeAttributes && groupHasTypeAttributes)
+            {
+                foreach (var customBinding in GetMergedTypeAttributeBindings(setup, type, customBindings))
+                {
+                    yield return customBinding;
+                }
+
+                customBindings.Clear();
+                hasTypeAttributes = false;
+            }
+
+            customBindings.AddRange(groupBindings);
+            hasTypeAttributes |= groupHasTypeAttributes;
+        }
+
+        foreach (var customBinding in GetMergedTypeAttributeBindings(setup, type, customBindings))
+        {
+            yield return customBinding;
+        }
+    }
+
+    private IEnumerable<TypeAttributeBinding> GetMergedTypeAttributeBindings(
+        MdSetup setup,
+        ITypeSymbol type,
+        IReadOnlyCollection<TypeAttributeBinding> customBindings)
+    {
+        foreach (var customBinding in MergeTypeAttributeBindings(type, customBindings))
+        {
+            yield return customBinding with
+            {
+                Type = GetImplementationType(setup, type, customBinding.Contracts)
+            };
+        }
+    }
+
+    private static IEnumerable<IReadOnlyCollection<AttributeData>> GetAttributeGroups(ITypeSymbol type)
+    {
+        var currentAttributes = new List<AttributeData>();
+        AttributeListSyntax? currentAttributeList = null;
+        foreach (var attributeData in type.GetAttributes())
+        {
+            var attributeList = GetAttributeList(attributeData);
+            if (currentAttributes.Count > 0 && !ReferenceEquals(currentAttributeList, attributeList))
+            {
+                yield return currentAttributes;
+                currentAttributes = [];
+            }
+
+            currentAttributeList = attributeList;
+            currentAttributes.Add(attributeData);
+        }
+
+        if (currentAttributes.Count > 0)
+        {
+            yield return currentAttributes;
+        }
+    }
+
+    private static AttributeListSyntax? GetAttributeList(AttributeData attributeData) =>
+        attributeData.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax attribute
+            ? attribute.Parent as AttributeListSyntax
+            : null;
+
+    private ITypeSymbol GetImplementationType(MdSetup setup, ITypeSymbol type, ImmutableArray<ITypeSymbol> contracts)
+    {
+        if (type is not INamedTypeSymbol { IsGenericType: true } implementationType)
+        {
+            return type;
+        }
+
+        foreach (var contract in contracts.Where(contract => marker.IsMarkerBased(setup, contract)))
+        {
+            foreach (var implementedContract in GetImplementedContracts(implementationType))
+            {
+                var typeConstructor = typeConstructorFactory();
+                if (typeConstructor.TryBind(setup, contract, implementedContract))
+                {
+                    return typeConstructor.ConstructReversed(implementationType);
+                }
+            }
+        }
+
+        return type;
+    }
+
+    private static IEnumerable<ITypeSymbol> GetImplementedContracts(INamedTypeSymbol implementationType)
+    {
+        yield return implementationType;
+
+        var baseType = implementationType.BaseType;
+        while (baseType is not null)
+        {
+            yield return baseType;
+            baseType = baseType.BaseType;
+        }
+
+        foreach (var implementedInterface in implementationType.AllInterfaces)
+        {
+            yield return implementedInterface;
+        }
+    }
+
+    private IEnumerable<TypeAttributeBinding> MergeTypeAttributeBindings(
+        ITypeSymbol type,
+        IReadOnlyCollection<TypeAttributeBinding> bindings)
+    {
+        if (bindings.Count == 0)
+        {
+            yield break;
+        }
+
+        var lifetimes = bindings
+            .Select(binding => binding.Lifetime)
+            .OfType<Lifetime>()
+            .ToArray();
+        if (lifetimes.Length > 1)
+        {
+            logger.CompileError(
+                new LogMessage(
+                    string.Format(Strings.Error_Template_MultipleBindingLifetimes, type),
+                    nameof(Strings.Error_Template_MultipleBindingLifetimes)),
+                type.Locations.Where(location => location != Location.None).ToImmutableArray(),
+                LogId.ErrorInvalidBinding);
+            yield break;
+        }
+
+        var contracts = ImmutableArray.CreateBuilder<ITypeSymbol>();
+        var tags = ImmutableArray.CreateBuilder<object?>();
+        foreach (var binding in bindings)
+        {
+            foreach (var contract in binding.Contracts)
+            {
+                if (!contracts.Any(item => typeSymbolComparer.RuntimeEquals(item, contract)))
+                {
+                    contracts.Add(contract);
+                }
+            }
+
+            foreach (var tag in binding.Tags)
+            {
+                if (!tags.Any(item => TagEquals(item, tag)))
+                {
+                    tags.Add(tag);
+                }
+            }
+        }
+
+        yield return new TypeAttributeBinding(type, contracts.ToImmutable(), tags.ToImmutable(), lifetimes.FirstOrDefault());
+    }
+
+    private bool TagEquals(object? tag, object? otherTag) =>
+        tag is ITypeSymbol tagType && otherTag is ITypeSymbol otherTagType
+            ? typeSymbolComparer.RuntimeEquals(tagType, otherTagType)
+            : Equals(tag, otherTag);
+
+    private ITypeSymbol? GetTypeAttributeValue(AttributeData attributeData, int argumentPosition)
+    {
+        if (attributeData.AttributeClass is { IsGenericType: true, TypeArguments.Length: > 0 } attributeClass
+            && argumentPosition < attributeClass.TypeArguments.Length)
+        {
+            return attributeClass.TypeArguments[argumentPosition];
+        }
+
+        if (argumentPosition < attributeData.ConstructorArguments.Length
+            && attributeData.ConstructorArguments[argumentPosition].Value is ITypeSymbol type)
+        {
+            return type;
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<object?> GetAttributeValues(AttributeData attributeData, int argumentPosition)
+    {
+        if (argumentPosition >= attributeData.ConstructorArguments.Length)
+        {
+            yield break;
+        }
+
+        var argument = attributeData.ConstructorArguments[argumentPosition];
+        if (argument.Kind == TypedConstantKind.Array)
+        {
+            if (argument.Values.IsDefaultOrEmpty)
+            {
+                yield break;
+            }
+
+            foreach (var value in argument.Values.Select(i => i.Value))
+            {
+                yield return value;
+            }
+
+            yield break;
+        }
+
+        yield return argument.Value;
+    }
+
+    private static IEnumerable<object?> GetTagAttributeValues(AttributeData attributeData, int argumentPosition) =>
+        GetAttributeValues(attributeData, argumentPosition)
+            .Where(_ => !IsLifetimeAttributeArgument(attributeData, argumentPosition));
+
+    private static bool IsLifetimeAttributeArgument(AttributeData attributeData, int argumentPosition)
+    {
+        if (argumentPosition >= attributeData.ConstructorArguments.Length)
+        {
+            return false;
+        }
+
+        var argument = attributeData.ConstructorArguments[argumentPosition];
+        return IsLifetime(argument) || argument.Kind == TypedConstantKind.Array
+            && !argument.Values.IsDefaultOrEmpty
+            && IsLifetime(argument.Values[0]);
+    }
+
+    private static bool IsLifetime(TypedConstant argument) =>
+        argument.Type is { TypeKind: TypeKind.Enum, Name: nameof(Lifetime) };
+
+    private static Lifetime? GetLifetimeAttributeValue(AttributeData attributeData, int argumentPosition)
+    {
+        if (argumentPosition >= attributeData.ConstructorArguments.Length)
+        {
+            return null;
+        }
+
+        var argument = attributeData.ConstructorArguments[argumentPosition];
+        if (argument.Kind == TypedConstantKind.Array)
+        {
+            if (argument.Values.IsDefaultOrEmpty)
+            {
+                return null;
+            }
+
+            argument = argument.Values[0];
+        }
+
+        return argument.Value switch
+        {
+            Lifetime lifetime => lifetime,
+            int value => (Lifetime)value,
+            _ => null
+        };
+    }
+
+    private bool IsAttributeMatch(INamedTypeSymbol actualAttribute, INamedTypeSymbol registeredAttribute)
+    {
+        var actual = actualAttribute.IsGenericType
+            ? actualAttribute.ConstructUnboundGenericType()
+            : actualAttribute;
+
+        var registered = registeredAttribute.IsGenericType
+            ? registeredAttribute.ConstructUnboundGenericType()
+            : registeredAttribute;
+
+        return symbolNames.GetGlobalName(actual) == symbolNames.GetGlobalName(registered);
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]

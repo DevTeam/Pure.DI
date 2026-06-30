@@ -1,13 +1,13 @@
-﻿// ReSharper disable once CheckNamespace
+// ReSharper disable once CheckNamespace
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace Pure.DI.UsageTests.IntegrationTests.ExposedRootTests;
+namespace Pure.DI.UsageTests.IntegrationTests.ExportedRootTests;
 
 using Pure.DI;
 
-public class ExposedRootTests
+public class ExportedRootTests
 {
     [Fact]
     public void Run()
@@ -39,7 +39,7 @@ public partial class CompositionInOtherProject
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
             .Bind().To<MyService>()
-            .Root<IMyService>("MyService", kind: RootKinds.Exposed);
+            .Root<IMyService>("MyService", kind: RootKinds.Exported);
 }
 
 public partial class Composition

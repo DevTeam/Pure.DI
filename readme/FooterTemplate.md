@@ -500,6 +500,38 @@ Example:
 .Bind<IService>().To<Service>()
 ```
 
+### Implementation-level binding attributes
+
+Bindings can also be declared on implementation types with registered binding metadata attributes such as `Bind`, `Type`, `Tag`, and `Lifetime`.
+
+```c#
+[Bind(typeof(IService)), Tag("main"), Lifetime(Lifetime.Singleton)]
+class Service : IService;
+```
+
+The square-bracket attribute group is the binding boundary:
+
+- attributes inside one `[ ... ]` group form one binding;
+- contracts and tags in the same group are merged into that binding;
+- lifetime can be specified only once in the same group;
+- repeated lifetime metadata inside one group is a compilation error;
+- separate `Bind` attribute groups create separate bindings for the same implementation type.
+
+For example, the following declaration creates one singleton binding that can be resolved by either tag:
+
+```c#
+[Bind(typeof(IService)), Tag("main"), Tag("secondary"), Lifetime(Lifetime.Singleton)]
+class Service : IService;
+```
+
+To create two independent bindings for the same implementation, place `Bind` attributes in separate square-bracket groups:
+
+```c#
+[Bind(typeof(IService), Lifetime.Singleton, "main")]
+[Bind(typeof(IService), Lifetime.Singleton, "secondary")]
+class Service : IService;
+```
+
 ### Nullable reference type contracts
 
 When nullable reference types are enabled, Pure.DI treats nullable annotations as part of the dependency contract while it builds the graph and generates code. This makes `T` and `T?` different contracts for bindings, arguments, factories, and generic contracts.

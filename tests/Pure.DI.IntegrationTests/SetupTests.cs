@@ -935,7 +935,7 @@ public class SetupTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -994,7 +994,7 @@ public class SetupTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1030,7 +1030,7 @@ public class SetupTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1065,7 +1065,7 @@ public class SetupTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1101,7 +1101,7 @@ public class SetupTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1716,7 +1716,7 @@ public class SetupTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.Preview });
 
         // Then
         result.Success.ShouldBeTrue(result);

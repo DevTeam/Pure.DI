@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 public class LightweightRootsTests
 {
@@ -1064,7 +1064,7 @@ public class LightweightRootsTests
                                    .Hint(Hint.Resolve, "Off")
                                    .RootArg<int>("id")
                                    .Bind<IService>().To<Service>()
-                                   .Root<IService>("GetService", kind: RootKinds.Exposed | RootKinds.Light);
+                                   .Root<IService>("GetService", kind: RootKinds.Exported | RootKinds.Light);
                            }
 
                            class Program
@@ -1102,7 +1102,7 @@ public class LightweightRootsTests
                                void Setup() => DI.Setup(nameof(Composition))
                                    .Hint(Hint.Resolve, "Off")
                                    .Bind<IService<TT>>().To<Service<TT>>()
-                                   .Root<IService<TT>>("GetService", kind: RootKinds.Exposed | RootKinds.Light);
+                                   .Root<IService<TT>>("GetService", kind: RootKinds.Exported | RootKinds.Light);
                            }
 
                            class Program

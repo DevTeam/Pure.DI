@@ -1072,7 +1072,7 @@ public class TagsTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.Preview });
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1115,7 +1115,7 @@ public class TagsTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+                           """.RunAsync(new Options { LanguageVersion = LanguageVersion.Preview });
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1181,7 +1181,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1245,7 +1245,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1309,7 +1309,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1367,7 +1367,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1431,7 +1431,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1494,7 +1494,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1544,7 +1544,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1639,7 +1639,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1738,7 +1738,7 @@ public class TagsTests
                                   }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp11));
+                           """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
         result.Success.ShouldBeTrue(result);

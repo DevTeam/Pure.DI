@@ -133,7 +133,7 @@ partial class Composition
         // {
         DI.Setup()
             .Bind().To<DbConnection>()
-            .Bind("shared").As(Lifetime.Singleton).To<DbConnection>()
+            .Bind("shared").As(Pure.DI.Lifetime.Singleton).To<DbConnection>()
             .Bind().To<DataService>()
 
             // Composition root

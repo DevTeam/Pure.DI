@@ -1,17 +1,20 @@
 /*
 $v=true
-$p=13
+$p=15
 $d=Bind attribute
-$h=`BindAttribute` lets you bind properties, fields, or methods declared on the bound type.
-$f=It applies to instance or static members, including members that return generic types.
+$h=Shows how to declare a binding directly on an implementation type with the built-in `BindAttribute`.
+$f=>[!NOTE]
+$f=>`BindAttribute` is registered by default and can provide the contract type, lifetime, and tag. Attributes inside the same square-bracket group form one binding; separate `Bind` groups create separate bindings.
+$r=Shouldly
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
-// ReSharper disable LocalizableElement
-namespace Pure.DI.UsageTests.Basics.BindAttributeScenario;
+// ReSharper disable UnusedParameter.Local
+#pragma warning disable CS9113 // Parameter is unread.
+namespace Pure.DI.UsageTests.Attributes.BindAttributeScenario;
 
 using Xunit;
 
@@ -28,60 +31,30 @@ public class Scenario
         // Resolve = Off
         // {
         DI.Setup(nameof(Composition))
-            .Bind().As(Lifetime.Singleton).To<DeviceFeatureProvider>()
-            .Bind().To<PhotoService>()
 
             // Composition root
-            .Root<IPhotoService>("PhotoService");
+            .Root<IMessageWriter>("Writer", "console");
 
         var composition = new Composition();
-        var photoService = composition.PhotoService;
-        photoService.TakePhotoWithLocation();
+        var writer = composition.Writer;
+        writer.Write("Pure.DI");
+
+        writer.ShouldBeOfType<ConsoleMessageWriter>();
+        writer.ShouldBeSameAs(composition.Writer);
         // }
         composition.SaveClassDiagram();
     }
 }
 
 // {
-interface IGps
+interface IMessageWriter
 {
-    void GetLocation();
+    void Write(string message);
 }
 
-class Gps : IGps
+[Bind(typeof(IMessageWriter), Lifetime.Singleton, "console")]
+class ConsoleMessageWriter : IMessageWriter
 {
-    public void GetLocation() => Console.WriteLine("Coordinates: 123, 456");
-}
-
-interface ICamera
-{
-    void Capture();
-}
-
-class Camera : ICamera
-{
-    public void Capture() => Console.WriteLine("Photo captured");
-}
-
-class DeviceFeatureProvider
-{
-    // The [Bind] attribute specifies that the property is a source of dependency
-    [Bind] public IGps Gps { get; } = new Gps();
-
-    [Bind] public ICamera Camera { get; } = new Camera();
-}
-
-interface IPhotoService
-{
-    void TakePhotoWithLocation();
-}
-
-class PhotoService(IGps gps, Func<ICamera> cameraFactory) : IPhotoService
-{
-    public void TakePhotoWithLocation()
-    {
-        gps.GetLocation();
-        cameraFactory().Capture();
-    }
+    public void Write(string message) => Console.WriteLine(message);
 }
 // }

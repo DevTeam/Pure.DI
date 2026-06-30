@@ -13,11 +13,11 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - Examples: A root depends on a service that has no binding.
 
 ### DIE001
-- Description: Binding cannot be built due to missing binding metadata.
-- Problem: A binding is missing required information (type, source, or factory).
-- Fix: Ensure the binding has a valid `.Bind(...).To<...>()` or `.Bind(...).To(ctx => ...)` chain.
-- See: [simplified-binding](readme/simplified-binding.md).
-- Examples: Binding is incomplete or the setup call is malformed.
+- Description: Binding cannot be built because its metadata is invalid or incomplete.
+- Problem: A binding is missing required information (type, source, or factory), or implementation-level binding attributes define conflicting metadata.
+- Fix: Ensure the binding has a valid `.Bind(...).To<...>()` or `.Bind(...).To(ctx => ...)` chain. For implementation attributes, specify lifetime at most once inside one square-bracket attribute group.
+- See: [simplified-binding](readme/simplified-binding.md), [bind-metadata-merge](readme/bind-metadata-merge.md).
+- Examples: Binding is incomplete, the setup call is malformed, or `[Bind(...), Lifetime(...)]` repeats lifetime metadata in the same attribute group.
 
 ### DIE002
 - Description: Binding is invalid because the compiler reported errors.

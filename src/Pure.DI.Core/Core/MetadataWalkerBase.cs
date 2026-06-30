@@ -33,6 +33,11 @@ abstract class MetadataWalkerBase : IMetadataVisitor
             VisitTagAttribute(md);
         }
 
+        foreach (var md in setup.LifetimeAttributes)
+        {
+            VisitLifetimeAttribute(md);
+        }
+
         foreach (var md in setup.OrdinalAttributes)
         {
             VisitOrdinalAttribute(md);
@@ -151,6 +156,10 @@ abstract class MetadataWalkerBase : IMetadataVisitor
     }
 
     public virtual void VisitTagAttribute(in MdTagAttribute tagAttribute)
+    {
+    }
+
+    public virtual void VisitLifetimeAttribute(in MdLifetimeAttribute lifetimeAttribute)
     {
     }
 

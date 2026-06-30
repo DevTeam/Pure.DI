@@ -47,6 +47,8 @@ sealed class MetadataToLinesWalker(int indent)
 
     public override void VisitTagAttribute(in MdTagAttribute tagAttribute) => _lb.AppendLine(tagAttribute.ToString());
 
+    public override void VisitLifetimeAttribute(in MdLifetimeAttribute lifetimeAttribute) => _lb.AppendLine(lifetimeAttribute.ToString());
+
     public override void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute) => _lb.AppendLine(ordinalAttribute.ToString());
 
     public override void VisitLifetime(in MdLifetime lifetime) => _lb.Append($".{lifetime.ToString()}");

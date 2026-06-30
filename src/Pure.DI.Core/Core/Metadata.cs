@@ -30,10 +30,10 @@ sealed class Metadata(
                 case IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }:
                 case MemberAccessExpressionSyntax { Name.Identifier.Text: nameof(DI.Setup) }
                     when expression.Kind() == SyntaxKind.SimpleMemberAccessExpression:
-                    var returnType = semantic.TryGetTypeSymbol<ITypeSymbol>(semanticModel, node);
+                    var returnType = TryGetReturnType(semanticModel, node);
                     if (returnType is null)
                     {
-                        return false;
+                        return IsSetupSyntax(expression);
                     }
 
                     var configType = _configTypeSymbols.GetValue(
@@ -54,4 +54,23 @@ sealed class Metadata(
 
         return false;
     }
+
+    private ITypeSymbol? TryGetReturnType(SemanticModel semanticModel, SyntaxNode node)
+    {
+        try
+        {
+            return semantic.TryGetTypeSymbol<ITypeSymbol>(semanticModel, node);
+        }
+        catch (HandledException)
+        {
+            return null;
+        }
+    }
+
+    private static bool IsSetupSyntax(ExpressionSyntax expression) =>
+        expression is IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }
+        || expression is MemberAccessExpressionSyntax {
+            Name.Identifier.Text: nameof(DI.Setup),
+            Expression: IdentifierNameSyntax { Identifier.Text: nameof(DI) }
+        };
 }
