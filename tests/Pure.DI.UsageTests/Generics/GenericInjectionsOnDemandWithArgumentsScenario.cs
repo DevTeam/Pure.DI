@@ -2,7 +2,8 @@
 $v=true
 $p=14
 $d=Generic injections on demand with arguments
-$h=Demonstrates how to create generic dependencies on demand with custom arguments using factory delegates.
+$h=When creating a generic dependency requires a runtime value, inject a factory with arguments. `SensorHub<T>` receives a `Func<int, ISensor<T>>` and calls it with a specific `id` for each sensor; the `int` argument is mapped to the `Sensor<T>` constructor parameter.
+$h=This keeps the composition in charge of wiring while letting the consumer supply per-instance data at creation time.
 $f=>[!NOTE]
 $f=>Generic factories with arguments allow passing runtime parameters while maintaining type safety.
 $r=Shouldly

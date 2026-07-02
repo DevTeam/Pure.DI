@@ -2,6 +2,8 @@
 $v=true
 $p=99
 $d=Service provider with scope
+$h=A composition class can implement the _Microsoft.Extensions.DependencyInjection_ scoping contracts — `IKeyedServiceProvider`, `IServiceScopeFactory`, and `IServiceScope` — with hints renaming the generated `Resolve` methods to `GetService` and `GetRequiredKeyedService`. Each `CreateScope()` call returns a new `Composition` instance, so `Scoped` bindings like `ISession` get one instance per scope, while `Singleton` bindings like `IConfiguration` are shared across all scopes.
+$h=
 $h=>[!IMPORTANT]
 $h=>Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface. These roots must be registered using `Root(...)` or `RootBind()` calls.
 $f=>[!NOTE]

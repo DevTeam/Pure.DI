@@ -2,7 +2,7 @@
 $v=true
 $p=101
 $d=Tracking disposable instances with different lifetimes
-$h=Demonstrates how disposable instances with different lifetimes are tracked and disposed correctly according to their respective lifetime scopes.
+$h=`Owned<T>` tracking respects lifetimes. Disposing an `Owned<T>` immediately disposes the transient dependencies created for that graph, while for a `Singleton` dependency it only releases ownership — the shared instance stays alive for other consumers and is disposed only when the composition itself is disposed.
 $f=>[!NOTE]
 $f=>The tracking mechanism respects lifetime semantics, ensuring that transient instances are disposed immediately while singleton instances persist until composition disposal.
 $r=Shouldly

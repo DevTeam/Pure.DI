@@ -2,7 +2,7 @@
 $v=true
 $p=3
 $d=ValueTask
-$h=Demonstrates `ValueTask<T>` injection, which provides a more efficient alternative to `Task<T>` for scenarios where the result is often already available synchronously.
+$h=A dependency can be injected as `ValueTask<T>` and awaited when needed — an allocation-friendly alternative to `Task<T>` for values that are usually available synchronously. Bind the underlying type as usual and request `ValueTask<T>`; here `DataProcessor` awaits `ValueTask<IConnection>` before using the connection.
 $f=>[!NOTE]
 $f=>`ValueTask<T>` reduces allocations compared to `Task<T>` when operations complete synchronously, making it ideal for high-performance scenarios.
 $r=Shouldly

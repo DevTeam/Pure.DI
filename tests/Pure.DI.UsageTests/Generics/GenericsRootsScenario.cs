@@ -2,7 +2,8 @@
 $v=true
 $p=10
 $d=Generic roots
-$h=Demonstrates how to create roots for all generic types that inherit from a given base type at compile time.
+$h=Declaring a separate root for every generic implementation gets tedious. `Roots<IExporter<TT>>("GetMy{type}")` creates a composition root for each type implementing `IExporter<TT>` that is known at compile time at the point of the call.
+$h=The `{type}` placeholder in the name template is replaced with the implementation name, producing methods like `GetMyFileExporter_T<T>()` and `GetMyNetworkExporter_T<T>()`.
 $f=>[!NOTE]
 $f=>Generic roots enable exposing multiple generic implementations without explicitly registering each one.
 $r=Shouldly

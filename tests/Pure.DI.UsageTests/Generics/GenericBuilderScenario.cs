@@ -2,7 +2,8 @@
 $v=true
 $p=9
 $d=Generic builder
-$h=Demonstrates how to create generic builders for build-up patterns with type parameters.
+$h=Builders can be generic as well. `Builder<ViewModel<TTS, TT2>>("BuildUp")` generates a generic `BuildUp` method that injects dependencies into an instance you already have — handy when objects are created by an external framework (a UI library, a serializer) rather than by the composition.
+$h=The marker types define the method's type parameters: `TTS` matches the `struct` constraint on `TId`, and `TT2` stands for the model type.
 $f=>[!NOTE]
 $f=>Generic builders enable flexible object initialization while maintaining type safety across different generic types.
 $r=Shouldly

@@ -2,7 +2,8 @@
 $v=true
 $p=14
 $d=Generic injections on demand
-$h=Demonstrates how to create generic dependencies on demand using factory delegates with generic type parameters.
+$h=On-demand creation via `Func<T>` works inside generic types too. `Distributor<T>` takes a `Func<IWorker<T>>` and calls it whenever it needs another worker — each call produces a new `Worker<T>` for the same type argument.
+$h=Use this when the consumer, not the composition, decides how many instances to create and when.
 $f=>[!NOTE]
 $f=>Generic on-demand injection provides flexibility for creating instances with different type parameters as needed.
 $r=Shouldly

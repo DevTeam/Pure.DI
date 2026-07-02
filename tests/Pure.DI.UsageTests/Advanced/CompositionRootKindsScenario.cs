@@ -2,7 +2,8 @@
 $v=true
 $p=1
 $d=Composition root kinds
-$h=Demonstrates different kinds of composition roots that can be created: public methods, private partial methods, and static roots. Each kind serves different use cases for accessing composition roots with appropriate visibility and lifetime semantics.
+$h=By default, a composition root is a public instance property, but the `kind` argument of `Root<T>(...)` lets you change that. Combine `RootKinds` flags to generate the root as a method instead of a property, adjust its visibility (`Public`, `Internal`, `Private`), or make it `Static` or `Partial`.
+$h=A private partial root is useful when you want to wrap the generated code in your own hand-written member, as the `PaymentService` property does here.
 $f=>[!NOTE]
 $f=>Composition roots can be customized with different kinds to control accessibility and lifetime, enabling flexible API design patterns.
 $r=Shouldly

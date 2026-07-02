@@ -2,7 +2,7 @@
 $v=true
 $p=12
 $d=Custom generic argument attribute
-$h=Demonstrates how to create and use custom attributes for generic type arguments, enabling advanced generic binding scenarios.
+$h=Besides the built-in `TT` marker types, you can define your own generic type argument markers. Register a custom attribute with `GenericTypeArgumentAttribute<T>()`, apply it to a marker type like `TMy`, and use that marker in bindings: a single `Bind<IRepository<TMy>>().To<Repository<TMy>>()` then resolves `IRepository<T>` for any `T`, such as `IRepository<Post>` and `IRepository<Comment>`.
 $f=>[!NOTE]
 $f=>Custom generic argument attributes are useful when you need to pass metadata specific to generic type parameters during binding resolution.
 $r=Shouldly

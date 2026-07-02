@@ -2,9 +2,9 @@
 $v=true
 $p=0
 $d=AutoMapper
-$h=Demonstrates integration with AutoMapper library, showing how Pure.DI can work alongside object mapping solutions.
+$h=AutoMapper creates target objects itself, so mapped instances normally bypass DI even when they need dependencies. Here a configured `IMapper` is bound as a singleton, and a generic `Func<TT1, TT2>` binding wraps `mapper.Map` so that consumers like `StudentService` simply inject a mapping function for the types they need. After mapping, `ctx.BuildUp(target)` injects the members marked with `[Inject]` — such as `Person.Formatter` — into the freshly mapped object.
 $f=>[!NOTE]
-$f=>AutoMapper integration enables clean separation between DI composition concerns and object mapping logic.
+$f=>Since the `IMapper` binding is a singleton, the mapping configuration is created and compiled only once and then reused for all mappings.
 $r=Shouldly;AutoMapper;Microsoft.Extensions.DependencyInjection;Pure.DI.Abstractions
 */
 

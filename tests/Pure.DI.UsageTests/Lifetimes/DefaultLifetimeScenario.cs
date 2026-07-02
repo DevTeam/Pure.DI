@@ -2,7 +2,9 @@
 $v=true
 $p=6
 $d=Default lifetime
-$h=Demonstrates how to set a default lifetime that is used when no specific lifetime is specified for a binding. This is useful when a particular lifetime is used more often than others.
+$h=When most bindings share the same lifetime, repeating `.As(...)` on each of them is noisy.
+$h=`DefaultLifetime(...)` sets the lifetime applied to every subsequent binding in the setup chain that doesn't specify one — until the chain ends or `DefaultLifetime(...)` is called again.
+$h=Here `DefaultLifetime(Singleton)` makes both the gateway and the assistant singletons, so the two gateway references inside the assistant resolve to the same instance.
 $f=>[!NOTE]
 $f=>Default lifetime reduces configuration verbosity when a particular lifetime is predominant in your composition.
 $r=Shouldly

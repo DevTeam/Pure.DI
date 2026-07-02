@@ -2,7 +2,8 @@
 $v=true
 $p=9
 $d=Async disposable scope
-$h=Demonstrates async disposable scope lifetime, where scoped instances are disposed asynchronously when the scope ends.
+$h=When scoped services hold resources that need asynchronous cleanup — network connections, streams, database sessions — implement `IAsyncDisposable` on them and dispose of the scope with `await scope.DisposeAsync()`.
+$h=A scope is a class derived from the composition (here `Session`): each session gets its own `Scoped` instances, and disposing the session asynchronously disposes everything created within it.
 $f=>[!NOTE]
 $f=>Async disposable scope is essential for scenarios requiring proper async cleanup of scoped resources.
 $r=Shouldly

@@ -2,9 +2,9 @@
 $v=true
 $p=0
 $d=Serilog
-$h=Demonstrates integration with _Serilog_ logging library, showing how to inject logger instances with context information.
+$h=Serilog loggers are typically enriched with the type of the class that writes the log. The key here is a binding that calls `logger.ForContext(ctx.ConsumerType)`: `ConsumerType` is the type of the consumer of the given dependency, so every class receives a logger whose `SourceContext` is already set to that class. The root logger itself is passed in as a composition argument.
 $f=>[!NOTE]
-$f=>Proper logging integration with DI enables context-aware logging throughout the application with minimal configuration.
+$f=>This example also turns on the `OnNewInstance` and `OnDependencyInjection` hints to log the creation and injection of composition objects. The regular-expression hints exclude the logger types themselves from these callbacks.
 $r=Serilog.Core;Serilog.Events
 */
 

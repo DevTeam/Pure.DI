@@ -2,7 +2,8 @@
 $v=true
 $p=9
 $d=Generic builders
-$h=Demonstrates how to create generic builders for all types derived from a generic base type known at compile time.
+$h=Sometimes many related types need the same build-up treatment. A single `Builders<IMessage<TT, TT2>>("BuildUp")` call creates a builder for every type implementing `IMessage<TT, TT2>` that is visible at compile time — here both `QueryMessage<,>` and `CommandMessage<,>` get their own `BuildUp` overload.
+$h=Each builder injects members marked with the `[Dependency]` attribute into an existing instance, so instances created elsewhere (e.g. by an API controller) still receive their dependencies.
 $f=>[!NOTE]
 $f=>Generic builders provide compile-time type safety while allowing flexible object graph construction.
 $r=Shouldly

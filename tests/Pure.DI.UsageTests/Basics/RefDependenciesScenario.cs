@@ -2,9 +2,10 @@
 $v=true
 $p=20
 $d=Ref dependencies
-$h=Demonstrates how to use `ref` and `out` parameters in dependency injection for scenarios where you need to pass values by reference.
+$h=High-performance code often relies on `ref struct` types such as `Span<T>`, which cannot be stored in fields — so ordinary constructor or property injection is off the table.
+$h=Instead, inject them by `ref` through a method marked with `[Ordinal]`: here a `ref struct Data` wrapping the bound `int[]` is passed into `Initialize(ref Data data)` and consumed without extra allocations.
 $f=>[!NOTE]
-$f=>`ref` dependencies are useful for scenarios where you need to return multiple values or modify parameters during injection.
+$f=>`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
 $r=Shouldly
 */
 

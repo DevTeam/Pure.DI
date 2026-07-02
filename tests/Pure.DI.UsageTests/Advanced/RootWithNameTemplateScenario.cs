@@ -2,7 +2,7 @@
 $v=true
 $p=2
 $d=Root with name template
-$h=Demonstrates how to use name templates for composition roots, allowing dynamic generation of root names based on patterns or parameters.
+$h=Instead of a fixed root name, `Root<T>()` accepts a name template where the `{type}` placeholder is replaced with the dependency's type name. This is handy when you declare many roots and want them to follow a consistent naming convention: the template `"My{type}"` here produces a root property named `MyApiClient`.
 $f=>[!NOTE]
 $f=>Name templates provide flexibility in root naming but should be used consistently to maintain code readability.
 $r=Shouldly

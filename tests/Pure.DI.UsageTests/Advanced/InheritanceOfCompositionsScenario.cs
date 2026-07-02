@@ -2,7 +2,8 @@
 $v=true
 $p=7
 $d=Inheritance of compositions
-$h=Demonstrates how composition classes can inherit from each other, allowing reuse of bindings and composition roots across multiple related compositions.
+$h=Common bindings can be shared between compositions through plain C# inheritance. Define them in a base class whose setup uses `DI.Setup(kind: Internal)` — the `Internal` composition kind marks the setup as reusable configuration that does not generate a composition class of its own.
+$h=A composition class that derives from it automatically picks up the inherited bindings and combines them with its own.
 $f=>[!NOTE]
 $f=>Composition inheritance provides a way to share common bindings while still allowing each derived composition to add its own specific bindings.
 $r=Shouldly

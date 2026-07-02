@@ -2,8 +2,8 @@
 $v=true
 $p=2
 $d=Factory
-$h=Demonstrates how to use factories for manual creation and initialization when constructor injection alone is not enough.
-$h=Use factory bindings for custom setup, external APIs, or controlled object state during creation.
+$h=Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
+$h=A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
 $f=There are scenarios where manual control over the creation process is required, such as
 $f=- When additional initialization logic is needed
 $f=- When complex construction steps are required

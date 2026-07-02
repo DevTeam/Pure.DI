@@ -3,9 +3,9 @@ $v=true
 $p=1
 $i=false
 $d=Unity Basics
-$h=Demonstrates basic integration with Unity game engine, showing how Pure.DI can be used for dependency injection in Unity projects.
+$h=In Unity, `MonoBehaviour` instances are created by the engine, not by your code, so constructor injection is not an option. Pure.DI solves this with builders: the `Builders<MonoBehaviour>()` call generates a `BuildUp` method for every `MonoBehaviour` in the composition, which injects the members marked with `[Dependency]`. Here `Clock` calls `scope.BuildUp(this)` in `Awake()` to receive its `IClockService`, while regular (non-`MonoBehaviour`) dependencies like `ClockService` are wired up with ordinary bindings.
 $f=>[!NOTE]
-$f=>Unity integration requires special considerations due to Unity's component-based architecture and lifecycle management.
+$f=>Call `BuildUp` in `Awake()` so that dependencies are ready before the first `Update()` runs.
 $r=Shouldly
 */
 

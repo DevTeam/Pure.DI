@@ -2,7 +2,8 @@
 $v=true
 $p=6
 $d=Custom generic argument
-$h=Demonstrates how to create custom generic arguments for advanced generic binding scenarios.
+$h=Besides the built-in marker types like `TT`, `TT1`, `TTS`, you can declare your own. Registering a type with `GenericTypeArgument<MyTT>()` turns it into a marker usable in generic bindings, such as `Bind<ISequence<MyTT>>().To<Sequence<MyTT>>()`.
+$h=Reach for this when the predefined markers are not enough — for example, to give markers meaningful names or specific type constraints.
 $f=>[!NOTE]
 $f=>Custom generic arguments provide flexibility for complex generic scenarios beyond standard marker types.
 $r=Shouldly

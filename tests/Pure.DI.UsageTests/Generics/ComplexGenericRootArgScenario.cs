@@ -2,7 +2,8 @@
 $v=true
 $p=9
 $d=Complex generic root arguments
-$h=Demonstrates complex generic root argument scenarios with multiple type parameters and constraints.
+$h=Root arguments can be generic too. `RootArg<SourceConfig<TT>>("config")` declares a root argument whose type follows the type parameter of the composition root, so the generated `GetSource<T>` method accepts a `SourceConfig<T>` at resolution time.
+$h=This is useful when a generic service needs per-call configuration: here the config is delivered to `Source<T>` through the `Initialize` method marked with the `[Dependency]` attribute.
 $f=>[!NOTE]
 $f=>Complex generic scenarios require careful attention to type constraints and argument order for correct resolution.
 $r=Shouldly

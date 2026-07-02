@@ -2,7 +2,7 @@
 $v=true
 $p=6
 $d=Weak Reference
-$h=Demonstrates `WeakReference<T>` injection, allowing references to objects without preventing garbage collection.
+$h=Injecting `WeakReference<T>` lets a service hold a dependency without keeping it alive — useful for large, recreatable objects such as caches. Bind the underlying type as usual and request `WeakReference<T>`; the consumer then calls `TryGetTarget`, which returns `false` once the object has been garbage-collected.
 $f=>[!NOTE]
 $f=>`WeakReference<T>` is useful for caching scenarios where you want to allow garbage collection when memory is constrained.
 $r=Shouldly
