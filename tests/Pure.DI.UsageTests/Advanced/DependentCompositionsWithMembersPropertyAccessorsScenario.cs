@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=7
+$p=9
 $d=Dependent compositions with setup context members and property accessors
+$sa=Dependent compositions with setup context members
 $h=This scenario shows how to copy referenced members and implement custom property accessors via partial methods.
 $h=When this occurs: you need base setup properties with logic, but the dependent composition must remain parameterless.
 $h=What it solves: keeps Unity-friendly composition while letting the user implement property logic.

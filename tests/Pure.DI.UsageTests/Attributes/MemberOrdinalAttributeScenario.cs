@@ -2,6 +2,8 @@
 $v=true
 $p=1
 $d=Member ordinal attribute
+$sa=Constructor ordinal attribute
+$sa=Dependency attribute
 $h=When applied to a property or field, the member participates in DI, ordered by ordinal (ascending).
 $f=The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
 $r=Shouldly

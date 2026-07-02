@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=15
+$p=18
 $d=Default values
+$sa=Required properties or fields
 $h=This example shows how to use default values in dependency injection when explicit injection is not possible.
 $f=The key points are:
 $f=- Default constructor arguments can be used for simple values

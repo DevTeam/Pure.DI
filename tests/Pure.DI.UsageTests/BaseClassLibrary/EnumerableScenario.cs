@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=1
+$p=3
 $d=Enumerable
+$sa=Array
+$sa=Enumerable generics
+$sa=Async Enumerable
 $h=Specifying `IEnumerable<T>` as the injection type lets you inject instances of all bindings that implement type `T` in a lazy fashion - the instances will be provided one by one, in order corresponding to the sequence of bindings.
 $f=>[!NOTE]
 $f=>IEnumerable<T> provides lazy evaluation, making it efficient for scenarios where you may not need to enumerate all instances.

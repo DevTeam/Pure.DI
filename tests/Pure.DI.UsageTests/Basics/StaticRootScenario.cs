@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=17
+$p=28
 $d=Static root
+$sa=Composition root kinds
 $h=Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type — `Composition.GlobalConfiguration` — without creating a composition object.
 $h=This comes in handy at application entry points or in code that has no composition instance to hand.
 $f=>[!NOTE]

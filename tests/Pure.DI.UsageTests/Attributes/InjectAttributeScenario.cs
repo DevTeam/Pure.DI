@@ -2,6 +2,7 @@
 $v=true
 $p=5
 $d=Inject attribute
+$sa=Dependency attribute
 $h=If you want attributes without defining your own, add this package:
 $h=
 $h=[![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)

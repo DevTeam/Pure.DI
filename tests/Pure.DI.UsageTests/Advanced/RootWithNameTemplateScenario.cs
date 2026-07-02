@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=2
+$p=1
 $d=Root with name template
+$sa=Composition roots
 $h=Instead of a fixed root name, `Root<T>()` accepts a name template where the `{type}` placeholder is replaced with the dependency's type name. This is handy when you declare many roots and want them to follow a consistent naming convention: the template `"My{type}"` here produces a root property named `MyApiClient`.
 $f=>[!NOTE]
 $f=>Name templates provide flexibility in root naming but should be used consistently to maintain code readability.

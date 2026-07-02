@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=102
+$p=104
 $d=Tracking async disposable instances per a composition root
+$sa=Tracking disposable instances per a composition root
+$sa=Tracking async disposable instances in delegates
 $h=Declaring a root as `Root<Owned<T>>` gives every root instance ownership of its own dependency graph, including `IAsyncDisposable` dependencies. Calling `DisposeAsync()` on one `Owned<T>` asynchronously disposes only the instances created for that root, leaving graphs obtained from other root accesses untouched.
 $f=>[!NOTE]
 $f=>Async disposable tracking ensures proper async cleanup of all disposable instances within a composition scope.

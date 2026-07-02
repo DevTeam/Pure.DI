@@ -1,7 +1,9 @@
 ﻿/*
 $v=true
-$p=3
+$p=7
 $d=Dictionary
+$sa=Enumerable
+$sa=Tags
 $h=When a service needs to pick a dependency by key at runtime — for example, choosing a notification channel — inject an `IReadOnlyDictionary<TKey, TValue>`. Bind each entry as a `KeyValuePair<TKey, TValue>` with `Tag.Unique`, and Pure.DI collects all such pairs into the dictionary automatically.
 $f=>[!NOTE]
 $f=>Dictionary injection is useful when you need to access dependencies by keys, such as named or tagged implementations like notification channels.

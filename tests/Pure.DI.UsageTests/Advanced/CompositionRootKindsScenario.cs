@@ -1,7 +1,9 @@
 ﻿/*
 $v=true
-$p=1
+$p=0
 $d=Composition root kinds
+$sa=Composition roots
+$sa=Static root
 $h=By default, a composition root is a public instance property, but the `kind` argument of `Root<T>(...)` lets you change that. Combine `RootKinds` flags to generate the root as a method instead of a property, adjust its visibility (`Public`, `Internal`, `Private`), or make it `Static` or `Partial`.
 $h=A private partial root is useful when you want to wrap the generated code in your own hand-written member, as the `PaymentService` property does here.
 $f=>[!NOTE]

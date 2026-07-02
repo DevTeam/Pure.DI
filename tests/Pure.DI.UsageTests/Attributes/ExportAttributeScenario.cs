@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=13
+$p=9
 $d=Export attribute
+$sa=Export attribute with lifetime and tag
+$sa=Export attribute for a generic type
 $h=`ExportAttribute` lets you bind properties, fields, or methods declared on the bound type.
 $f=It applies to instance or static members, including members that return generic types.
 */

@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=103
+$p=105
 $d=Tracking async disposable instances in delegates
+$sa=Tracking async disposable instances per a composition root
 $h=When a service creates `IAsyncDisposable` dependencies dynamically, inject `Func<Owned<T>>` instead of `Func<T>`. Each factory call returns an `Owned<T>` that takes ownership of the dependency graph it just created, so the consumer decides exactly when to call `DisposeAsync()` — and disposing one instance does not affect graphs produced by other calls.
 $f=>[!NOTE]
 $f=>Async disposable tracking in delegates ensures proper async cleanup even when instances are created dynamically through factory delegates.

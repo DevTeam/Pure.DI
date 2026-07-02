@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=11
+$p=24
 $d=Root Name
+$sa=Root Type
 $h=`RootName` provides the name of the composition root being resolved. This property is useful for logging, diagnostics, or implementing root-specific behavior.
 $h=Use this when infrastructure behavior should include root-level context (for example, logging prefixes).
 $f=Limitations: root-name-dependent behavior couples logic to API naming; avoid it in domain services.

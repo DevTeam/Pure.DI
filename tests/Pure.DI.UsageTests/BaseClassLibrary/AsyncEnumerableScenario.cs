@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=7
+$p=12
 $d=Async Enumerable
+$sa=Enumerable
 $h=Specifying `IAsyncEnumerable<T>` as the injection type allows instances of all bindings implementing type `T` to be injected in an asynchronous-lazy manner - the instances will be provided one at a time, in an order corresponding to the sequence of the bindings.
 $f=>[!NOTE]
 $f=>IAsyncEnumerable<T> provides efficient lazy enumeration for scenarios where you need to process many instances without loading them all into memory at once.

@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=15
+$p=11
 $d=Export attribute for a generic type
+$sa=Export attribute
 $h=The `[Export]` attribute works with generic types too: applied to a generic factory method with a `TT` marker, as in `[Export(typeof(IComments<TT>))]`, it makes a single method the source of `IComments<T>` for any requested `T`. This is handy when a factory class produces generic dependencies and you don't want to declare a separate binding for each closed type.
 $f=>[!NOTE]
 $f=>The Export attribute provides a declarative way to specify bindings directly on types, reducing the need for manual composition setup.

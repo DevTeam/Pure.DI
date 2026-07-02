@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=99
+$p=1
 $d=Func with arguments
+$sa=Func
+$sa=Injections on demand with arguments
+$sa=Overrides
 $h=Sometimes an instance can only be created with values known at runtime, such as an id or a name. Injecting a `Func<..., T>` with arguments gives you a factory: values passed at call time are matched by type to the constructor parameters (here `int id` and `string name` of `Person`), while the remaining dependencies, like `IClock`, are resolved from the composition as usual.
 $f=>[!NOTE]
 $f=>Func with arguments provides flexibility for scenarios where you need to pass runtime parameters during instance creation.

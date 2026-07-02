@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=3
+$p=7
 $d=Injection on demand
+$sa=Func
+$sa=Injections on demand with arguments
 $h=This example creates dependencies on demand using a factory delegate. The service (`GameLevel`) needs multiple instances of `IEnemy`, so it receives a `Func<IEnemy>` that can create new instances when needed.
 $h=This approach is useful when instances are created lazily or repeatedly during business execution.
 $f=Key elements:

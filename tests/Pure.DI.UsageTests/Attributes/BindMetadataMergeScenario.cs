@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=21
+$p=20
 $d=Bind metadata merge
+$sa=Bind attribute groups
 $h=Shows how binding metadata attributes on one implementation type are combined into one binding.
 $f=>[!NOTE]
 $f=>Attributes inside the same square-bracket group form one binding. Contracts and tags are merged, but lifetime must be specified at most once in the group. Separate `Bind` attribute groups create separate bindings.

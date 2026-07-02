@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=1
+$p=4
 $d=Simplified binding
+$sa=Simplified lifetime-specific bindings
+$sa=Auto-bindings
 $h=You can call `Bind()` without type parameters to infer contracts from the implementation type.
 $h=This reduces boilerplate while preserving compile-time graph validation.
 $f=In practice, most abstraction types can be inferred. The parameterless `Bind()` binds:

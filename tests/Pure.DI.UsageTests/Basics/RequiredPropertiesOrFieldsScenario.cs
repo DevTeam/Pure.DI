@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=15
+$p=19
 $d=Required properties or fields
+$sa=Property injection
+$sa=Default values
 $h=This example shows how the `required` modifier can be used to automatically inject dependencies into properties and fields. When a property or field is marked with `required`, the DI will automatically inject the dependency without additional effort.
 $f=This approach simplifies dependency injection by eliminating the need to manually configure bindings for required dependencies, making the code more concise and easier to maintain.
 $r=Shouldly

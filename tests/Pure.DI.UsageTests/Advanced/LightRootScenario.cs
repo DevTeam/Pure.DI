@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=10
+$p=2
 $d=Light roots
+$sa=Composition roots
 $h=Light roots optimize code generation by avoiding the creation of separate composition objects for each root. Instead, they share a common lightweight composition and use delegates to create instances. This is particularly useful for simple, frequently resolved roots where the overhead of generating separate compositions outweighs the benefits. Anonymous roots (roots without explicit names) are lightweight by default.
 $f=>[!NOTE]
 $f=>Light roots are ideal for simple services, factories, or utilities that don't require complex dependency graphs. They reduce generated code size and improve compilation time.

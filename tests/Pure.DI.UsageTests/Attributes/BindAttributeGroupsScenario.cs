@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=22
+$p=21
 $d=Bind attribute groups
+$sa=Bind metadata merge
 $h=Shows how separate `BindAttribute` groups on one implementation type create separate bindings.
 $f=>[!NOTE]
 $f=>Attributes inside one square-bracket group are merged into one binding. To create several bindings for the same implementation type, place `Bind` attributes in separate square-bracket groups.
@@ -55,7 +56,7 @@ interface IMessageWriter
 }
 
 [Bind(typeof(IMessageWriter), Lifetime.Singleton, "console")]
-[Bind(typeof(IMessageWriter), Lifetime.Singleton, "audit")]
+[Bind(typeof(IMessageWriter), Lifetime.Transient, "audit")]
 class MessageWriter : IMessageWriter
 {
     public void Write(string message) => Console.WriteLine(message);

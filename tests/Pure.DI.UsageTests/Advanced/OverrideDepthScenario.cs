@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=12
+$p=22
 $d=Override depth
+$sa=Overrides
+$sa=Thread-safe overrides
 $h=When this occurs: you need to control how far override values propagate in a factory.
 $h=What it solves: keeps overrides local to a single injection level without affecting nested dependencies.
 $h=How it is solved in the example: uses Let to keep overrides local and verifies the scope.

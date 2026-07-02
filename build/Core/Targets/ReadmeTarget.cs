@@ -163,6 +163,12 @@ class ReadmeTarget(
         await writer.WriteLineAsync("## Examples");
         await writer.WriteLineAsync();
 
+        var exampleFilesByDescription = examples
+            .SelectMany(group => group.Examples)
+            .Select(example => example[CreateExamplesTarget.DescriptionKey])
+            .Distinct()
+            .ToDictionary(description => description, description => $"{CreateExampleFileName(description)}.md");
+
         foreach (var (groupName, exampleItems) in examples)
         {
             var groupTitle = new string(readmeTools.FormatTitle(groupName).ToArray());
@@ -243,9 +249,37 @@ class ReadmeTarget(
                 await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
                 await examplesWriter.WriteLineAsync();
 
+                await AddSeeAlso(example, exampleFilesByDescription, examplesWriter);
+
                 await examplesWriter.FlushAsync();
             }
         }
+    }
+
+    private static async Task AddSeeAlso(Example example, IReadOnlyDictionary<string, string> exampleFilesByDescription, TextWriter writer)
+    {
+        var references = example[CreateExamplesTarget.SeeAlsoKey]
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (references.Length == 0)
+        {
+            return;
+        }
+
+        await writer.WriteLineAsync("See also:");
+        await writer.WriteLineAsync();
+        foreach (var reference in references)
+        {
+            if (exampleFilesByDescription.TryGetValue(reference, out var referenceFile))
+            {
+                await writer.WriteLineAsync($"- [{reference}]({referenceFile})");
+            }
+            else
+            {
+                Warning($"The example \"{example[CreateExamplesTarget.DescriptionKey]}\" has an unknown \"see also\" reference \"{reference}\"");
+            }
+        }
+
+        await writer.WriteLineAsync();
     }
 
     private static async Task AddClassDiagram(string logsDirectory, string exampleName, TextWriter writer)
@@ -277,7 +311,8 @@ class ReadmeTarget(
         foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
         {
             var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').AsEnumerable().Reverse().Skip(3).Reverse()) + ".";
-            await writer.WriteLineAsync("The following partial class will be generated:");
+            await writer.WriteLineAsync("<details>");
+            await writer.WriteLineAsync("<summary>The following partial class will be generated</summary>");
             await writer.WriteLineAsync();
             await writer.WriteLineAsync("```c#");
             var generatedCode = await File.ReadAllTextAsync(generatedCodeFile);
@@ -323,6 +358,8 @@ class ReadmeTarget(
 
             await writer.WriteLineAsync(generatedCode);
             await writer.WriteLineAsync("```");
+            await writer.WriteLineAsync();
+            await writer.WriteLineAsync("</details>");
         }
     }
 

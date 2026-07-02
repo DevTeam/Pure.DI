@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=4
+$p=6
 $d=Span and ReadOnlySpan
+$sa=Array
 $h=Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
 $f=This scenario is even more efficient in the case of `Span<T>` or `ReadOnlySpan<T>` when `T` is a value type. In this case, there is no heap allocation, and the composition root `IPath` looks like this:
 $f=```c#

@@ -2,6 +2,9 @@
 $v=true
 $p=4
 $d=Scoped
+$sa=Scope
+$sa=Auto scoped
+$sa=Async disposable scope
 $h=The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
 $f=>[!NOTE]
 $f=>`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.

@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=5
+$p=9
 $d=Composition arguments
+$sa=Root arguments
+$sa=Overrides
+$sa=Func with arguments
 $h=Use composition arguments when you need to pass state into the composition. Define them with `Arg<T>(string argName)` (optionally with tags) and use them like any other dependency. Only arguments that are used in the object graph become constructor parameters.
 $h=This is a clean way to inject external runtime state without global static variables.
 $h=>[!NOTE]

@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=8
+$p=14
 $d=Simplified lifetime-specific factory
+$sa=Simplified factory
+$sa=Simplified lifetime-specific bindings
 $h=Lifetime-named shortcuts such as `Transient(...)` and `Singleton(...)` register a factory and its lifetime in a single call, replacing the longer `Bind().As(...).To(...)` chain.
 $h=Overloads accept a plain lambda (optionally with a tag, like `Transient(() => DateTime.Today, "today")`) or a lambda whose parameters are injected dependencies — parameters may carry attributes such as `[Tag]` — so you can initialize the instance before returning it, as `Singleton<FileLogger, DateTime, IFileLogger>` does when setting up the log file name.
 $f=>[!NOTE]

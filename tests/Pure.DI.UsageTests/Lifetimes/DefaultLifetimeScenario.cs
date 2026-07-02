@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=6
+$p=8
 $d=Default lifetime
+$sa=Default lifetime for a type
+$sa=Default lifetime for a type and a tag
 $h=When most bindings share the same lifetime, repeating `.As(...)` on each of them is noisy.
 $h=`DefaultLifetime(...)` sets the lifetime applied to every subsequent binding in the setup chain that doesn't specify one — until the chain ends or `DefaultLifetime(...)` is called again.
 $h=Here `DefaultLifetime(Singleton)` makes both the gateway and the assistant singletons, so the two gateway references inside the assistant resolve to the same instance.

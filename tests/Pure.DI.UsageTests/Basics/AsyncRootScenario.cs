@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=18
+$p=29
 $d=Async Root
+$sa=Task
 $h=A composition root can be asynchronous: declare it as `Root<Task<IService>>(...)` and _Pure.DI_ generates a root method you can `await`.
 $h=This is useful when building the object graph is costly and you don't want to block the caller.
 $h=Add `RootArg<CancellationToken>("cancellationToken")` to pass a cancellation token that is used when resolving the root.

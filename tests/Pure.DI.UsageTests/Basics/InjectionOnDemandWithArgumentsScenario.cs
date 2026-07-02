@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=3
+$p=8
 $d=Injections on demand with arguments
+$sa=Injection on demand
+$sa=Func with arguments
+$sa=Overrides
 $h=This example uses a parameterized factory so dependencies can be created with runtime arguments. The service creates sensors with specific IDs at instantiation time.
 $h=It is a type-safe way to combine DI-managed creation with runtime data.
 $f=Delayed dependency instantiation:

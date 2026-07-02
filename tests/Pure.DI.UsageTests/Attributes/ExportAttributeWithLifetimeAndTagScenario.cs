@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=14
+$p=10
 $d=Export attribute with lifetime and tag
+$sa=Export attribute
 $h=The `[Export]` attribute accepts optional `lifetime` and `tags` parameters, so an exported member is registered exactly like a hand-written binding. Here the `GraphicsAdapter.HighPerfGpu` property is exported as a `Singleton` with the tag `"HighPerformance"`, and `RayTracer` receives that instance by requesting `[Tag("HighPerformance")] IGpu`.
 $f=>[!NOTE]
 $f=>Specifying lifetime and tag in the Export attribute allows for fine-grained control over instance creation and binding resolution.

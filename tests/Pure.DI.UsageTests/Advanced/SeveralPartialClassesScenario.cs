@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=11
+$p=4
 $d=A few partial classes
+$sa=Partial class
 $h=The setting code for one Composition can be located in several methods and/or in several partial classes.
 $f=>[!NOTE]
 $f=>Splitting composition setup across multiple partial classes can improve organization for large compositions but may reduce readability if overused.

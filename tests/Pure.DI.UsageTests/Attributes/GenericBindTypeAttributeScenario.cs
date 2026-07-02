@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=18
+$p=16
 $d=Generic bind type attribute
+$sa=Bind generic contract attribute
 $h=Shows how a custom generic attribute can declare a contract type on an implementation.
 $f=>[!NOTE]
 $f=>Registering the custom generic attribute with `TypeAttribute<T>()` lets Pure.DI read the contract from the attribute type argument.

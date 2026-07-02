@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=20
+$p=30
 $d=Roots
+$sa=Roots with filter
+$sa=Generic roots
 $h=Sometimes you need roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
 $f=>[!NOTE]
 $f=>This feature is useful for plugin-style architectures where you need to expose all implementations of a base type or interface.

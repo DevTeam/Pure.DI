@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=10
+$p=3
 $d=Partial class
+$sa=A few partial classes
 $h=The composition class is generated as a partial class, so you can put the setup code in your own part of it and extend the generated code with hand-written members. Here the custom part adds a constructor accepting `storeName` and a `GenerateId()` method, and both are used directly inside factory bindings.
 $f=The partial class is also useful for specifying access modifiers to the generated class.
 $r=Shouldly

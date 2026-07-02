@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=9
+$p=17
 $d=Field injection
+$sa=Method injection
+$sa=Property injection
 $h=To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
 $f=The key points are:
 $f=- The field must be writable

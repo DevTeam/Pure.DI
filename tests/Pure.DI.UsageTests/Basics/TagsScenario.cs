@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=6
+$p=11
 $d=Tags
+$sa=Smart tags
+$sa=Tag attribute
+$sa=Tag on injection site
 $h=Tags let you control dependency selection when multiple implementations exist:
 $h=This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
 $f=The example shows how to:

@@ -2,6 +2,8 @@
 $v=true
 $p=3
 $d=PerBlock
+$sa=PerResolve
+$sa=Transient
 $h=The `PerBlock` lifetime does not guarantee that there will be a single dependency instance for each instance of the composition root (as for the `PerResolve` lifetime), but is useful for reducing the number of instances of a type.
 $f=>[!NOTE]
 $f=>`PerBlock` lifetime provides a balance between `PerResolve` and `Transient`, reducing instance count within a resolution block.

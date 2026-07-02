@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=99
+$p=2
 $d=Func with tag
+$sa=Func
+$sa=Tags
 $h=A tag applied to a `Func<T>` dependency carries over to the instances it creates. Here `[Tag("postgres")] Func<IDbConnection>` resolves the binding registered with the `"postgres"` tag, and each call returns a new `NpgsqlConnection`, letting the pool create as many distinct connections as it needs.
 $f=>[!NOTE]
 $f=>Func with tags allows you to create instances with specific tags dynamically, useful for factory patterns with multiple implementations.

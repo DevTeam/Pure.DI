@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=2
+$p=1
 $d=Generic composition roots
+$sa=Generic composition roots with constraints
+$sa=Generic roots
 $h=Sometimes you want to be able to create composition roots with type parameters. In this case, the composition root can only be represented by a method.
 $h=>[!IMPORTANT]
 $h=>`Resolve()` methods cannot be used to resolve generic composition roots.

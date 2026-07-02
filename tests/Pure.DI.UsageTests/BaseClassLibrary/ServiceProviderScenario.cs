@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=99
+$p=18
 $d=Service provider
+$sa=Service collection
+$sa=Service provider with scope
 $h=The `// ObjectResolveMethodName = GetService` hint overriding the `object Resolve(Type type)` method name in `GetService()`, allowing the `IServiceProvider` interface to be implemented in a partial class.
 $h=>[!IMPORTANT]
 $h=>Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface. These roots must be registered using `Root(...)` or `RootBind()` calls.

@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=11
+$p=27
 $d=IsLockRequired
+$sa=Thread-safe overrides
 $h=`IsLockRequired` indicates whether a lock is required for thread-safe operations in the current context. This property is useful when you need to conditionally synchronize based on thread safety requirements.
 $h=Use this when custom factory logic must respect thread-safety semantics of generated code.
 $f=Limitations: avoid adding business logic inside lock-aware factories; use it only for synchronization concerns.

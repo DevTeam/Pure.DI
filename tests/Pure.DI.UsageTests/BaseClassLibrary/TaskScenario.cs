@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=3
+$p=9
 $d=Task
+$sa=ValueTask
+$sa=Manually started tasks
+$sa=Async Root
 $h=By default, tasks are started automatically when they are injected. It is recommended to use an argument of type <c>CancellationToken</c> to the composition root to be able to cancel the execution of a task. In this case, the composition root property is automatically converted to a method with a parameter of type <c>CancellationToken</c>. To start a task, an instance of type <c>TaskFactory<T></c> is used, with default settings:
 $h=
 $h=- CancellationToken.None

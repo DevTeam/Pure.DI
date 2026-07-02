@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=15
+$p=13
 $d=Custom bind attribute
+$sa=Bind attribute
 $h=Shows how to declare a binding directly on an implementation type with a custom attribute. A custom attribute can combine contract type, lifetime, and tag metadata by registering argument positions in the composition setup.
 $f=>[!NOTE]
 $f=>Implementation-level binding attributes are useful when the implementation assembly should describe its DI role while keeping the composition concise. Custom attributes participate in the same merge rules as the built-in `Bind`, `Type`, `Tag`, and `Lifetime` attributes: attributes in one square-bracket group form one binding, while separate `Bind` groups create separate bindings.

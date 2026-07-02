@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=9
+$p=22
 $d=Builder with arguments
+$sa=Builder
 $h=This example shows how to use builders with custom arguments in dependency injection. It shows how to pass additional parameters during the build-up process.
 $f=Important Notes:
 $f=- The default builder method name is `BuildUp`

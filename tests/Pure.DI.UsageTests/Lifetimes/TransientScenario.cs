@@ -2,6 +2,9 @@
 $v=true
 $p=0
 $d=Transient
+$sa=Singleton
+$sa=PerResolve
+$sa=PerBlock
 $h=The `Transient` lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
 $f=The `Transient` lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the `Transient` lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the `Transient` lifetime:
 $f=

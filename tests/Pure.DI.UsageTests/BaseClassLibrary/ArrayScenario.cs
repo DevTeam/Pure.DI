@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=2
+$p=5
 $d=Array
+$sa=Enumerable
+$sa=Span and ReadOnlySpan
 $h=Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
 $f=In addition to arrays, other collection types are also supported, such as:
 $f=- System.Memory<T>

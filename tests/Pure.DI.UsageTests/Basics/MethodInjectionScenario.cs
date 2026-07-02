@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=9
+$p=15
 $d=Method injection
+$sa=Property injection
+$sa=Field injection
+$sa=Dependency attribute
 $h=To use dependency injection for a method, simply add the _Dependency_ (or _Ordinal_) attribute to that method, specifying the sequence number that will be used to define the call to that method:
 $f=The key points are:
 $f=- The method must be available to be called from a composition class

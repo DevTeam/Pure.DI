@@ -2,6 +2,9 @@
 $v=true
 $p=100
 $d=Tracking disposable instances per a composition root
+$sa=Tracking disposable instances in delegates
+$sa=Tracking disposable instances with different lifetimes
+$sa=Disposable singleton
 $h=The special `Owned<T>` type lets you track and dispose of disposable instances per composition root rather than per composition. Declare a root as `Root<Owned<T>>`: each access returns an `Owned<T>` that owns every disposable created for that dependency graph, and calling its `Dispose()` cleans up exactly those instances without affecting other roots.
 $f=>[!NOTE]
 $f=>Disposable tracking ensures proper cleanup of all disposable instances within a composition scope.

@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=4
+$p=2
 $d=Generic composition roots with constraints
+$sa=Generic async composition roots with constraints
+$sa=Generic composition roots
 $h=Generic composition roots respect type constraints. Using constrained marker types — `TTDisposable` (`IDisposable`) and `TTS` (`struct`) — in `Root<IDataProcessor<TTDisposable, TTS>>("GetProcessor")` produces a generic method `GetProcessor<T, TOptions>()` whose type parameters carry the same constraints.
 $h=A tagged root can also fix one of the type arguments, as `GetSpecializedProcessor<T>()` does with `bool`.
 $h=>[!IMPORTANT]

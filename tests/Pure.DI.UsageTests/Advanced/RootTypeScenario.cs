@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=11
+$p=25
 $d=Root Type
+$sa=Root Name
 $h=`RootType` provides the type of the composition root being resolved. This property is useful for implementing root-specific behavior like different caching strategies per root type.
 $h=Use this when infrastructure dependencies must vary by root contract type.
 $f=Limitations: root-type-specific rules can become hidden policy; keep this logic centralized and observable.

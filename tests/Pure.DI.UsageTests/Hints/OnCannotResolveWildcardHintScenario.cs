@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=3
+$p=5
 $d=OnCannotResolve wildcard hint
+$sa=OnCannotResolve regular expression hint
 $h=Hints are used to fine-tune code generation. The `OnCannotResolve` hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnCannotResolveContractTypeNameWildcard = string`.
 $f=The `OnCannotResolveContractTypeNameWildcard` hint helps define the set of types that require manual dependency resolution. You can use it to specify a wildcard to filter the full type name.

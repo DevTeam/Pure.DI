@@ -2,6 +2,7 @@
 $v=true
 $p=2
 $d=Advanced interception
+$sa=Interception
 $h=This approach of interception maximizes performance by precompiling the proxy object factory.
 $f=>[!NOTE]
 $f=>Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.

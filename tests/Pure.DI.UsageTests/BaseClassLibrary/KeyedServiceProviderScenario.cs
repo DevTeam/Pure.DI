@@ -1,7 +1,9 @@
 ﻿/*
 $v=true
-$p=99
+$p=20
 $d=Keyed service provider
+$sa=Service provider
+$sa=Tags
 $h=A composition class can implement `IKeyedServiceProvider` from _Microsoft.Extensions.DependencyInjection_, exposing tagged composition roots as keyed services. The `ObjectResolveMethodName` and `ObjectResolveByTagMethodName` hints rename the generated `Resolve` methods to `GetService` and `GetRequiredKeyedService`, so binding tags such as `"PayPal"` and `"Online"` become the service keys.
 $f=>[!NOTE]
 $f=>This enables compatibility with Microsoft's DI container ecosystem when using keyed service resolution.

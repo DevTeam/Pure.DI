@@ -1,7 +1,10 @@
 ﻿/*
 $v=true
-$p=4
+$p=5
 $d=Scope
+$sa=Scoped
+$sa=Scope setup method
+$sa=Auto scoped
 $h=The `Scoped` lifetime ensures a single instance of a dependency within a scope — a typical example is a single `DbContext`, unit of work, or request context per web request. This example wraps scope creation in a `Scope` class: each scope gets its own `RequestContext`, all services resolved within that scope share it, and disposing the scope disposes all scoped instances it created.
 $f=>[!NOTE]
 $f=>A scope is just another composition instance bound to its parent, so singletons remain shared across scopes while scoped instances are unique per scope.

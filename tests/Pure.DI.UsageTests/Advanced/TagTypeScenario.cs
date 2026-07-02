@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=3
+$p=12
 $d=Tag Type
+$sa=Tags
 $h=`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
 $f=>[!NOTE]
 $f=>`Tag.Type` provides a convenient way to reference implementation types in tags without explicitly using `typeof()`.

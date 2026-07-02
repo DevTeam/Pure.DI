@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=6
+$p=17
 $d=Tag on a constructor argument
+$sa=Tag on injection site
+$sa=Tag on a member
+$sa=Tag on a method argument
 $h=`Tag.OnConstructorArg<T>(name)` creates a tag that targets the constructor parameter `name` of type `T`, letting you choose a specific implementation for a single injection site without adding `[Tag(...)]` attributes to the consuming class — useful when you can't or don't want to modify its code. The wildcards `*` and `?` are supported.
 $f=>[!WARNING]
 $f=>Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.

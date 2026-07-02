@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=5
+$p=3
 $d=Generic async composition roots with constraints
+$sa=Generic composition roots with constraints
 $h=Generic composition roots can be asynchronous and constrained at the same time. Constrained marker types — `TTDisposable` (`IDisposable`) and `TTS` (`struct`) — carry their constraints into the generated methods, and wrapping the root type in `Task<...>` yields methods like `GetDataQueryAsync<T, TStruct>(CancellationToken)` that build the object graph asynchronously.
 $h=The `CancellationToken` comes from a `RootArg` and is passed in at resolution time.
 $h=>[!IMPORTANT]

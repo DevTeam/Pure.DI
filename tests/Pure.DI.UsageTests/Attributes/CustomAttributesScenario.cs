@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=10
+$p=6
 $d=Custom attributes
+$sa=Custom universal attribute
 $h=To use custom attributes, derive from `System.Attribute` and register them with the setup API:
 $h=- `TagAttribute`
 $h=- `OrdinalAttribute`

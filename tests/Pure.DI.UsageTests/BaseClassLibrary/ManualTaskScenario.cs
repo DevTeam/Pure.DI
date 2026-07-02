@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=4
+$p=11
 $d=Manually started tasks
+$sa=Task
 $h=By default, tasks are started automatically when they are injected. But you can override this behavior as shown in the example below. It is also recommended to add a binding for <c>CancellationToken</c> to be able to cancel the execution of a task.
 $f=>[!IMPORTANT]
 $f=>The method `Inject()`cannot be used outside of the binding setup.

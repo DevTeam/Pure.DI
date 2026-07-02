@@ -1,7 +1,11 @@
 /*
 $v=true
-$p=16
+$p=25
 $d=Overrides
+$sa=Composition arguments
+$sa=Root arguments
+$sa=Func with arguments
+$sa=Thread-safe overrides
 $h=This example shows advanced dependency injection techniques using Pure.DI's override mechanism to customize dependency instantiation with runtime arguments and tagged parameters. The implementation creates multiple `IDependency` instances with values manipulated through explicit overrides.
 $f=>[!NOTE]
 $f=>Overrides provide fine-grained control over dependency resolution, allowing you to customize bindings at runtime or for specific scenarios.

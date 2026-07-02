@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=10
+$p=13
 $d=Generic roots
+$sa=Roots
+$sa=Generics
 $h=Declaring a separate root for every generic implementation gets tedious. `Roots<IExporter<TT>>("GetMy{type}")` creates a composition root for each type implementing `IExporter<TT>` that is known at compile time at the point of the call.
 $h=The `{type}` placeholder in the name template is replaced with the implementation name, producing methods like `GetMyFileExporter_T<T>()` and `GetMyNetworkExporter_T<T>()`.
 $f=>[!NOTE]

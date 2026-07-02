@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=15
+$p=12
 $d=Bind attribute
+$sa=Bind type attribute
+$sa=Bind lifetime attribute
+$sa=Bind tag attribute
 $h=Shows how to declare a binding directly on an implementation type with the built-in `BindAttribute`.
 $f=>[!NOTE]
 $f=>`BindAttribute` is registered by default and can provide the contract type, lifetime, and tag. Attributes inside the same square-bracket group form one binding; separate `Bind` groups create separate bindings.

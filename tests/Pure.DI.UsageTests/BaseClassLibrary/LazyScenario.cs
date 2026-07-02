@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=3
+$p=8
 $d=Lazy
+$sa=Func
+$sa=Manually started tasks
 $h=Injecting `Lazy<T>` defers creation of a dependency until its `Value` property is first accessed, after which the same instance is returned every time. No extra setup is needed: bind the underlying type as usual and request `Lazy<T>` in the constructor.
 $f=>[!NOTE]
 $f=>Lazy<T> is useful for expensive-to-create objects or when the instance may never be needed, improving application startup performance.

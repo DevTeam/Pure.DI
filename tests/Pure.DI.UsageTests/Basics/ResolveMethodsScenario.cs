@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=1
+$p=3
 $d=Resolve methods
+$sa=Composition roots
+$sa=Resolve hint
+$sa=Check for a root
 $h=This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
 $h=Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
 $f=_Resolve_ methods are similar to calling composition roots, which are properties (or methods). Roots are efficient and do not throw, so they are preferred. In contrast, _Resolve_ methods have drawbacks:

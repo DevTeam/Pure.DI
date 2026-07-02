@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=9
+$p=12
 $d=Generic builders
+$sa=Generic builder
+$sa=Builders
 $h=Sometimes many related types need the same build-up treatment. A single `Builders<IMessage<TT, TT2>>("BuildUp")` call creates a builder for every type implementing `IMessage<TT, TT2>` that is visible at compile time — here both `QueryMessage<,>` and `CommandMessage<,>` get their own `BuildUp` overload.
 $h=Each builder injects members marked with the `[Dependency]` attribute into an existing instance, so instances created elsewhere (e.g. by an API controller) still receive their dependencies.
 $f=>[!NOTE]

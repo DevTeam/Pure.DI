@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=9
+$p=20
 $d=Build up of an existing object
+$sa=Builder
+$sa=Method injection
+$sa=Property injection
 $h=This example shows the Build-Up pattern in dependency injection, where an existing object is injected with necessary dependencies through its properties, methods, or fields.
 $f=Key Concepts:
 $f=**Build-Up** - injecting dependencies into an already created object

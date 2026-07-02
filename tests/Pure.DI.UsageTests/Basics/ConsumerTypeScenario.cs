@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=19
+$p=32
 $d=Consumer type
+$sa=Consumer types
 $h=`ConsumerType` is used to get the consumer type of the given dependency. The use of `ConsumerType` is demonstrated on the example of [Serilog library](https://serilog.net/):
 $f=>[!NOTE]
 $f=>ConsumerType is useful for creating context-aware loggers or when you need to know which type is consuming a dependency.

@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=14
+$p=9
 $d=Generic injections on demand with arguments
+$sa=Generic injections on demand
+$sa=Injections on demand with arguments
 $h=When creating a generic dependency requires a runtime value, inject a factory with arguments. `SensorHub<T>` receives a `Func<int, ISensor<T>>` and calls it with a specific `id` for each sensor; the `int` argument is mapped to the `Sensor<T>` constructor parameter.
 $h=This keeps the composition in charge of wiring while letting the consumer supply per-instance data at creation time.
 $f=>[!NOTE]

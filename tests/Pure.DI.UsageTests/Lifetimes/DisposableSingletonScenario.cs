@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=7
+$p=11
 $d=Disposable singleton
+$sa=Async disposable singleton
+$sa=Tracking disposable instances per a composition root
 $h=To dispose all created singleton instances, simply dispose the composition instance:
 $f=A composition class becomes disposable if it creates at least one disposable singleton instance.
 $r=Shouldly

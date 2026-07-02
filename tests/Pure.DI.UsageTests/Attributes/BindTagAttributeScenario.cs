@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=19
+$p=18
 $d=Bind tag attribute
+$sa=Bind attribute
 $h=Shows how tags can be declared directly on implementation types, including several tags for one implementation.
 $f=>[!NOTE]
 $f=>A tag attribute on an implementation type becomes a binding tag. Several tag attributes in the same square-bracket binding group are merged into one binding, so the same implementation can be resolved by any of those tags.

@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=8
+$p=6
 $d=Generic root arguments
+$sa=Root arguments
+$sa=Complex generic root arguments
 $h=Sometimes a composition root needs an argument whose type depends on the root's own type parameter. Declaring `RootArg<TT>("model")` together with the generic root `Root<IPresenter<TT>>("GetPresenter")` produces a generic method `GetPresenter<T>(T model)`.
 $h=The value passed to that method is injected into `Presenter<T>` through the method marked with the `[Dependency]` attribute.
 $f=>[!NOTE]

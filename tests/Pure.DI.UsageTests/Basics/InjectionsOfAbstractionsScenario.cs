@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=0
+$p=1
 $d=Injections of abstractions
+$sa=Auto-bindings
+$sa=Composition roots
 $h=This is the recommended model for production code: depend on abstractions and bind them to implementations in composition.
 $h=It keeps business code independent from infrastructure details and makes replacements predictable.
 $f=The binding chain maps abstractions to concrete types so the generator can build a fully concrete object graph. This keeps consumers decoupled and allows swapping implementations. A single implementation can satisfy multiple abstractions.

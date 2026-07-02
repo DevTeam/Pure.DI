@@ -2,6 +2,7 @@
 $v=true
 $p=2
 $d=OnDependencyInjection regular expression hint
+$sa=OnDependencyInjection wildcard hint
 $h=Hints are used to fine-tune code generation. The `OnDependencyInjection` hint determines whether to generate partial `OnDependencyInjection` method to control of dependency injection.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnDependencyInjection = On`.
 $f=The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.

@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=16
+$p=17
 $d=Bind generic contract attribute
+$sa=Generic bind type attribute
 $h=Shows how the built-in `BindAttribute` can declare a generic contract with the `TT` marker on a generic implementation.
 $f=>[!NOTE]
 $f=>`typeof(IBox<TT>)` is a marker-based generic contract. It is different from the open generic `typeof(IBox<>)`: Pure.DI uses `TT` to construct the matching implementation type, such as `CardboardBox<TT>`.

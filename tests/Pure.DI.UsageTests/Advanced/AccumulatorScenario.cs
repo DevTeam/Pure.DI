@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=8
+$p=23
 $d=Accumulators
+$sa=Tracking disposable instances per a composition root
 $h=Accumulators allow you to accumulate instances of certain types and lifetimes.
 $h=Use this when you need an aggregated view of created dependencies (for diagnostics, telemetry, or registries).
 $f=Limitations: accumulation order depends on object creation order in the graph, so do not treat it as a stable business ordering.

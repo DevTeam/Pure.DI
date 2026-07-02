@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=16
+$p=14
 $d=Bind type attribute
+$sa=Bind attribute
+$sa=Bind type attributes
 $h=Shows how the `Type` attribute can declare a contract directly on an implementation type.
 $f=>[!NOTE]
 $f=>When a registered type attribute is applied to a class or struct, Pure.DI treats it as binding metadata for that implementation.

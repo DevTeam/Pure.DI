@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=17
+$p=27
 $d=Root binding
+$sa=Composition roots
 $h=In general, it is recommended to define one composition root for the entire application. But Sometimes you need to have multiple roots. To simplify the definition of composition roots, a "hybrid" API method `RootBind<T>(string rootName)` was added. It lets you define a binding and at the same time the root of the composition. You can it in order to reduce repetitions. The registration `composition.RootBind<IDependency>().To<Dependency>()` is an equivalent to `composition.Bind<IDependency>().To<Dependency>().Root<IDependency>()`.
 $f=>[!NOTE]
 $f=>`RootBind` reduces boilerplate when you need both a binding and a root for the same type.

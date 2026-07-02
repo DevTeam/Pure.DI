@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=11
+$p=21
 $d=Thread-safe overrides
+$sa=Overrides
+$sa=Override depth
 $h=When a factory delegate can be invoked from several threads at once — as with the `Func<int, int, IOrderHandler>` called in parallel here — its `ctx.Override(...)` calls must be synchronized. Wrap the overrides together with the subsequent `ctx.Inject(...)` in a `lock (ctx.Lock)` block so that each object graph is built with its own override values and parallel invocations don't overwrite each other.
 $f=>[!IMPORTANT]
 $f=>Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.

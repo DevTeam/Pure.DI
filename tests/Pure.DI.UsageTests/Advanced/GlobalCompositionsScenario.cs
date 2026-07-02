@@ -1,7 +1,8 @@
 ﻿/*
 $v=true
-$p=9
+$p=11
 $d=Global compositions
+$sa=Dependent compositions
 $h=When the `Setup(name, kind)` method is called, the second optional parameter specifies the composition kind. If you set it as `CompositionKind.Global`, no composition class will be created, but this setup will be the base setup for all others in the current project, and `DependsOn(...)` is not required. The setups will be applied in the sort order of their names.
 $f=>[!IMPORTANT]
 $f=>Global compositions apply to all other compositions in the project automatically, so use them carefully to avoid unintended side effects.

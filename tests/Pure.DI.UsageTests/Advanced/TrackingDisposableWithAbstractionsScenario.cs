@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=101
+$p=103
 $d=Tracking disposable instances using pre-built classes
+$sa=Tracking disposable instances per a composition root
 $h=If you want ready-made classes for tracking disposable objects in your libraries but don't want to create your own, you can add this package to your projects:
 $h=
 $h=[![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)

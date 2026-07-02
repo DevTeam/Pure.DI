@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=20
+$p=19
 $d=Bind lifetime attribute
+$sa=Bind attribute
 $h=Shows how the `Lifetime` attribute can declare the lifetime of an implementation binding.
 $f=>[!NOTE]
 $f=>A lifetime attribute on an implementation type is equivalent to applying `.As(...)` to the generated binding. Lifetime metadata can be specified only once inside one square-bracket binding group; repeated lifetime metadata in the same group is a compilation error.

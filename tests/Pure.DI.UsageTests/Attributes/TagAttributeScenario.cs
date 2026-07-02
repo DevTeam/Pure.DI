@@ -2,6 +2,8 @@
 $v=true
 $p=3
 $d=Tag attribute
+$sa=Tags
+$sa=Smart tags
 $h=Tags let you choose among multiple implementations of the same contract.
 $f=A tag can be a constant, a type, a [smart tag](smart-tags.md), or an enum value. The `Tag` attribute is part of the API, but you can define your own in any assembly or namespace.
 $r=Shouldly

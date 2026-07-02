@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=100
+$p=16
 $d=Overriding the BCL binding
+$sa=Default BCL bindings
 $h=At any time, the default binding to the BCL type can be changed to your own:
 $f=>[!NOTE]
 $f=>Overriding BCL bindings allows you to provide custom implementations for standard types, enabling specialized behavior for your application.

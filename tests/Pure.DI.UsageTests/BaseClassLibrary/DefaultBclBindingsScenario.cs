@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=101
+$p=15
 $d=Default BCL bindings
+$sa=Overriding the BCL binding
 $h=Pure.DI provides default bindings for commonly used .NET BCL types, so they can be injected without extra setup code.
 $f=>[!NOTE]
 $f=>Default BCL bindings can still be overridden in the composition when an application needs a different policy.

@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=7
+$p=10
 $d=Dependent compositions with setup context root argument
+$sa=Dependent compositions with setup context
 $h=This scenario shows how to pass an explicit setup context as a root argument.
 $h=When this occurs: you need external state from the base setup but cannot use a constructor (e.g., Unity MonoBehaviour).
 $h=What it solves: keeps the dependent composition safe while avoiding constructor arguments.

@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=12
+$p=4
 $d=Request overrides
+$sa=Overrides
+$sa=Scope
 $h=When this occurs: you need per-request overrides with different scopes for nested services.
 $h=What it solves: applies request data to the main workflow while keeping background or system dependencies isolated.
 $h=How it is solved in the example: uses nested factories and overrides to select the nearest context.

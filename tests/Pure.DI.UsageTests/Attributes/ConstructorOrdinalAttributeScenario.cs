@@ -2,6 +2,8 @@
 $v=true
 $p=0
 $d=Constructor ordinal attribute
+$sa=Member ordinal attribute
+$sa=Dependency attribute
 $h=Applying this attribute disables automatic constructor selection. Only constructors marked with this attribute are considered, ordered by ordinal (ascending).
 $f=The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
 $r=Shouldly

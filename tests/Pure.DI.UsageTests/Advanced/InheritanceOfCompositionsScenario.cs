@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=7
+$p=5
 $d=Inheritance of compositions
+$sa=Dependent compositions
 $h=Common bindings can be shared between compositions through plain C# inheritance. Define them in a base class whose setup uses `DI.Setup(kind: Internal)` — the `Internal` composition kind marks the setup as reusable configuration that does not generate a composition class of its own.
 $h=A composition class that derives from it automatically picks up the inherited bindings and combines them with its own.
 $f=>[!NOTE]

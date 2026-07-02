@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=8
+$p=12
 $d=Async disposable singleton
+$sa=Disposable singleton
+$sa=Async disposable scope
 $h=If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner:
 $f=>[!NOTE]
 $f=>Async disposable singleton ensures proper async cleanup of all singleton resources when the composition is disposed.

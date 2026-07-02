@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=4
+$p=7
 $d=OnNewInstance wildcard hint
+$sa=OnNewInstance regular expression hint
 $h=Hints are used to fine-tune code generation. The `OnNewInstance` hint determines whether to generate partial `OnNewInstance` method.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnNewInstance = On`.
 $f=The `OnNewInstanceImplementationTypeNameWildcard` hint helps you define a set of implementation types that require instance creation control. You can use it to specify a wildcard to filter bindings by implementation name.

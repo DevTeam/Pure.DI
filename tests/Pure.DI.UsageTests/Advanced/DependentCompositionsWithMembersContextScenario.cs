@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=7
+$p=8
 $d=Dependent compositions with setup context members
+$sa=Dependent compositions with setup context
 $h=This scenario shows how to copy referenced members from a base setup into the dependent composition.
 $h=When this occurs: you want to reuse base setup state without passing a separate context instance.
 $h=What it solves: lets dependent compositions access base setup members directly (Unity-friendly, no constructor args).

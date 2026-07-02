@@ -1,7 +1,9 @@
 ﻿/*
 $v=true
-$p=9
+$p=23
 $d=Builders
+$sa=Builder
+$sa=Builders with a name template
 $h=Sometimes you need builders for all types derived from `T` that are known at compile time.
 $f=Important Notes:
 $f=- The default builder method name is `BuildUp`

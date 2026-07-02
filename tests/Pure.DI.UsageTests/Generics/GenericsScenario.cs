@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=1
+$p=0
 $d=Generics
+$sa=Generic composition roots
+$sa=Complex generics
+$sa=Custom generic argument
 $h=Generic types are supported out of the box: a single binding like `Bind<IRepository<TT>>().To<Repository<TT>>()` covers `IRepository<User>`, `IRepository<Order>` and any other instantiation used in the object graph. Since Pure.DI is a source generator, each of them is turned into concrete, reflection-free code at compile time.
 $h=>[!IMPORTANT]
 $h=>Instead of open generic types, as in classical DI container libraries, regular generic types with `marker` types as type parameters are used here. Such "marker" types allow to define dependency graph more precisely.

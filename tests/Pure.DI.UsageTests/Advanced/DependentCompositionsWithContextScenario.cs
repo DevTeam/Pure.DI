@@ -2,6 +2,7 @@
 $v=true
 $p=7
 $d=Dependent compositions with setup context
+$sa=Dependent compositions
 $h=This scenario shows how to pass an explicit setup context when a dependent setup uses instance members.
 $h=When this occurs: you need base setup state (e.g., Unity-initialized fields) inside a dependent composition.
 $h=What it solves: avoids missing instance members in dependent compositions and keeps state access explicit.

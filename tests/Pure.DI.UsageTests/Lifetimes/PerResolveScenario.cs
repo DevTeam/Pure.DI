@@ -2,6 +2,9 @@
 $v=true
 $p=2
 $d=PerResolve
+$sa=Transient
+$sa=PerBlock
+$sa=Singleton
 $h=The `PerResolve` lifetime ensures that there will be one instance of the dependency for each composition root instance.
 $f=>[!NOTE]
 $f=>`PerResolve` lifetime is useful when you want to share a dependency instance within a single composition root resolution.

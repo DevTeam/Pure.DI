@@ -1,7 +1,9 @@
 ﻿/*
 $v=true
-$p=98
+$p=17
 $d=Service collection
+$sa=Service provider
+$sa=Keyed service provider
 $h=The `// OnNewRoot = On` hint specifies to create a static method that will be called for each registered composition root. This method can be used, for example, to create an `IServiceCollection` object:
 $f=>[!NOTE]
 $f=>This enables integration with _Microsoft.Extensions.DependencyInjection_, allowing you to leverage both DI systems together.

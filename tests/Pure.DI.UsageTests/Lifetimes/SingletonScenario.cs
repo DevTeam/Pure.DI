@@ -2,6 +2,9 @@
 $v=true
 $p=1
 $d=Singleton
+$sa=Transient
+$sa=Disposable singleton
+$sa=Default lifetime
 $h=The `Singleton` lifetime ensures that there will be a single instance of the dependency for each composition.
 $f=Some articles advise using objects with a `Singleton` lifetime as often as possible, but the following details must be considered:
 $f=

@@ -417,6 +417,28 @@ See also: [Root arguments example](readme/root-arguments.md)
 </details>
 
 <details>
+<summary>Passing values at runtime</summary>
+
+### Passing values at runtime
+
+Several mechanisms deliver a runtime value into the object graph. Choose by the moment the value becomes known and by how far it must travel:
+
+| Mechanism | The value is known | The value is visible to | Example |
+|-----------|--------------------|-------------------------|---------|
+| `Arg<T>(name)` | when the composition is created | the whole composition | [Composition arguments](readme/composition-arguments.md) |
+| `RootArg<T>(name)` | at each root call (the root becomes a method) | one root call | [Root arguments](readme/root-arguments.md) |
+| `Func<TArg, T>` | at each factory call inside the graph | the instance created by that call | [Func with arguments](readme/func-with-arguments.md) |
+| `ctx.Override(value)` | inside a factory | the dependency subtree created by that factory | [Overrides](readme/overrides.md) |
+
+Rules of thumb:
+- Configuration that is fixed for the lifetime of the application → `Arg<T>`.
+- Per-call data for an entry point, such as a user or request id → `RootArg<T>`.
+- A service creates many instances with different parameters → inject `Func<TArg, T>`.
+- A factory must customize how nested dependencies are built → `ctx.Override(...)`.
+
+</details>
+
+<details>
 <summary>Resolve/ResolveByTag methods</summary>
 
 ### Resolve/ResolveByTag methods
@@ -622,11 +644,22 @@ Example:
 ### Lifetimes
 
 Lifetimes control how long an object lives and how it is reused:
-- **Transient**: A new instance is created for every injection (default).
-- **Singleton**: A single instance is created for the entire composition.
-- **PerResolve**: A single instance is reused within a single composition root (or a `Resolve`/`ResolveByTag` call).
-- **PerBlock**: Reuses instances within a code block to reduce allocations.
-- **Scoped**: A single instance is reused within a specific scope.
+
+| Lifetime | One instance per | Disposal of disposable instances | Example |
+|----------|------------------|----------------------------------|---------|
+| `Transient` (default) | injection | not tracked — own it explicitly, e.g. via `Owned<T>` | [Transient](readme/transient.md) |
+| `Singleton` | composition | disposed together with the composition | [Singleton](readme/singleton.md) |
+| `Scoped` | scope | disposed together with the scope | [Scoped](readme/scoped.md) |
+| `PerResolve` | composition root call (or a `Resolve`/`ResolveByTag` call) | not tracked — own it explicitly, e.g. via `Owned<T>` | [PerResolve](readme/perresolve.md) |
+| `PerBlock` | code block — an allocation optimization, no strict uniqueness guarantee | not tracked | [PerBlock](readme/perblock.md) |
+
+How to choose:
+- Start with `Transient` and promote a binding to `Singleton` only for genuinely shared state (caches, configuration, connection pools).
+- Use `Scoped` when the natural unit of sharing is a request, a session, or a unit of work — one `DbContext` per web request is the classic case.
+- Use `PerResolve` when several consumers within one object graph must observe the same instance, but different graphs must not share it.
+- Treat `PerBlock` as an optimization that reduces allocations by reusing an instance within one initialization block; do not rely on instance identity with it.
+
+For tracking and disposing of `Transient`/`PerResolve` disposables, see [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md).
 
 ### Default Lifetimes
 

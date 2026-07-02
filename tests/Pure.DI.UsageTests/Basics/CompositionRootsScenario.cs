@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=1
+$p=2
 $d=Composition roots
+$sa=Root binding
+$sa=Roots
+$sa=Composition root kinds
 $h=This example shows several ways to define composition roots as explicit entry points into the graph.
 $h=>[!TIP]
 $h=>There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.

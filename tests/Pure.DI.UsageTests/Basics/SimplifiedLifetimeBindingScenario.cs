@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=8
+$p=13
 $d=Simplified lifetime-specific bindings
+$sa=Simplified binding
+$sa=Simplified lifetime-specific factory
 $h=You can use the `Transient<>()`, `Singleton<>()`, `PerResolve<>()`, etc. methods. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
 $h=This keeps lifetime configuration concise while preserving explicit lifetime semantics.
 $f=These methods perform the binding with appropriate lifetime:

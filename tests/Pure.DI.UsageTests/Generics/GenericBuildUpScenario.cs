@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=7
+$p=10
 $d=Build up of an existing generic object
+$sa=Build up of an existing object
+$sa=Generic builder
 $h=In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
 $f=>[!NOTE]
 $f=>Generic build-up allows you to inject dependencies into existing generic objects after their creation.

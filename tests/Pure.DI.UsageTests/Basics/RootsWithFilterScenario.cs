@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=20
+$p=31
 $d=Roots with filter
+$sa=Roots
 $h=`Roots<T>(name, filter)` creates a composition root for every implementation of `T` whose type name matches a wildcard filter, with `{type}` in the name template replaced by each type's name.
 $h=Filtering matters when some implementations should not be exposed: here `filter: "*Email*"` picks up `EmailService` but skips `SmsService`, whose `string apiKey` dependency has no binding and therefore cannot be resolved.
 $f=>[!NOTE]

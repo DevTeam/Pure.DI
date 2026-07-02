@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=17
+$p=15
 $d=Bind type attributes
+$sa=Bind type attribute
 $h=Shows how several `Type` attributes can expose one implementation through several contracts.
 $f=>[!NOTE]
 $f=>Multiple type attributes in the same square-bracket binding group are merged into one binding with several contracts.

@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=5
+$p=15
 $d=Tag on injection site
+$sa=Tag on injection site with wildcards
+$sa=Tag on a constructor argument
 $h=Sometimes you need to determine which binding will be used to inject explicitly. To do this, use a special tag created by calling the `Tag.On()` method. Tag on injection site is specified in a special format: `Tag.On("<namespace>.<type>.<member>[:argument]")`. The argument is specified only for the constructor and methods. For example, for namespace _MyNamespace_ and type _Class1_:
 $h=
 $h=- `Tag.On("MyNamespace.Class1.Class1:state1") - the tag corresponds to the constructor argument named _state_ of type _MyNamespace.Class1_

@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=7
+$p=12
 $d=Smart tags
+$sa=Tags
 $h=Large object graphs often need many tags. String tags are error-prone and easy to mistype. Prefer `Enum` values as tags, and _Pure.DI_ helps make this safe.
 $h=Smart tags improve refactoring safety by moving tag usage into compiler-checked symbols.
 $h=

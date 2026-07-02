@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=6
+$p=18
 $d=Tag on a member
+$sa=Tag on injection site
+$sa=Tag on a constructor argument
 $h=`Tag.OnMember<T>(memberName)` creates a tag that targets injection into a specific property or field of type `T`, so you can override which implementation goes into that member without touching the class definition — here `StripeGateway` is injected into the `Gateway` property of `CheckoutService` while `PayPalGateway` stays the default binding elsewhere. The wildcards `*` and `?` are supported.
 $f=>[!WARNING]
 $f=>Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.

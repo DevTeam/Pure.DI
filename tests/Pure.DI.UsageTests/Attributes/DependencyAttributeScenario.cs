@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=1
+$p=2
 $d=Dependency attribute
+$sa=Member ordinal attribute
+$sa=Inject attribute
 $h=When applied to a property or field, the member participates in DI, ordered by ordinal (ascending).
 $f=The `Dependency` attribute is part of the API, but you can define your own in any assembly or namespace.
 $r=Shouldly

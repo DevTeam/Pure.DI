@@ -1,7 +1,8 @@
 ﻿/*
 $v=true
-$p=20
+$p=33
 $d=Ref dependencies
+$sa=Span and ReadOnlySpan
 $h=High-performance code often relies on `ref struct` types such as `Span<T>`, which cannot be stored in fields — so ordinary constructor or property injection is off the table.
 $h=Instead, inject them by `ref` through a method marked with `[Ordinal]`: here a `ref struct Data` wrapping the bound `int[]` is passed into `Initialize(ref Data data)` and consumed without extra allocations.
 $f=>[!NOTE]

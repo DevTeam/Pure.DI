@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=10
+$p=26
 $d=Nullable reference types
+$sa=Default values
 $h=Pure.DI preserves nullable reference type annotations when it reads dependency contracts, builds the graph, and generates composition members.
 $h=Use nullable dependencies for values that are allowed to be absent. A nullable root or composition argument does not get a generated null check, while a non-null reference argument still does.
 $h=A non-null binding can satisfy a nullable dependency request. This is useful for optional constructor parameters, nullable factory results, and nullable collection elements.

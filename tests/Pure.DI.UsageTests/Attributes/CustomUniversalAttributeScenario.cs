@@ -1,7 +1,8 @@
 /*
 $v=true
-$p=11
+$p=7
 $d=Custom universal attribute
+$sa=Custom attributes
 $h=A combined attribute can supply _tag_, _ordinal_, and _type_ metadata. Each registration method can take an optional argument index (default is 0) that specifies where to read the metadata.
 $f=>[!NOTE]
 $f=>Universal attributes reduce the number of attributes needed by combining multiple metadata types into a single attribute.

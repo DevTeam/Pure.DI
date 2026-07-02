@@ -1,7 +1,9 @@
 /*
 $v=true
-$p=5
+$p=7
 $d=Auto scoped
+$sa=Scope
+$sa=Scoped
 $h=You can use the following example to automatically create a session when creating instances of a particular type:
 $f=>[!IMPORTANT]
 $f=>The method `Inject()`cannot be used outside of the binding setup.

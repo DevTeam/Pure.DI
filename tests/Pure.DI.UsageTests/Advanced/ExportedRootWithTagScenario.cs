@@ -2,6 +2,7 @@
 $v=true
 $p=201
 $d=Exported roots with tags
+$sa=Exported roots
 $h=Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exported` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 $h=```c#
 $h=public partial class CompositionWithTagsInOtherProject

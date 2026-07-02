@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=2
+$p=5
 $d=Factory
+$sa=Simplified factory
+$sa=Injection on demand
+$sa=Overrides
 $h=Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
 $h=A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
 $f=There are scenarios where manual control over the creation process is required, such as

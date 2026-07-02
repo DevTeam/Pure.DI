@@ -1,7 +1,10 @@
 /*
 $v=true
-$p=9
+$p=21
 $d=Builder
+$sa=Build up of an existing object
+$sa=Builder with arguments
+$sa=Builders
 $h=Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
 $f=Important Notes:
 $f=- The default builder method name is `BuildUp`

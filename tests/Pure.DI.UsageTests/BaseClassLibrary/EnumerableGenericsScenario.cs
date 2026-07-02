@@ -1,7 +1,8 @@
 ﻿/*
 $v=true
-$p=1
+$p=4
 $d=Enumerable generics
+$sa=Enumerable
 $h=Shows how generic middleware pipelines collect all matching implementations.
 $f=>[!NOTE]
 $f=>Generic enumerable injections are useful for implementing middleware patterns where multiple handlers need to be invoked in sequence.
