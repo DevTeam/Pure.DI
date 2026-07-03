@@ -148,6 +148,53 @@ public class BindAttributeTests
     }
 
     [Fact]
+    public async Task ShouldWarnWhenSeveralImplementationTypesHaveSameBindAttributeContract()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+
+                               [Bind(typeof(IService), Lifetime.Transient, "main")]
+                               class Service1 : IService {}
+
+                               [Bind(typeof(IService), Lifetime.Transient, "main")]
+                               class Service2 : IService {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<IService>("Root", "main");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.GetType().Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.StdOut.ShouldBe(["Service1"], result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding && i.Locations.FirstOrDefault().GetSource() == "Setup(\"Composition\")").ShouldBe(1, result);
+    }
+
+    [Fact]
     public async Task ShouldSupportBindAttributeOnImplementationTypeWhenContractIsNotDefined()
     {
         // Given
