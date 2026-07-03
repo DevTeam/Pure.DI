@@ -1,6 +1,6 @@
 #### Tracking disposable instances per a composition root
 
-Demonstrates how disposable instances are tracked per composition root and disposed when the composition is disposed.
+The special `Owned<T>` type lets you track and dispose of disposable instances per composition root rather than per composition. Declare a root as `Root<Owned<T>>`: each access returns an `Owned<T>` that owns every disposable created for that dependency graph, and calling its `Dispose()` cleans up exactly those instances without affecting other roots.
 
 
 ```c#
@@ -93,7 +93,8 @@ dotnet run
 >[!NOTE]
 >Disposable tracking ensures proper cleanup of all disposable instances within a composition scope.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -140,6 +141,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -189,4 +192,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tracking disposable instances in delegates](tracking-disposable-instances-in-delegates.md)
+- [Tracking disposable instances with different lifetimes](tracking-disposable-instances-with-different-lifetimes.md)
+- [Disposable singleton](disposable-singleton.md)
 

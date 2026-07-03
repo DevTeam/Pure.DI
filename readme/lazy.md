@@ -1,6 +1,6 @@
 #### Lazy
 
-Demonstrates lazy injection using Lazy<T>, delaying instance creation until the Value property is accessed.
+Injecting `Lazy<T>` defers creation of a dependency until its `Value` property is first accessed, after which the same instance is returned every time. No extra setup is needed: bind the underlying type as usual and request `Lazy<T>` in the constructor.
 
 
 ```c#
@@ -65,7 +65,8 @@ dotnet run
 >[!NOTE]
 >Lazy<T> is useful for expensive-to-create objects or when the instance may never be needed, improving application startup performance.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -92,6 +93,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -137,4 +140,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Func](func.md)
+- [Manually started tasks](manually-started-tasks.md)
 

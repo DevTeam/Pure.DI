@@ -1,6 +1,7 @@
 #### Async disposable scope
 
-Demonstrates async disposable scope lifetime, where scoped instances are disposed asynchronously when the scope ends.
+When scoped services hold resources that need asynchronous cleanup — network connections, streams, database sessions — implement `IAsyncDisposable` on them and dispose of the scope with `await scope.DisposeAsync()`.
+A scope is a class derived from the composition (here `Session`): each session gets its own `Scoped` instances, and disposing the session asynchronously disposes everything created within it.
 
 
 ```c#
@@ -116,7 +117,8 @@ dotnet run
 >[!NOTE]
 >Async disposable scope is essential for scenarios requiring proper async cleanup of scoped resources.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable, IAsyncDisposable
@@ -256,6 +258,8 @@ partial class Composition: IDisposable, IAsyncDisposable
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -317,4 +321,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Scope](scope.md)
+- [Async disposable singleton](async-disposable-singleton.md)
 

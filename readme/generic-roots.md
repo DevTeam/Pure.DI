@@ -1,6 +1,7 @@
 #### Generic roots
 
-Demonstrates how to create roots for all generic types that inherit from a given base type at compile time.
+Declaring a separate root for every generic implementation gets tedious. `Roots<IExporter<TT>>("GetMy{type}")` creates a composition root for each type implementing `IExporter<TT>` that is known at compile time at the point of the call.
+The `{type}` placeholder in the name template is replaced with the implementation name, producing methods like `GetMyFileExporter_T<T>()` and `GetMyNetworkExporter_T<T>()`.
 
 
 ```c#
@@ -72,7 +73,8 @@ dotnet run
 >[!NOTE]
 >Generic roots enable exposing multiple generic implementations without explicitly registering each one.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -93,6 +95,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -134,4 +138,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Roots](roots.md)
+- [Generics](generics.md)
 

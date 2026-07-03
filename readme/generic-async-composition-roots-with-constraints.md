@@ -1,5 +1,7 @@
 #### Generic async composition roots with constraints
 
+Generic composition roots can be asynchronous and constrained at the same time. Constrained marker types — `TTDisposable` (`IDisposable`) and `TTS` (`struct`) — carry their constraints into the generated methods, and wrapping the root type in `Task<...>` yields methods like `GetDataQueryAsync<T, TStruct>(CancellationToken)` that build the object graph asynchronously.
+The `CancellationToken` comes from a `RootArg` and is passed in at resolution time.
 >[!IMPORTANT]
 >`Resolve` methods cannot be used to resolve generic composition roots.
 
@@ -88,7 +90,8 @@ dotnet run
 >[!IMPORTANT]
 >The method `Inject()` cannot be used outside of the binding setup.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -158,6 +161,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -253,4 +258,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generic composition roots with constraints](generic-composition-roots-with-constraints.md)
 

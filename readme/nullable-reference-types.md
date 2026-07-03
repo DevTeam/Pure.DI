@@ -104,7 +104,8 @@ Common pitfalls:
 - Declaring generic contracts with `where T : class` and then consuming them as `T?`; use a nullable-aware constraint such as `where T : class?` when nullable generic arguments are valid.
 See also: [Composition arguments](composition-arguments.md), [Root arguments](root-arguments.md), [Injection on demand](injection-on-demand.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -130,6 +131,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -179,4 +182,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Default values](default-values.md)
 

@@ -87,7 +87,8 @@ dotnet run
 >[!NOTE]
 >Default BCL bindings can still be overridden in the composition when an application needs a different policy.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -133,6 +134,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -201,4 +204,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Overriding the BCL binding](overriding-the-bcl-binding.md)
 

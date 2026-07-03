@@ -90,7 +90,8 @@ Important points:
 Useful when:
 - You want to override a constructor parameter without affecting deeper object graphs.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class DeepComposition
@@ -241,7 +242,10 @@ partial class DeepComposition
   }
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class ShallowComposition
@@ -394,6 +398,8 @@ partial class ShallowComposition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -430,4 +436,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Overrides](overrides.md)
+- [Thread-safe overrides](thread-safe-overrides.md)
 

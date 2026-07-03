@@ -1,5 +1,7 @@
 #### Scope
 
+The `Scoped` lifetime ensures a single instance of a dependency within a scope — a typical example is a single `DbContext`, unit of work, or request context per web request. This example wraps scope creation in a `Scope` class: each scope gets its own `RequestContext`, all services resolved within that scope share it, and disposing the scope disposes all scoped instances it created.
+
 
 ```c#
 using Shouldly;
@@ -136,7 +138,11 @@ dotnet run
 
 </details>
 
-The following partial class will be generated:
+>[!NOTE]
+>A scope is just another composition instance bound to its parent, so singletons remain shared across scopes while scoped instances are unique per scope.
+
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable
@@ -232,6 +238,8 @@ partial class Composition: IDisposable
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -288,4 +296,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Scoped](scoped.md)
+- [Scope setup method](scope-setup-method.md)
+- [Auto scoped](auto-scoped.md)
 

@@ -1,6 +1,6 @@
 #### JSON serialization
 
-Demonstrates how to handle JSON serialization scenarios with Pure.DI, showing integration with serialization libraries.
+Serialization can be hidden behind injectable functions instead of scattering `JsonSerializer` calls across the code. A shared `JsonSerializerOptions` instance is bound as a singleton, and two generic bindings tagged `JSON` expose `Func<string, TT?>` and `Func<TT, string>` delegates that deserialize and serialize any type using those options. `SettingsService` then just injects these functions to load and save its `Settings`, keeping it decoupled from the serializer.
 
 
 ```c#
@@ -110,10 +110,11 @@ dotnet run
 
 </details>
 
->[!NOTE]
->Proper DI integration with serialization requires careful handling of object creation and property injection.
+>[!TIP]
+>Binding delegates with generic type markers like `TT` produces a serialize/deserialize function for every type where it is injected — no per-type bindings are needed.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -124,8 +125,8 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Func<string, Settings?>? _singletonFunc76;
-  private Func<Settings, string>? _singletonFunc77;
+  private Func<string, Settings?>? _singletonFunc2147481181;
+  private Func<Settings, string>? _singletonFunc2147481182;
   private Storage? _singletonStorage75;
   private Text.Json.JsonSerializerOptions? _singletonJsonSerializerOptions72;
 
@@ -141,25 +142,25 @@ partial class Composition
             _singletonStorage75 = new Storage();
           }
 
-      if (_singletonFunc77 is null)
+      if (_singletonFunc2147481182 is null)
         lock (_lock)
-          if (_singletonFunc77 is null)
+          if (_singletonFunc2147481182 is null)
           {
             EnsureJsonSerializerOptionsExists();
             Text.Json.JsonSerializerOptions localOptions = _singletonJsonSerializerOptions72;
-            _singletonFunc77 = value => JsonSerializer.Serialize(value, localOptions);
+            _singletonFunc2147481182 = value => JsonSerializer.Serialize(value, localOptions);
           }
 
-      if (_singletonFunc76 is null)
+      if (_singletonFunc2147481181 is null)
         lock (_lock)
-          if (_singletonFunc76 is null)
+          if (_singletonFunc2147481181 is null)
           {
             EnsureJsonSerializerOptionsExists();
             Text.Json.JsonSerializerOptions localOptions1 = _singletonJsonSerializerOptions72;
-            _singletonFunc76 = json => JsonSerializer.Deserialize<Settings?>(json, localOptions1);
+            _singletonFunc2147481181 = json => JsonSerializer.Deserialize<Settings?>(json, localOptions1);
           }
 
-      return new SettingsService(_singletonFunc76, _singletonFunc77, _singletonStorage75);
+      return new SettingsService(_singletonFunc2147481181, _singletonFunc2147481182, _singletonStorage75);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureJsonSerializerOptionsExists()
       {
@@ -177,6 +178,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -229,4 +232,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generics](generics.md)
 

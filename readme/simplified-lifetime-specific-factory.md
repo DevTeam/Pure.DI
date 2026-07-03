@@ -1,6 +1,7 @@
 #### Simplified lifetime-specific factory
 
-Demonstrates how to create factories with lifetime-specific bindings, providing a concise way to define factories with proper lifetime semantics.
+Lifetime-named shortcuts such as `Transient(...)` and `Singleton(...)` register a factory and its lifetime in a single call, replacing the longer `Bind().As(...).To(...)` chain.
+Overloads accept a plain lambda (optionally with a tag, like `Transient(() => DateTime.Today, "today")`) or a lambda whose parameters are injected dependencies — parameters may carry attributes such as `[Tag]` — so you can initialize the instance before returning it, as `Singleton<FileLogger, DateTime, IFileLogger>` does when setting up the log file name.
 
 
 ```c#
@@ -90,7 +91,8 @@ dotnet run
 >[!NOTE]
 >Lifetime-specific factories combine the convenience of simplified syntax with explicit lifetime control for optimal performance and correctness.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -132,6 +134,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -217,4 +221,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Simplified factory](simplified-factory.md)
+- [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md)
 

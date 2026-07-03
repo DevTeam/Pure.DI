@@ -1,6 +1,8 @@
 #### Default lifetime
 
-Demonstrates how to set a default lifetime that is used when no specific lifetime is specified for a binding. This is useful when a particular lifetime is used more often than others.
+When most bindings share the same lifetime, repeating `.As(...)` on each of them is noisy.
+`DefaultLifetime(...)` sets the lifetime applied to every subsequent binding in the setup chain that doesn't specify one — until the chain ends or `DefaultLifetime(...)` is called again.
+Here `DefaultLifetime(Singleton)` makes both the gateway and the assistant singletons, so the two gateway references inside the assistant resolve to the same instance.
 
 
 ```c#
@@ -94,7 +96,8 @@ dotnet run
 >[!NOTE]
 >Default lifetime reduces configuration verbosity when a particular lifetime is predominant in your composition.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -137,6 +140,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -171,4 +176,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Default lifetime for a type](default-lifetime-for-a-type.md)
+- [Default lifetime for a type and a tag](default-lifetime-for-a-type-and-a-tag.md)
 

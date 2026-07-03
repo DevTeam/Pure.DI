@@ -97,7 +97,8 @@ dotnet run
 >[!NOTE]
 >IEnumerable<T> provides lazy evaluation, making it efficient for scenarios where you may not need to enumerate all instances.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -119,6 +120,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -166,4 +169,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Array](array.md)
+- [Enumerable generics](enumerable-generics.md)
+- [Async Enumerable](async-enumerable.md)
 

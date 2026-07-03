@@ -129,7 +129,8 @@ dotnet run
 >[!NOTE]
 >`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable
@@ -233,6 +234,8 @@ partial class Composition: IDisposable
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -289,4 +292,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Scope](scope.md)
+- [Auto scoped](auto-scoped.md)
+- [Async disposable scope](async-disposable-scope.md)
 

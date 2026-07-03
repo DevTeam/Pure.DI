@@ -1,7 +1,7 @@
 #### Unity scene scopes
 
-Demonstrates Unity-style scoped lifetime boundaries where Unity creates MonoBehaviour instances and Pure.DI builds them up without constructors.
-Each loaded scene has its own scope, so scoped services are shared inside one scene and isolated from another scene.
+In Unity, a loaded scene is a natural lifetime boundary: services should be shared within one scene and isolated from another. This example models that with scopes — each scene gets its own scope created via the generated `SetupScope` method, `Scoped` services are unique per scene, and `Singleton` services remain shared across all scenes through the application-level composition.
+Unity itself creates the `MonoBehaviour` instances, so Pure.DI only builds them up, injecting members marked with `[Dependency]` instead of using constructors.
 
 
 ```c#
@@ -156,7 +156,8 @@ dotnet run
 >[!NOTE]
 >In a real Unity project the scene objects are created by Unity. The sample uses constructors only to simulate serialized references in a test.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Scope: IDisposable
@@ -235,8 +236,8 @@ partial class Scope: IDisposable
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     switch (buildingInstance)
     {
-      case Clock Clock1:
-        BuildUp(Clock1);
+      case Clock Clock3:
+        BuildUp(Clock3);
         return true;
       default:
         return false;
@@ -323,4 +324,11 @@ partial class Scope: IDisposable
 }
 ```
 
+</details>
+
+
+See also:
+
+- [Unity Basics](unity-basics.md)
+- [Scope](scope.md)
 

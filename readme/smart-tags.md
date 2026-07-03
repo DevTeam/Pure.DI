@@ -113,7 +113,8 @@ Common pitfalls:
 - Treating generated tag constants as domain concepts instead of DI composition details.
 See also: [Tags](tags.md), [Generics](generics.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -160,6 +161,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -203,4 +206,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tags](tags.md)
 

@@ -1,6 +1,8 @@
 #### Async Root
 
-Demonstrates how to define asynchronous composition roots that return Task or Task<T>, enabling async operations during composition.
+A composition root can be asynchronous: declare it as `Root<Task<IService>>(...)` and _Pure.DI_ generates a root method you can `await`.
+This is useful when building the object graph is costly and you don't want to block the caller.
+Add `RootArg<CancellationToken>("cancellationToken")` to pass a cancellation token that is used when resolving the root.
 
 
 ```c#
@@ -62,7 +64,8 @@ dotnet run
 >[!NOTE]
 >Async roots are useful when you need to perform asynchronous initialization or when your services require async creation.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -97,6 +100,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -166,4 +171,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Task](task.md)
 

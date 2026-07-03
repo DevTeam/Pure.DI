@@ -1,6 +1,6 @@
 #### Unity Basics
 
-Demonstrates basic integration with Unity game engine, showing how Pure.DI can be used for dependency injection in Unity projects.
+In Unity, `MonoBehaviour` instances are created by the engine, not by your code, so constructor injection is not an option. Pure.DI solves this with builders: the `Builders<MonoBehaviour>()` call generates a `BuildUp` method for every `MonoBehaviour` in the composition, which injects the members marked with `[Dependency]`. Here `Clock` calls `scope.BuildUp(this)` in `Awake()` to receive its `IClockService`, while regular (non-`MonoBehaviour`) dependencies like `ClockService` are wired up with ordinary bindings.
 
 
 ```c#
@@ -114,9 +114,10 @@ dotnet run
 </details>
 
 >[!NOTE]
->Unity integration requires special considerations due to Unity's component-based architecture and lifecycle management.
+>Call `BuildUp` in `Awake()` so that dependencies are ready before the first `Update()` runs.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Scope: IDisposable
@@ -171,8 +172,8 @@ partial class Scope: IDisposable
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     switch (buildingInstance)
     {
-      case Clock Clock:
-        BuildUp(Clock);
+      case Clock Clock2:
+        BuildUp(Clock2);
         return true;
       default:
         return false;
@@ -258,4 +259,12 @@ partial class Scope: IDisposable
 }
 ```
 
+</details>
+
+
+See also:
+
+- [Unity with prefabs](unity-with-prefabs.md)
+- [Unity scene scopes](unity-scene-scopes.md)
+- [Builders](builders.md)
 

@@ -70,7 +70,8 @@ dotnet run
 >[!NOTE]
 >Overriding BCL bindings allows you to provide custom implementations for standard types, enabling specialized behavior for your application.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -86,6 +87,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -116,4 +119,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Default BCL bindings](default-bcl-bindings.md)
 

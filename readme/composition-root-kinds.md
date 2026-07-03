@@ -1,6 +1,7 @@
 #### Composition root kinds
 
-Demonstrates different kinds of composition roots that can be created: public methods, private partial methods, and static roots. Each kind serves different use cases for accessing composition roots with appropriate visibility and lifetime semantics.
+By default, a composition root is a public instance property, but the `kind` argument of `Root<T>(...)` lets you change that. Combine `RootKinds` flags to generate the root as a method instead of a property, adjust its visibility (`Public`, `Internal`, `Private`), or make it `Static` or `Partial`.
+A private partial root is useful when you want to wrap the generated code in your own hand-written member, as the `PaymentService` property does here.
 
 
 ```c#
@@ -81,7 +82,8 @@ dotnet run
 >[!NOTE]
 >Composition roots can be customized with different kinds to control accessibility and lifetime, enabling flexible API design patterns.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -257,6 +259,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -304,4 +308,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition roots](composition-roots.md)
+- [Static root](static-root.md)
 

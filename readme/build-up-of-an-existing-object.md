@@ -84,7 +84,8 @@ Key Concepts:
 **Build-Up** - injecting dependencies into an already created object
 **Dependency Attribute** - marker for identifying injectable members
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -104,6 +105,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -190,4 +193,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Builder](builder.md)
+- [Method injection](method-injection.md)
+- [Property injection](property-injection.md)
 

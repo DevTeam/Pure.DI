@@ -58,3 +58,7 @@ dotnet run
 
 
 
+See also:
+
+- [Dependent compositions](dependent-compositions.md)
+

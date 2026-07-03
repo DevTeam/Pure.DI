@@ -1,6 +1,7 @@
 #### Generic injections on demand
 
-Demonstrates how to create generic dependencies on demand using factory delegates with generic type parameters.
+On-demand creation via `Func<T>` works inside generic types too. `Distributor<T>` takes a `Func<IWorker<T>>` and calls it whenever it needs another worker — each call produces a new `Worker<T>` for the same type argument.
+Use this when the consumer, not the composition, decides how many instances to create and when.
 
 
 ```c#
@@ -72,7 +73,8 @@ dotnet run
 >[!NOTE]
 >Generic on-demand injection provides flexibility for creating instances with different type parameters as needed.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -94,6 +96,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -135,4 +139,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Injection on demand](injection-on-demand.md)
+- [Generic injections on demand with arguments](generic-injections-on-demand-with-arguments.md)
 

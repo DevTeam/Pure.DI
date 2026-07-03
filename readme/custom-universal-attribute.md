@@ -76,7 +76,8 @@ dotnet run
 >[!NOTE]
 >Universal attributes reduce the number of attributes needed by combining multiple metadata types into a single attribute.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class PersonComposition
@@ -104,6 +105,8 @@ partial class PersonComposition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -164,4 +167,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Custom attributes](custom-attributes.md)
 

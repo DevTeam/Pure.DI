@@ -1,6 +1,6 @@
 #### Unity with prefabs
 
-Demonstrates advanced Unity integration showing how Pure.DI works with Unity prefabs and component lifecycle.
+Components created from prefabs at runtime also need their dependencies injected. Building on the basic Unity example, the `ClockManager` composition root instantiates the `ClockDigital` prefab with `Object.Instantiate` and immediately passes the new instance to `BuildUp`, which fills in its `[Dependency]` members. The `Builders<MonoBehaviour>()` call generates such a `BuildUp` method for every `MonoBehaviour` in the setup.
 
 
 ```c#
@@ -168,9 +168,10 @@ dotnet run
 </details>
 
 >[!NOTE]
->Prefab integration with DI requires careful handling of Unity's instantiation and component initialization phases.
+>Call `BuildUp` right after `Object.Instantiate` so the component's dependencies are set before Unity starts calling its lifecycle methods such as `FixedUpdate()`.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Scope: IDisposable
@@ -245,8 +246,8 @@ partial class Scope: IDisposable
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     switch (buildingInstance)
     {
-      case Clock Clock2:
-        BuildUp(Clock2);
+      case Clock Clock4:
+        BuildUp(Clock4);
         return true;
       case ClockDigital ClockDigital:
         BuildUp(ClockDigital);
@@ -425,4 +426,10 @@ partial class Scope: IDisposable
 }
 ```
 
+</details>
+
+
+See also:
+
+- [Unity Basics](unity-basics.md)
 

@@ -89,7 +89,8 @@ dotnet run
 >[!NOTE]
 >Generic enumerable injections are useful for implementing middleware patterns where multiple handlers need to be invoked in sequence.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -127,6 +128,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -203,4 +206,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Enumerable](enumerable.md)
 

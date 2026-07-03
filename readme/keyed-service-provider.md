@@ -1,6 +1,6 @@
 #### Keyed service provider
 
-Demonstrates integration with Microsoft.Extensions.DependencyInjection's keyed services feature.
+A composition class can implement `IKeyedServiceProvider` from _Microsoft.Extensions.DependencyInjection_, exposing tagged composition roots as keyed services. The `ObjectResolveMethodName` and `ObjectResolveByTagMethodName` hints rename the generated `Resolve` methods to `GetService` and `GetRequiredKeyedService`, so binding tags such as `"PayPal"` and `"Online"` become the service keys.
 
 
 ```c#
@@ -100,7 +100,8 @@ dotnet run
 >[!NOTE]
 >This enables compatibility with Microsoft's DI container ecosystem when using keyed service resolution.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -324,6 +325,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -386,4 +389,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Service provider](service-provider.md)
+- [Tags](tags.md)
 

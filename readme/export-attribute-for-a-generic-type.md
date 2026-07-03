@@ -1,6 +1,6 @@
-#### Bind attribute for a generic type
+#### Export attribute for a generic type
 
-Demonstrates how to use the Bind attribute to configure bindings for generic types, allowing automatic registration without explicit binding declarations.
+The `[Export]` attribute works with generic types too: applied to a generic factory method with a `TT` marker, as in `[Export(typeof(IComments<TT>))]`, it makes a single method the source of `IComments<T>` for any requested `T`. This is handy when a factory class produces generic dependencies and you don't want to declare a separate binding for each closed type.
 
 
 ```c#
@@ -35,7 +35,7 @@ class CommentsFactory
     // The 'TT' type marker in the attribute indicates that this method
     // can produce 'IComments<T>' for any generic type 'T'.
     // This allows the factory to handle all requests for IComments<T>.
-    [Bind(typeof(IComments<TT>))]
+    [Export(typeof(IComments<TT>))]
     public IComments<T> Create<T>() => new Comments<T>();
 }
 
@@ -80,9 +80,10 @@ dotnet run
 </details>
 
 >[!NOTE]
->The Bind attribute provides a declarative way to specify bindings directly on types, reducing the need for manual composition setup.
+>The Export attribute provides a declarative way to specify bindings directly on types, reducing the need for manual composition setup.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -116,6 +117,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -129,7 +132,7 @@ classDiagram
 	Composition ..> ArticleService : IArticleService ArticleService
 	ArticleService *-- ICommentsᐸArticleᐳ : ICommentsᐸArticleᐳ
 	ICommentsᐸArticleᐳ o-- "Singleton" CommentsFactory : CommentsFactory
-	namespace Pure.DI.UsageTests.Basics.BindAttributeForGenericTypeScenario {
+	namespace Pure.DI.UsageTests.Basics.ExportAttributeForGenericTypeScenario {
 		class ArticleService {
 				<<class>>
 			+ArticleService(ICommentsᐸArticleᐳ comments)
@@ -150,4 +153,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Export attribute](export-attribute.md)
 

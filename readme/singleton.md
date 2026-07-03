@@ -113,7 +113,8 @@ Some articles advise using objects with a `Singleton` lifetime as often as possi
 
 - Sometimes additional logic is required to dispose of _Singleton_.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -143,6 +144,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -178,4 +181,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Transient](transient.md)
+- [Disposable singleton](disposable-singleton.md)
+- [Default lifetime](default-lifetime.md)
 

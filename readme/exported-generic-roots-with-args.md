@@ -1,6 +1,6 @@
-#### Exposed generic roots with args
+#### Exported generic roots with args
 
-Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
+Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exported` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
 public partial class CompositionWithGenericRootsAndArgsInOtherProject
 {
@@ -10,7 +10,7 @@ public partial class CompositionWithGenericRootsAndArgsInOtherProject
             .RootArg<int>("id")
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
             .Bind().To<MyGenericService<TT>>()
-            .Root<IMyGenericService<TT>>("GetMyService", kind: RootKinds.Exposed);
+            .Root<IMyGenericService<TT>>("GetMyService", kind: RootKinds.Exported);
 }
 ```
 
@@ -67,36 +67,9 @@ dotnet run
 >[!IMPORTANT]
 >At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
 
-The following partial class will be generated:
 
-```c#
-partial class Composition
-{
-#if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
-#else
-  private readonly Object _lock = new Object();
-#endif
 
-  private OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject? _singletonCompositionWithGenericRootsAndArgsInOtherProject72;
+See also:
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program GetProgram(int id)
-  {
-    OtherAssembly.IMyGenericService<int> transientIMyGenericServiceInt32;
-    int localId = id;
-    if (_singletonCompositionWithGenericRootsAndArgsInOtherProject72 is null)
-      lock (_lock)
-        if (_singletonCompositionWithGenericRootsAndArgsInOtherProject72 is null)
-        {
-          _singletonCompositionWithGenericRootsAndArgsInOtherProject72 = new OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject();
-        }
-
-    OtherAssembly.CompositionWithGenericRootsAndArgsInOtherProject localInstance_1182D127 = _singletonCompositionWithGenericRootsAndArgsInOtherProject72;
-    transientIMyGenericServiceInt32 = localInstance_1182D127.GetMyService<int>(localId);
-    return new Program(transientIMyGenericServiceInt32);
-  }
-}
-```
-
+- [Exported generic roots](exported-generic-roots.md)
 

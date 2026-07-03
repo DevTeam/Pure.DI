@@ -1,6 +1,7 @@
 #### Generic builders
 
-Demonstrates how to create generic builders for all types derived from a generic base type known at compile time.
+Sometimes many related types need the same build-up treatment. A single `Builders<IMessage<TT, TT2>>("BuildUp")` call creates a builder for every type implementing `IMessage<TT, TT2>` that is visible at compile time — here both `QueryMessage<,>` and `CommandMessage<,>` get their own `BuildUp` overload.
+Each builder injects members marked with the `[Dependency]` attribute into an existing instance, so instances created elsewhere (e.g. by an API controller) still receive their dependencies.
 
 
 ```c#
@@ -105,7 +106,8 @@ dotnet run
 >[!NOTE]
 >Generic builders provide compile-time type safety while allowing flexible object graph construction.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -173,6 +175,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -217,4 +221,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generic builder](generic-builder.md)
+- [Builders](builders.md)
 

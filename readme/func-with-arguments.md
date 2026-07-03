@@ -1,6 +1,6 @@
 #### Func with arguments
 
-Demonstrates how to use Func<T> with arguments for dynamic creation of instances with runtime parameters.
+Sometimes an instance can only be created with values known at runtime, such as an id or a name. Injecting a `Func<..., T>` with arguments gives you a factory: values passed at call time are matched by type to the constructor parameters (here `int id` and `string name` of `Person`), while the remaining dependencies, like `IClock`, are resolved from the composition as usual.
 
 
 ```c#
@@ -101,7 +101,8 @@ dotnet run
 >[!NOTE]
 >Func with arguments provides flexibility for scenarios where you need to pass runtime parameters during instance creation.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -141,6 +142,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -194,4 +197,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Func](func.md)
+- [Injections on demand with arguments](injections-on-demand-with-arguments.md)
+- [Overrides](overrides.md)
 

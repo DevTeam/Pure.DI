@@ -133,7 +133,8 @@ Important points:
 Useful when:
 - You handle multi-tenant requests and need system services to run under a system context.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -285,6 +286,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -349,4 +352,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Overrides](overrides.md)
+- [Scope](scope.md)
 

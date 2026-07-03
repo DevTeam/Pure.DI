@@ -1,62 +1,33 @@
 #### Bind attribute
 
-`BindAttribute` lets you bind properties, fields, or methods declared on the bound type.
+Shows how to declare a binding directly on an implementation type with the built-in `BindAttribute`.
 
 
 ```c#
+using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<DeviceFeatureProvider>()
-    .Bind().To<PhotoService>()
 
     // Composition root
-    .Root<IPhotoService>("PhotoService");
+    .Root<IMessageWriter>("Writer", "console");
 
 var composition = new Composition();
-var photoService = composition.PhotoService;
-photoService.TakePhotoWithLocation();
+var writer = composition.Writer;
+writer.Write("Pure.DI");
 
-interface IGps
+writer.ShouldBeOfType<ConsoleMessageWriter>();
+writer.ShouldBeSameAs(composition.Writer);
+
+interface IMessageWriter
 {
-    void GetLocation();
+    void Write(string message);
 }
 
-class Gps : IGps
+[Bind(typeof(IMessageWriter), Lifetime.Singleton, "console")]
+class ConsoleMessageWriter : IMessageWriter
 {
-    public void GetLocation() => Console.WriteLine("Coordinates: 123, 456");
-}
-
-interface ICamera
-{
-    void Capture();
-}
-
-class Camera : ICamera
-{
-    public void Capture() => Console.WriteLine("Photo captured");
-}
-
-class DeviceFeatureProvider
-{
-    // The [Bind] attribute specifies that the property is a source of dependency
-    [Bind] public IGps Gps { get; } = new Gps();
-
-    [Bind] public ICamera Camera { get; } = new Camera();
-}
-
-interface IPhotoService
-{
-    void TakePhotoWithLocation();
-}
-
-class PhotoService(IGps gps, Func<ICamera> cameraFactory) : IPhotoService
-{
-    public void TakePhotoWithLocation()
-    {
-        gps.GetLocation();
-        cameraFactory().Capture();
-    }
+    public void Write(string message) => Console.WriteLine(message);
 }
 ```
 
@@ -71,10 +42,12 @@ dotnet --list-sdk
 ```bash
 dotnet new console -n Sample
 ```
-- Add a reference to the NuGet package
+- Add references to the NuGet packages
   - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 ```bash
 dotnet add package Pure.DI
+dotnet add package Shouldly
 ```
 - Copy the example code into the _Program.cs_ file
 
@@ -85,9 +58,11 @@ dotnet run
 
 </details>
 
-It applies to instance or static members, including members that return generic types.
+>[!NOTE]
+>`BindAttribute` is registered by default and can provide the contract type, lifetime, and tag. Attributes inside the same square-bracket group form one binding; separate `Bind` groups create separate bindings.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -98,43 +73,27 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private DeviceFeatureProvider? _singletonDeviceFeatureProvider71;
+  private ConsoleMessageWriter? _singletonConsoleMessageWriter2147482626;
 
-  public IPhotoService PhotoService
+  public IMessageWriter Writer
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      IGps transientIGps;
-      EnsureDeviceFeatureProviderExists();
-      DeviceFeatureProvider localInstance_1182D127 = _singletonDeviceFeatureProvider71;
-      transientIGps = localInstance_1182D127.Gps;
-      Func<ICamera> perBlockFuncICamera = new Func<ICamera>(
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      () =>
-      {
-        // Creates a deferred value
-        ICamera transientICamera;
-        EnsureDeviceFeatureProviderExists();
-        DeviceFeatureProvider localInstance_1182D1271 = _singletonDeviceFeatureProvider71;
-        transientICamera = localInstance_1182D1271.Camera;
-        return transientICamera;
-      });
-      return new PhotoService(transientIGps, perBlockFuncICamera);
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      void EnsureDeviceFeatureProviderExists()
-      {
-        if (_singletonDeviceFeatureProvider71 is null)
-          lock (_lock)
-            if (_singletonDeviceFeatureProvider71 is null)
-            {
-              _singletonDeviceFeatureProvider71 = new DeviceFeatureProvider();
-            }
-      }
+      if (_singletonConsoleMessageWriter2147482626 is null)
+        lock (_lock)
+          if (_singletonConsoleMessageWriter2147482626 is null)
+          {
+            _singletonConsoleMessageWriter2147482626 = new ConsoleMessageWriter();
+          }
+
+      return _singletonConsoleMessageWriter2147482626;
     }
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -145,40 +104,26 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	PhotoService --|> IPhotoService
-	Composition ..> PhotoService : IPhotoService PhotoService
-	PhotoService *-- IGps : IGps
-	PhotoService o-- "PerBlock" FuncᐸICameraᐳ : FuncᐸICameraᐳ
-	ICamera o-- "Singleton" DeviceFeatureProvider : DeviceFeatureProvider
-	IGps o-- "Singleton" DeviceFeatureProvider : DeviceFeatureProvider
-	FuncᐸICameraᐳ *-- ICamera : ICamera
-	namespace Pure.DI.UsageTests.Basics.BindAttributeScenario {
+	ConsoleMessageWriter --|> IMessageWriter : "console"
+	Composition ..> ConsoleMessageWriter : IMessageWriter Writer
+	namespace Pure.DI.UsageTests.Attributes.BindAttributeScenario {
 		class Composition {
 		<<partial>>
-		+IPhotoService PhotoService
+		+IMessageWriter Writer
 		}
-		class DeviceFeatureProvider {
+		class ConsoleMessageWriter {
 				<<class>>
-			+DeviceFeatureProvider()
+			+ConsoleMessageWriter()
 		}
-		class ICamera {
-				<<interface>>
-		}
-		class IGps {
-				<<interface>>
-		}
-		class IPhotoService {
+		class IMessageWriter {
 			<<interface>>
-		}
-		class PhotoService {
-				<<class>>
-			+PhotoService(IGps gps, FuncᐸICameraᐳ cameraFactory)
-		}
-	}
-	namespace System {
-		class FuncᐸICameraᐳ {
-				<<delegate>>
 		}
 	}
 ```
+
+See also:
+
+- [Bind type attribute](bind-type-attribute.md)
+- [Bind lifetime attribute](bind-lifetime-attribute.md)
+- [Bind tag attribute](bind-tag-attribute.md)
 

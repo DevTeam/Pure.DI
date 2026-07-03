@@ -89,7 +89,8 @@ Common pitfalls:
 - Duplicating argument validation logic across consumers.
 See also: [Injection on demand](injection-on-demand.md), [Root arguments](root-arguments.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -113,6 +114,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -158,4 +161,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Injection on demand](injection-on-demand.md)
+- [Func with arguments](func-with-arguments.md)
+- [Overrides](overrides.md)
 

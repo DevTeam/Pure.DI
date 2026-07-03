@@ -132,7 +132,8 @@ dotnet run
 >[!NOTE]
 >Overrides provide fine-grained control over dependency resolution, allowing you to customize bindings at runtime or for specific scenarios.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -180,6 +181,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -237,4 +240,11 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition arguments](composition-arguments.md)
+- [Root arguments](root-arguments.md)
+- [Func with arguments](func-with-arguments.md)
+- [Thread-safe overrides](thread-safe-overrides.md)
 

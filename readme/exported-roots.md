@@ -1,17 +1,16 @@
-#### Exposed roots with tags
+#### Exported roots
 
-Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
+Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exported` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
-public partial class CompositionWithTagsInOtherProject
+public partial class CompositionInOtherProject
 {
     private static void Setup() =>
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
-            .Bind("Some tag").To<MyService>()
-            .Root<IMyService>("MyService", "Some tag", RootKinds.Exposed);
+            .Bind().To<MyService>()
+            .Root<IMyService>("MyService", kind: RootKinds.Exported);
 }
 ```
-Use this when a library exposes ready-made composition roots that must be reused in another composition.
 
 
 ```c#
@@ -21,14 +20,14 @@ using OtherAssembly;
 
 DI.Setup(nameof(Composition))
     // Binds to exposed composition roots from other project
-    .Bind().As(Singleton).To<CompositionWithTagsInOtherProject>()
+    .Bind().As(Singleton).To<CompositionInOtherProject>()
     .Root<Program>("Program");
 
 var composition = new Composition();
 var program = composition.Program;
 program.DoSomething();
 
-partial class Program([Tag("Some tag")] IMyService myService)
+partial class Program(IMyService myService)
 {
     public void DoSomething() => myService.DoSomething();
 }
@@ -59,10 +58,11 @@ dotnet run
 
 </details>
 
-Limitations: exposed roots create an integration contract between assemblies; tag names and root contracts should be versioned carefully.
-See also: [Tags](tags.md), [Exposed roots](exposed-roots.md).
+>[!IMPORTANT]
+>At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -73,7 +73,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private OtherAssembly.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject71;
+  private OtherAssembly.CompositionInOtherProject? _singletonCompositionInOtherProject71;
 
   public Program Program
   {
@@ -81,14 +81,14 @@ partial class Composition
     get
     {
       OtherAssembly.IMyService transientIMyService;
-      if (_singletonCompositionWithTagsInOtherProject71 is null)
+      if (_singletonCompositionInOtherProject71 is null)
         lock (_lock)
-          if (_singletonCompositionWithTagsInOtherProject71 is null)
+          if (_singletonCompositionInOtherProject71 is null)
           {
-            _singletonCompositionWithTagsInOtherProject71 = new OtherAssembly.CompositionWithTagsInOtherProject();
+            _singletonCompositionInOtherProject71 = new OtherAssembly.CompositionInOtherProject();
           }
 
-      OtherAssembly.CompositionWithTagsInOtherProject localInstance_1182D127 = _singletonCompositionWithTagsInOtherProject71;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D127 = _singletonCompositionInOtherProject71;
       transientIMyService = localInstance_1182D127.MyService;
       return new Program(transientIMyService);
     }
@@ -96,4 +96,11 @@ partial class Composition
 }
 ```
 
+</details>
+
+
+See also:
+
+- [Exported roots with tags](exported-roots-with-tags.md)
+- [Exported generic roots](exported-generic-roots.md)
 

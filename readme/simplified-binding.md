@@ -127,7 +127,8 @@ Common pitfalls:
 - Forgetting that special framework types are intentionally excluded.
 See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md), [Special types](simplified-lifetime-specific-bindings.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -143,6 +144,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -190,4 +193,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md)
+- [Auto-bindings](auto-bindings.md)
 

@@ -88,7 +88,8 @@ Use Cases:
 - When migrating existing code to DI
 - For complex object graphs where full construction is not feasible
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -107,6 +108,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -181,4 +184,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Build up of an existing object](build-up-of-an-existing-object.md)
+- [Builder with arguments](builder-with-arguments.md)
+- [Builders](builders.md)
 

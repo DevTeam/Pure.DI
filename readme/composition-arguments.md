@@ -108,7 +108,8 @@ Common pitfalls:
 - Treating composition arguments as mutable runtime state holders.
 See also: [Root arguments](root-arguments.md), [Tags](tags.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -135,6 +136,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -181,4 +184,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Root arguments](root-arguments.md)
+- [Overrides](overrides.md)
+- [Func with arguments](func-with-arguments.md)
 

@@ -92,7 +92,8 @@ dotnet run
 The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
 For more hints, see [this](../README.md#setup-hints) page.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -107,6 +108,8 @@ partial class Composition
   private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime);
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -152,4 +155,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [OnDependencyInjection wildcard hint](ondependencyinjection-wildcard-hint.md)
 

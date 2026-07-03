@@ -82,7 +82,8 @@ dotnet run
 Limitations: avoid adding business logic inside lock-aware factories; use it only for synchronization concerns.
 See also: [ThreadSafe hint](threadsafe-hint.md), [Factory](factory.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -157,6 +158,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -184,4 +187,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Thread-safe overrides](thread-safe-overrides.md)
 

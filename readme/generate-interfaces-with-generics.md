@@ -79,7 +79,8 @@ The example shows how to:
 - Preserve nullable annotations
 - Preserve events and generic constraints
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -216,11 +217,16 @@ partial class Composition
   }
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 }
 ```
+
+</details>
 
 Class diagram:
 

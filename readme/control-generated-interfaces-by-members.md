@@ -76,7 +76,8 @@ The example shows how to:
 - Keep class-level generation settings
 - Exclude explicitly ignored members from all generated interfaces
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -213,16 +214,24 @@ partial class Composition
   }
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 }
 ```
+
+</details>
 
 Class diagram:
 

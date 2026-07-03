@@ -150,7 +150,8 @@ dotnet run
 >[!NOTE]
 >Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -168,6 +169,8 @@ partial class Composition
   private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime);
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -203,4 +206,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Interception](interception.md)
 

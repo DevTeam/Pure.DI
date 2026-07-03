@@ -1,6 +1,6 @@
 #### Root with name template
 
-Demonstrates how to use name templates for composition roots, allowing dynamic generation of root names based on patterns or parameters.
+Instead of a fixed root name, `Root<T>()` accepts a name template where the `{type}` placeholder is replaced with the dependency's type name. This is handy when you declare many roots and want them to follow a consistent naming convention: the template `"My{type}"` here produces a root property named `MyApiClient`.
 
 
 ```c#
@@ -61,7 +61,8 @@ dotnet run
 >[!NOTE]
 >Name templates provide flexibility in root naming but should be used consistently to maintain code readability.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -76,6 +77,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -103,4 +106,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition roots](composition-roots.md)
 

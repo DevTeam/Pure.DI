@@ -113,7 +113,8 @@ Common pitfalls:
 - Depending on `Resolve` everywhere instead of explicit root members.
 See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -320,6 +321,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -383,4 +386,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Root binding](root-binding.md)
+- [Roots](roots.md)
+- [Composition root kinds](composition-root-kinds.md)
 

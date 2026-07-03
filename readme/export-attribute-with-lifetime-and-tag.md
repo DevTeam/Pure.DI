@@ -1,6 +1,6 @@
-#### Bind attribute with lifetime and tag
+#### Export attribute with lifetime and tag
 
-Demonstrates how to configure the Bind attribute with lifetime and tag parameters for more precise binding control.
+The `[Export]` attribute accepts optional `lifetime` and `tags` parameters, so an exported member is registered exactly like a hand-written binding. Here the `GraphicsAdapter.HighPerfGpu` property is exported as a `Singleton` with the tag `"HighPerformance"`, and `RayTracer` receives that instance by requesting `[Tag("HighPerformance")] IGpu`.
 
 
 ```c#
@@ -33,7 +33,7 @@ class GraphicsAdapter
     // Binds the property to the composition with the specified
     // lifetime and tag. This allows the "HighPerformance" GPU
     // to be injected into other components.
-    [Bind(lifetime: Lifetime.Singleton, tags: ["HighPerformance"])]
+    [Export(lifetime: Lifetime.Singleton, tags: ["HighPerformance"])]
     public IGpu HighPerfGpu { get; } = new DiscreteGpu();
 }
 
@@ -76,9 +76,10 @@ dotnet run
 </details>
 
 >[!NOTE]
->Specifying lifetime and tag in the Bind attribute allows for fine-grained control over instance creation and binding resolution.
+>Specifying lifetime and tag in the Export attribute allows for fine-grained control over instance creation and binding resolution.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -89,7 +90,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private IGpu? _singletonIGpu2147483103;
+  private IGpu? _singletonIGpu2147482282;
   private GraphicsAdapter? _singletonGraphicsAdapter71;
 
   public IRenderer Renderer
@@ -97,9 +98,9 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonIGpu2147483103 is null)
+      if (_singletonIGpu2147482282 is null)
         lock (_lock)
-          if (_singletonIGpu2147483103 is null)
+          if (_singletonIGpu2147482282 is null)
           {
             if (_singletonGraphicsAdapter71 is null)
             {
@@ -107,14 +108,16 @@ partial class Composition
             }
 
             GraphicsAdapter localInstance_1182D127 = _singletonGraphicsAdapter71;
-            _singletonIGpu2147483103 = localInstance_1182D127.HighPerfGpu;
+            _singletonIGpu2147482282 = localInstance_1182D127.HighPerfGpu;
           }
 
-      return new RayTracer(_singletonIGpu2147483103);
+      return new RayTracer(_singletonIGpu2147482282);
     }
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -129,7 +132,7 @@ classDiagram
 	Composition ..> RayTracer : IRenderer Renderer
 	RayTracer o-- "Singleton" IGpu : "HighPerformance" IGpu
 	IGpu o-- "Singleton" GraphicsAdapter : GraphicsAdapter
-	namespace Pure.DI.UsageTests.Basics.BindAttributeWithLifetimeAndTagScenario {
+	namespace Pure.DI.UsageTests.Basics.ExportAttributeWithLifetimeAndTagScenario {
 		class Composition {
 		<<partial>>
 		+IRenderer Renderer
@@ -150,4 +153,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Export attribute](export-attribute.md)
 

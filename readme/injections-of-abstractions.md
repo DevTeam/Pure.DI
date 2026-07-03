@@ -89,7 +89,8 @@ Common pitfalls:
 - Forgetting to bind alternate implementations for tagged use cases.
 See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -104,6 +105,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -144,4 +147,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Auto-bindings](auto-bindings.md)
+- [Composition roots](composition-roots.md)
 

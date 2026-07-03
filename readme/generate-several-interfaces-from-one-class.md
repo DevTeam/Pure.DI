@@ -78,7 +78,8 @@ The example shows how to:
 - Select members per interface using member attributes
 - Reuse one member in several generated interfaces
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -215,16 +216,24 @@ partial class Composition
   }
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 }
 ```
+
+</details>
 
 Class diagram:
 

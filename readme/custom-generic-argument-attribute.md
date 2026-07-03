@@ -1,6 +1,6 @@
 #### Custom generic argument attribute
 
-Demonstrates how to create and use custom attributes for generic type arguments, enabling advanced generic binding scenarios.
+Besides the built-in `TT` marker types, you can define your own generic type argument markers. Register a custom attribute with `GenericTypeArgumentAttribute<T>()`, apply it to a marker type like `TMy`, and use that marker in bindings: a single `Bind<IRepository<TMy>>().To<Repository<TMy>>()` then resolves `IRepository<T>` for any `T`, such as `IRepository<Post>` and `IRepository<Comment>`.
 
 
 ```c#
@@ -83,7 +83,8 @@ dotnet run
 >[!NOTE]
 >Custom generic argument attributes are useful when you need to pass metadata specific to generic type parameters during binding resolution.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -98,6 +99,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -142,4 +145,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Custom generic argument](custom-generic-argument.md)
 

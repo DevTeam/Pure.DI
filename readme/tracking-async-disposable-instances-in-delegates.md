@@ -1,6 +1,6 @@
 #### Tracking async disposable instances in delegates
 
-Demonstrates how async disposable instances created within delegate factories are tracked and disposed properly when the composition is disposed.
+When a service creates `IAsyncDisposable` dependencies dynamically, inject `Func<Owned<T>>` instead of `Func<T>`. Each factory call returns an `Owned<T>` that takes ownership of the dependency graph it just created, so the consumer decides exactly when to call `DisposeAsync()` — and disposing one instance does not affect graphs produced by other calls.
 
 
 ```c#
@@ -108,7 +108,8 @@ dotnet run
 >[!NOTE]
 >Async disposable tracking in delegates ensures proper async cleanup even when instances are created dynamically through factory delegates.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -162,6 +163,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -221,4 +224,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tracking async disposable instances per a composition root](tracking-async-disposable-instances-per-a-composition-root.md)
 

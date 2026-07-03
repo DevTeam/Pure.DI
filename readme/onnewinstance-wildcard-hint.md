@@ -103,7 +103,8 @@ dotnet run
 The `OnNewInstanceImplementationTypeNameWildcard` hint helps you define a set of implementation types that require instance creation control. You can use it to specify a wildcard to filter bindings by implementation name.
 For more hints, see [this](../README.md#setup-hints) page.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -142,6 +143,8 @@ partial class Composition
   partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime);
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -186,4 +189,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [OnNewInstance regular expression hint](onnewinstance-regular-expression-hint.md)
 

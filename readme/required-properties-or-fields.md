@@ -76,7 +76,8 @@ dotnet run
 
 This approach simplifies dependency injection by eliminating the need to manually configure bindings for required dependencies, making the code more concise and easier to maintain.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -103,6 +104,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -146,4 +149,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Property injection](property-injection.md)
+- [Default values](default-values.md)
 

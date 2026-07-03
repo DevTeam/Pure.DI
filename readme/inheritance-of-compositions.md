@@ -1,6 +1,7 @@
 #### Inheritance of compositions
 
-Demonstrates how composition classes can inherit from each other, allowing reuse of bindings and composition roots across multiple related compositions.
+Common bindings can be shared between compositions through plain C# inheritance. Define them in a base class whose setup uses `DI.Setup(kind: Internal)` — the `Internal` composition kind marks the setup as reusable configuration that does not generate a composition class of its own.
+A composition class that derives from it automatically picks up the inherited bindings and combines them with its own.
 
 
 ```c#
@@ -76,7 +77,8 @@ dotnet run
 >[!NOTE]
 >Composition inheritance provides a way to share common bindings while still allowing each derived composition to add its own specific bindings.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -214,4 +216,10 @@ partial class Composition
 }
 ```
 
+</details>
+
+
+See also:
+
+- [Dependent compositions](dependent-compositions.md)
 

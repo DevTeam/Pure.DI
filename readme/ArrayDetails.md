@@ -95,7 +95,8 @@ classDiagram
 
 ### Generated code
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Array
@@ -229,3 +230,5 @@ partial class Array
   }
 }
 ```
+
+</details>

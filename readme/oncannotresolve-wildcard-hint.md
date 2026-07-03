@@ -88,7 +88,8 @@ dotnet run
 The `OnCannotResolveContractTypeNameWildcard` hint helps define the set of types that require manual dependency resolution. You can use it to specify a wildcard to filter the full type name.
 For more hints, see [this](../README.md#setup-hints) page.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -106,6 +107,8 @@ partial class Composition
   private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime);
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -147,4 +150,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [OnCannotResolve regular expression hint](oncannotresolve-regular-expression-hint.md)
 

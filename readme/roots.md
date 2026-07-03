@@ -57,7 +57,8 @@ dotnet run
 >[!NOTE]
 >This feature is useful for plugin-style architectures where you need to expose all implementations of a base type or interface.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -104,6 +105,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -141,4 +144,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Roots with filter](roots-with-filter.md)
+- [Generic roots](generic-roots.md)
 

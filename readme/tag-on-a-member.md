@@ -1,6 +1,6 @@
 #### Tag on a member
 
-The wildcards `*` and `?` are supported.
+`Tag.OnMember<T>(memberName)` creates a tag that targets injection into a specific property or field of type `T`, so you can override which implementation goes into that member without touching the class definition — here `StripeGateway` is injected into the `Gateway` property of `CheckoutService` while `PayPalGateway` stays the default binding elsewhere. The wildcards `*` and `?` are supported.
 
 
 ```c#
@@ -72,7 +72,8 @@ dotnet run
 >[!WARNING]
 >Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -90,6 +91,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -126,4 +129,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tag on injection site](tag-on-injection-site.md)
+- [Tag on a constructor argument](tag-on-a-constructor-argument.md)
 

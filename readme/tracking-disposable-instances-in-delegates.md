@@ -1,6 +1,6 @@
 #### Tracking disposable instances in delegates
 
-Demonstrates how disposable instances created within delegate factories are tracked and disposed properly when the composition is disposed.
+When a service creates disposable dependencies dynamically, inject `Func<Owned<T>>` instead of `Func<T>`. Each factory call returns an `Owned<T>` that owns all disposables created for that particular graph, so disposing it cleans up exactly those instances — graphs produced by other factory calls remain alive.
 
 
 ```c#
@@ -97,7 +97,8 @@ dotnet run
 >[!NOTE]
 >Disposable tracking in delegates ensures proper cleanup even when instances are created dynamically through factory delegates.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -151,6 +152,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -206,4 +209,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tracking disposable instances per a composition root](tracking-disposable-instances-per-a-composition-root.md)
 

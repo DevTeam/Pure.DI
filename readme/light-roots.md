@@ -107,7 +107,8 @@ dotnet run
 >[!NOTE]
 >Light roots are ideal for simple services, factories, or utilities that don't require complex dependency graphs. They reduce generated code size and improve compilation time.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -425,6 +426,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -532,4 +535,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition roots](composition-roots.md)
 

@@ -61,7 +61,8 @@ dotnet run
 >[!NOTE]
 >`RootBind` reduces boilerplate when you need both a binding and a root for the same type.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -91,6 +92,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -126,4 +129,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition roots](composition-roots.md)
 

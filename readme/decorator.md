@@ -62,7 +62,8 @@ dotnet run
 
 Here an instance of the `TextWidget` type, labeled `"base"`, is injected in the decorator `BoxWidget`. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -77,6 +78,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -109,4 +112,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Interception](interception.md)
 

@@ -1,6 +1,7 @@
 #### Generic root arguments
 
-Demonstrates how to pass type arguments as parameters to generic composition roots.
+Sometimes a composition root needs an argument whose type depends on the root's own type parameter. Declaring `RootArg<TT>("model")` together with the generic root `Root<IPresenter<TT>>("GetPresenter")` produces a generic method `GetPresenter<T>(T model)`.
+The value passed to that method is injected into `Presenter<T>` through the method marked with the `[Dependency]` attribute.
 
 
 ```c#
@@ -68,7 +69,8 @@ dotnet run
 >[!NOTE]
 >Generic root arguments enable flexible type parameterization while maintaining compile-time type safety.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -83,6 +85,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -111,4 +115,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Root arguments](root-arguments.md)
+- [Complex generic root arguments](complex-generic-root-arguments.md)
 

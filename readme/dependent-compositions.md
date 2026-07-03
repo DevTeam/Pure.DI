@@ -75,9 +75,9 @@ dotnet run
 </details>
 
 Limitations: too many setup layers can make graph ownership unclear; keep boundaries explicit and naming consistent.
-See also: [Composition roots](composition-roots.md), [Global compositions](global-compositions.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -92,7 +92,10 @@ partial class Composition
   }
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class OtherComposition
@@ -116,6 +119,8 @@ partial class OtherComposition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -158,4 +163,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition roots](composition-roots.md)
+- [Global compositions](global-compositions.md)
+- [Inheritance of compositions](inheritance-of-compositions.md)
 

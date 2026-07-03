@@ -96,7 +96,8 @@ dotnet run
 >[!NOTE]
 >ConsumerType is useful for creating context-aware loggers or when you need to know which type is consuming a dependency.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -131,6 +132,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -174,4 +177,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Consumer types](consumer-types.md)
 

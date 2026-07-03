@@ -93,7 +93,8 @@ Common pitfalls:
 - Forgetting explicit tags when several same-type dependencies exist.
 See also: [Factory](factory.md), [Tags](tags.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -114,6 +115,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -154,4 +157,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Factory](factory.md)
+- [Simplified lifetime-specific factory](simplified-lifetime-specific-factory.md)
 

@@ -134,7 +134,8 @@ Useful when:
 - Some properties are simple field-backed while others have custom logic.
 
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -280,6 +281,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -319,4 +322,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Dependent compositions with setup context members](dependent-compositions-with-setup-context-members.md)
 

@@ -97,7 +97,8 @@ dotnet run
 >[!NOTE]
 >`PerBlock` lifetime provides a balance between `PerResolve` and `Transient`, reducing instance count within a resolution block.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -108,8 +109,8 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private (IDatabaseConnection conn3, IDatabaseConnection conn4) _singletonValueTuple74;
-  private bool _singletonValueTuple74Created;
+  private (IDatabaseConnection conn3, IDatabaseConnection conn4) _singletonValueTuple2147481303;
+  private bool _singletonValueTuple2147481303Created;
 
   public OrderRepository Repository
   {
@@ -117,21 +118,23 @@ partial class Composition
     get
     {
       var perBlockDatabaseConnection = new DatabaseConnection();
-      if (!_singletonValueTuple74Created)
+      if (!_singletonValueTuple2147481303Created)
         lock (_lock)
-          if (!_singletonValueTuple74Created)
+          if (!_singletonValueTuple2147481303Created)
           {
             var perBlockDatabaseConnection1 = new DatabaseConnection();
-            _singletonValueTuple74 = (perBlockDatabaseConnection1, perBlockDatabaseConnection1);
+            _singletonValueTuple2147481303 = (perBlockDatabaseConnection1, perBlockDatabaseConnection1);
             Thread.MemoryBarrier();
-            _singletonValueTuple74Created = true;
+            _singletonValueTuple2147481303Created = true;
           }
 
-      return new OrderRepository(perBlockDatabaseConnection, perBlockDatabaseConnection, _singletonValueTuple74);
+      return new OrderRepository(perBlockDatabaseConnection, perBlockDatabaseConnection, _singletonValueTuple2147481303);
     }
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -199,4 +202,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [PerResolve](perresolve.md)
+- [Transient](transient.md)
 

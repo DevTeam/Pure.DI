@@ -63,7 +63,8 @@ dotnet run
 
 For more hints, see [this](../README.md#setup-hints) page.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -87,6 +88,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -124,4 +127,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Resolve methods](resolve-methods.md)
+- [Check for a root](check-for-a-root.md)
 

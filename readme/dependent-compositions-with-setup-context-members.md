@@ -165,7 +165,8 @@ Useful when:
 - You need to extend configuration with additional settings in derived compositions.
 
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -314,6 +315,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -366,4 +369,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Dependent compositions with setup context](dependent-compositions-with-setup-context.md)
 

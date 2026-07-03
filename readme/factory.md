@@ -1,7 +1,7 @@
 #### Factory
 
-Demonstrates how to use factories for manual creation and initialization when constructor injection alone is not enough.
-Use factory bindings for custom setup, external APIs, or controlled object state during creation.
+Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
+A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
 
 
 ```c#
@@ -89,7 +89,8 @@ Common pitfalls:
 - Overusing `Inject()` where normal constructor binding is enough.
 See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -110,6 +111,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -144,4 +147,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Simplified factory](simplified-factory.md)
+- [Injection on demand](injection-on-demand.md)
+- [Overrides](overrides.md)
 

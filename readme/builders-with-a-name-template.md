@@ -94,7 +94,8 @@ dotnet run
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -157,6 +158,8 @@ partial class Composition
   #pragma warning restore CS0162
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -243,4 +246,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Builders](builders.md)
 

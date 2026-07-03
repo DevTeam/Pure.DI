@@ -99,7 +99,8 @@ dotnet run
 >[!NOTE]
 >Custom attributes provide extensibility for advanced scenarios where standard attributes don't meet specific requirements.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class PersonComposition
@@ -127,6 +128,8 @@ partial class PersonComposition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -187,4 +190,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Custom universal attribute](custom-universal-attribute.md)
 

@@ -1,6 +1,6 @@
 #### Weak Reference
 
-Demonstrates `WeakReference<T>` injection, allowing references to objects without preventing garbage collection.
+Injecting `WeakReference<T>` lets a service hold a dependency without keeping it alive — useful for large, recreatable objects such as caches. Bind the underlying type as usual and request `WeakReference<T>`; the consumer then calls `TryGetTarget`, which returns `false` once the object has been garbage-collected.
 
 
 ```c#
@@ -65,7 +65,8 @@ dotnet run
 >[!NOTE]
 >`WeakReference<T>` is useful for caching scenarios where you want to allow garbage collection when memory is constrained.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -80,6 +81,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 

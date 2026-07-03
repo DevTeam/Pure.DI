@@ -67,7 +67,8 @@ dotnet run
 >[!NOTE]
 >Tuples are useful for returning multiple values from a method or grouping related dependencies without creating explicit types.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -83,6 +84,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 

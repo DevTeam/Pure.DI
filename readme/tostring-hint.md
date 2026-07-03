@@ -54,7 +54,8 @@ dotnet run
 Developers who start using DI technology often complain that they stop seeing the structure of the application because it is difficult to understand how it is built. To make life easier, you can add the `ToString` hint by telling the generator to create a `ToString()` method.
 For more hints, see [this](../README.md#setup-hints) page.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -69,6 +70,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 

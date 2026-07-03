@@ -80,7 +80,8 @@ This example shows how to handle default values in a dependency injection scenar
   - The property must be set
   - If no explicit injection occurs, a default value will be used
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -98,6 +99,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -140,4 +143,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Required properties or fields](required-properties-or-fields.md)
 

@@ -83,7 +83,8 @@ The `Transient` lifetime is the safest and is used by default. Yes, its widespre
 >[!IMPORTANT]
 >The following very important rule, in my opinion, will help in the last point. Now, when a constructor is used to implement dependencies, it should not be loaded with other tasks. Accordingly, constructors should be free of all logic except for checking arguments and saving them for later use. Following this rule, even the largest compositions of objects will be built quickly.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -98,6 +99,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -133,4 +136,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Singleton](singleton.md)
+- [PerResolve](perresolve.md)
+- [PerBlock](perblock.md)
 

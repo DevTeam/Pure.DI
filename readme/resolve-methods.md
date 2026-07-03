@@ -79,7 +79,8 @@ Common pitfalls:
 - Assuming runtime resolve calls are always safe when no matching root exists.
 See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -254,6 +255,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -315,4 +318,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition roots](composition-roots.md)
+- [Resolve hint](resolve-hint.md)
+- [Check for a root](check-for-a-root.md)
 

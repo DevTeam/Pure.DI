@@ -78,7 +78,8 @@ dotnet run
 >[!IMPORTANT]
 >The method `Inject()` cannot be used outside of the binding setup.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -99,6 +100,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -141,4 +144,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generic composition roots with constraints](generic-composition-roots-with-constraints.md)
+- [Generic roots](generic-roots.md)
 

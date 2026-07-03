@@ -1,6 +1,7 @@
 #### Static root
 
-Demonstrates how to create static composition roots that don't require instantiation of the composition class.
+Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type — `Composition.GlobalConfiguration` — without creating a composition object.
+This comes in handy at application entry points or in code that has no composition instance to hand.
 
 
 ```c#
@@ -54,7 +55,8 @@ dotnet run
 >[!NOTE]
 >Static roots are useful when you want to access services without creating a composition instance.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -82,6 +84,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -117,4 +121,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition root kinds](composition-root-kinds.md)
 

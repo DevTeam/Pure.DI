@@ -81,7 +81,8 @@ dotnet run
 >[!NOTE]
 >Thread synchronization in factories should be used carefully as it may impact performance. Only use when necessary for correct initialization behavior.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -119,6 +120,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -153,4 +156,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Factory](factory.md)
+- [Thread-safe overrides](thread-safe-overrides.md)
 

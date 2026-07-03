@@ -105,7 +105,8 @@ dotnet run
 >[!NOTE]
 >Default lifetime configuration reduces boilerplate when the same lifetime is consistently used for specific types.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -143,6 +144,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -184,4 +187,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Default lifetime](default-lifetime.md)
+- [Default lifetime for a type](default-lifetime-for-a-type.md)
 

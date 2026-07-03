@@ -1,6 +1,7 @@
 #### Custom generic argument
 
-Demonstrates how to create custom generic arguments for advanced generic binding scenarios.
+Besides the built-in marker types like `TT`, `TT1`, `TTS`, you can declare your own. Registering a type with `GenericTypeArgument<MyTT>()` turns it into a marker usable in generic bindings, such as `Bind<ISequence<MyTT>>().To<Sequence<MyTT>>()`.
+Reach for this when the predefined markers are not enough — for example, to give markers meaningful names or specific type constraints.
 
 
 ```c#
@@ -77,7 +78,8 @@ dotnet run
 >[!NOTE]
 >Custom generic arguments provide flexibility for complex generic scenarios beyond standard marker types.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -92,6 +94,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -136,4 +140,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Custom generic argument attribute](custom-generic-argument-attribute.md)
+- [Generics](generics.md)
 

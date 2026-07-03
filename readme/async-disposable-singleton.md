@@ -105,7 +105,8 @@ dotnet run
 >[!NOTE]
 >Async disposable singleton ensures proper async cleanup of all singleton resources when the composition is disposed.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable, IAsyncDisposable
@@ -208,6 +209,8 @@ partial class Composition: IDisposable, IAsyncDisposable
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -249,4 +252,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Disposable singleton](disposable-singleton.md)
+- [Async disposable scope](async-disposable-scope.md)
 

@@ -1,6 +1,6 @@
 #### Serilog
 
-Demonstrates integration with _Serilog_ logging library, showing how to inject logger instances with context information.
+Serilog loggers are typically enriched with the type of the class that writes the log. The key here is a binding that calls `logger.ForContext(ctx.ConsumerType)`: `ConsumerType` is the type of the consumer of the given dependency, so every class receives a logger whose `SourceContext` is already set to that class. The root logger itself is passed in as a composition argument.
 
 
 ```c#
@@ -99,9 +99,10 @@ dotnet run
 </details>
 
 >[!NOTE]
->Proper logging integration with DI enables context-aware logging throughout the application with minimal configuration.
+>This example also turns on the `OnNewInstance` and `OnDependencyInjection` hints to log the creation and injection of composition objects. The regular-expression hints exclude the logger types themselves from these callbacks.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -149,6 +150,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -192,4 +195,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Consumer type](consumer-type.md)
 

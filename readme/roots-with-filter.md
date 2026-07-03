@@ -1,6 +1,7 @@
 #### Roots with filter
 
-Demonstrates how to create roots for types that match specific filter criteria, allowing selective exposure of implementations.
+`Roots<T>(name, filter)` creates a composition root for every implementation of `T` whose type name matches a wildcard filter, with `{type}` in the name template replaced by each type's name.
+Filtering matters when some implementations should not be exposed: here `filter: "*Email*"` picks up `EmailService` but skips `SmsService`, whose `string apiKey` dependency has no binding and therefore cannot be resolved.
 
 
 ```c#
@@ -57,7 +58,8 @@ dotnet run
 >[!NOTE]
 >Filtering roots provides fine-grained control over which implementations are exposed, useful for conditional feature activation.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -87,6 +89,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -118,4 +122,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Roots](roots.md)
 

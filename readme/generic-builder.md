@@ -1,6 +1,7 @@
 #### Generic builder
 
-Demonstrates how to create generic builders for build-up patterns with type parameters.
+Builders can be generic as well. `Builder<ViewModel<TTS, TT2>>("BuildUp")` generates a generic `BuildUp` method that injects dependencies into an instance you already have — handy when objects are created by an external framework (a UI library, a serializer) rather than by the composition.
+The marker types define the method's type parameters: `TTS` matches the `struct` constraint on `TId`, and `TT2` stands for the model type.
 
 
 ```c#
@@ -87,7 +88,8 @@ dotnet run
 >[!NOTE]
 >Generic builders enable flexible object initialization while maintaining type safety across different generic types.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -107,6 +109,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -140,4 +144,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Builder](builder.md)
+- [Generic builders](generic-builders.md)
 

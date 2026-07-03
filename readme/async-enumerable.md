@@ -78,7 +78,8 @@ dotnet run
 >[!NOTE]
 >IAsyncEnumerable<T> provides efficient lazy enumeration for scenarios where you need to process many instances without loading them all into memory at once.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -101,6 +102,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -148,4 +151,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Enumerable](enumerable.md)
 

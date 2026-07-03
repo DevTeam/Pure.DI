@@ -1,6 +1,6 @@
 #### Partial class
 
-A partial class can contain setup code.
+The composition class is generated as a partial class, so you can put the setup code in your own part of it and extend the generated code with hand-written members. Here the custom part adds a constructor accepting `storeName` and a `GenerateId()` method, and both are used directly inside factory bindings.
 
 
 ```c#
@@ -89,7 +89,8 @@ dotnet run
 
 The partial class is also useful for specifying access modifiers to the generated class.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -107,6 +108,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -148,4 +151,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [A few partial classes](a-few-partial-classes.md)
 

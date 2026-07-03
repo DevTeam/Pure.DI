@@ -109,7 +109,8 @@ dotnet run
 >[!NOTE]
 >Setting default lifetime for types simplifies configuration when the same lifetime is consistently applied.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -143,6 +144,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -184,4 +187,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Default lifetime](default-lifetime.md)
+- [Default lifetime for a type and a tag](default-lifetime-for-a-type-and-a-tag.md)
 

@@ -76,7 +76,8 @@ classDiagram
 
 ### Generated code
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Func
@@ -217,3 +218,5 @@ partial class Func
   }
 }
 ```
+
+</details>

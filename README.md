@@ -298,33 +298,33 @@ dotnet run
 - [Smart tags](readme/smart-tags.md)
 - [Simplified lifetime-specific bindings](readme/simplified-lifetime-specific-bindings.md)
 - [Simplified lifetime-specific factory](readme/simplified-lifetime-specific-factory.md)
+- [Method injection](readme/method-injection.md)
+- [Property injection](readme/property-injection.md)
+- [Field injection](readme/field-injection.md)
+- [Default values](readme/default-values.md)
+- [Required properties or fields](readme/required-properties-or-fields.md)
 - [Build up of an existing object](readme/build-up-of-an-existing-object.md)
 - [Builder](readme/builder.md)
 - [Builder with arguments](readme/builder-with-arguments.md)
 - [Builders](readme/builders.md)
 - [Builders with a name template](readme/builders-with-a-name-template.md)
-- [Field injection](readme/field-injection.md)
-- [Method injection](readme/method-injection.md)
-- [Property injection](readme/property-injection.md)
-- [Nullable reference types](readme/nullable-reference-types.md)
-- [Default values](readme/default-values.md)
-- [Required properties or fields](readme/required-properties-or-fields.md)
 - [Overrides](readme/overrides.md)
+- [Nullable reference types](readme/nullable-reference-types.md)
 - [Root binding](readme/root-binding.md)
 - [Static root](readme/static-root.md)
 - [Async Root](readme/async-root.md)
-- [Consumer type](readme/consumer-type.md)
-- [Ref dependencies](readme/ref-dependencies.md)
 - [Roots](readme/roots.md)
 - [Roots with filter](readme/roots-with-filter.md)
+- [Consumer type](readme/consumer-type.md)
+- [Ref dependencies](readme/ref-dependencies.md)
 ### Lifetimes
 - [Transient](readme/transient.md)
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
 - [PerBlock](readme/perblock.md)
+- [Scoped](readme/scoped.md)
 - [Scope](readme/scope.md)
 - [Scope setup method](readme/scope-setup-method.md)
-- [Scoped](readme/scoped.md)
 - [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
 - [Default lifetime for a type](readme/default-lifetime-for-a-type.md)
@@ -334,54 +334,64 @@ dotnet run
 - [Async disposable scope](readme/async-disposable-scope.md)
 ### Base Class Library
 - [Func](readme/func.md)
+- [Func with arguments](readme/func-with-arguments.md)
+- [Func with tag](readme/func-with-tag.md)
 - [Enumerable](readme/enumerable.md)
 - [Enumerable generics](readme/enumerable-generics.md)
 - [Array](readme/array.md)
+- [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
 - [Dictionary](readme/dictionary.md)
 - [Lazy](readme/lazy.md)
 - [Task](readme/task.md)
 - [ValueTask](readme/valuetask.md)
 - [Manually started tasks](readme/manually-started-tasks.md)
-- [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
+- [Async Enumerable](readme/async-enumerable.md)
 - [Tuple](readme/tuple.md)
 - [Weak Reference](readme/weak-reference.md)
-- [Async Enumerable](readme/async-enumerable.md)
+- [Default BCL bindings](readme/default-bcl-bindings.md)
+- [Overriding the BCL binding](readme/overriding-the-bcl-binding.md)
 - [Service collection](readme/service-collection.md)
-- [Func with arguments](readme/func-with-arguments.md)
-- [Func with tag](readme/func-with-tag.md)
-- [Keyed service provider](readme/keyed-service-provider.md)
 - [Service provider](readme/service-provider.md)
 - [Service provider with scope](readme/service-provider-with-scope.md)
-- [Overriding the BCL binding](readme/overriding-the-bcl-binding.md)
-- [Default BCL bindings](readme/default-bcl-bindings.md)
+- [Keyed service provider](readme/keyed-service-provider.md)
 ### Generics
 - [Generics](readme/generics.md)
 - [Generic composition roots](readme/generic-composition-roots.md)
-- [Complex generics](readme/complex-generics.md)
 - [Generic composition roots with constraints](readme/generic-composition-roots-with-constraints.md)
 - [Generic async composition roots with constraints](readme/generic-async-composition-roots-with-constraints.md)
+- [Complex generics](readme/complex-generics.md)
 - [Custom generic argument](readme/custom-generic-argument.md)
-- [Build up of an existing generic object](readme/build-up-of-an-existing-generic-object.md)
 - [Generic root arguments](readme/generic-root-arguments.md)
 - [Complex generic root arguments](readme/complex-generic-root-arguments.md)
+- [Generic injections on demand](readme/generic-injections-on-demand.md)
+- [Generic injections on demand with arguments](readme/generic-injections-on-demand-with-arguments.md)
+- [Build up of an existing generic object](readme/build-up-of-an-existing-generic-object.md)
 - [Generic builder](readme/generic-builder.md)
 - [Generic builders](readme/generic-builders.md)
 - [Generic roots](readme/generic-roots.md)
-- [Generic injections on demand](readme/generic-injections-on-demand.md)
-- [Generic injections on demand with arguments](readme/generic-injections-on-demand-with-arguments.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
-- [Dependency attribute](readme/dependency-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)
+- [Dependency attribute](readme/dependency-attribute.md)
 - [Tag attribute](readme/tag-attribute.md)
 - [Type attribute](readme/type-attribute.md)
 - [Inject attribute](readme/inject-attribute.md)
 - [Custom attributes](readme/custom-attributes.md)
 - [Custom universal attribute](readme/custom-universal-attribute.md)
 - [Custom generic argument attribute](readme/custom-generic-argument-attribute.md)
+- [Export attribute](readme/export-attribute.md)
+- [Export attribute with lifetime and tag](readme/export-attribute-with-lifetime-and-tag.md)
+- [Export attribute for a generic type](readme/export-attribute-for-a-generic-type.md)
 - [Bind attribute](readme/bind-attribute.md)
-- [Bind attribute with lifetime and tag](readme/bind-attribute-with-lifetime-and-tag.md)
-- [Bind attribute for a generic type](readme/bind-attribute-for-a-generic-type.md)
+- [Custom bind attribute](readme/custom-bind-attribute.md)
+- [Bind type attribute](readme/bind-type-attribute.md)
+- [Bind type attributes](readme/bind-type-attributes.md)
+- [Generic bind type attribute](readme/generic-bind-type-attribute.md)
+- [Bind generic contract attribute](readme/bind-generic-contract-attribute.md)
+- [Bind tag attribute](readme/bind-tag-attribute.md)
+- [Bind lifetime attribute](readme/bind-lifetime-attribute.md)
+- [Bind metadata merge](readme/bind-metadata-merge.md)
+- [Bind attribute groups](readme/bind-attribute-groups.md)
 ### Interception
 - [Decorator](readme/decorator.md)
 - [Interception](readme/interception.md)
@@ -406,49 +416,50 @@ dotnet run
 - [Control generated interfaces by members](readme/control-generated-interfaces-by-members.md)
 ### Advanced
 - [Composition root kinds](readme/composition-root-kinds.md)
-- [Factory with thread synchronization](readme/factory-with-thread-synchronization.md)
 - [Root with name template](readme/root-with-name-template.md)
-- [Tag Any](readme/tag-any.md)
-- [Tag Type](readme/tag-type.md)
-- [Tag Unique](readme/tag-unique.md)
-- [Tag on injection site](readme/tag-on-injection-site.md)
-- [Tag on a constructor argument](readme/tag-on-a-constructor-argument.md)
-- [Tag on a member](readme/tag-on-a-member.md)
-- [Tag on a method argument](readme/tag-on-a-method-argument.md)
-- [Tag on injection site with wildcards](readme/tag-on-injection-site-with-wildcards.md)
+- [Light roots](readme/light-roots.md)
+- [Partial class](readme/partial-class.md)
+- [A few partial classes](readme/a-few-partial-classes.md)
+- [Inheritance of compositions](readme/inheritance-of-compositions.md)
 - [Dependent compositions](readme/dependent-compositions.md)
 - [Dependent compositions with setup context](readme/dependent-compositions-with-setup-context.md)
 - [Dependent compositions with setup context members](readme/dependent-compositions-with-setup-context-members.md)
 - [Dependent compositions with setup context members and property accessors](readme/dependent-compositions-with-setup-context-members-and-property-accessors.md)
 - [Dependent compositions with setup context root argument](readme/dependent-compositions-with-setup-context-root-argument.md)
-- [Inheritance of compositions](readme/inheritance-of-compositions.md)
-- [Accumulators](readme/accumulators.md)
 - [Global compositions](readme/global-compositions.md)
-- [Light roots](readme/light-roots.md)
-- [Partial class](readme/partial-class.md)
-- [A few partial classes](readme/a-few-partial-classes.md)
-- [IsLockRequired](readme/islockrequired.md)
-- [Root Name](readme/root-name.md)
-- [Root Type](readme/root-type.md)
+- [Tag Type](readme/tag-type.md)
+- [Tag Any](readme/tag-any.md)
+- [Tag Unique](readme/tag-unique.md)
+- [Tag on injection site](readme/tag-on-injection-site.md)
+- [Tag on injection site with wildcards](readme/tag-on-injection-site-with-wildcards.md)
+- [Tag on a constructor argument](readme/tag-on-a-constructor-argument.md)
+- [Tag on a member](readme/tag-on-a-member.md)
+- [Tag on a method argument](readme/tag-on-a-method-argument.md)
+- [Factory with thread synchronization](readme/factory-with-thread-synchronization.md)
 - [Thread-safe overrides](readme/thread-safe-overrides.md)
 - [Override depth](readme/override-depth.md)
+- [Accumulators](readme/accumulators.md)
+- [Root Name](readme/root-name.md)
+- [Root Type](readme/root-type.md)
 - [Consumer types](readme/consumer-types.md)
+- [IsLockRequired](readme/islockrequired.md)
 - [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
-- [Tracking disposable instances using pre-built classes](readme/tracking-disposable-instances-using-pre-built-classes.md)
 - [Tracking disposable instances with different lifetimes](readme/tracking-disposable-instances-with-different-lifetimes.md)
+- [Tracking disposable instances using pre-built classes](readme/tracking-disposable-instances-using-pre-built-classes.md)
 - [Tracking async disposable instances per a composition root](readme/tracking-async-disposable-instances-per-a-composition-root.md)
 - [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
-- [Exposed roots](readme/exposed-roots.md)
-- [Exposed roots with tags](readme/exposed-roots-with-tags.md)
-- [Exposed roots via arg](readme/exposed-roots-via-arg.md)
-- [Exposed roots via root arg](readme/exposed-roots-via-root-arg.md)
-- [Exposed generic roots](readme/exposed-generic-roots.md)
-- [Exposed generic roots with args](readme/exposed-generic-roots-with-args.md)
+- [Exported roots](readme/exported-roots.md)
+- [Exported roots with tags](readme/exported-roots-with-tags.md)
+- [Exported roots via arg](readme/exported-roots-via-arg.md)
+- [Exported roots via root arg](readme/exported-roots-via-root-arg.md)
+- [Exported generic roots](readme/exported-generic-roots.md)
+- [Exported generic roots with args](readme/exported-generic-roots-with-args.md)
 ### Use Cases
-- [AutoMapper](readme/automapper.md)
-- [JSON serialization](readme/json-serialization.md)
+- [Unit testing](readme/unit-testing.md)
 - [Serilog](readme/serilog.md)
+- [JSON serialization](readme/json-serialization.md)
+- [AutoMapper](readme/automapper.md)
 - [Request overrides](readme/request-overrides.md)
 ### Unity
 - [Unity Basics](readme/unity-basics.md)
@@ -873,6 +884,28 @@ See also: [Root arguments example](readme/root-arguments.md)
 </details>
 
 <details>
+<summary>Passing values at runtime</summary>
+
+### Passing values at runtime
+
+Several mechanisms deliver a runtime value into the object graph. Choose by the moment the value becomes known and by how far it must travel:
+
+| Mechanism | The value is known | The value is visible to | Example |
+|-----------|--------------------|-------------------------|---------|
+| `Arg<T>(name)` | when the composition is created | the whole composition | [Composition arguments](readme/composition-arguments.md) |
+| `RootArg<T>(name)` | at each root call (the root becomes a method) | one root call | [Root arguments](readme/root-arguments.md) |
+| `Func<TArg, T>` | at each factory call inside the graph | the instance created by that call | [Func with arguments](readme/func-with-arguments.md) |
+| `ctx.Override(value)` | inside a factory | the dependency subtree created by that factory | [Overrides](readme/overrides.md) |
+
+Rules of thumb:
+- Configuration that is fixed for the lifetime of the application → `Arg<T>`.
+- Per-call data for an entry point, such as a user or request id → `RootArg<T>`.
+- A service creates many instances with different parameters → inject `Func<TArg, T>`.
+- A factory must customize how nested dependencies are built → `ctx.Override(...)`.
+
+</details>
+
+<details>
 <summary>Resolve/ResolveByTag methods</summary>
 
 ### Resolve/ResolveByTag methods
@@ -954,6 +987,38 @@ Example:
 
 ```c#
 .Bind<IService>().To<Service>()
+```
+
+### Implementation-level binding attributes
+
+Bindings can also be declared on implementation types with registered binding metadata attributes such as `Bind`, `Type`, `Tag`, and `Lifetime`.
+
+```c#
+[Bind(typeof(IService)), Tag("main"), Lifetime(Lifetime.Singleton)]
+class Service : IService;
+```
+
+The square-bracket attribute group is the binding boundary:
+
+- attributes inside one `[ ... ]` group form one binding;
+- contracts and tags in the same group are merged into that binding;
+- lifetime can be specified only once in the same group;
+- repeated lifetime metadata inside one group is a compilation error;
+- separate `Bind` attribute groups create separate bindings for the same implementation type.
+
+For example, the following declaration creates one singleton binding that can be resolved by either tag:
+
+```c#
+[Bind(typeof(IService)), Tag("main"), Tag("secondary"), Lifetime(Lifetime.Singleton)]
+class Service : IService;
+```
+
+To create two independent bindings for the same implementation, place `Bind` attributes in separate square-bracket groups:
+
+```c#
+[Bind(typeof(IService), Lifetime.Singleton, "main")]
+[Bind(typeof(IService), Lifetime.Singleton, "secondary")]
+class Service : IService;
 ```
 
 ### Nullable reference type contracts
@@ -1046,11 +1111,22 @@ Example:
 ### Lifetimes
 
 Lifetimes control how long an object lives and how it is reused:
-- **Transient**: A new instance is created for every injection (default).
-- **Singleton**: A single instance is created for the entire composition.
-- **PerResolve**: A single instance is reused within a single composition root (or a `Resolve`/`ResolveByTag` call).
-- **PerBlock**: Reuses instances within a code block to reduce allocations.
-- **Scoped**: A single instance is reused within a specific scope.
+
+| Lifetime | One instance per | Disposal of disposable instances | Example |
+|----------|------------------|----------------------------------|---------|
+| `Transient` (default) | injection | not tracked — own it explicitly, e.g. via `Owned<T>` | [Transient](readme/transient.md) |
+| `Singleton` | composition | disposed together with the composition | [Singleton](readme/singleton.md) |
+| `Scoped` | scope | disposed together with the scope | [Scoped](readme/scoped.md) |
+| `PerResolve` | composition root call (or a `Resolve`/`ResolveByTag` call) | not tracked — own it explicitly, e.g. via `Owned<T>` | [PerResolve](readme/perresolve.md) |
+| `PerBlock` | code block — an allocation optimization, no strict uniqueness guarantee | not tracked | [PerBlock](readme/perblock.md) |
+
+How to choose:
+- Start with `Transient` and promote a binding to `Singleton` only for genuinely shared state (caches, configuration, connection pools).
+- Use `Scoped` when the natural unit of sharing is a request, a session, or a unit of work — one `DbContext` per web request is the classic case.
+- Use `PerResolve` when several consumers within one object graph must observe the same instance, but different graphs must not share it.
+- Treat `PerBlock` as an optimization that reduces allocations by reusing an instance within one initialization block; do not rely on instance identity with it.
+
+For tracking and disposing of `Transient`/`PerResolve` disposables, see [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md).
 
 ### Default Lifetimes
 
@@ -2406,9 +2482,9 @@ AI needs to understand the situation it’s in (context). This means knowing det
 
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 62KB | 16K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 112KB | 28K |
-| [AGENTS.md](AGENTS.md) | 413KB | 105K |
+| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 40KB | 10K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 114KB | 29K |
+| [AGENTS.md](AGENTS.md) | 442KB | 113K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

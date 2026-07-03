@@ -102,7 +102,7 @@ partial class Composition
 
         DI.Setup()
             .Bind().To<DbConnection>()
-            .Bind("shared").As(Lifetime.Singleton).To<DbConnection>()
+            .Bind("shared").As(Pure.DI.Lifetime.Singleton).To<DbConnection>()
             .Bind().To<DataService>()
 
             // Composition root
@@ -143,7 +143,8 @@ This package should also be included in a project:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable
@@ -252,6 +253,8 @@ partial class Composition: IDisposable
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -310,4 +313,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tracking disposable instances per a composition root](tracking-disposable-instances-per-a-composition-root.md)
 

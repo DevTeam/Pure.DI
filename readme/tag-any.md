@@ -91,7 +91,8 @@ dotnet run
 >[!IMPORTANT]
 >`Tag.Any` provides maximum flexibility but requires careful handling within factories to properly interpret and use the tag value.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -126,6 +127,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -170,4 +173,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tags](tags.md)
 

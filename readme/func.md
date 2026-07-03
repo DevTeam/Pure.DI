@@ -91,7 +91,8 @@ dotnet run
 
 Be careful, replication takes into account the lifetime of the object.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -128,6 +129,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -178,4 +181,11 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Func with arguments](func-with-arguments.md)
+- [Func with tag](func-with-tag.md)
+- [Injection on demand](injection-on-demand.md)
+- [Lazy](lazy.md)
 

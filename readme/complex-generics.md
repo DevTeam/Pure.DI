@@ -94,7 +94,8 @@ dotnet run
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -105,27 +106,29 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private StructConsumer<int> _singletonStructConsumer79;
-  private bool _singletonStructConsumer79Created;
+  private StructConsumer<int> _singletonStructConsumer2147481780;
+  private bool _singletonStructConsumer2147481780Created;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program<T1> GetRoot<T1>(T1 name)
     where T1: notnull
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
-    if (!_singletonStructConsumer79Created)
+    if (!_singletonStructConsumer2147481780Created)
       lock (_lock)
-        if (!_singletonStructConsumer79Created)
+        if (!_singletonStructConsumer2147481780Created)
         {
-          _singletonStructConsumer79 = new StructConsumer<int>();
+          _singletonStructConsumer2147481780 = new StructConsumer<int>();
           Thread.MemoryBarrier();
-          _singletonStructConsumer79Created = true;
+          _singletonStructConsumer2147481780Created = true;
         }
 
-    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _singletonStructConsumer79));
+    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _singletonStructConsumer2147481780));
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -176,4 +179,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generics](generics.md)
+- [Custom generic argument](custom-generic-argument.md)
 

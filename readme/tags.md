@@ -96,7 +96,8 @@ Common pitfalls:
 - Forgetting to define a `default` tag path for untagged consumers.
 See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -143,6 +144,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -186,4 +189,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Smart tags](smart-tags.md)
+- [Tag attribute](tag-attribute.md)
+- [Tag on injection site](tag-on-injection-site.md)
 

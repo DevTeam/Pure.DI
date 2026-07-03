@@ -73,7 +73,8 @@ This package should also be included in a project:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class PersonComposition
@@ -101,6 +102,8 @@ partial class PersonComposition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -143,4 +146,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Dependency attribute](dependency-attribute.md)
 

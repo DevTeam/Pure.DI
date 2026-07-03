@@ -367,8 +367,8 @@ See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-b
 
 ## Factory
 
-Demonstrates how to use factories for manual creation and initialization when constructor injection alone is not enough.
-Use factory bindings for custom setup, external APIs, or controlled object state during creation.
+Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
+A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
 
 ```c#
 using Shouldly;
@@ -502,380 +502,6 @@ Common pitfalls:
 - Putting heavy imperative setup code into short lambda factories.
 - Forgetting explicit tags when several same-type dependencies exist.
 See also: [Factory](factory.md), [Tags](tags.md).
-
-## Injection on demand
-
-This example creates dependencies on demand using a factory delegate. The service (`GameLevel`) needs multiple instances of `IEnemy`, so it receives a `Func<IEnemy>` that can create new instances when needed.
-This approach is useful when instances are created lazily or repeatedly during business execution.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System.Collections.Generic;
-
-DI.Setup(nameof(Composition))
-    .Bind().To<Enemy>()
-    .Bind().To<GameLevel>()
-
-    // Composition root
-    .Root<IGameLevel>("GameLevel");
-
-var composition = new Composition();
-var gameLevel = composition.GameLevel;
-
-// Verifies that two distinct enemies have been spawned
-gameLevel.Enemies.Count.ShouldBe(2);
-
-// Represents a game entity that acts as an enemy
-interface IEnemy;
-
-class Enemy : IEnemy;
-
-// Represents a game level that manages entities
-interface IGameLevel
-{
-    IReadOnlyList<IEnemy> Enemies { get; }
-}
-
-class GameLevel(Func<IEnemy> enemySpawner) : IGameLevel
-{
-    // The factory spawns a fresh enemy instance on each call.
-    public IReadOnlyList<IEnemy> Enemies { get; } =
-    [
-        enemySpawner(),
-        enemySpawner()
-    ];
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-Key elements:
-- `Enemy` is bound to the `IEnemy` interface, and `GameLevel` is bound to `IGameLevel`.
-- The `GameLevel` constructor accepts `Func<IEnemy>`, enabling deferred creation of entities.
-- The `GameLevel` calls the factory twice, resulting in two distinct `Enemy` instances stored in its `Enemies` collection.
-
-This approach lets factories control lifetime and instantiation timing. Pure.DI resolves a new `IEnemy` each time the factory is invoked.
-Limitations: factory delegate calls can create many objects, so lifetime choices still matter for performance and state.
-Common pitfalls:
-- Assuming `Func<T>` always returns new instances regardless of configured lifetime.
-- Hiding expensive work behind repeated on-demand calls.
-See also: [Injections on demand with arguments](injections-on-demand-with-arguments.md), [Func<T>](func.md).
-
-## Injections on demand with arguments
-
-This example uses a parameterized factory so dependencies can be created with runtime arguments. The service creates sensors with specific IDs at instantiation time.
-It is a type-safe way to combine DI-managed creation with runtime data.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System.Collections.Generic;
-
-DI.Setup(nameof(Composition))
-    .Bind().To<Sensor>()
-    .Bind().To<SmartHome>()
-
-    // Composition root
-    .Root<ISmartHome>("SmartHome");
-
-var composition = new Composition();
-var smartHome = composition.SmartHome;
-var sensors = smartHome.Sensors;
-
-sensors.Count.ShouldBe(2);
-sensors[0].Id.ShouldBe(101);
-sensors[1].Id.ShouldBe(102);
-
-interface ISensor
-{
-    int Id { get; }
-}
-
-class Sensor(int id) : ISensor
-{
-    public int Id { get; } = id;
-}
-
-interface ISmartHome
-{
-    IReadOnlyList<ISensor> Sensors { get; }
-}
-
-class SmartHome(Func<int, ISensor> sensorFactory) : ISmartHome
-{
-    public IReadOnlyList<ISensor> Sensors { get; } =
-    [
-        // Use the injected factory to create a sensor with ID 101
-        sensorFactory(101),
-
-        // Create another sensor with ID 102
-        sensorFactory(102)
-    ];
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-Delayed dependency instantiation:
-- Injection of dependencies requiring runtime parameters
-- Creation of distinct instances with different configurations
-- Type-safe resolution of dependencies with constructor arguments
-Limitations: runtime arguments improve flexibility but can increase coupling between call sites and construction signatures.
-Common pitfalls:
-- Passing infrastructure concerns as runtime arguments instead of normal dependencies.
-- Duplicating argument validation logic across consumers.
-See also: [Injection on demand](injection-on-demand.md), [Root arguments](root-arguments.md).
-
-## Composition arguments
-
-Use composition arguments when you need to pass state into the composition. Define them with `Arg<T>(string argName)` (optionally with tags) and use them like any other dependency. Only arguments that are used in the object graph become constructor parameters.
-This is a clean way to inject external runtime state without global static variables.
->[!NOTE]
->Actually, composition arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
-
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<IBankGateway>().To<BankGateway>()
-    .Bind<IPaymentProcessor>().To<PaymentProcessor>()
-
-    // Composition root "PaymentService"
-    .Root<IPaymentProcessor>("PaymentService")
-
-    // Composition argument: Connection timeout (e.g., from config)
-    .Arg<int>("timeoutSeconds")
-
-    // Composition argument: API Token (using a tag to distinguish from other strings)
-    .Arg<string>("authToken", "api token")
-
-    // Composition argument: Bank gateway address
-    .Arg<string>("gatewayUrl");
-
-// Create the composition, passing real settings from outside
-var composition = new Composition(
-    timeoutSeconds: 30,
-    authToken: "secret_token_123",
-    gatewayUrl: "https://api.bank.com/v1");
-
-var paymentService = composition.PaymentService;
-
-paymentService.Token.ShouldBe("secret_token_123");
-paymentService.Gateway.Timeout.ShouldBe(30);
-paymentService.Gateway.Url.ShouldBe("https://api.bank.com/v1");
-
-interface IBankGateway
-{
-    int Timeout { get; }
-
-    string Url { get; }
-}
-
-// Simulation of a bank gateway client
-class BankGateway(int timeoutSeconds, string gatewayUrl) : IBankGateway
-{
-    public int Timeout { get; } = timeoutSeconds;
-
-    public string Url { get; } = gatewayUrl;
-}
-
-interface IPaymentProcessor
-{
-    string Token { get; }
-
-    IBankGateway Gateway { get; }
-}
-
-// Payment processing service
-class PaymentProcessor(
-    // The tag allows specifying exactly which string to inject here
-    [Tag("api token")] string token,
-    IBankGateway gateway) : IPaymentProcessor
-{
-    public string Token { get; } = token;
-
-    public IBankGateway Gateway { get; } = gateway;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->Composition arguments provide a way to inject runtime values into the composition, making your DI configuration more flexible.
-Limitations: too many composition arguments can bloat composition constructors and blur configuration boundaries.
-Common pitfalls:
-- Using untagged primitive arguments where several values of the same type exist.
-- Treating composition arguments as mutable runtime state holders.
-See also: [Root arguments](root-arguments.md), [Tags](tags.md).
-
-## Root arguments
-
-Use root arguments when you need to pass state into a specific root. Define them with `RootArg<T>(string argName)` (optionally with tags) and use them like any other dependency. A root that uses at least one root argument becomes a method, and only arguments used in that root's object graph appear in the method signature. Use unique argument names to avoid collisions.
-Root arguments are useful when runtime values belong to one entry point, not to the whole composition.
->[!NOTE]
->Actually, root arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
-
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Tag;
-
-DI.Setup(nameof(Composition))
-    // Disable Resolve methods because root arguments are not compatible
-    .Hint(Hint.Resolve, "Off")
-    .Bind<IDatabaseService>().To<DatabaseService>()
-    .Bind<IApplication>().To<Application>()
-
-    // Root arguments serve as values passed
-    // to the composition root method
-    .RootArg<int>("port")
-    .RootArg<string>("connectionString")
-
-    // An argument can be tagged
-    // to be injectable by type and this tag
-    .RootArg<string>("appName", AppDetail)
-
-    // Composition root
-    .Root<IApplication>("CreateApplication");
-
-var composition = new Composition();
-
-// Creates an application with specific arguments
-var app = composition.CreateApplication(
-    appName: "MySuperApp",
-    port: 8080,
-    connectionString: "Server=.;Database=MyDb;");
-
-app.Name.ShouldBe("MySuperApp");
-app.Database.Port.ShouldBe(8080);
-app.Database.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
-
-interface IDatabaseService
-{
-    int Port { get; }
-
-    string ConnectionString { get; }
-}
-
-class DatabaseService(int port, string connectionString) : IDatabaseService
-{
-    public int Port { get; } = port;
-
-    public string ConnectionString { get; } = connectionString;
-}
-
-interface IApplication
-{
-    string Name { get; }
-
-    IDatabaseService Database { get; }
-}
-
-class Application(
-    [Tag(AppDetail)] string name,
-    IDatabaseService database)
-    : IApplication
-{
-    public string Name { get; } = name;
-
-    public IDatabaseService Database { get; } = database;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-When using root arguments, compilation warnings are emitted if `Resolve` methods are generated because these methods cannot create such roots. Disable `Resolve` via `Hint(Hint.Resolve, "Off")`, or ignore the warnings and accept the risks.
-Limitations: roots with root arguments become methods and are incompatible with generated `Resolve` methods.
-Common pitfalls:
-- Reusing ambiguous argument names for different concepts.
-- Forgetting to disable or avoid `Resolve` usage in these setups.
-See also: [Composition arguments](composition-arguments.md), [Resolve hint](resolve-hint.md).
-
-## Tags
-
-Tags let you control dependency selection when multiple implementations exist:
-This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    // The `default` tag is used when the consumer does not specify a tag
-    .Bind<IApiClient>("Public", default).To<RestApiClient>()
-    .Bind<IApiClient>("Internal").As(Lifetime.Singleton).To<InternalApiClient>()
-    .Bind<IApiFacade>().To<ApiFacade>()
-
-    // "InternalRoot" is a root name, "Internal" is a tag
-    .Root<IApiClient>("InternalRoot", "Internal")
-
-    // Specifies to create the composition root named "Root"
-    .Root<IApiFacade>("Api");
-
-var composition = new Composition();
-var api = composition.Api;
-api.PublicClient.ShouldBeOfType<RestApiClient>();
-api.InternalClient.ShouldBeOfType<InternalApiClient>();
-api.InternalClient.ShouldBe(composition.InternalRoot);
-api.DefaultClient.ShouldBeOfType<RestApiClient>();
-
-interface IApiClient;
-
-class RestApiClient : IApiClient;
-
-class InternalApiClient : IApiClient;
-
-interface IApiFacade
-{
-    IApiClient PublicClient { get; }
-
-    IApiClient InternalClient { get; }
-
-    IApiClient DefaultClient { get; }
-}
-
-class ApiFacade(
-    [Tag("Public")] IApiClient publicClient,
-    [Tag("Internal")] IApiClient internalClient,
-    IApiClient defaultClient)
-    : IApiFacade
-{
-    public IApiClient PublicClient { get; } = publicClient;
-
-    public IApiClient InternalClient { get; } = internalClient;
-
-    public IApiClient DefaultClient { get; } = defaultClient;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The example shows how to:
-- Define multiple bindings for the same interface
-- Use tags to differentiate between implementations
-- Control lifetime management
-- Inject tagged dependencies into constructors
-
-The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
-Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
-Common pitfalls:
-- Using many ad-hoc string tags without central conventions.
-- Forgetting to define a `default` tag path for untagged consumers.
-See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
 
 ## Transient
 
@@ -1183,7 +809,116 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >`PerBlock` lifetime provides a balance between `PerResolve` and `Transient`, reducing instance count within a resolution block.
 
+## Scoped
+
+The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition();
+var app = composition.AppRoot;
+
+// Real-world analogy:
+// each HTTP request (or message consumer handling) creates its own scope.
+// Scoped services live exactly as long as the request is being processed.
+
+// Request #1
+var request1 = app.CreateRequestScope();
+var checkout1 = request1.RequestRoot;
+
+var ctx11 = checkout1.Context;
+var ctx12 = checkout1.Context;
+
+// Same request => same scoped instance
+ctx11.ShouldBe(ctx12);
+
+// Request #2
+var request2 = app.CreateRequestScope();
+var checkout2 = request2.RequestRoot;
+
+var ctx2 = checkout2.Context;
+
+// Different request => different scoped instance
+ctx11.ShouldNotBe(ctx2);
+
+// End of Request #1 => scoped instance is disposed
+request1.Dispose();
+ctx11.IsDisposed.ShouldBeTrue();
+
+// End of Request #2 => scoped instance is disposed
+request2.Dispose();
+ctx2.IsDisposed.ShouldBeTrue();
+
+interface IRequestContext
+{
+    Guid CorrelationId { get; }
+
+    bool IsDisposed { get; }
+}
+
+// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
+sealed class RequestContext : IRequestContext, IDisposable
+{
+    public Guid CorrelationId { get; } = Guid.NewGuid();
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface ICheckoutService
+{
+    IRequestContext Context { get; }
+}
+
+// "Controller/service" that participates in request processing.
+// It depends on a scoped context (per-request resource).
+sealed class CheckoutService(IRequestContext context) : ICheckoutService
+{
+    public IRequestContext Context => context;
+}
+
+// Implements a request scope (per-request composition)
+sealed class RequestScope(Composition parent) : Composition(parent);
+
+partial class App(Func<RequestScope> requestScopeFactory)
+{
+    // In a web app this would roughly map to: "create scope for request"
+    public RequestScope CreateRequestScope() => requestScopeFactory();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            // Per-request lifetime
+            .Bind().As(Scoped).To<RequestContext>()
+
+            // Regular service that consumes scoped context
+            .Bind().To<CheckoutService>()
+
+            // "Request root" (what your controller/handler resolves)
+            .Root<ICheckoutService>("RequestRoot")
+
+            // "Application root" (what creates request scopes)
+            .Root<App>("AppRoot");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
+
 ## Scope
+
+The `Scoped` lifetime ensures a single instance of a dependency within a scope — a typical example is a single `DbContext`, unit of work, or request context per web request. This example wraps scope creation in a `Scope` class: each scope gets its own `RequestContext`, all services resolved within that scope share it, and disposing the scope disposes all scoped instances it created.
 
 ```c#
 using Shouldly;
@@ -1297,8 +1032,12 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
+>[!NOTE]
+>A scope is just another composition instance bound to its parent, so singletons remain shared across scopes while scoped instances are unique per scope.
 
 ## Scope setup method
+
+The `ScopeMethodName` hint sets the name of a generated static method that binds a new composition instance to a parent scope. This example calls the generated `Composition.SetupScope(...)` method directly to create per-request scopes without defining a wrapper class: scoped instances are unique per scope and are disposed together with it, while singletons remain shared with the parent composition.
 
 ```c#
 using Shouldly;
@@ -1401,448 +1140,3 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-
-## Scoped
-
-The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-var composition = new Composition();
-var app = composition.AppRoot;
-
-// Real-world analogy:
-// each HTTP request (or message consumer handling) creates its own scope.
-// Scoped services live exactly as long as the request is being processed.
-
-// Request #1
-var request1 = app.CreateRequestScope();
-var checkout1 = request1.RequestRoot;
-
-var ctx11 = checkout1.Context;
-var ctx12 = checkout1.Context;
-
-// Same request => same scoped instance
-ctx11.ShouldBe(ctx12);
-
-// Request #2
-var request2 = app.CreateRequestScope();
-var checkout2 = request2.RequestRoot;
-
-var ctx2 = checkout2.Context;
-
-// Different request => different scoped instance
-ctx11.ShouldNotBe(ctx2);
-
-// End of Request #1 => scoped instance is disposed
-request1.Dispose();
-ctx11.IsDisposed.ShouldBeTrue();
-
-// End of Request #2 => scoped instance is disposed
-request2.Dispose();
-ctx2.IsDisposed.ShouldBeTrue();
-
-interface IRequestContext
-{
-    Guid CorrelationId { get; }
-
-    bool IsDisposed { get; }
-}
-
-// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
-sealed class RequestContext : IRequestContext, IDisposable
-{
-    public Guid CorrelationId { get; } = Guid.NewGuid();
-
-    public bool IsDisposed { get; private set; }
-
-    public void Dispose() => IsDisposed = true;
-}
-
-interface ICheckoutService
-{
-    IRequestContext Context { get; }
-}
-
-// "Controller/service" that participates in request processing.
-// It depends on a scoped context (per-request resource).
-sealed class CheckoutService(IRequestContext context) : ICheckoutService
-{
-    public IRequestContext Context => context;
-}
-
-// Implements a request scope (per-request composition)
-sealed class RequestScope(Composition parent) : Composition(parent);
-
-partial class App(Func<RequestScope> requestScopeFactory)
-{
-    // In a web app this would roughly map to: "create scope for request"
-    public RequestScope CreateRequestScope() => requestScopeFactory();
-}
-
-partial class Composition
-{
-    static void Setup() =>
-
-        DI.Setup()
-            // Per-request lifetime
-            .Bind().As(Scoped).To<RequestContext>()
-
-            // Regular service that consumes scoped context
-            .Bind().To<CheckoutService>()
-
-            // "Request root" (what your controller/handler resolves)
-            .Root<ICheckoutService>("RequestRoot")
-
-            // "Application root" (what creates request scopes)
-            .Root<App>("AppRoot");
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
-
-## Auto scoped
-
-You can use the following example to automatically create a session when creating instances of a particular type:
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-var composition = new Composition();
-var musicApp = composition.MusicAppRoot;
-
-// Session #1: user starts listening on "Living Room Speaker"
-var session1 = musicApp.StartListeningSession();
-session1.Enqueue("Daft Punk - One More Time");
-session1.Enqueue("Massive Attack - Teardrop");
-
-// Session #2: user starts listening on "Headphones"
-var session2 = musicApp.StartListeningSession();
-session2.Enqueue("Radiohead - Weird Fishes/Arpeggi");
-
-// Different sessions -> different scoped queue instances
-session1.Queue.ShouldNotBe(session2.Queue);
-
-// But inside one session, the same queue is used everywhere within that scope
-session1.Queue.Items.Count.ShouldBe(2);
-session2.Queue.Items.Count.ShouldBe(1);
-
-// Domain abstractions
-
-interface IPlaybackQueue
-{
-    IReadOnlyList<string> Items { get; }
-    void Add(string trackTitle);
-}
-
-sealed class PlaybackQueue : IPlaybackQueue
-{
-    private readonly List<string> _items = [];
-
-    public IReadOnlyList<string> Items => _items;
-
-    public void Add(string trackTitle) => _items.Add(trackTitle);
-}
-
-interface IListeningSession
-{
-    IPlaybackQueue Queue { get; }
-
-    void Enqueue(string trackTitle);
-}
-
-sealed class ListeningSession(IPlaybackQueue queue) : IListeningSession
-{
-    public IPlaybackQueue Queue => queue;
-
-    public void Enqueue(string trackTitle) => queue.Add(trackTitle);
-}
-
-// Implements a "session boundary" for listening
-class MusicApp(Func<IListeningSession> sessionFactory)
-{
-    // Each call creates a new DI scope under the hood (new "listening session").
-    public IListeningSession StartListeningSession() => sessionFactory();
-}
-
-partial class Composition
-{
-    static void Setup() =>
-
-        DI.Setup()
-            // Scoped: one queue per listening session
-            .Bind().As(Scoped).To<PlaybackQueue>()
-
-            // Session composition root (private root used only to build sessions)
-            .Root<ListeningSession>("Session", kind: RootKinds.Private)
-
-            // Auto scoped factory: creates a new scope for each listening session
-            .Bind().To(IListeningSession (Composition parentScope) => {
-                // Create a child scope so scoped services (PlaybackQueue) are unique per session.
-                var scope = new Composition(parentScope);
-                return scope.Session;
-            })
-
-            // App-level root
-            .Root<MusicApp>("MusicAppRoot");
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!IMPORTANT]
->The method `Inject()`cannot be used outside of the binding setup.
-
-## Default lifetime
-
-Demonstrates how to set a default lifetime that is used when no specific lifetime is specified for a binding. This is useful when a particular lifetime is used more often than others.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-DI.Setup(nameof(Composition))
-    // In real AI apps, the "client" (HTTP handler, connection pool, retries, telemetry)
-    // is typically expensive and should be shared.
-    //
-    // DefaultLifetime(Singleton) makes *all* bindings in this chain singletons,
-    // until the chain ends or DefaultLifetime(...) is called again.
-    .DefaultLifetime(Singleton)
-    .Bind().To<LlmGateway>()
-    .Bind().To<RagChatAssistant>()
-    .Root<IChatAssistant>("Assistant");
-
-var composition = new Composition();
-
-// Think of these as two independent "requests" to resolve the assistant.
-// With singleton lifetime, you get the same assistant instance each time.
-var assistant1 = composition.Assistant;
-var assistant2 = composition.Assistant;
-
-assistant1.ShouldBe(assistant2);
-
-// The assistant depends on the same gateway in two places (e.g., chat + embeddings).
-// Because the gateway is singleton, both references are the *same instance*.
-assistant1.ChatGateway.ShouldBe(assistant1.EmbeddingsGateway);
-
-// And because the assistant itself is singleton, it reuses the same gateway across resolutions.
-assistant1.ChatGateway.ShouldBe(assistant2.ChatGateway);
-
-// Represents an "LLM provider gateway": HTTP client, auth, retries, rate limiting, etc.
-// NOTE: No secrets here; in real projects you'd configure credentials via secure configuration.
-interface ILlmGateway;
-
-// Concrete gateway implementation (placeholder for "OpenAI/Anthropic/Azure/etc. client").
-class LlmGateway : ILlmGateway;
-
-// A chat assistant that does RAG (Retrieval-Augmented Generation).
-// It needs the gateway for:
-// - Chat completions (answer generation)
-// - Embeddings (vectorization of question/documents)
-interface IChatAssistant
-{
-    ILlmGateway ChatGateway { get; }
-
-    ILlmGateway EmbeddingsGateway { get; }
-}
-
-class RagChatAssistant(
-    ILlmGateway chatGateway,
-    ILlmGateway embeddingsGateway)
-    : IChatAssistant
-{
-    public ILlmGateway ChatGateway { get; } = chatGateway;
-
-    public ILlmGateway EmbeddingsGateway { get; } = embeddingsGateway;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->Default lifetime reduces configuration verbosity when a particular lifetime is predominant in your composition.
-
-## Default lifetime for a type
-
-For example, if a certain lifetime is used more often than others, you can make it the default lifetime for a certain type:
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-DI.Setup(nameof(Composition))
-    // In a real base station, the time source (PTP/GNSS disciplined clock)
-    // is a shared infrastructure component:
-    // it should be created once per station and reused everywhere.
-    .DefaultLifetime<ITimeSource>(Singleton)
-
-    // Time source used by multiple subsystems
-    .Bind().To<GnssTimeSource>()
-
-    // Upper-level station components (usually transient by default)
-    .Bind().To<BaseStationController>()
-    .Bind().To<RadioScheduler>()
-
-    // Composition root (represents "get me a controller instance")
-    .Root<IBaseStationController>("Controller");
-
-var composition = new Composition();
-
-// Two independent controller instances (e.g., two independent operations)
-var controller1 = composition.Controller;
-var controller2 = composition.Controller;
-
-controller1.ShouldNotBe(controller2);
-
-// Inside one controller we request ITimeSource twice:
-// the same singleton instance should be injected both times.
-controller1.SyncTimeSource.ShouldBe(controller1.SchedulerTimeSource);
-
-// Across different controllers the same station-wide time source is reused.
-controller1.SyncTimeSource.ShouldBe(controller2.SyncTimeSource);
-
-// A shared station-wide dependency
-interface ITimeSource
-{
-    long UnixTimeMilliseconds { get; }
-}
-
-// Represents a GNSS-disciplined clock (or PTP grandmaster input).
-// In real deployments you'd talk to a driver / NIC / daemon here.
-class GnssTimeSource : ITimeSource
-{
-    public long UnixTimeMilliseconds => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-}
-
-interface IBaseStationController
-{
-    ITimeSource SyncTimeSource { get; }
-    ITimeSource SchedulerTimeSource { get; }
-}
-
-// A "top-level" controller of the base station.
-// It depends on the time source for synchronization and for scheduling decisions.
-class BaseStationController(
-    ITimeSource syncTimeSource,
-    RadioScheduler scheduler)
-    : IBaseStationController
-{
-    // Used for time synchronization / frame timing
-    public ITimeSource SyncTimeSource { get; } = syncTimeSource;
-
-    // Demonstrates that scheduler also uses the same singleton time source
-    public ITimeSource SchedulerTimeSource { get; } = scheduler.TimeSource;
-}
-
-// A subsystem (e.g., MAC scheduler) that also needs precise time.
-class RadioScheduler(ITimeSource timeSource)
-{
-    public ITimeSource TimeSource { get; } = timeSource;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->Setting default lifetime for types simplifies configuration when the same lifetime is consistently applied.
-
-## Default lifetime for a type and a tag
-
-For example, if a certain lifetime is used more often than others, you can make it the default lifetime for a certain type:
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-DI.Setup(nameof(Composition))
-    // Real-world idea:
-    // "Live" audio capture device should be shared (singleton),
-    // while a regular (untagged) audio source can be created per session (transient).
-    .DefaultLifetime<IAudioSource>(Singleton, "Live")
-
-    // Tagged binding: "Live" audio capture (shared)
-    .Bind("Live").To<LiveAudioSource>()
-
-    // Untagged binding: some other source (new instance each time)
-    .Bind().To<BufferedAudioSource>()
-
-    // A playback session uses two sources:
-    // - Live (shared, tagged)
-    // - Buffered (transient, untagged)
-    .Bind().To<PlaybackSession>()
-
-    // Composition root
-    .Root<IPlaybackSession>("PlaybackSession");
-
-var composition = new Composition();
-
-// Two independent sessions (transient root)
-var session1 = composition.PlaybackSession;
-var session2 = composition.PlaybackSession;
-
-session1.ShouldNotBe(session2);
-
-// Within a single session:
-// - Live source is tagged => default lifetime forces it to be shared (singleton)
-// - Buffered source is untagged => transient => always a new instance
-session1.LiveSource.ShouldNotBe(session1.BufferedSource);
-
-// Between sessions:
-// - Live source is a shared singleton (same instance)
-// - Buffered source is transient (different instances)
-session1.LiveSource.ShouldBe(session2.LiveSource);
-
-interface IAudioSource;
-
-// "Live" device: e.g., microphone/line-in capture.
-class LiveAudioSource : IAudioSource;
-
-// "Buffered" source: e.g., decoded audio chunks, per-session pipeline buffer.
-class BufferedAudioSource : IAudioSource;
-
-interface IPlaybackSession
-{
-    IAudioSource LiveSource { get; }
-
-    IAudioSource BufferedSource { get; }
-}
-
-class PlaybackSession(
-    // Tagged dependency: should be singleton because of DefaultLifetime<IAudioSource>(..., "Live")
-    [Tag("Live")] IAudioSource liveSource,
-
-    // Untagged dependency: transient by default
-    IAudioSource bufferedSource)
-    : IPlaybackSession
-{
-    public IAudioSource LiveSource { get; } = liveSource;
-
-    public IAudioSource BufferedSource { get; } = bufferedSource;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->Default lifetime configuration reduces boilerplate when the same lifetime is consistently used for specific types.

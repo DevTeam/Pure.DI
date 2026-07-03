@@ -108,7 +108,8 @@ Common pitfalls:
 - Forgetting to disable or avoid `Resolve` usage in these setups.
 See also: [Composition arguments](composition-arguments.md), [Resolve hint](resolve-hint.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -122,6 +123,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -168,4 +171,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Composition arguments](composition-arguments.md)
+- [Overrides](overrides.md)
+- [Func with arguments](func-with-arguments.md)
 

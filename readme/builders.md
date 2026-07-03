@@ -110,7 +110,8 @@ Important Notes:
 - The first argument to the builder method is always the instance to be built
 - `Builders<T>` also generates `TryBuildUp` for safe build-up when the runtime subtype may be unknown
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -173,6 +174,8 @@ partial class Composition
   #pragma warning restore CS0162
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -259,4 +262,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Builder](builder.md)
+- [Builders with a name template](builders-with-a-name-template.md)
 

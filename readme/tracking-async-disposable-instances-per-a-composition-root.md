@@ -1,6 +1,6 @@
 #### Tracking async disposable instances per a composition root
 
-Demonstrates how async disposable instances are tracked per composition root and disposed asynchronously when the composition is disposed.
+Declaring a root as `Root<Owned<T>>` gives every root instance ownership of its own dependency graph, including `IAsyncDisposable` dependencies. Calling `DisposeAsync()` on one `Owned<T>` asynchronously disposes only the instances created for that root, leaving graphs obtained from other root accesses untouched.
 
 
 ```c#
@@ -98,7 +98,8 @@ dotnet run
 >[!NOTE]
 >Async disposable tracking ensures proper async cleanup of all disposable instances within a composition scope.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -145,6 +146,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -200,4 +203,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tracking disposable instances per a composition root](tracking-disposable-instances-per-a-composition-root.md)
+- [Tracking async disposable instances in delegates](tracking-async-disposable-instances-in-delegates.md)
 

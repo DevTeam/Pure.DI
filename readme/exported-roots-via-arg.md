@@ -1,6 +1,6 @@
-#### Exposed roots via root arg
+#### Exported roots via arg
 
-Composition roots from other assemblies or projects can be used as a source of bindings passed through root arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exposed` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
+Composition roots from other assemblies or projects can be used as a source of bindings passed through composition arguments. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exported` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:
 ```c#
 public partial class CompositionInOtherProject
 {
@@ -8,7 +8,7 @@ public partial class CompositionInOtherProject
         DI.Setup()
             .Bind().As(Lifetime.Singleton).To<MyDependency>()
             .Bind().To<MyService>()
-            .Root<IMyService>("MyService", kind: RootKinds.Exposed);
+            .Root<IMyService>("MyService", kind: RootKinds.Exported);
 }
 ```
 
@@ -20,12 +20,12 @@ using OtherAssembly;
 
 DI.Setup(nameof(Composition))
     // Binds to exposed composition roots from other project
-    .RootArg<CompositionInOtherProject>("baseComposition")
-    .Root<Program>("GetProgram");
+    .Arg<CompositionInOtherProject>("baseComposition")
+    .Root<Program>("Program");
 
 var baseComposition = new CompositionInOtherProject();
-var composition = new Composition();
-var program = composition.GetProgram(baseComposition);
+var composition = new Composition(baseComposition);
+var program = composition.Program;
 program.DoSomething();
 
 partial class Program(IMyService myService)
@@ -64,21 +64,38 @@ dotnet run
 >[!IMPORTANT]
 >At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
 {
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public Program GetProgram(OtherAssembly.CompositionInOtherProject baseComposition)
+  private readonly OtherAssembly.CompositionInOtherProject _argBaseComposition;
+
+  [OrdinalAttribute(128)]
+  public Composition(OtherAssembly.CompositionInOtherProject baseComposition)
   {
-    if (baseComposition is null) throw new ArgumentNullException(nameof(baseComposition));
-    OtherAssembly.IMyService transientIMyService;
-    OtherAssembly.CompositionInOtherProject localInstance_1182D127 = baseComposition;
-    transientIMyService = localInstance_1182D127.MyService;
-    return new Program(transientIMyService);
+    _argBaseComposition = baseComposition ?? throw new ArgumentNullException(nameof(baseComposition));
+  }
+
+  public Program Program
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      OtherAssembly.IMyService transientIMyService;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D127 = _argBaseComposition;
+      transientIMyService = localInstance_1182D127.MyService;
+      return new Program(transientIMyService);
+    }
   }
 }
 ```
 
+</details>
+
+
+See also:
+
+- [Exported roots](exported-roots.md)
 

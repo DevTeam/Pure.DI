@@ -1,6 +1,7 @@
 #### Generic injections on demand with arguments
 
-Demonstrates how to create generic dependencies on demand with custom arguments using factory delegates.
+When creating a generic dependency requires a runtime value, inject a factory with arguments. `SensorHub<T>` receives a `Func<int, ISensor<T>>` and calls it with a specific `id` for each sensor; the `int` argument is mapped to the `Sensor<T>` constructor parameter.
+This keeps the composition in charge of wiring while letting the consumer supply per-instance data at creation time.
 
 
 ```c#
@@ -77,7 +78,8 @@ dotnet run
 >[!NOTE]
 >Generic factories with arguments allow passing runtime parameters while maintaining type safety.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -101,6 +103,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -146,4 +150,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generic injections on demand](generic-injections-on-demand.md)
+- [Injections on demand with arguments](injections-on-demand-with-arguments.md)
 

@@ -91,7 +91,8 @@ Useful when:
 - Base setup has instance members initialized externally (e.g., Unity).
 
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -238,6 +239,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -275,4 +278,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Dependent compositions](dependent-compositions.md)
 

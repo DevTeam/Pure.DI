@@ -1,6 +1,7 @@
 #### Ref dependencies
 
-Demonstrates how to use `ref` and `out` parameters in dependency injection for scenarios where you need to pass values by reference.
+High-performance code often relies on `ref struct` types such as `Span<T>`, which cannot be stored in fields — so ordinary constructor or property injection is off the table.
+Instead, inject them by `ref` through a method marked with `[Ordinal]`: here a `ref struct Data` wrapping the bound `int[]` is passed into `Initialize(ref Data data)` and consumed without extra allocations.
 
 
 ```c#
@@ -66,9 +67,10 @@ dotnet run
 </details>
 
 >[!NOTE]
->`ref` dependencies are useful for scenarios where you need to return multiple values or modify parameters during injection.
+>`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -211,6 +213,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -246,4 +250,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Span and ReadOnlySpan](span-and-readonlyspan.md)
 

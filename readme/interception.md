@@ -117,7 +117,8 @@ Using an intercept gives you the ability to add end-to-end functionality such as
 
 - Providing resistance to failures, etc.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -135,6 +136,8 @@ partial class Composition
   private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime);
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -161,4 +164,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Decorator](decorator.md)
+- [Advanced interception](advanced-interception.md)
 

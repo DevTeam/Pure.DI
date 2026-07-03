@@ -93,7 +93,8 @@ dotnet run
 
 A composition class becomes disposable if it creates at least one disposable singleton instance.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable
@@ -160,6 +161,8 @@ partial class Composition: IDisposable
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -200,4 +203,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Async disposable singleton](async-disposable-singleton.md)
+- [Tracking disposable instances per a composition root](tracking-disposable-instances-per-a-composition-root.md)
 

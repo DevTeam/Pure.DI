@@ -79,7 +79,8 @@ dotnet run
 >[!NOTE]
 >Splitting composition setup across multiple partial classes can improve organization for large compositions but may reduce readability if overused.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -217,6 +218,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -255,4 +258,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Partial class](partial-class.md)
 

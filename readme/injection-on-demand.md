@@ -83,7 +83,8 @@ Common pitfalls:
 - Hiding expensive work behind repeated on-demand calls.
 See also: [Injections on demand with arguments](injections-on-demand-with-arguments.md), [Func<T>](func.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -105,6 +106,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -146,4 +149,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Func](func.md)
+- [Injections on demand with arguments](injections-on-demand-with-arguments.md)
 

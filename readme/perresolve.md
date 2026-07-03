@@ -101,7 +101,8 @@ dotnet run
 >[!NOTE]
 >`PerResolve` lifetime is useful when you want to share a dependency instance within a single composition root resolution.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -112,8 +113,8 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple74;
-  private bool _singletonValueTuple74Created;
+  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple2147481292;
+  private bool _singletonValueTuple2147481292Created;
 
   public TrainTripPlanner Planner
   {
@@ -121,18 +122,18 @@ partial class Composition
     get
     {
       var perResolveRoutePlanningSession = default(RoutePlanningSession);
-      if (!_singletonValueTuple74Created)
+      if (!_singletonValueTuple2147481292Created)
         lock (_lock)
-          if (!_singletonValueTuple74Created)
+          if (!_singletonValueTuple2147481292Created)
           {
             if (perResolveRoutePlanningSession is null)
             {
               perResolveRoutePlanningSession = new RoutePlanningSession();
             }
 
-            _singletonValueTuple74 = (perResolveRoutePlanningSession, perResolveRoutePlanningSession);
+            _singletonValueTuple2147481292 = (perResolveRoutePlanningSession, perResolveRoutePlanningSession);
             Thread.MemoryBarrier();
-            _singletonValueTuple74Created = true;
+            _singletonValueTuple2147481292Created = true;
           }
 
       if (perResolveRoutePlanningSession is null)
@@ -142,11 +143,13 @@ partial class Composition
             perResolveRoutePlanningSession = new RoutePlanningSession();
           }
 
-      return new TrainTripPlanner(perResolveRoutePlanningSession, perResolveRoutePlanningSession, _singletonValueTuple74);
+      return new TrainTripPlanner(perResolveRoutePlanningSession, perResolveRoutePlanningSession, _singletonValueTuple2147481292);
     }
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -214,4 +217,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Transient](transient.md)
+- [PerBlock](perblock.md)
+- [Singleton](singleton.md)
 

@@ -60,7 +60,8 @@ Common pitfalls:
 - Losing explicit control over lifetime choices during refactoring.
 See also: [Injections of abstractions](injections-of-abstractions.md), [Simplified binding](simplified-binding.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -75,6 +76,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -102,4 +105,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Injections of abstractions](injections-of-abstractions.md)
+- [Simplified binding](simplified-binding.md)
 

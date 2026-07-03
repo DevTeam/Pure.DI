@@ -95,7 +95,8 @@ dotnet run
 >[!NOTE]
 >`Task` injection provides automatic background execution with optional cancellation support for asynchronous operations.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -130,6 +131,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -199,4 +202,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [ValueTask](valuetask.md)
+- [Manually started tasks](manually-started-tasks.md)
+- [Async Root](async-root.md)
 

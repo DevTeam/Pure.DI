@@ -94,7 +94,8 @@ In addition to arrays, other collection types are also supported, such as:
 - System.Collections.Immutable.IImmutableStack<T>
 And of course this list can easily be supplemented on its own.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -109,6 +110,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -154,4 +157,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Enumerable](enumerable.md)
+- [Span and ReadOnlySpan](span-and-readonlyspan.md)
 

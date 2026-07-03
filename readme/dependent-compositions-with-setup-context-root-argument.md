@@ -91,7 +91,8 @@ Important points:
 Useful when:
 - The host (like Unity) creates the composition instance.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -107,6 +108,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -145,4 +148,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Dependent compositions with setup context](dependent-compositions-with-setup-context.md)
 

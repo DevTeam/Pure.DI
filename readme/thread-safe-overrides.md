@@ -1,6 +1,6 @@
 #### Thread-safe overrides
 
-Demonstrates how to create thread-safe overrides in compositions, ensuring that override operations work correctly in multi-threaded scenarios.
+When a factory delegate can be invoked from several threads at once — as with the `Func<int, int, IOrderHandler>` called in parallel here — its `ctx.Override(...)` calls must be synchronized. Wrap the overrides together with the subsequent `ctx.Inject(...)` in a `lock (ctx.Lock)` block so that each object graph is built with its own override values and parallel invocations don't overwrite each other.
 
 
 ```c#
@@ -135,7 +135,8 @@ dotnet run
 >[!IMPORTANT]
 >Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -188,6 +189,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -243,4 +246,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Overrides](overrides.md)
+- [Override depth](override-depth.md)
 

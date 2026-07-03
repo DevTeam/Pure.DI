@@ -1,6 +1,6 @@
 #### AutoMapper
 
-Demonstrates integration with AutoMapper library, showing how Pure.DI can work alongside object mapping solutions.
+AutoMapper creates target objects itself, so mapped instances normally bypass DI even when they need dependencies. Here a configured `IMapper` is bound as a singleton, and a generic `Func<TT1, TT2>` binding wraps `mapper.Map` so that consumers like `StudentService` simply inject a mapping function for the types they need. After mapping, `ctx.BuildUp(target)` injects the members marked with `[Inject]` — such as `Person.Formatter` — into the freshly mapped object.
 
 
 ```c#
@@ -172,9 +172,10 @@ dotnet run
 </details>
 
 >[!NOTE]
->AutoMapper integration enables clean separation between DI composition concerns and object mapping logic.
+>Since the `IMapper` binding is a singleton, the mapping configuration is created and compiled only once and then reused for all mappings.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable
@@ -189,7 +190,7 @@ partial class Composition: IDisposable
   private int _disposeIndex;
 
   private Microsoft.Extensions.Logging.ILogger? _singletonILogger75;
-  private Func<Student, Person>? _singletonFunc79;
+  private Func<Student, Person>? _singletonFunc2147481193;
   private AutoMapper.Mapper? _singletonMapper76;
   private PersonFormatter? _singletonPersonFormatter73;
   private LoggerFactory? _singletonLoggerFactory74;
@@ -215,11 +216,11 @@ partial class Composition: IDisposable
     get
     {
       var root = _root ?? this;
-      if (root._singletonFunc79 is null)
+      if (root._singletonFunc2147481193 is null)
         lock (_lock)
-          if (root._singletonFunc79 is null)
+          if (root._singletonFunc2147481193 is null)
           {
-            root._singletonFunc79 = source =>
+            root._singletonFunc2147481193 = source =>
             {
               if (root._singletonMapper76 is null)
               {
@@ -258,7 +259,7 @@ partial class Composition: IDisposable
             root._singletonILogger75 = localLoggerFactory1.CreateLogger("info");
           }
 
-      return new Program(root._singletonILogger75, new StudentService(root._singletonFunc79));
+      return new Program(root._singletonILogger75, new StudentService(root._singletonFunc2147481193));
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLoggerFactoryExists()
       {
@@ -284,7 +285,7 @@ partial class Composition: IDisposable
       disposables = _disposables;
       _disposables = new object[1];
       _singletonILogger75 = null;
-      _singletonFunc79 = null;
+      _singletonFunc2147481193 = null;
       _singletonMapper76 = null;
       _singletonPersonFormatter73 = null;
       _singletonLoggerFactory74 = null;
@@ -311,6 +312,8 @@ partial class Composition: IDisposable
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -394,4 +397,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Build up of an existing object](build-up-of-an-existing-object.md)
 

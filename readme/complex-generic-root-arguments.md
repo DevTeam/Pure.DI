@@ -1,6 +1,7 @@
 #### Complex generic root arguments
 
-Demonstrates complex generic root argument scenarios with multiple type parameters and constraints.
+Root arguments can be generic too. `RootArg<SourceConfig<TT>>("config")` declares a root argument whose type follows the type parameter of the composition root, so the generated `GetSource<T>` method accepts a `SourceConfig<T>` at resolution time.
+This is useful when a generic service needs per-call configuration: here the config is delivered to `Source<T>` through the `Initialize` method marked with the `[Dependency]` attribute.
 
 
 ```c#
@@ -83,7 +84,8 @@ dotnet run
 >[!NOTE]
 >Complex generic scenarios require careful attention to type constraints and argument order for correct resolution.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -98,6 +100,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -129,4 +133,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generic root arguments](generic-root-arguments.md)
 

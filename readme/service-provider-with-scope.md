@@ -1,5 +1,7 @@
 #### Service provider with scope
 
+A composition class can implement the _Microsoft.Extensions.DependencyInjection_ scoping contracts — `IKeyedServiceProvider`, `IServiceScopeFactory`, and `IServiceScope` — with hints renaming the generated `Resolve` methods to `GetService` and `GetRequiredKeyedService`. Each `CreateScope()` call returns a new `Composition` instance, so `Scoped` bindings like `ISession` get one instance per scope, while `Singleton` bindings like `IConfiguration` are shared across all scopes.
+
 >[!IMPORTANT]
 >Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface. These roots must be registered using `Root(...)` or `RootBind()` calls.
 
@@ -118,7 +120,8 @@ dotnet run
 >[!NOTE]
 >This enables scoped service resolution compatible with _Microsoft.Extensions.DependencyInjection's_ scoping model.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition: IDisposable
@@ -409,6 +412,8 @@ partial class Composition: IDisposable
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -475,4 +480,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Service provider](service-provider.md)
+- [Scope](scope.md)
 

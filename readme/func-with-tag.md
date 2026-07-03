@@ -1,6 +1,6 @@
 #### Func with tag
 
-Demonstrates how to use Func<T> with tags for dynamic creation of tagged instances.
+A tag applied to a `Func<T>` dependency carries over to the instances it creates. Here `[Tag("postgres")] Func<IDbConnection>` resolves the binding registered with the `"postgres"` tag, and each call returns a new `NpgsqlConnection`, letting the pool create as many distinct connections as it needs.
 
 
 ```c#
@@ -74,7 +74,8 @@ dotnet run
 >[!NOTE]
 >Func with tags allows you to create instances with specific tags dynamically, useful for factory patterns with multiple implementations.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -96,6 +97,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -137,4 +140,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Func](func.md)
+- [Tags](tags.md)
 

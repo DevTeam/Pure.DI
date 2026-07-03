@@ -367,8 +367,8 @@ See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-b
 
 ## Factory
 
-Demonstrates how to use factories for manual creation and initialization when constructor injection alone is not enough.
-Use factory bindings for custom setup, external APIs, or controlled object state during creation.
+Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
+A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
 
 ```c#
 using Shouldly;
@@ -1094,7 +1094,8 @@ See also: [Transient](transient.md), [Simplified binding](simplified-binding.md)
 
 ## Simplified lifetime-specific factory
 
-Demonstrates how to create factories with lifetime-specific bindings, providing a concise way to define factories with proper lifetime semantics.
+Lifetime-named shortcuts such as `Transient(...)` and `Singleton(...)` register a factory and its lifetime in a single call, replacing the longer `Bind().As(...).To(...)` chain.
+Overloads accept a plain lambda (optionally with a tag, like `Transient(() => DateTime.Today, "today")`) or a lambda whose parameters are injected dependencies — parameters may carry attributes such as `[Tag]` — so you can initialize the instance before returning it, as `Singleton<FileLogger, DateTime, IFileLogger>` does when setting up the log file name.
 
 ```c#
 using Shouldly;
@@ -1159,6 +1160,264 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Lifetime-specific factories combine the convenience of simplified syntax with explicit lifetime control for optimal performance and correctness.
+
+## Method injection
+
+To use dependency injection for a method, simply add the _Dependency_ (or _Ordinal_) attribute to that method, specifying the sequence number that will be used to define the call to that method:
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IMap>().To<Map>()
+    .Bind<INavigator>().To<Navigator>()
+
+    // Composition root
+    .Root<INavigator>("Navigator");
+
+var composition = new Composition();
+var navigator = composition.Navigator;
+navigator.CurrentMap.ShouldBeOfType<Map>();
+
+interface IMap;
+
+class Map : IMap;
+
+interface INavigator
+{
+    IMap? CurrentMap { get; }
+}
+
+class Navigator : INavigator
+{
+    // The Dependency (or Ordinal) attribute indicates that the method
+    // should be called to inject the dependency.
+    [Dependency(ordinal: 0)]
+    public void LoadMap(IMap map) =>
+        CurrentMap = map;
+
+    public IMap? CurrentMap { get; private set; }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The key points are:
+- The method must be available to be called from a composition class
+- The `Dependency` (or `Ordinal`) attribute is used to mark the method for injection
+- The DI automatically calls the method to inject dependencies
+
+## Property injection
+
+To use dependency injection on a property, make sure the property is writable and simply add the _Ordinal_ attribute to that property, specifying the ordinal that will be used to determine the injection order:
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<ILogger>().To<ConsoleLogger>()
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("MyService");
+
+var composition = new Composition();
+var service = composition.MyService;
+service.Logger.ShouldBeOfType<ConsoleLogger>();
+
+interface ILogger;
+
+class ConsoleLogger : ILogger;
+
+interface IService
+{
+    ILogger? Logger { get; }
+}
+
+class Service : IService
+{
+    // The Dependency attribute specifies to perform an injection,
+    // the integer value in the argument specifies
+    // the ordinal of injection.
+    // Usually, property injection is used for optional dependencies.
+    [Dependency] public ILogger? Logger { get; set; }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The key points are:
+- The property must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
+- The DI automatically injects the dependency when resolving the object graph
+
+## Field injection
+
+To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<ICoffeeMachine>().To<CoffeeMachine>()
+    .Bind<ISmartKitchen>().To<SmartKitchen>()
+
+    // Composition root
+    .Root<ISmartKitchen>("Kitchen");
+
+var composition = new Composition();
+var kitchen = composition.Kitchen;
+kitchen.CoffeeMachine.ShouldBeOfType<CoffeeMachine>();
+
+interface ICoffeeMachine;
+
+class CoffeeMachine : ICoffeeMachine;
+
+interface ISmartKitchen
+{
+    ICoffeeMachine? CoffeeMachine { get; }
+}
+
+class SmartKitchen : ISmartKitchen
+{
+    // The Dependency attribute specifies to perform an injection.
+    // The DI will automatically assign a value to this field
+    // when creating the SmartKitchen instance.
+    [Dependency]
+    public ICoffeeMachine? CoffeeMachineImpl;
+
+    // Expose the injected dependency through a public property
+    public ICoffeeMachine? CoffeeMachine => CoffeeMachineImpl;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The key points are:
+- The field must be writable
+- The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection
+- The DI automatically injects the dependency when resolving the object graph
+
+## Default values
+
+This example shows how to use default values in dependency injection when explicit injection is not possible.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<ISensor>().To<MotionSensor>()
+    .Bind<ISecuritySystem>().To<SecuritySystem>()
+
+    // Composition root
+    .Root<ISecuritySystem>("SecuritySystem");
+
+var composition = new Composition();
+var securitySystem = composition.SecuritySystem;
+securitySystem.Sensor.ShouldBeOfType<MotionSensor>();
+securitySystem.SystemName.ShouldBe("Home Guard");
+
+interface ISensor;
+
+class MotionSensor : ISensor;
+
+interface ISecuritySystem
+{
+    string SystemName { get; }
+
+    ISensor Sensor { get; }
+}
+
+// If injection cannot be performed explicitly,
+// the default value will be used
+class SecuritySystem(string systemName = "Home Guard") : ISecuritySystem
+{
+    public string SystemName { get; } = systemName;
+
+    // The 'required' modifier ensures that the property is set during initialization.
+    // The default value 'new MotionSensor()' provides a fallback
+    // if no dependency is injected.
+    public required ISensor Sensor { get; init; } = new MotionSensor();
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The key points are:
+- Default constructor arguments can be used for simple values
+- The DI will use these defaults if no explicit bindings are provided
+
+This example shows how to handle default values in a dependency injection scenario:
+- **Constructor Default Argument**: The `SecuritySystem` class has a constructor with a default value for the name parameter. If no value is provided, "Home Guard" will be used.
+- **Required Property with Default**: The `Sensor` property is marked as required but has a default instantiation. This ensures that:
+  - The property must be set
+  - If no explicit injection occurs, a default value will be used
+
+## Required properties or fields
+
+This example shows how the `required` modifier can be used to automatically inject dependencies into properties and fields. When a property or field is marked with `required`, the DI will automatically inject the dependency without additional effort.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Arg<string>("connectionString")
+    .Bind<IDatabase>().To<SqlDatabase>()
+    .Bind<IUserRepository>().To<UserRepository>()
+
+    // Composition root
+    .Root<IUserRepository>("Repository");
+
+var composition = new Composition(connectionString: "Server=.;Database=MyDb;");
+var repository = composition.Repository;
+
+repository.Database.ShouldBeOfType<SqlDatabase>();
+repository.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
+
+interface IDatabase;
+
+class SqlDatabase : IDatabase;
+
+interface IUserRepository
+{
+    string ConnectionString { get; }
+
+    IDatabase Database { get; }
+}
+
+class UserRepository : IUserRepository
+{
+    // The required field will be injected automatically.
+    // In this case, it gets the value from the composition argument
+    // of type 'string'.
+    public required string ConnectionStringField;
+
+    public string ConnectionString => ConnectionStringField;
+
+    // The required property will be injected automatically
+    // without additional effort.
+    public required IDatabase Database { get; init; }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+This approach simplifies dependency injection by eliminating the need to manually configure bindings for required dependencies, making the code more concise and easier to maintain.
 
 ## Build up of an existing object
 
@@ -1512,346 +1771,6 @@ To run the above code, the following NuGet packages must be added:
 
 The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
 
-## Field injection
-
-To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<ICoffeeMachine>().To<CoffeeMachine>()
-    .Bind<ISmartKitchen>().To<SmartKitchen>()
-
-    // Composition root
-    .Root<ISmartKitchen>("Kitchen");
-
-var composition = new Composition();
-var kitchen = composition.Kitchen;
-kitchen.CoffeeMachine.ShouldBeOfType<CoffeeMachine>();
-
-interface ICoffeeMachine;
-
-class CoffeeMachine : ICoffeeMachine;
-
-interface ISmartKitchen
-{
-    ICoffeeMachine? CoffeeMachine { get; }
-}
-
-class SmartKitchen : ISmartKitchen
-{
-    // The Dependency attribute specifies to perform an injection.
-    // The DI will automatically assign a value to this field
-    // when creating the SmartKitchen instance.
-    [Dependency]
-    public ICoffeeMachine? CoffeeMachineImpl;
-
-    // Expose the injected dependency through a public property
-    public ICoffeeMachine? CoffeeMachine => CoffeeMachineImpl;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The key points are:
-- The field must be writable
-- The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection
-- The DI automatically injects the dependency when resolving the object graph
-
-## Method injection
-
-To use dependency injection for a method, simply add the _Dependency_ (or _Ordinal_) attribute to that method, specifying the sequence number that will be used to define the call to that method:
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<IMap>().To<Map>()
-    .Bind<INavigator>().To<Navigator>()
-
-    // Composition root
-    .Root<INavigator>("Navigator");
-
-var composition = new Composition();
-var navigator = composition.Navigator;
-navigator.CurrentMap.ShouldBeOfType<Map>();
-
-interface IMap;
-
-class Map : IMap;
-
-interface INavigator
-{
-    IMap? CurrentMap { get; }
-}
-
-class Navigator : INavigator
-{
-    // The Dependency (or Ordinal) attribute indicates that the method
-    // should be called to inject the dependency.
-    [Dependency(ordinal: 0)]
-    public void LoadMap(IMap map) =>
-        CurrentMap = map;
-
-    public IMap? CurrentMap { get; private set; }
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The key points are:
-- The method must be available to be called from a composition class
-- The `Dependency` (or `Ordinal`) attribute is used to mark the method for injection
-- The DI automatically calls the method to inject dependencies
-
-## Property injection
-
-To use dependency injection on a property, make sure the property is writable and simply add the _Ordinal_ attribute to that property, specifying the ordinal that will be used to determine the injection order:
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<ILogger>().To<ConsoleLogger>()
-    .Bind<IService>().To<Service>()
-
-    // Composition root
-    .Root<IService>("MyService");
-
-var composition = new Composition();
-var service = composition.MyService;
-service.Logger.ShouldBeOfType<ConsoleLogger>();
-
-interface ILogger;
-
-class ConsoleLogger : ILogger;
-
-interface IService
-{
-    ILogger? Logger { get; }
-}
-
-class Service : IService
-{
-    // The Dependency attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection.
-    // Usually, property injection is used for optional dependencies.
-    [Dependency] public ILogger? Logger { get; set; }
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The key points are:
-- The property must be writable
-- The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
-- The DI automatically injects the dependency when resolving the object graph
-
-## Nullable reference types
-
-Pure.DI preserves nullable reference type annotations when it reads dependency contracts, builds the graph, and generates composition members.
-Use nullable dependencies for values that are allowed to be absent. A nullable root or composition argument does not get a generated null check, while a non-null reference argument still does.
-A non-null binding can satisfy a nullable dependency request. This is useful for optional constructor parameters, nullable factory results, and nullable collection elements.
->[!TIP]
->`T?` means that the consumer can handle `null`; it does not mean that a missing binding is ignored. If no binding or auto-binding can provide the type, Pure.DI still reports the graph error.
->[!NOTE]
->When a nullable reference type is used as a generic argument, the generic type must allow nullable arguments. For example, prefer `where T : class?` over `where T : class` for contracts such as `IBox<string?>`; otherwise the C# compiler reports a nullable constraint warning before Pure.DI analyzes the graph.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System.Collections.Generic;
-using System.Linq;
-
-DI.Setup(nameof(Composition))
-    .Hint(Hint.Resolve, "Off")
-    .Bind<IDatabase>().To<Database>()
-    .Bind<IReportService>().To<ReportService>()
-
-    // Nullable composition argument: no generated null check
-    .Arg<string?>("defaultTitle", "title")
-
-    // Nullable root argument: no generated null check
-    .RootArg<string?>("connectionString", "connection")
-
-    // Composition root
-    .Root<IReportService>("CreateReportService");
-
-var composition = new Composition(defaultTitle: null);
-var reportService = composition.CreateReportService(connectionString: null);
-
-reportService.DefaultTitle.ShouldBeNull();
-reportService.ConnectionString.ShouldBeNull();
-reportService.OptionalDatabase.ShouldNotBeNull();
-reportService.Databases.Count.ShouldBe(1);
-
-interface IDatabase;
-
-class Database : IDatabase;
-
-interface IReportService
-{
-    string? DefaultTitle { get; }
-
-    string? ConnectionString { get; }
-
-    IDatabase? OptionalDatabase { get; }
-
-    IReadOnlyList<IDatabase?> Databases { get; }
-}
-
-class ReportService(
-    [Tag("title")] string? defaultTitle,
-    [Tag("connection")] string? connectionString,
-    IDatabase? optionalDatabase,
-    IEnumerable<IDatabase?> databases)
-    : IReportService
-{
-    public string? DefaultTitle { get; } = defaultTitle;
-
-    public string? ConnectionString { get; } = connectionString;
-
-    public IDatabase? OptionalDatabase { get; } = optionalDatabase;
-
-    public IReadOnlyList<IDatabase?> Databases { get; } = databases.ToList();
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-Limitations: nullable annotations describe compile-time contracts. They are not runtime validation rules and do not replace explicit domain validation.
-Common pitfalls:
-- Using `T?` to hide a missing binding instead of modelling an optional value.
-- Forgetting tags for nullable primitive values when several values of the same type exist.
-- Assuming `IEnumerable<T?>` changes the lifetime of elements; lifetime still comes from the matched bindings.
-- Declaring generic contracts with `where T : class` and then consuming them as `T?`; use a nullable-aware constraint such as `where T : class?` when nullable generic arguments are valid.
-See also: [Composition arguments](composition-arguments.md), [Root arguments](root-arguments.md), [Injection on demand](injection-on-demand.md).
-
-## Default values
-
-This example shows how to use default values in dependency injection when explicit injection is not possible.
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<ISensor>().To<MotionSensor>()
-    .Bind<ISecuritySystem>().To<SecuritySystem>()
-
-    // Composition root
-    .Root<ISecuritySystem>("SecuritySystem");
-
-var composition = new Composition();
-var securitySystem = composition.SecuritySystem;
-securitySystem.Sensor.ShouldBeOfType<MotionSensor>();
-securitySystem.SystemName.ShouldBe("Home Guard");
-
-interface ISensor;
-
-class MotionSensor : ISensor;
-
-interface ISecuritySystem
-{
-    string SystemName { get; }
-
-    ISensor Sensor { get; }
-}
-
-// If injection cannot be performed explicitly,
-// the default value will be used
-class SecuritySystem(string systemName = "Home Guard") : ISecuritySystem
-{
-    public string SystemName { get; } = systemName;
-
-    // The 'required' modifier ensures that the property is set during initialization.
-    // The default value 'new MotionSensor()' provides a fallback
-    // if no dependency is injected.
-    public required ISensor Sensor { get; init; } = new MotionSensor();
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The key points are:
-- Default constructor arguments can be used for simple values
-- The DI will use these defaults if no explicit bindings are provided
-
-This example shows how to handle default values in a dependency injection scenario:
-- **Constructor Default Argument**: The `SecuritySystem` class has a constructor with a default value for the name parameter. If no value is provided, "Home Guard" will be used.
-- **Required Property with Default**: The `Sensor` property is marked as required but has a default instantiation. This ensures that:
-  - The property must be set
-  - If no explicit injection occurs, a default value will be used
-
-## Required properties or fields
-
-This example shows how the `required` modifier can be used to automatically inject dependencies into properties and fields. When a property or field is marked with `required`, the DI will automatically inject the dependency without additional effort.
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Arg<string>("connectionString")
-    .Bind<IDatabase>().To<SqlDatabase>()
-    .Bind<IUserRepository>().To<UserRepository>()
-
-    // Composition root
-    .Root<IUserRepository>("Repository");
-
-var composition = new Composition(connectionString: "Server=.;Database=MyDb;");
-var repository = composition.Repository;
-
-repository.Database.ShouldBeOfType<SqlDatabase>();
-repository.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
-
-interface IDatabase;
-
-class SqlDatabase : IDatabase;
-
-interface IUserRepository
-{
-    string ConnectionString { get; }
-
-    IDatabase Database { get; }
-}
-
-class UserRepository : IUserRepository
-{
-    // The required field will be injected automatically.
-    // In this case, it gets the value from the composition argument
-    // of type 'string'.
-    public required string ConnectionStringField;
-
-    public string ConnectionString => ConnectionStringField;
-
-    // The required property will be injected automatically
-    // without additional effort.
-    public required IDatabase Database { get; init; }
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-This approach simplifies dependency injection by eliminating the need to manually configure bindings for required dependencies, making the code more concise and easier to maintain.
-
 ## Overrides
 
 This example shows advanced dependency injection techniques using Pure.DI's override mechanism to customize dependency instantiation with runtime arguments and tagged parameters. The implementation creates multiple `IDependency` instances with values manipulated through explicit overrides.
@@ -1962,6 +1881,88 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >Overrides provide fine-grained control over dependency resolution, allowing you to customize bindings at runtime or for specific scenarios.
 
+## Nullable reference types
+
+Pure.DI preserves nullable reference type annotations when it reads dependency contracts, builds the graph, and generates composition members.
+Use nullable dependencies for values that are allowed to be absent. A nullable root or composition argument does not get a generated null check, while a non-null reference argument still does.
+A non-null binding can satisfy a nullable dependency request. This is useful for optional constructor parameters, nullable factory results, and nullable collection elements.
+>[!TIP]
+>`T?` means that the consumer can handle `null`; it does not mean that a missing binding is ignored. If no binding or auto-binding can provide the type, Pure.DI still reports the graph error.
+>[!NOTE]
+>When a nullable reference type is used as a generic argument, the generic type must allow nullable arguments. For example, prefer `where T : class?` over `where T : class` for contracts such as `IBox<string?>`; otherwise the C# compiler reports a nullable constraint warning before Pure.DI analyzes the graph.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+using System.Linq;
+
+DI.Setup(nameof(Composition))
+    .Hint(Hint.Resolve, "Off")
+    .Bind<IDatabase>().To<Database>()
+    .Bind<IReportService>().To<ReportService>()
+
+    // Nullable composition argument: no generated null check
+    .Arg<string?>("defaultTitle", "title")
+
+    // Nullable root argument: no generated null check
+    .RootArg<string?>("connectionString", "connection")
+
+    // Composition root
+    .Root<IReportService>("CreateReportService");
+
+var composition = new Composition(defaultTitle: null);
+var reportService = composition.CreateReportService(connectionString: null);
+
+reportService.DefaultTitle.ShouldBeNull();
+reportService.ConnectionString.ShouldBeNull();
+reportService.OptionalDatabase.ShouldNotBeNull();
+reportService.Databases.Count.ShouldBe(1);
+
+interface IDatabase;
+
+class Database : IDatabase;
+
+interface IReportService
+{
+    string? DefaultTitle { get; }
+
+    string? ConnectionString { get; }
+
+    IDatabase? OptionalDatabase { get; }
+
+    IReadOnlyList<IDatabase?> Databases { get; }
+}
+
+class ReportService(
+    [Tag("title")] string? defaultTitle,
+    [Tag("connection")] string? connectionString,
+    IDatabase? optionalDatabase,
+    IEnumerable<IDatabase?> databases)
+    : IReportService
+{
+    public string? DefaultTitle { get; } = defaultTitle;
+
+    public string? ConnectionString { get; } = connectionString;
+
+    public IDatabase? OptionalDatabase { get; } = optionalDatabase;
+
+    public IReadOnlyList<IDatabase?> Databases { get; } = databases.ToList();
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+Limitations: nullable annotations describe compile-time contracts. They are not runtime validation rules and do not replace explicit domain validation.
+Common pitfalls:
+- Using `T?` to hide a missing binding instead of modelling an optional value.
+- Forgetting tags for nullable primitive values when several values of the same type exist.
+- Assuming `IEnumerable<T?>` changes the lifetime of elements; lifetime still comes from the matched bindings.
+- Declaring generic contracts with `where T : class` and then consuming them as `T?`; use a nullable-aware constraint such as `where T : class?` when nullable generic arguments are valid.
+See also: [Composition arguments](composition-arguments.md), [Root arguments](root-arguments.md), [Injection on demand](injection-on-demand.md).
+
 ## Root binding
 
 In general, it is recommended to define one composition root for the entire application. But Sometimes you need to have multiple roots. To simplify the definition of composition roots, a "hybrid" API method `RootBind<T>(string rootName)` was added. It lets you define a binding and at the same time the root of the composition. You can it in order to reduce repetitions. The registration `composition.RootBind<IDependency>().To<Dependency>()` is an equivalent to `composition.Bind<IDependency>().To<Dependency>().Root<IDependency>()`.
@@ -2003,7 +2004,8 @@ To run the above code, the following NuGet packages must be added:
 
 ## Static root
 
-Demonstrates how to create static composition roots that don't require instantiation of the composition class.
+Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type — `Composition.GlobalConfiguration` — without creating a composition object.
+This comes in handy at application entry points or in code that has no composition instance to hand.
 
 ```c#
 using Shouldly;
@@ -2035,7 +2037,9 @@ To run the above code, the following NuGet packages must be added:
 
 ## Async Root
 
-Demonstrates how to define asynchronous composition roots that return Task or Task<T>, enabling async operations during composition.
+A composition root can be asynchronous: declare it as `Root<Task<IService>>(...)` and _Pure.DI_ generates a root method you can `await`.
+This is useful when building the object graph is costly and you don't want to block the caller.
+Add `RootArg<CancellationToken>("cancellationToken")` to pass a cancellation token that is used when resolving the root.
 
 ```c#
 using Shouldly;
@@ -2072,6 +2076,77 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Async roots are useful when you need to perform asynchronous initialization or when your services require async creation.
+
+## Roots
+
+Sometimes you need roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().As(Lifetime.Singleton).To<Preferences>()
+    // Roots can be used to register all descendants of a type as roots.
+    .Roots<IWindow>("{type}");
+
+var composition = new Composition();
+composition.MainWindow.ShouldBeOfType<MainWindow>();
+composition.SettingsWindow.ShouldBeOfType<SettingsWindow>();
+
+interface IPreferences;
+
+class Preferences : IPreferences;
+
+interface IWindow;
+
+class MainWindow(IPreferences preferences) : IWindow;
+
+class SettingsWindow(IPreferences preferences) : IWindow;
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>This feature is useful for plugin-style architectures where you need to expose all implementations of a base type or interface.
+
+## Roots with filter
+
+`Roots<T>(name, filter)` creates a composition root for every implementation of `T` whose type name matches a wildcard filter, with `{type}` in the name template replaced by each type's name.
+Filtering matters when some implementations should not be exposed: here `filter: "*Email*"` picks up `EmailService` but skips `SmsService`, whose `string apiKey` dependency has no binding and therefore cannot be resolved.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().As(Lifetime.Singleton).To<Configuration>()
+    .Roots<INotificationService>("My{type}", filter: "*Email*");
+
+var composition = new Composition();
+composition.MyEmailService.ShouldBeOfType<EmailService>();
+
+interface IConfiguration;
+
+class Configuration : IConfiguration;
+
+interface INotificationService;
+
+// This service requires an API key which is not bound,
+// so it cannot be resolved and should be filtered out.
+class SmsService(string apiKey) : INotificationService;
+
+class EmailService(IConfiguration config) : INotificationService;
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>Filtering roots provides fine-grained control over which implementations are exposed, useful for conditional feature activation.
 
 ## Consumer type
 
@@ -2147,7 +2222,8 @@ To run the above code, the following NuGet packages must be added:
 
 ## Ref dependencies
 
-Demonstrates how to use `ref` and `out` parameters in dependency injection for scenarios where you need to pass values by reference.
+High-performance code often relies on `ref struct` types such as `Span<T>`, which cannot be stored in fields — so ordinary constructor or property injection is off the table.
+Instead, inject them by `ref` through a method marked with `[Ordinal]`: here a `ref struct Data` wrapping the bound `int[]` is passed into `Initialize(ref Data data)` and consumed without extra allocations.
 
 ```c#
 using Shouldly;
@@ -2189,77 +2265,7 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 >[!NOTE]
->`ref` dependencies are useful for scenarios where you need to return multiple values or modify parameters during injection.
-
-## Roots
-
-Sometimes you need roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Preferences>()
-    // Roots can be used to register all descendants of a type as roots.
-    .Roots<IWindow>("{type}");
-
-var composition = new Composition();
-composition.MainWindow.ShouldBeOfType<MainWindow>();
-composition.SettingsWindow.ShouldBeOfType<SettingsWindow>();
-
-interface IPreferences;
-
-class Preferences : IPreferences;
-
-interface IWindow;
-
-class MainWindow(IPreferences preferences) : IWindow;
-
-class SettingsWindow(IPreferences preferences) : IWindow;
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->This feature is useful for plugin-style architectures where you need to expose all implementations of a base type or interface.
-
-## Roots with filter
-
-Demonstrates how to create roots for types that match specific filter criteria, allowing selective exposure of implementations.
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Configuration>()
-    .Roots<INotificationService>("My{type}", filter: "*Email*");
-
-var composition = new Composition();
-composition.MyEmailService.ShouldBeOfType<EmailService>();
-
-interface IConfiguration;
-
-class Configuration : IConfiguration;
-
-interface INotificationService;
-
-// This service requires an API key which is not bound,
-// so it cannot be resolved and should be filtered out.
-class SmsService(string apiKey) : INotificationService;
-
-class EmailService(IConfiguration config) : INotificationService;
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->Filtering roots provides fine-grained control over which implementations are exposed, useful for conditional feature activation.
+>`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
 
 ## Transient
 
@@ -2561,9 +2567,9 @@ To run the above code, the following NuGet packages must be added:
 
 Be careful, replication takes into account the lifetime of the object.
 
-## Enumerable
+## Func with arguments
 
-Specifying `IEnumerable<T>` as the injection type lets you inject instances of all bindings that implement type `T` in a lazy fashion - the instances will be provided one by one, in order corresponding to the sequence of bindings.
+Sometimes an instance can only be created with values known at runtime, such as an id or a name. Injecting a `Func<..., T>` with arguments gives you a factory: values passed at call time are matched by type to the constructor parameters (here `int id` and `string name` of `Person`), while the remaining dependencies, like `IClock`, are resolved from the composition as usual.
 
 ```c#
 using Shouldly;
@@ -2571,61 +2577,65 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    .Bind<IMessageSender>().To<EmailSender>()
-    .Bind<IMessageSender>("sms").To<SmsSender>()
-    .Bind<INotificationService>().To<NotificationService>()
+    .Bind().As(Lifetime.Singleton).To<Clock>()
+    .Bind().To<Person>()
+    .Bind().To<Team>()
 
     // Composition root
-    .Root<INotificationService>("NotificationService");
+    .Root<ITeam>("Team");
 
 var composition = new Composition();
-var notificationService = composition.NotificationService;
-notificationService.Senders.Length.ShouldBe(2);
-notificationService.Senders[0].ShouldBeOfType<EmailSender>();
-notificationService.Senders[1].ShouldBeOfType<SmsSender>();
+var team = composition.Team;
 
-notificationService.Notify("Hello World");
+team.Members.Length.ShouldBe(3);
 
-interface IMessageSender
+team.Members[0].Id.ShouldBe(10);
+team.Members[0].Name.ShouldBe("Nik");
+
+team.Members[1].Id.ShouldBe(20);
+team.Members[1].Name.ShouldBe("Mike");
+
+team.Members[2].Id.ShouldBe(30);
+team.Members[2].Name.ShouldBe("Jake");
+
+interface IClock
 {
-    void Send(string message);
+    DateTimeOffset Now { get; }
 }
 
-class EmailSender : IMessageSender
+class Clock : IClock
 {
-    public void Send(string message)
-    {
-        // Sending email...
-    }
+    public DateTimeOffset Now => DateTimeOffset.Now;
 }
 
-class SmsSender : IMessageSender
+interface IPerson
 {
-    public void Send(string message)
-    {
-        // Sending SMS...
-    }
+    int Id { get; }
+
+    string Name { get; }
 }
 
-interface INotificationService
+class Person(string name, IClock clock, int id)
+    : IPerson
 {
-    ImmutableArray<IMessageSender> Senders { get; }
+    public int Id => id;
 
-    void Notify(string message);
+    public string Name => name;
 }
 
-class NotificationService(IEnumerable<IMessageSender> senders) : INotificationService
+interface ITeam
 {
-    public ImmutableArray<IMessageSender> Senders { get; }
-        = [..senders];
+    ImmutableArray<IPerson> Members { get; }
+}
 
-    public void Notify(string message)
-    {
-        foreach (var sender in Senders)
-        {
-            sender.Send(message);
-        }
-    }
+class Team(Func<int, string, IPerson> personFactory) : ITeam
+{
+    public ImmutableArray<IPerson> Members { get; } =
+    [
+        personFactory(10, "Nik"),
+        personFactory(20, "Mike"),
+        personFactory(30, "Jake")
+    ];
 }
 ```
 
@@ -2634,11 +2644,11 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 >[!NOTE]
->IEnumerable<T> provides lazy evaluation, making it efficient for scenarios where you may not need to enumerate all instances.
+>Func with arguments provides flexibility for scenarios where you need to pass runtime parameters during instance creation.
 
-## Enumerable generics
+## Func with tag
 
-Shows how generic middleware pipelines collect all matching implementations.
+A tag applied to a `Func<T>` dependency carries over to the instances it creates. Here `[Tag("postgres")] Func<IDbConnection>` resolves the binding registered with the `"postgres"` tag, and each call returns a new `NpgsqlConnection`, letting the pool create as many distinct connections as it needs.
 
 ```c#
 using Shouldly;
@@ -2646,53 +2656,38 @@ using Pure.DI;
 using System.Collections.Immutable;
 
 DI.Setup(nameof(Composition))
-    // Register generic middleware components.
-    // LoggingMiddleware<T> is registered as the default implementation.
-    .Bind<IMiddleware<TT>>().To<LoggingMiddleware<TT>>()
-    // MetricsMiddleware<T> is registered with the "Metrics" tag.
-    .Bind<IMiddleware<TT>>("Metrics").To<MetricsMiddleware<TT>>()
+    .Bind<IDbConnection>("postgres").To<NpgsqlConnection>()
+    .Bind<IConnectionPool>().To<ConnectionPool>()
 
-    // Register the pipeline that takes the collection of all middleware.
-    .Bind<IPipeline<TT>>().To<Pipeline<TT>>()
-
-    // Composition roots for different data types (int and string)
-    .Root<IPipeline<int>>("IntPipeline")
-    .Root<IPipeline<string>>("StringPipeline");
+    // Composition root
+    .Root<IConnectionPool>("ConnectionPool");
 
 var composition = new Composition();
+var pool = composition.ConnectionPool;
 
-// Validate the pipeline for int
-var intPipeline = composition.IntPipeline;
-intPipeline.Middlewares.Length.ShouldBe(2);
-intPipeline.Middlewares[0].ShouldBeOfType<LoggingMiddleware<int>>();
-intPipeline.Middlewares[1].ShouldBeOfType<MetricsMiddleware<int>>();
+// Check that the pool has created 3 connections
+pool.Connections.Length.ShouldBe(3);
+pool.Connections[0].ShouldBeOfType<NpgsqlConnection>();
 
-// Validate the pipeline for string
-var stringPipeline = composition.StringPipeline;
-stringPipeline.Middlewares.Length.ShouldBe(2);
-stringPipeline.Middlewares[0].ShouldBeOfType<LoggingMiddleware<string>>();
-stringPipeline.Middlewares[1].ShouldBeOfType<MetricsMiddleware<string>>();
+interface IDbConnection;
 
-// Middleware interface
-interface IMiddleware<T>;
+// Specific implementation for PostgreSQL
+class NpgsqlConnection : IDbConnection;
 
-// Logging implementation
-class LoggingMiddleware<T> : IMiddleware<T>;
-
-// Metrics implementation
-class MetricsMiddleware<T> : IMiddleware<T>;
-
-// Pipeline interface
-interface IPipeline<T>
+interface IConnectionPool
 {
-    ImmutableArray<IMiddleware<T>> Middlewares { get; }
+    ImmutableArray<IDbConnection> Connections { get; }
 }
 
-// Pipeline implementation that aggregates all available middleware
-class Pipeline<T>(IEnumerable<IMiddleware<T>> middlewares) : IPipeline<T>
+class ConnectionPool([Tag("postgres")] Func<IDbConnection> connectionFactory) : IConnectionPool
 {
-    public ImmutableArray<IMiddleware<T>> Middlewares { get; }
-        = [..middlewares];
+    public ImmutableArray<IDbConnection> Connections { get; } =
+    [
+        // Use the factory to create distinct connection instances
+        connectionFactory(),
+        connectionFactory(),
+        connectionFactory()
+    ];
 }
 ```
 
@@ -2701,87 +2696,15 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 >[!NOTE]
->Generic enumerable injections are useful for implementing middleware patterns where multiple handlers need to be invoked in sequence.
-
-## Array
-
-Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
-
-```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<ISensor>().To<TemperatureSensor>()
-    .Bind<ISensor>("External").To<WindSensor>()
-    .Bind<ISensorService>().To<SensorService>()
-
-    // Composition root
-    .Root<ISensorService>("Sensor");
-
-var composition = new Composition();
-var sensor = composition.Sensor;
-
-// Checks that all bindings for the ISensor interface are injected,
-// regardless of whether they are tagged or not.
-sensor.Sensors.Length.ShouldBe(2);
-sensor.Sensors[0].ShouldBeOfType<TemperatureSensor>();
-sensor.Sensors[1].ShouldBeOfType<WindSensor>();
-
-interface ISensor;
-
-class TemperatureSensor : ISensor;
-
-class WindSensor : ISensor;
-
-interface ISensorService
-{
-    ISensor[] Sensors { get; }
-}
-
-class SensorService(ISensor[] sensors) : ISensorService
-{
-    public ISensor[] Sensors { get; } = sensors;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-In addition to arrays, other collection types are also supported, such as:
-- System.Memory<T>
-- System.ReadOnlyMemory<T>
-- System.Span<T>
-- System.ReadOnlySpan<T>
-- System.Collections.Generic.ICollection<T>
-- System.Collections.Generic.IList<T>
-- System.Collections.Generic.List<T>
-- System.Collections.Generic.IReadOnlyCollection<T>
-- System.Collections.Generic.IReadOnlyList<T>
-- System.Collections.Generic.ISet<T>
-- System.Collections.Generic.HashSet<T>
-- System.Collections.Generic.SortedSet<T>
-- System.Collections.Generic.Queue<T>
-- System.Collections.Generic.Stack<T>
-- System.Collections.Immutable.ImmutableArray<T>
-- System.Collections.Immutable.IImmutableList<T>
-- System.Collections.Immutable.ImmutableList<T>
-- System.Collections.Immutable.IImmutableSet<T>
-- System.Collections.Immutable.ImmutableHashSet<T>
-- System.Collections.Immutable.ImmutableSortedSet<T>
-- System.Collections.Immutable.IImmutableQueue<T>
-- System.Collections.Immutable.ImmutableQueue<T>
-- System.Collections.Immutable.IImmutableStack<T>
-And of course this list can easily be supplemented on its own.
+>Func with tags allows you to create instances with specific tags dynamically, useful for factory patterns with multiple implementations.
 
 ## Generics
 
-Generic types are also supported.
+Generic types are supported out of the box: a single binding like `Bind<IRepository<TT>>().To<Repository<TT>>()` covers `IRepository<User>`, `IRepository<Order>` and any other instantiation used in the object graph. Since Pure.DI is a source generator, each of them is turned into concrete, reflection-free code at compile time.
 >[!IMPORTANT]
 >Instead of open generic types, as in classical DI container libraries, regular generic types with `marker` types as type parameters are used here. Such "marker" types allow to define dependency graph more precisely.
 
-For the case of `IDependency<TT>`, `TT` is a `marker` type, which allows the usual `IDependency<TT>` to be used instead of an open generic type like `IDependency<>`. This makes it easy to bind generic types by specifying `marker` types such as `TT`, `TT1`, etc. as parameters of generic types:
+For the case of `IRepository<TT>`, `TT` is a `marker` type, which allows the usual `IRepository<TT>` to be used instead of an open generic type like `IRepository<>`. This makes it easy to bind generic types by specifying `marker` types such as `TT`, `TT1`, etc. as parameters of generic types:
 
 ```c#
 using Shouldly;
@@ -2837,13 +2760,13 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-Actually, the property `Root` looks like:
+Actually, the property `DataService` looks like:
 ```c#
-public IService Root
+public IDataService DataService
 {
   get
   {
-    return new Service(new Dependency<int>(), new Dependency<string>());
+    return new DataService(new Repository<User>(), new Repository<Order>());
   }
 }
 ```
@@ -2937,6 +2860,74 @@ To run the above code, the following NuGet package must be added:
 >[!IMPORTANT]
 >The method `Inject()` cannot be used outside of the binding setup.
 
+## Generic composition roots with constraints
+
+Generic composition roots respect type constraints. Using constrained marker types — `TTDisposable` (`IDisposable`) and `TTS` (`struct`) — in `Root<IDataProcessor<TTDisposable, TTS>>("GetProcessor")` produces a generic method `GetProcessor<T, TOptions>()` whose type parameters carry the same constraints.
+A tagged root can also fix one of the type arguments, as `GetSpecializedProcessor<T>()` does with `bool`.
+>[!IMPORTANT]
+>`Resolve` methods cannot be used to resolve generic composition roots.
+
+```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    // Disable Resolve methods to keep the public API minimal
+    .Hint(Hint.Resolve, "Off")
+    .Bind().To<StreamSource<TTDisposable>>()
+    .Bind().To<DataProcessor<TTDisposable, TTS>>()
+    // Creates SpecializedDataProcessor manually,
+    // just for the sake of example.
+    // It treats 'bool' as the options type for specific boolean flags.
+    .Bind("Specialized").To(ctx => {
+        ctx.Inject(out IStreamSource<TTDisposable> source);
+        return new SpecializedDataProcessor<TTDisposable>(source);
+    })
+
+    // Specifies to create a regular public method
+    // to get a composition root of type DataProcessor<T, TOptions>
+    // with the name "GetProcessor"
+    .Root<IDataProcessor<TTDisposable, TTS>>("GetProcessor")
+
+    // Specifies to create a regular public method
+    // to get a composition root of type SpecializedDataProcessor<T>
+    // with the name "GetSpecializedProcessor"
+    // using the "Specialized" tag
+    .Root<IDataProcessor<TTDisposable, bool>>("GetSpecializedProcessor", "Specialized");
+
+var composition = new Composition();
+
+// Creates a processor for a Stream with 'double' as options (e.g., threshold)
+// processor = new DataProcessor<Stream, double>(new StreamSource<Stream>());
+var processor = composition.GetProcessor<Stream, double>();
+
+// Creates a specialized processor for a BinaryReader
+// specializedProcessor = new SpecializedDataProcessor<BinaryReader>(new StreamSource<BinaryReader>());
+var specializedProcessor = composition.GetSpecializedProcessor<BinaryReader>();
+
+interface IStreamSource<T>
+    where T : IDisposable;
+
+class StreamSource<T> : IStreamSource<T>
+    where T : IDisposable;
+
+interface IDataProcessor<T, TOptions>
+    where T : IDisposable
+    where TOptions : struct;
+
+class DataProcessor<T, TOptions>(IStreamSource<T> source) : IDataProcessor<T, TOptions>
+    where T : IDisposable
+    where TOptions : struct;
+
+class SpecializedDataProcessor<T>(IStreamSource<T> source) : IDataProcessor<T, bool>
+    where T : IDisposable;
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+>[!IMPORTANT]
+>The method `Inject()` cannot be used outside of the binding setup.
+
 ## Constructor ordinal attribute
 
 Applying this attribute disables automatic constructor selection. Only constructors marked with this attribute are considered, ordered by ordinal (ascending).
@@ -2988,6 +2979,77 @@ class SqlDatabaseClient : IDatabaseClient
         ConnectionString = "InMemory";
 
     public string ConnectionString { get; }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
+
+## Member ordinal attribute
+
+When applied to a property or field, the member participates in DI, ordered by ordinal (ascending).
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Text;
+
+DI.Setup(nameof(PersonComposition))
+    .Arg<int>("personId")
+    .Arg<string>("personName")
+    .Arg<DateTime>("personBirthday")
+    .Bind().To<Person>()
+
+    // Composition root
+    .Root<IPerson>("Person");
+
+var composition = new PersonComposition(
+    personId: 123,
+    personName: "Nik",
+    personBirthday: new DateTime(1977, 11, 16));
+
+var person = composition.Person;
+person.Name.ShouldBe("123 Nik 1977-11-16");
+
+interface IPerson
+{
+    string Name { get; }
+}
+
+class Person : IPerson
+{
+    private readonly StringBuilder _name = new();
+
+    public string Name => _name.ToString();
+
+    // The Ordinal attribute specifies to perform an injection,
+    // the integer value in the argument specifies
+    // the ordinal of injection
+    [Ordinal(0)] public int Id;
+
+    [Ordinal(1)]
+    public string FirstName
+    {
+        set
+        {
+            _name.Append(Id);
+            _name.Append(' ');
+            _name.Append(value);
+        }
+    }
+
+    [Ordinal(2)]
+    public DateTime Birthday
+    {
+        set
+        {
+            _name.Append(' ');
+            _name.Append($"{value:yyyy-MM-dd}");
+        }
+    }
 }
 ```
 
@@ -3067,77 +3129,6 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The `Dependency` attribute is part of the API, but you can define your own in any assembly or namespace.
-
-## Member ordinal attribute
-
-When applied to a property or field, the member participates in DI, ordered by ordinal (ascending).
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System.Text;
-
-DI.Setup(nameof(PersonComposition))
-    .Arg<int>("personId")
-    .Arg<string>("personName")
-    .Arg<DateTime>("personBirthday")
-    .Bind().To<Person>()
-
-    // Composition root
-    .Root<IPerson>("Person");
-
-var composition = new PersonComposition(
-    personId: 123,
-    personName: "Nik",
-    personBirthday: new DateTime(1977, 11, 16));
-
-var person = composition.Person;
-person.Name.ShouldBe("123 Nik 1977-11-16");
-
-interface IPerson
-{
-    string Name { get; }
-}
-
-class Person : IPerson
-{
-    private readonly StringBuilder _name = new();
-
-    public string Name => _name.ToString();
-
-    // The Ordinal attribute specifies to perform an injection,
-    // the integer value in the argument specifies
-    // the ordinal of injection
-    [Ordinal(0)] public int Id;
-
-    [Ordinal(1)]
-    public string FirstName
-    {
-        set
-        {
-            _name.Append(Id);
-            _name.Append(' ');
-            _name.Append(value);
-        }
-    }
-
-    [Ordinal(2)]
-    public DateTime Birthday
-    {
-        set
-        {
-            _name.Append(' ');
-            _name.Append($"{value:yyyy-MM-dd}");
-        }
-    }
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
 
 ## Decorator
 

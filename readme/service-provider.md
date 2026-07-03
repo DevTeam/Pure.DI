@@ -85,7 +85,8 @@ Important Notes:
 - Hint Overriding: The `ObjectResolveMethodName = GetService` hint overrides the default object `Resolve(Type type)` method name to implement `IServiceProvider` interface
 - Roots: Only roots can be resolved. Use `Root(...)` or `RootBind()` calls for registration
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -309,6 +310,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -371,4 +374,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Service collection](service-collection.md)
+- [Service provider with scope](service-provider-with-scope.md)
 

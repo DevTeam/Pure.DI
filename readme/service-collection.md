@@ -78,7 +78,8 @@ dotnet run
 >[!NOTE]
 >This enables integration with _Microsoft.Extensions.DependencyInjection_, allowing you to leverage both DI systems together.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -304,6 +305,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -366,4 +369,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Service provider](service-provider.md)
+- [Keyed service provider](keyed-service-provider.md)
 

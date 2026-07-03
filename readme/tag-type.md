@@ -88,7 +88,8 @@ dotnet run
 >[!NOTE]
 >`Tag.Type` provides a convenient way to reference implementation types in tags without explicitly using `typeof()`.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -135,6 +136,8 @@ partial class Composition
 }
 ```
 
+</details>
+
 Class diagram:
 
 ```mermaid
@@ -178,4 +181,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tags](tags.md)
 

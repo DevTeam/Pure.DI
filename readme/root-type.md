@@ -102,7 +102,8 @@ dotnet run
 Limitations: root-type-specific rules can become hidden policy; keep this logic centralized and observable.
 See also: [Composition roots](composition-roots.md), [Root Name](root-name.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -128,6 +129,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -173,4 +176,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Root Name](root-name.md)
 

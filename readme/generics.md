@@ -1,10 +1,10 @@
 #### Generics
 
-Generic types are also supported.
+Generic types are supported out of the box: a single binding like `Bind<IRepository<TT>>().To<Repository<TT>>()` covers `IRepository<User>`, `IRepository<Order>` and any other instantiation used in the object graph. Since Pure.DI is a source generator, each of them is turned into concrete, reflection-free code at compile time.
 >[!IMPORTANT]
 >Instead of open generic types, as in classical DI container libraries, regular generic types with `marker` types as type parameters are used here. Such "marker" types allow to define dependency graph more precisely.
 
-For the case of `IDependency<TT>`, `TT` is a `marker` type, which allows the usual `IDependency<TT>` to be used instead of an open generic type like `IDependency<>`. This makes it easy to bind generic types by specifying `marker` types such as `TT`, `TT1`, etc. as parameters of generic types:
+For the case of `IRepository<TT>`, `TT` is a `marker` type, which allows the usual `IRepository<TT>` to be used instead of an open generic type like `IRepository<>`. This makes it easy to bind generic types by specifying `marker` types such as `TT`, `TT1`, etc. as parameters of generic types:
 
 
 ```c#
@@ -84,13 +84,13 @@ dotnet run
 
 </details>
 
-Actually, the property `Root` looks like:
+Actually, the property `DataService` looks like:
 ```c#
-public IService Root
+public IDataService DataService
 {
   get
   {
-    return new Service(new Dependency<int>(), new Dependency<string>());
+    return new DataService(new Repository<User>(), new Repository<Order>());
   }
 }
 ```
@@ -127,7 +127,8 @@ internal interface TTDisposable: IDisposable { }
 internal interface TTEnumerator<out T>: IEnumerator<T> { }
 ```
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -142,6 +143,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -186,4 +189,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Generic composition roots](generic-composition-roots.md)
+- [Complex generics](complex-generics.md)
+- [Custom generic argument](custom-generic-argument.md)
 

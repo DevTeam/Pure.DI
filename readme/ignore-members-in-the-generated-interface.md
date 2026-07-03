@@ -65,12 +65,16 @@ The example shows how to:
 - Keep only the intended contract surface
 - Use the generated interface in Pure.DI
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 }
 ```
-The following partial class will be generated:
+
+</details>
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -207,6 +211,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 

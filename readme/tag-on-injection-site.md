@@ -107,7 +107,8 @@ dotnet run
 >[!WARNING]
 >Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -125,6 +126,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -173,4 +176,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tag on injection site with wildcards](tag-on-injection-site-with-wildcards.md)
+- [Tag on a constructor argument](tag-on-a-constructor-argument.md)
 

@@ -90,7 +90,8 @@ dotnet run
 Limitations: accumulation order depends on object creation order in the graph, so do not treat it as a stable business ordering.
 See also: [Enumerable](enumerable.md), [Lifetimes](transient.md).
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -138,6 +139,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -191,4 +194,8 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Tracking disposable instances per a composition root](tracking-disposable-instances-per-a-composition-root.md)
 

@@ -91,7 +91,8 @@ dotnet run
 >[!NOTE]
 >Generic build-up allows you to inject dependencies into existing generic objects after their creation.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -113,6 +114,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -199,4 +202,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Build up of an existing object](build-up-of-an-existing-object.md)
+- [Generic builder](generic-builder.md)
 

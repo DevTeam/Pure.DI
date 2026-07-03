@@ -69,7 +69,8 @@ The key points are:
 - The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
 - The DI automatically injects the dependency when resolving the object graph
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class Composition
@@ -86,6 +87,8 @@ partial class Composition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -122,4 +125,10 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Method injection](method-injection.md)
+- [Field injection](field-injection.md)
+- [Required properties or fields](required-properties-or-fields.md)
 

@@ -93,7 +93,8 @@ dotnet run
 
 The `Dependency` attribute is part of the API, but you can define your own in any assembly or namespace.
 
-The following partial class will be generated:
+<details>
+<summary>The following partial class will be generated</summary>
 
 ```c#
 partial class PersonComposition
@@ -124,6 +125,8 @@ partial class PersonComposition
   }
 }
 ```
+
+</details>
 
 Class diagram:
 
@@ -167,4 +170,9 @@ classDiagram
 		}
 	}
 ```
+
+See also:
+
+- [Member ordinal attribute](member-ordinal-attribute.md)
+- [Inject attribute](inject-attribute.md)
 

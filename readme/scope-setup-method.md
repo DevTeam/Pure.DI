@@ -1,5 +1,7 @@
 #### Scope setup method
 
+The `ScopeMethodName` hint sets the name of a generated static method that binds a new composition instance to a parent scope. This example calls the generated `Composition.SetupScope(...)` method directly to create per-request scopes without defining a wrapper class: scoped instances are unique per scope and are disposed together with it, while singletons remain shared with the parent composition.
+
 
 ```c#
 using Shouldly;
@@ -126,4 +128,9 @@ dotnet run
 </details>
 
 
+
+See also:
+
+- [Scope](scope.md)
+- [Scoped](scoped.md)
 
