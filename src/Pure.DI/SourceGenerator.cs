@@ -27,7 +27,7 @@ public class SourceGenerator : IIncrementalGenerator
 
         var setupContexts = context.SyntaxProvider
             .CreateSyntaxProvider(
-                static (_, _) => true,
+                static (node, _) => node is CompilationUnitSyntax,
                 static (syntaxContext, _) => syntaxContext)
             .Collect();
 

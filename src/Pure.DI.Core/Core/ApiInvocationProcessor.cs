@@ -35,17 +35,15 @@ sealed class ApiInvocationProcessor(
             _ => null
         };
 
-        var prevInvocation = invocation.DescendantNodes().FirstOrDefault(i => i is InvocationExpressionSyntax);
+        var prevInvocation = GetPreviousInvocation(invocation);
         List<string> invocationComments;
         if (prevInvocation is null)
         {
-            invocationComments = comments.GetComments(
-                invocation.GetLeadingTrivia()).ToList();
+            invocationComments = GetComments(invocation.GetLeadingTrivia());
         }
         else
         {
-            invocationComments = comments.GetComments(
-                invocation.DescendantTrivia(node => node != prevInvocation, true)).ToList();
+            invocationComments = GetComments(invocation.DescendantTrivia(node => node != prevInvocation, true));
         }
 
         switch (name)
@@ -1539,6 +1537,33 @@ sealed class ApiInvocationProcessor(
 
         return null;
     }
+
+    private static InvocationExpressionSyntax? GetPreviousInvocation(InvocationExpressionSyntax invocation) =>
+        invocation.Expression is MemberAccessExpressionSyntax
+        {
+            Expression: InvocationExpressionSyntax previousInvocation
+        }
+            ? previousInvocation
+            : null;
+
+    private List<string> GetComments(IEnumerable<SyntaxTrivia> trivias)
+    {
+        List<SyntaxTrivia>? commentTrivias = null;
+        foreach (var trivia in trivias)
+        {
+            if (IsSupportedCommentTrivia(trivia))
+            {
+                commentTrivias ??= [];
+                commentTrivias.Add(trivia);
+            }
+        }
+
+        return commentTrivias is null ? [] : comments.GetComments(commentTrivias).ToList();
+    }
+
+    private static bool IsSupportedCommentTrivia(SyntaxTrivia trivia) =>
+        trivia.IsKind(SyntaxKind.SingleLineCommentTrivia)
+        || trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia);
 
     private void CheckNotAsync(LambdaExpressionSyntax lambdaExpression)
     {

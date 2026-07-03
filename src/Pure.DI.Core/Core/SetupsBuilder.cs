@@ -776,6 +776,13 @@ sealed class SetupsBuilder(
 
     private void AddTypeAttributeBindings(MdSetup setup)
     {
+        if (setup.TypeAttributes.IsDefaultOrEmpty
+            && setup.TagAttributes.IsDefaultOrEmpty
+            && setup.LifetimeAttributes.IsDefaultOrEmpty)
+        {
+            return;
+        }
+
         var compilation = setup.SemanticModel.Compilation;
         var processedTypes = new HashSet<ITypeSymbol>(typeSymbolComparer.Runtime);
         foreach (var syntaxTree in compilation.SyntaxTrees)

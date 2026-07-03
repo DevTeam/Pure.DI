@@ -3,123 +3,210 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System" #>
 <#
-	const int hierarchy = 3;
-	const int count = 3;
-	var total = 1;
-	var methodIndex = 0;
-	var random = new Random();
+    const int moduleCount = 12;
+    const int useCasesPerModule = 8;
+    const int repositoriesPerModule = 5;
+    const int validatorsPerUseCase = 3;
+    const int policiesPerModule = 4;
 
-	var lifetimes = new[]
-	{
-		"Lifetime.Transient",
-		"Lifetime.Singleton",
-		"Lifetime.PerBlock",
-		"Lifetime.PerResolve"
-	};
+    var bindingCount = 0;
+    var rootCount = 0;
+    var declarationCount = 0;
+    var bindings = new StringBuilder();
+    var declarations = new StringBuilder();
 
-	string GetRandomLifetime()
-	{
-		return lifetimes[random.Next(lifetimes.Length)];
-	}
+    string LifetimeFor(int index)
+    {
+        switch (index % 5)
+        {
+            case 0:
+                return "Lifetime.Singleton";
 
-	var bindings = new List<string>();
-	var declarations = new StringBuilder();
+            case 1:
+                return "Lifetime.PerBlock";
 
-	void GenerateDependencies(int index, string prefix, int depth)
-	{
-		total++;
-		var interfaceName = $"IDependency_{prefix}{index}";
-		var className = $"Dependency_{prefix}{index}";
-		declarations.AppendLine($"public interface {interfaceName};");
-		declarations.AppendLine();
+            case 2:
+                return "Lifetime.Transient";
 
-		declarations.Append($"public class {className}(");
+            case 3:
+                return "Lifetime.PerResolve";
 
-		var dependencies = new List<string>();
-		if (depth < count)
-		{
-			for (var i = 0; i < hierarchy; i++)
-			{
-				dependencies.Add($"IDependency_{prefix}{index}_{i} dep{depth}{i}");
-			}
-		}
+            default:
+                return "Lifetime.Transient";
+        }
+    }
 
-		if (dependencies.Count > 0)
-		{
-			declarations.Append(string.Join(", ", dependencies));
-		}
-		declarations.AppendLine($"): {interfaceName};");
-		declarations.AppendLine();
+    void AppendBinding(string contract, string implementation, string lifetime)
+    {
+        bindingCount++;
+        bindings.AppendLine($"        .Bind<{contract}>().As({lifetime}).To<{implementation}>()");
+    }
 
-		// Generate nested dependencies
-		if (depth >= count)
-		{
-			return;
-		}
+    void AppendRoot(string contract, string name)
+    {
+        rootCount++;
+        bindings.AppendLine($"        .Root<{contract}>(\"{name}\")");
+    }
 
-		for (var i = 0; i < hierarchy; i++)
-		{
-			var newPrefix = $"{prefix}{index}_";
-			GenerateDependencies(i, newPrefix, depth + 1);
+    void AppendService(string contract, string implementation, string parameters, string lifetime)
+    {
+        AppendBinding(contract, implementation, lifetime);
+        declarationCount += 2;
+        declarations.AppendLine($"public interface {contract};");
+        declarations.AppendLine($"public class {implementation}({parameters}) : {contract};");
+        declarations.AppendLine();
+    }
 
-			var nestedInterfaceName = $"IDependency_{newPrefix}{i}";
-			var nestedClassName = $"Dependency_{newPrefix}{i}";
-			var nestedLifetime = lifetimes[random.Next(lifetimes.Length)];
+    void AppendLeafService(string contract, string implementation, string lifetime)
+    {
+        AppendService(contract, implementation, "", lifetime);
+    }
 
-			var binding = new StringBuilder();
-			var methodName = methodIndex++;
-			binding.AppendLine($"\tprivate void Setup_{methodName}() => DI.Setup()");
-			binding.AppendLine($"\t\t.Bind<{nestedInterfaceName}>().As({nestedLifetime}).To(ctx => {{");
-			binding.AppendLine($"\t\t\tctx.Inject<{nestedClassName}>(out var val{depth}{i});");
-			binding.AppendLine($"\t\t\treturn val{depth}{i};");
-			binding.AppendLine($"\t\t}}).Root<{nestedInterfaceName}>();");
+    var sharedServices = new List<string[]>
+    {
+        new[] { "IClock", "SystemClock", "Lifetime.Singleton" },
+        new[] { "IAppLogger", "StructuredLogger", "Lifetime.Singleton" },
+        new[] { "IMetrics", "Metrics", "Lifetime.Singleton" },
+        new[] { "ITracer", "Tracer", "Lifetime.Singleton" },
+        new[] { "IMessageBus", "MessageBus", "Lifetime.Singleton" },
+        new[] { "IEventPublisher", "EventPublisher", "Lifetime.PerBlock" },
+        new[] { "IDatabase", "Database", "Lifetime.Singleton" },
+        new[] { "IConnectionFactory", "ConnectionFactory", "Lifetime.Singleton" },
+        new[] { "IQueryCompiler", "QueryCompiler", "Lifetime.Singleton" },
+        new[] { "ICache", "MemoryCache", "Lifetime.Singleton" },
+        new[] { "ITransaction", "Transaction", "Lifetime.PerBlock" },
+        new[] { "IRetryPolicy", "RetryPolicy", "Lifetime.Singleton" },
+        new[] { "IFeatureFlags", "FeatureFlags", "Lifetime.Singleton" },
+        new[] { "IObjectMapper", "ObjectMapper", "Lifetime.Singleton" },
+        new[] { "IRuleCatalog", "RuleCatalog", "Lifetime.Singleton" },
+        new[] { "IAuthorization", "Authorization", "Lifetime.PerBlock" },
+        new[] { "ISettings", "Settings", "Lifetime.Singleton" },
+        new[] { "IRequestContext", "RequestContext", "Lifetime.PerBlock" }
+    };
 
-			bindings.Add(binding.ToString());
-		}
-	}
+    foreach (var service in sharedServices)
+    {
+        AppendLeafService(service[0], service[1], service[2]);
+    }
 
-	// Generate interface and class declarations
-	declarations.AppendLine("public interface IRoot;");
-	declarations.AppendLine();
-	declarations.Append("public class Root(");
+    AppendService(
+        "IAuditTrail",
+        "AuditTrail",
+        "IClock clock, IAppLogger logger, IEventPublisher events, IRequestContext requestContext",
+        "Lifetime.PerBlock");
 
-	var rootDependencies = new List<string>();
-	for (var i = 0; i < hierarchy; i++)
-	{
-		rootDependencies.Add($"IDependency_{i} dep{i}");
-	}
+    var moduleFacadeContracts = new List<string>();
+    for (var module = 0; module < moduleCount; module++)
+    {
+        var moduleFacadeContract = $"IModule{module}Facade";
+        moduleFacadeContracts.Add(moduleFacadeContract);
 
-	declarations.Append(string.Join(", ", rootDependencies));
-	declarations.AppendLine("): IRoot;");
-	declarations.AppendLine();
+        AppendService(
+            $"IModule{module}Audit",
+            $"Module{module}Audit",
+            "IAuditTrail auditTrail, IAppLogger logger, IMetrics metrics, IRequestContext requestContext",
+            "Lifetime.PerBlock");
 
-	// Generate dependencies recursively
-	for (var i = 0; i < hierarchy; i++)
-	{
-		GenerateDependencies(i, "", 0);
-	}
+        for (var policy = 0; policy < policiesPerModule; policy++)
+        {
+            AppendService(
+                $"IModule{module}Policy{policy}",
+                $"Module{module}Policy{policy}",
+                "IFeatureFlags featureFlags, IAuthorization authorization, ISettings settings, IRequestContext requestContext",
+                LifetimeFor(module + policy));
+        }
 
-	// Root binding
-	var rootBinding = new StringBuilder();
-	var rootLifetime = GetRandomLifetime();
-	rootBinding.AppendLine("\tprivate void Setup() => DI.Setup()");
-	rootBinding.AppendLine($"\t\t.Bind<IRoot>().As({rootLifetime}).To<Root>().Root<IRoot>(\"Root\");");
-	bindings.Insert(0, rootBinding.ToString());
+        for (var repository = 0; repository < repositoriesPerModule; repository++)
+        {
+            AppendService(
+                $"IModule{module}Repository{repository}",
+                $"Module{module}Repository{repository}",
+                "IDatabase database, IConnectionFactory connectionFactory, IQueryCompiler queryCompiler, ICache cache, IAppLogger logger, IMetrics metrics, ITracer tracer, IRetryPolicy retryPolicy, IClock clock",
+                LifetimeFor(module + repository + 1));
+        }
 
-	// Add root bindings for each IDependency_
-	for (var i = 0; i < hierarchy; i++)
-	{
-		var lifetime = GetRandomLifetime();
-		var binding = new StringBuilder();
-		var methodName = methodIndex++;
-		binding.AppendLine($"\tprivate void Setup_{methodName}() => DI.Setup()");
-		binding.AppendLine($"\t\t.Bind<IDependency_{i}>().As({lifetime}).To(ctx => {{");
-		binding.AppendLine($"\t\t\tctx.Inject<Dependency_{i}>(out var val{i});");
-		binding.AppendLine($"\t\t\treturn val{i};");
-		binding.AppendLine($"\t\t}}).Root<IDependency_{i}>();");
+        for (var useCase = 0; useCase < useCasesPerModule; useCase++)
+        {
+            for (var validator = 0; validator < validatorsPerUseCase; validator++)
+            {
+                AppendService(
+                    $"IModule{module}UseCase{useCase}Validator{validator}",
+                    $"Module{module}UseCase{useCase}Validator{validator}",
+                    "IRuleCatalog ruleCatalog, ISettings settings, IClock clock, IAppLogger logger, IRequestContext requestContext",
+                    LifetimeFor(module + useCase + validator));
+            }
 
-		bindings.Add(binding.ToString());
-	}
+            var useCaseParameters = new List<string>
+            {
+                $"IModule{module}Repository{useCase % repositoriesPerModule} primaryRepository",
+                $"IModule{module}Repository{(useCase + 1) % repositoriesPerModule} secondaryRepository",
+                $"IModule{module}Repository{(useCase + 2) % repositoriesPerModule} archiveRepository",
+                $"IModule{module}Policy{useCase % policiesPerModule} policy",
+                $"IModule{module}Policy{(useCase + 1) % policiesPerModule} fallbackPolicy",
+                $"IModule{module}UseCase{useCase}Validator0 validator0",
+                $"IModule{module}UseCase{useCase}Validator1 validator1",
+                $"IModule{module}UseCase{useCase}Validator2 validator2",
+                $"IModule{module}Audit audit",
+                "IObjectMapper mapper",
+                "ITransaction transaction",
+                "IEventPublisher events",
+                "IMessageBus messageBus",
+                "IAppLogger logger",
+                "IMetrics metrics",
+                "ITracer tracer",
+                "IClock clock",
+                "IRequestContext requestContext"
+            };
+
+            AppendService(
+                $"IModule{module}UseCase{useCase}",
+                $"Module{module}UseCase{useCase}",
+                string.Join(", ", useCaseParameters),
+                LifetimeFor(module + useCase + 2));
+        }
+
+        var facadeParameters = new List<string>();
+        for (var useCase = 0; useCase < useCasesPerModule; useCase++)
+        {
+            facadeParameters.Add($"IModule{module}UseCase{useCase} useCase{useCase}");
+        }
+
+        facadeParameters.Add($"IModule{module}Audit audit");
+        facadeParameters.Add("IAppLogger logger");
+        facadeParameters.Add("IMetrics metrics");
+        facadeParameters.Add("ITracer tracer");
+
+        AppendService(
+            moduleFacadeContract,
+            $"Module{module}Facade",
+            string.Join(", ", facadeParameters),
+            "Lifetime.PerBlock");
+
+        AppendRoot(moduleFacadeContract, $"Module{module}");
+    }
+
+    var applicationParameters = new List<string>();
+    for (var module = 0; module < moduleCount; module++)
+    {
+        applicationParameters.Add($"IModule{module}Facade module{module}");
+    }
+
+    applicationParameters.Add("IMessageBus messageBus");
+    applicationParameters.Add("IEventPublisher events");
+    applicationParameters.Add("IAuditTrail auditTrail");
+    applicationParameters.Add("IAppLogger logger");
+    applicationParameters.Add("IMetrics metrics");
+    applicationParameters.Add("ITracer tracer");
+    applicationParameters.Add("IClock clock");
+    applicationParameters.Add("IRequestContext requestContext");
+
+    AppendService(
+        "IApplication",
+        "Application",
+        string.Join(", ", applicationParameters),
+        "Lifetime.PerBlock");
+
+    AppendRoot("IApplication", "Application");
 #>
 // ReSharper disable InconsistentNaming
 // ReSharper disable EmptyConstructor
@@ -132,12 +219,16 @@ namespace HugeComposition;
 
 using Pure.DI;
 
-// Total bindings: <#= total #>
+// Modules: <#= moduleCount #>
+// Bindings: <#= bindingCount #>
+// Roots: <#= rootCount #>
+// Service declarations: <#= declarationCount #>
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
 public partial class Composition
 {
-<#= string.Join("\n", bindings) #>
+    private void Setup() => DI.Setup()
+<#= bindings.ToString().TrimEnd() #>;
 }
 
 <#= declarations.ToString() #>

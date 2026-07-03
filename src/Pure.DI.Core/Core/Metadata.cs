@@ -30,6 +30,14 @@ sealed class Metadata(
                 case IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }:
                 case MemberAccessExpressionSyntax { Name.Identifier.Text: nameof(DI.Setup) }
                     when expression.Kind() == SyntaxKind.SimpleMemberAccessExpression:
+                    if (expression is MemberAccessExpressionSyntax
+                        {
+                            Expression: IdentifierNameSyntax { Identifier.Text: nameof(DI) }
+                        })
+                    {
+                        return true;
+                    }
+
                     var returnType = TryGetReturnType(semanticModel, node);
                     if (returnType is null)
                     {
