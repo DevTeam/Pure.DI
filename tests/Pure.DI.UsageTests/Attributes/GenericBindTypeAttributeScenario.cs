@@ -13,6 +13,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedTypeParameter
 namespace Pure.DI.UsageTests.Attributes.GenericBindTypeAttributeScenario;
 
 using Xunit;

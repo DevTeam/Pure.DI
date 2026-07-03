@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>มีการกำหนด Binding ไม่ถูกต้อง</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>ชนิดการใช้งาน {0} มีแอตทริบิวต์อายุการใช้งานของ binding หลายรายการในกลุ่มแอตทริบิวต์เดียวกัน</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition มีขนาดใหญ่เกินไป หยุดที่การพึ่งพาที่ #{0}</value>
     </data>

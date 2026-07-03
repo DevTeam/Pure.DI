@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding tidak didefinisikan dengan benar.</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>Tipe implementasi {0} memiliki beberapa atribut lifetime binding dalam grup atribut yang sama.</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Komposisi terlalu besar. Dihentikan pada dependensi #{0}.</value>
     </data>

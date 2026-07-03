@@ -1,7 +1,6 @@
 <#@ template language="C#" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="System" #>
 <#
     const int moduleCount = 12;
     const int useCasesPerModule = 8;
@@ -17,23 +16,14 @@
 
     string LifetimeFor(int index)
     {
-        switch (index % 5)
+        return (index % 5) switch
         {
-            case 0:
-                return "Lifetime.Singleton";
-
-            case 1:
-                return "Lifetime.PerBlock";
-
-            case 2:
-                return "Lifetime.Transient";
-
-            case 3:
-                return "Lifetime.PerResolve";
-
-            default:
-                return "Lifetime.Transient";
-        }
+            0 => "Lifetime.Singleton",
+            1 => "Lifetime.PerBlock",
+            2 => "Lifetime.Transient",
+            3 => "Lifetime.PerResolve",
+            _ => "Lifetime.Transient"
+        };
     }
 
     void AppendBinding(string contract, string implementation, string lifetime)
@@ -95,12 +85,9 @@
         "IClock clock, IAppLogger logger, IEventPublisher events, IRequestContext requestContext",
         "Lifetime.PerBlock");
 
-    var moduleFacadeContracts = new List<string>();
     for (var module = 0; module < moduleCount; module++)
     {
         var moduleFacadeContract = $"IModule{module}Facade";
-        moduleFacadeContracts.Add(moduleFacadeContract);
-
         AppendService(
             $"IModule{module}Audit",
             $"Module{module}Audit",

@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>绑定定义不正确。</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>实现类型 {0} 在同一特性组中包含多个绑定生命周期特性。</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>组合过大。已在依赖项 #{0} 处停止。</value>
     </data>

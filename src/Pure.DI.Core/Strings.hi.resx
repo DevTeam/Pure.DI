@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding गलत तरीके से परिभाषित की गई है।</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>कार्यान्वयन प्रकार {0} में उसी attribute group में कई binding lifetime attributes हैं।</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition बहुत बड़ी है। निर्भरता संख्या {0} पर रुक गया।</value>
     </data>

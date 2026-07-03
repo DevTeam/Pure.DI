@@ -1,9 +1,4 @@
-
-
-
-
-
-// ReSharper disable InconsistentNaming
+﻿// ReSharper disable InconsistentNaming
 // ReSharper disable EmptyConstructor
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global

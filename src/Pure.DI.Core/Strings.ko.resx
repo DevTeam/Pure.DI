@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding이 올바르게 정의되지 않았습니다.</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>구현 형식 {0}에 동일한 특성 그룹 안에 여러 바인딩 수명 특성이 있습니다.</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>컴포지션이 너무 큽니다. 종속성 #{0}에서 중단되었습니다.</value>
     </data>

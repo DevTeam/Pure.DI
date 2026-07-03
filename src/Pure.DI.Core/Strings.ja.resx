@@ -127,6 +127,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding が正しく定義されていません。</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>実装型 {0} には、同じ属性グループ内に複数のバインディング ライフタイム属性があります。</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition が大きすぎます。依存関係番号 {0} で停止しました。</value>
     </data>

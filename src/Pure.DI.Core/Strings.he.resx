@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>ה-Binding מוגדר באופן שגוי.</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>סוג המימוש {0} מכיל כמה מאפייני משך חיים של binding באותה קבוצת מאפיינים.</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>הקומפוזיציה גדולה מדי. נעצר בתלות מס' {0}.</value>
     </data>

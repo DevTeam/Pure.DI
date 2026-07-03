@@ -77,8 +77,5 @@ sealed class Metadata(
 
     private static bool IsSetupSyntax(ExpressionSyntax expression) =>
         expression is IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) }
-        || expression is MemberAccessExpressionSyntax {
-            Name.Identifier.Text: nameof(DI.Setup),
-            Expression: IdentifierNameSyntax { Identifier.Text: nameof(DI) }
-        };
+            or MemberAccessExpressionSyntax { Name.Identifier.Text: nameof(DI.Setup), Expression: IdentifierNameSyntax { Identifier.Text: nameof(DI) } };
 }

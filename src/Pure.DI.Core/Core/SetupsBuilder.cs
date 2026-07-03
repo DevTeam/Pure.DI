@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 #pragma warning disable RS1024 // Pure.DI intentionally uses ITypeSymbolComparer to control nullable-reference contract equality.
 
 namespace Pure.DI.Core;
@@ -792,7 +793,7 @@ sealed class SetupsBuilder(
             foreach (var typeDeclaration in root
                          .DescendantNodes()
                          .OfType<TypeDeclarationSyntax>()
-                         .Where(typeDeclaration => (typeDeclaration is ClassDeclarationSyntax or StructDeclarationSyntax or RecordDeclarationSyntax)
+                         .Where(typeDeclaration => typeDeclaration is ClassDeclarationSyntax or StructDeclarationSyntax or RecordDeclarationSyntax
                                                    && typeDeclaration.AttributeLists.Count > 0))
             {
                 if (semanticModel.GetDeclaredSymbol(typeDeclaration) is not ITypeSymbol type || !processedTypes.Add(type))
@@ -800,7 +801,7 @@ sealed class SetupsBuilder(
                     continue;
                 }
 
-                foreach (var binding in GetTypeAttributeBindings(setup, semanticModel, type))
+                foreach (var binding in GetTypeAttributeBindings(setup, type))
                 {
                     var builder = bindingBuilderFactory();
                     foreach (var defaultLifetime in setup.DefaultLifetimes)
@@ -851,7 +852,6 @@ sealed class SetupsBuilder(
 
     private IEnumerable<TypeAttributeBinding> GetTypeAttributeBindings(
         MdSetup setup,
-        SemanticModel semanticModel,
         ITypeSymbol type)
     {
         var customBindings = new List<TypeAttributeBinding>();
@@ -934,6 +934,7 @@ sealed class SetupsBuilder(
         ITypeSymbol type,
         IReadOnlyCollection<TypeAttributeBinding> customBindings)
     {
+        // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var customBinding in MergeTypeAttributeBindings(type, customBindings))
         {
             yield return customBinding with
@@ -1063,7 +1064,7 @@ sealed class SetupsBuilder(
             ? typeSymbolComparer.RuntimeEquals(tagType, otherTagType)
             : Equals(tag, otherTag);
 
-    private ITypeSymbol? GetTypeAttributeValue(AttributeData attributeData, int argumentPosition)
+    private static ITypeSymbol? GetTypeAttributeValue(AttributeData attributeData, int argumentPosition)
     {
         if (attributeData.AttributeClass is { IsGenericType: true, TypeArguments.Length: > 0 } attributeClass
             && argumentPosition < attributeClass.TypeArguments.Length)
@@ -1118,9 +1119,9 @@ sealed class SetupsBuilder(
         }
 
         var argument = attributeData.ConstructorArguments[argumentPosition];
-        return IsLifetime(argument) || argument.Kind == TypedConstantKind.Array
-            && !argument.Values.IsDefaultOrEmpty
-            && IsLifetime(argument.Values[0]);
+        return IsLifetime(argument)
+               || argument is { Kind: TypedConstantKind.Array, Values.IsDefaultOrEmpty: false }
+               && IsLifetime(argument.Values[0]);
     }
 
     private static bool IsLifetime(TypedConstant argument) =>
@@ -1134,6 +1135,7 @@ sealed class SetupsBuilder(
         }
 
         var argument = attributeData.ConstructorArguments[argumentPosition];
+        // ReSharper disable once InvertIf
         if (argument.Kind == TypedConstantKind.Array)
         {
             if (argument.Values.IsDefaultOrEmpty)

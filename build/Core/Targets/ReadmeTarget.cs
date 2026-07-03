@@ -256,7 +256,7 @@ class ReadmeTarget(
         }
     }
 
-    private static async Task AddSeeAlso(Example example, IReadOnlyDictionary<string, string> exampleFilesByDescription, TextWriter writer)
+    private static async Task AddSeeAlso(Example example, Dictionary<string, string> exampleFilesByDescription, TextWriter writer)
     {
         var references = example[CreateExamplesTarget.SeeAlsoKey]
             .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);

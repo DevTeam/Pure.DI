@@ -1546,19 +1546,20 @@ sealed class ApiInvocationProcessor(
             ? previousInvocation
             : null;
 
-    private List<string> GetComments(IEnumerable<SyntaxTrivia> trivias)
+    private List<string> GetComments(IEnumerable<SyntaxTrivia> triviaItems)
     {
-        List<SyntaxTrivia>? commentTrivias = null;
-        foreach (var trivia in trivias)
+        List<SyntaxTrivia>? commentTriviaItems = null;
+        foreach (var trivia in triviaItems)
         {
+            // ReSharper disable once InvertIf
             if (IsSupportedCommentTrivia(trivia))
             {
-                commentTrivias ??= [];
-                commentTrivias.Add(trivia);
+                commentTriviaItems ??= [];
+                commentTriviaItems.Add(trivia);
             }
         }
 
-        return commentTrivias is null ? [] : comments.GetComments(commentTrivias).ToList();
+        return commentTriviaItems is null ? [] : comments.GetComments(commentTriviaItems).ToList();
     }
 
     private static bool IsSupportedCommentTrivia(SyntaxTrivia trivia) =>

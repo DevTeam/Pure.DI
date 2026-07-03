@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>A Binding está definida incorretamente.</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>O tipo de implementação {0} tem vários atributos de tempo de vida do binding no mesmo grupo de atributos.</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>A composição é muito grande. Interrompido na dependência nº {0}.</value>
     </data>

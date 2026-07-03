@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding được xác định không chính xác.</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>Kiểu triển khai {0} có nhiều thuộc tính vòng đời binding trong cùng một nhóm thuộc tính.</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition quá lớn. Đã dừng tại phụ thuộc #{0}.</value>
     </data>

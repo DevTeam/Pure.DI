@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>تم تعريف الارتباط (binding) بشكل غير صحيح.</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>يحتوي نوع التنفيذ {0} على عدة سمات لمدة حياة الربط في مجموعة السمات نفسها.</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>التكوين كبير جداً. توقف عند التبعية رقم {0}.</value>
     </data>

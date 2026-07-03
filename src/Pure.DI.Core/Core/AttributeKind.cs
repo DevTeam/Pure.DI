@@ -4,6 +4,5 @@ enum AttributeKind
 {
     Ordinal,
     Type,
-    Tag,
-    Lifetime
+    Tag
 }

@@ -124,6 +124,9 @@
   <data name="Error_InvalidBinding" xml:space="preserve">
         <value>Binding ভুলভাবে সংজ্ঞায়িত করা হয়েছে।</value>
     </data>
+  <data name="Error_Template_MultipleBindingLifetimes" xml:space="preserve">
+        <value>বাস্তবায়ন টাইপ {0}-এ একই attribute group-এ একাধিক binding lifetime attribute রয়েছে।</value>
+    </data>
   <data name="Error_Template_TooLargeComposition" xml:space="preserve">
         <value>Composition অনেক বড়। ডিপেন্ডেন্সি নং {0}-এ থামানো হয়েছে।</value>
     </data>

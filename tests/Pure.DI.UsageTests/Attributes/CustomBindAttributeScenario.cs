@@ -14,6 +14,7 @@ $r=Shouldly
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable UnusedTypeParameter
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Attributes.CustomBindAttributeScenario;
 
