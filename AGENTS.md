@@ -109,156 +109,6 @@ Common pitfalls:
 - Forgetting to bind alternate implementations for tagged use cases.
 See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 
-## Composition roots
-
-This example shows several ways to define composition roots as explicit entry points into the graph.
->[!TIP]
->There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
-
-In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
-
-```c#
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<IInvoiceGenerator>().To<PdfInvoiceGenerator>()
-    .Bind<IInvoiceGenerator>("Online").To<HtmlInvoiceGenerator>()
-    .Bind<ILogger>().To<FileLogger>()
-
-    // Specifies to create a regular composition root
-    // of type "IInvoiceGenerator" with the name "InvoiceGenerator".
-    // This will be the main entry point for invoice generation.
-    .Root<IInvoiceGenerator>("InvoiceGenerator")
-
-    // Specifies to create an anonymous composition root
-    // that is only accessible from "Resolve()" methods.
-    // This is useful for auxiliary types or testing.
-    .Root<ILogger>()
-
-    // Specifies to create a regular composition root
-    // of type "IInvoiceGenerator" with the name "OnlineInvoiceGenerator"
-    // using the "Online" tag to differentiate implementations.
-    .Root<IInvoiceGenerator>("OnlineInvoiceGenerator", "Online");
-
-var composition = new Composition();
-
-// Resolves the default invoice generator (PDF) with all its dependencies
-// invoiceGenerator = new PdfInvoiceGenerator(new FileLogger());
-var invoiceGenerator = composition.InvoiceGenerator;
-
-// Resolves the online invoice generator (HTML)
-// onlineInvoiceGenerator = new HtmlInvoiceGenerator();
-var onlineInvoiceGenerator = composition.OnlineInvoiceGenerator;
-
-// All and only the roots of the composition
-// can be obtained by Resolve method.
-// Here we resolve the private root 'ILogger'.
-var logger = composition.Resolve<ILogger>();
-
-// We can also resolve tagged roots dynamically if needed
-var tagged = composition.Resolve<IInvoiceGenerator>("Online");
-
-// Common logger interface used across the system
-interface ILogger;
-
-// Concrete implementation of a logger that writes to a file
-class FileLogger : ILogger;
-
-// Abstract definition of an invoice generator
-interface IInvoiceGenerator;
-
-// Implementation for generating PDF invoices, dependent on ILogger
-class PdfInvoiceGenerator(ILogger logger) : IInvoiceGenerator;
-
-// Implementation for generating HTML invoices for online viewing
-class HtmlInvoiceGenerator : IInvoiceGenerator;
-```
-
-To run the above code, the following NuGet package must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-
-The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the `Root` property has the form:
-```c#
-public IService Root
-{
-  get
-  {
-    return new Service(new Dependency());
-  }
-}
-```
-To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
-```c#
-// Resolve = Off
-DI.Setup("Composition")
-  .Bind<IDependency>().To<Dependency>()
-  ...
-```
-This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
-Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
-Common pitfalls:
-- Exposing internal services as roots instead of keeping them private.
-- Depending on `Resolve` everywhere instead of explicit root members.
-See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
-
-## Resolve methods
-
-This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
-Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
-
-```c#
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<IDevice>().To<Device>()
-    .Bind<ISensor>().To<TemperatureSensor>()
-    .Bind<ISensor>("Humidity").To<HumiditySensor>()
-
-    // Specifies to create a private root
-    // that is only accessible from _Resolve_ methods
-    .Root<ISensor>()
-
-    // Specifies to create a public root named _HumiditySensor_
-    // using the "Humidity" tag
-    .Root<ISensor>("HumiditySensor", "Humidity");
-
-var composition = new Composition();
-
-// The next 3 lines of code do the same thing:
-var sensor1 = composition.Resolve<ISensor>();
-var sensor2 = composition.Resolve(typeof(ISensor));
-var sensor3 = composition.Resolve(typeof(ISensor), null);
-
-// Resolve by "Humidity" tag
-// The next 3 lines of code do the same thing too:
-var humiditySensor1 = composition.Resolve<ISensor>("Humidity");
-var humiditySensor2 = composition.Resolve(typeof(ISensor), "Humidity");
-var humiditySensor3 = composition.HumiditySensor; // Resolve via the public root
-
-interface IDevice;
-
-class Device : IDevice;
-
-interface ISensor;
-
-class TemperatureSensor(IDevice device) : ISensor;
-
-class HumiditySensor : ISensor;
-```
-
-To run the above code, the following NuGet package must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-
-_Resolve_ methods are similar to calling composition roots, which are properties (or methods). Roots are efficient and do not throw, so they are preferred. In contrast, _Resolve_ methods have drawbacks:
-- They provide access to an unlimited set of dependencies (_Service Locator_).
-- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
-- They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
-Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
-Common pitfalls:
-- Using `Resolve` as the default access pattern across the codebase.
-- Assuming runtime resolve calls are always safe when no matching root exists.
-See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
-
 ## Simplified binding
 
 You can call `Bind()` without type parameters to infer contracts from the implementation type.
@@ -364,6 +214,431 @@ Common pitfalls:
 - Expecting inherited interfaces to be included automatically.
 - Forgetting that special framework types are intentionally excluded.
 See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md), [Special types](simplified-lifetime-specific-bindings.md).
+
+## Composition roots
+
+This example shows several ways to define composition roots as explicit entry points into the graph.
+>[!TIP]
+>There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
+
+In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
+
+```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IInvoiceGenerator>().To<PdfInvoiceGenerator>()
+    .Bind<IInvoiceGenerator>("Online").To<HtmlInvoiceGenerator>()
+    .Bind<ILogger>().To<FileLogger>()
+
+    // Specifies to create a regular composition root
+    // of type "IInvoiceGenerator" with the name "InvoiceGenerator".
+    // This will be the main entry point for invoice generation.
+    .Root<IInvoiceGenerator>("InvoiceGenerator")
+
+    // Specifies to create an anonymous composition root
+    // that is only accessible from "Resolve()" methods.
+    // This is useful for auxiliary types or testing.
+    .Root<ILogger>()
+
+    // Specifies to create a regular composition root
+    // of type "IInvoiceGenerator" with the name "OnlineInvoiceGenerator"
+    // using the "Online" tag to differentiate implementations.
+    .Root<IInvoiceGenerator>("OnlineInvoiceGenerator", "Online");
+
+var composition = new Composition();
+
+// Resolves the default invoice generator (PDF) with all its dependencies
+// invoiceGenerator = new PdfInvoiceGenerator(new FileLogger());
+var invoiceGenerator = composition.InvoiceGenerator;
+
+// Resolves the online invoice generator (HTML)
+// onlineInvoiceGenerator = new HtmlInvoiceGenerator();
+var onlineInvoiceGenerator = composition.OnlineInvoiceGenerator;
+
+// All and only the roots of the composition
+// can be obtained by Resolve method.
+// Here we resolve the private root 'ILogger'.
+var logger = composition.Resolve<ILogger>();
+
+// We can also resolve tagged roots dynamically if needed
+var tagged = composition.Resolve<IInvoiceGenerator>("Online");
+
+// Common logger interface used across the system
+interface ILogger;
+
+// Concrete implementation of a logger that writes to a file
+class FileLogger : ILogger;
+
+// Abstract definition of an invoice generator
+interface IInvoiceGenerator;
+
+// Implementation for generating PDF invoices, dependent on ILogger
+class PdfInvoiceGenerator(ILogger logger) : IInvoiceGenerator;
+
+// Implementation for generating HTML invoices for online viewing
+class HtmlInvoiceGenerator : IInvoiceGenerator;
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the `Root` property has the form:
+```c#
+public IService Root
+{
+  get
+  {
+    return new Service(new Dependency());
+  }
+}
+```
+To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
+```c#
+// Resolve = Off
+DI.Setup("Composition")
+  .Bind<IDependency>().To<Dependency>()
+  ...
+```
+This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
+Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
+Common pitfalls:
+- Exposing internal services as roots instead of keeping them private.
+- Depending on `Resolve` everywhere instead of explicit root members.
+See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
+
+## Transient
+
+The `Transient` lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    .Bind().As(Transient).To<Buffer>()
+    .Bind().To<BatchProcessor>()
+    .Root<IBatchProcessor>("Processor");
+
+var composition = new Composition();
+var processor = composition.Processor;
+
+// Verify that input and output buffers are different instances.
+// This is critical for the batch processor to avoid data corruption
+// during reading. The Transient lifetime ensures a new instance
+// is created for each dependency injection.
+processor.Input.ShouldNotBe(processor.Output);
+
+// Represents a memory buffer that should be unique for each operation
+interface IBuffer;
+
+class Buffer : IBuffer;
+
+interface IBatchProcessor
+{
+    public IBuffer Input { get; }
+
+    public IBuffer Output { get; }
+}
+
+class BatchProcessor(
+    IBuffer input,
+    IBuffer output)
+    : IBatchProcessor
+{
+    public IBuffer Input { get; } = input;
+
+    public IBuffer Output { get; } = output;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The `Transient` lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the `Transient` lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the `Transient` lifetime:
+
+- There will be unnecessary memory overhead that could be avoided.
+
+- Every object created must be disposed of, and this will waste CPU resources, at least when the GC does its memory-clearing job.
+
+- Poorly designed constructors can run slowly, perform functions that are not their own, and greatly hinder the efficient creation of compositions of multiple objects.
+
+>[!IMPORTANT]
+>The following very important rule, in my opinion, will help in the last point. Now, when a constructor is used to implement dependencies, it should not be loaded with other tasks. Accordingly, constructors should be free of all logic except for checking arguments and saving them for later use. Following this rule, even the largest compositions of objects will be built quickly.
+
+## Singleton
+
+The `Singleton` lifetime ensures that there will be a single instance of the dependency for each composition.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Diagnostics.CodeAnalysis;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    // Bind the cache as Singleton to share it across all services
+    .Bind().As(Singleton).To<Cache>()
+    // Bind the order service as Transient (default) for per-request instances
+    .Bind().To<OrderService>()
+    .Root<IOrderService>("OrderService");
+
+var composition = new Composition();
+var orderService1 = composition.OrderService; // First order service instance
+var orderService2 = composition.OrderService; // Second order service instance
+
+// Verify that both services share the same cache instance (Singleton behavior)
+orderService1.Cache.ShouldBe(orderService2.Cache);
+// Simulate real-world usage: add data to cache via one service and check via another
+orderService1.AddToCache("Order123", "Processed");
+orderService2.GetFromCache("Order123").ShouldBe("Processed");
+
+// Interface for a shared cache (e.g., for storing order statuses)
+interface ICache
+{
+    void Add(string key, string value);
+
+    bool TryGet(string key, [MaybeNullWhen(false)] out string value);
+}
+
+// Implementation of a simple in-memory cache (must be thread-safe in real apps)
+class Cache : ICache
+{
+    private readonly Dictionary<string, string> _data = new();
+
+    public void Add(string key, string value) =>
+        _data[key] = value;
+
+    public bool TryGet(string key, [MaybeNullWhen(false)] out string value) =>
+        _data.TryGetValue(key, out value);
+}
+
+// Interface for order processing service
+interface IOrderService
+{
+    ICache Cache { get; }
+
+    void AddToCache(string orderId, string status);
+
+    string GetFromCache(string orderId);
+}
+
+// Order service that uses the shared cache
+class OrderService(ICache cache) : IOrderService
+{
+    // The cache is injected and shared (Singleton)
+    public ICache Cache { get; } = cache;
+
+    // Real-world method: add order status to cache
+    public void AddToCache(string orderId, string status) =>
+        Cache.Add(orderId, status);
+
+    // Real-world method: retrieve order status from cache
+    public string GetFromCache(string orderId) =>
+        Cache.TryGet(orderId, out var status) ? status : "unknown";
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+Some articles advise using objects with a `Singleton` lifetime as often as possible, but the following details must be considered:
+
+- For .NET the default behavior is to create a new instance of the type each time it is needed, other behavior requires, additional logic that is not free and requires additional resources.
+
+- The use of `Singleton` adds a requirement for thread-safety controls on their use, since singletons are more likely to share their state between different threads without even realizing it.
+
+- The thread-safety control should be automatically extended to all dependencies that _Singleton_ uses, since their state is also now shared.
+
+- Logic for thread-safety control can be resource-costly, error-prone, interlocking, and difficult to test.
+
+- _Singleton_ can retain dependency references longer than their expected lifetime, this is especially significant for objects that hold "non-renewable" resources, such as the operating system Handler.
+
+- Sometimes additional logic is required to dispose of _Singleton_.
+
+## Scoped
+
+The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition();
+var app = composition.AppRoot;
+
+// Real-world analogy:
+// each HTTP request (or message consumer handling) creates its own scope.
+// Scoped services live exactly as long as the request is being processed.
+
+// Request #1
+var request1 = app.CreateRequestScope();
+var checkout1 = request1.RequestRoot;
+
+var ctx11 = checkout1.Context;
+var ctx12 = checkout1.Context;
+
+// Same request => same scoped instance
+ctx11.ShouldBe(ctx12);
+
+// Request #2
+var request2 = app.CreateRequestScope();
+var checkout2 = request2.RequestRoot;
+
+var ctx2 = checkout2.Context;
+
+// Different request => different scoped instance
+ctx11.ShouldNotBe(ctx2);
+
+// End of Request #1 => scoped instance is disposed
+request1.Dispose();
+ctx11.IsDisposed.ShouldBeTrue();
+
+// End of Request #2 => scoped instance is disposed
+request2.Dispose();
+ctx2.IsDisposed.ShouldBeTrue();
+
+interface IRequestContext
+{
+    Guid CorrelationId { get; }
+
+    bool IsDisposed { get; }
+}
+
+// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
+sealed class RequestContext : IRequestContext, IDisposable
+{
+    public Guid CorrelationId { get; } = Guid.NewGuid();
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface ICheckoutService
+{
+    IRequestContext Context { get; }
+}
+
+// "Controller/service" that participates in request processing.
+// It depends on a scoped context (per-request resource).
+sealed class CheckoutService(IRequestContext context) : ICheckoutService
+{
+    public IRequestContext Context => context;
+}
+
+// Implements a request scope (per-request composition)
+sealed class RequestScope(Composition parent) : Composition(parent);
+
+partial class App(Func<RequestScope> requestScopeFactory)
+{
+    // In a web app this would roughly map to: "create scope for request"
+    public RequestScope CreateRequestScope() => requestScopeFactory();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            // Per-request lifetime
+            .Bind().As(Scoped).To<RequestContext>()
+
+            // Regular service that consumes scoped context
+            .Bind().To<CheckoutService>()
+
+            // "Request root" (what your controller/handler resolves)
+            .Root<ICheckoutService>("RequestRoot")
+
+            // "Application root" (what creates request scopes)
+            .Root<App>("AppRoot");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
+
+## Tags
+
+Tags let you control dependency selection when multiple implementations exist:
+This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    // The `default` tag is used when the consumer does not specify a tag
+    .Bind<IApiClient>("Public", default).To<RestApiClient>()
+    .Bind<IApiClient>("Internal").As(Lifetime.Singleton).To<InternalApiClient>()
+    .Bind<IApiFacade>().To<ApiFacade>()
+
+    // "InternalRoot" is a root name, "Internal" is a tag
+    .Root<IApiClient>("InternalRoot", "Internal")
+
+    // Specifies to create the composition root named "Root"
+    .Root<IApiFacade>("Api");
+
+var composition = new Composition();
+var api = composition.Api;
+api.PublicClient.ShouldBeOfType<RestApiClient>();
+api.InternalClient.ShouldBeOfType<InternalApiClient>();
+api.InternalClient.ShouldBe(composition.InternalRoot);
+api.DefaultClient.ShouldBeOfType<RestApiClient>();
+
+interface IApiClient;
+
+class RestApiClient : IApiClient;
+
+class InternalApiClient : IApiClient;
+
+interface IApiFacade
+{
+    IApiClient PublicClient { get; }
+
+    IApiClient InternalClient { get; }
+
+    IApiClient DefaultClient { get; }
+}
+
+class ApiFacade(
+    [Tag("Public")] IApiClient publicClient,
+    [Tag("Internal")] IApiClient internalClient,
+    IApiClient defaultClient)
+    : IApiFacade
+{
+    public IApiClient PublicClient { get; } = publicClient;
+
+    public IApiClient InternalClient { get; } = internalClient;
+
+    public IApiClient DefaultClient { get; } = defaultClient;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Define multiple bindings for the same interface
+- Use tags to differentiate between implementations
+- Control lifetime management
+- Inject tagged dependencies into constructors
+
+The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
+Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
+Common pitfalls:
+- Using many ad-hoc string tags without central conventions.
+- Forgetting to define a `default` tag path for untagged consumers.
+See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
 
 ## Factory
 
@@ -564,73 +839,6 @@ Common pitfalls:
 - Hiding expensive work behind repeated on-demand calls.
 See also: [Injections on demand with arguments](injections-on-demand-with-arguments.md), [Func<T>](func.md).
 
-## Injections on demand with arguments
-
-This example uses a parameterized factory so dependencies can be created with runtime arguments. The service creates sensors with specific IDs at instantiation time.
-It is a type-safe way to combine DI-managed creation with runtime data.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System.Collections.Generic;
-
-DI.Setup(nameof(Composition))
-    .Bind().To<Sensor>()
-    .Bind().To<SmartHome>()
-
-    // Composition root
-    .Root<ISmartHome>("SmartHome");
-
-var composition = new Composition();
-var smartHome = composition.SmartHome;
-var sensors = smartHome.Sensors;
-
-sensors.Count.ShouldBe(2);
-sensors[0].Id.ShouldBe(101);
-sensors[1].Id.ShouldBe(102);
-
-interface ISensor
-{
-    int Id { get; }
-}
-
-class Sensor(int id) : ISensor
-{
-    public int Id { get; } = id;
-}
-
-interface ISmartHome
-{
-    IReadOnlyList<ISensor> Sensors { get; }
-}
-
-class SmartHome(Func<int, ISensor> sensorFactory) : ISmartHome
-{
-    public IReadOnlyList<ISensor> Sensors { get; } =
-    [
-        // Use the injected factory to create a sensor with ID 101
-        sensorFactory(101),
-
-        // Create another sensor with ID 102
-        sensorFactory(102)
-    ];
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-Delayed dependency instantiation:
-- Injection of dependencies requiring runtime parameters
-- Creation of distinct instances with different configurations
-- Type-safe resolution of dependencies with constructor arguments
-Limitations: runtime arguments improve flexibility but can increase coupling between call sites and construction signatures.
-Common pitfalls:
-- Passing infrastructure concerns as runtime arguments instead of normal dependencies.
-- Duplicating argument validation logic across consumers.
-See also: [Injection on demand](injection-on-demand.md), [Root arguments](root-arguments.md).
-
 ## Composition arguments
 
 Use composition arguments when you need to pass state into the composition. Define them with `Arg<T>(string argName)` (optionally with tags) and use them like any other dependency. Only arguments that are used in the object graph become constructor parameters.
@@ -803,60 +1011,114 @@ Common pitfalls:
 - Forgetting to disable or avoid `Resolve` usage in these setups.
 See also: [Composition arguments](composition-arguments.md), [Resolve hint](resolve-hint.md).
 
-## Tags
+## Resolve methods
 
-Tags let you control dependency selection when multiple implementations exist:
-This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
+This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
+Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
+
+```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDevice>().To<Device>()
+    .Bind<ISensor>().To<TemperatureSensor>()
+    .Bind<ISensor>("Humidity").To<HumiditySensor>()
+
+    // Specifies to create a private root
+    // that is only accessible from _Resolve_ methods
+    .Root<ISensor>()
+
+    // Specifies to create a public root named _HumiditySensor_
+    // using the "Humidity" tag
+    .Root<ISensor>("HumiditySensor", "Humidity");
+
+var composition = new Composition();
+
+// The next 3 lines of code do the same thing:
+var sensor1 = composition.Resolve<ISensor>();
+var sensor2 = composition.Resolve(typeof(ISensor));
+var sensor3 = composition.Resolve(typeof(ISensor), null);
+
+// Resolve by "Humidity" tag
+// The next 3 lines of code do the same thing too:
+var humiditySensor1 = composition.Resolve<ISensor>("Humidity");
+var humiditySensor2 = composition.Resolve(typeof(ISensor), "Humidity");
+var humiditySensor3 = composition.HumiditySensor; // Resolve via the public root
+
+interface IDevice;
+
+class Device : IDevice;
+
+interface ISensor;
+
+class TemperatureSensor(IDevice device) : ISensor;
+
+class HumiditySensor : ISensor;
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+_Resolve_ methods are similar to calling composition roots, which are properties (or methods). Roots are efficient and do not throw, so they are preferred. In contrast, _Resolve_ methods have drawbacks:
+- They provide access to an unlimited set of dependencies (_Service Locator_).
+- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
+- They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
+Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
+Common pitfalls:
+- Using `Resolve` as the default access pattern across the codebase.
+- Assuming runtime resolve calls are always safe when no matching root exists.
+See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
+
+## Injections on demand with arguments
+
+This example uses a parameterized factory so dependencies can be created with runtime arguments. The service creates sensors with specific IDs at instantiation time.
+It is a type-safe way to combine DI-managed creation with runtime data.
 
 ```c#
 using Shouldly;
 using Pure.DI;
+using System.Collections.Generic;
 
 DI.Setup(nameof(Composition))
-    // The `default` tag is used when the consumer does not specify a tag
-    .Bind<IApiClient>("Public", default).To<RestApiClient>()
-    .Bind<IApiClient>("Internal").As(Lifetime.Singleton).To<InternalApiClient>()
-    .Bind<IApiFacade>().To<ApiFacade>()
+    .Bind().To<Sensor>()
+    .Bind().To<SmartHome>()
 
-    // "InternalRoot" is a root name, "Internal" is a tag
-    .Root<IApiClient>("InternalRoot", "Internal")
-
-    // Specifies to create the composition root named "Root"
-    .Root<IApiFacade>("Api");
+    // Composition root
+    .Root<ISmartHome>("SmartHome");
 
 var composition = new Composition();
-var api = composition.Api;
-api.PublicClient.ShouldBeOfType<RestApiClient>();
-api.InternalClient.ShouldBeOfType<InternalApiClient>();
-api.InternalClient.ShouldBe(composition.InternalRoot);
-api.DefaultClient.ShouldBeOfType<RestApiClient>();
+var smartHome = composition.SmartHome;
+var sensors = smartHome.Sensors;
 
-interface IApiClient;
+sensors.Count.ShouldBe(2);
+sensors[0].Id.ShouldBe(101);
+sensors[1].Id.ShouldBe(102);
 
-class RestApiClient : IApiClient;
-
-class InternalApiClient : IApiClient;
-
-interface IApiFacade
+interface ISensor
 {
-    IApiClient PublicClient { get; }
-
-    IApiClient InternalClient { get; }
-
-    IApiClient DefaultClient { get; }
+    int Id { get; }
 }
 
-class ApiFacade(
-    [Tag("Public")] IApiClient publicClient,
-    [Tag("Internal")] IApiClient internalClient,
-    IApiClient defaultClient)
-    : IApiFacade
+class Sensor(int id) : ISensor
 {
-    public IApiClient PublicClient { get; } = publicClient;
+    public int Id { get; } = id;
+}
 
-    public IApiClient InternalClient { get; } = internalClient;
+interface ISmartHome
+{
+    IReadOnlyList<ISensor> Sensors { get; }
+}
 
-    public IApiClient DefaultClient { get; } = defaultClient;
+class SmartHome(Func<int, ISensor> sensorFactory) : ISmartHome
+{
+    public IReadOnlyList<ISensor> Sensors { get; } =
+    [
+        // Use the injected factory to create a sensor with ID 101
+        sensorFactory(101),
+
+        // Create another sensor with ID 102
+        sensorFactory(102)
+    ];
 }
 ```
 
@@ -864,18 +1126,15 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-The example shows how to:
-- Define multiple bindings for the same interface
-- Use tags to differentiate between implementations
-- Control lifetime management
-- Inject tagged dependencies into constructors
-
-The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
-Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
+Delayed dependency instantiation:
+- Injection of dependencies requiring runtime parameters
+- Creation of distinct instances with different configurations
+- Type-safe resolution of dependencies with constructor arguments
+Limitations: runtime arguments improve flexibility but can increase coupling between call sites and construction signatures.
 Common pitfalls:
-- Using many ad-hoc string tags without central conventions.
-- Forgetting to define a `default` tag path for untagged consumers.
-See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
+- Passing infrastructure concerns as runtime arguments instead of normal dependencies.
+- Duplicating argument validation logic across consumers.
+See also: [Injection on demand](injection-on-demand.md), [Root arguments](root-arguments.md).
 
 ## Smart tags
 
@@ -2267,158 +2526,6 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
 
-## Transient
-
-The `Transient` lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-DI.Setup(nameof(Composition))
-    .Bind().As(Transient).To<Buffer>()
-    .Bind().To<BatchProcessor>()
-    .Root<IBatchProcessor>("Processor");
-
-var composition = new Composition();
-var processor = composition.Processor;
-
-// Verify that input and output buffers are different instances.
-// This is critical for the batch processor to avoid data corruption
-// during reading. The Transient lifetime ensures a new instance
-// is created for each dependency injection.
-processor.Input.ShouldNotBe(processor.Output);
-
-// Represents a memory buffer that should be unique for each operation
-interface IBuffer;
-
-class Buffer : IBuffer;
-
-interface IBatchProcessor
-{
-    public IBuffer Input { get; }
-
-    public IBuffer Output { get; }
-}
-
-class BatchProcessor(
-    IBuffer input,
-    IBuffer output)
-    : IBatchProcessor
-{
-    public IBuffer Input { get; } = input;
-
-    public IBuffer Output { get; } = output;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The `Transient` lifetime is the safest and is used by default. Yes, its widespread use can cause a lot of memory traffic, but if there are doubts about thread safety, the `Transient` lifetime is preferable because each consumer has its own instance of the dependency. The following nuances should be considered when choosing the `Transient` lifetime:
-
-- There will be unnecessary memory overhead that could be avoided.
-
-- Every object created must be disposed of, and this will waste CPU resources, at least when the GC does its memory-clearing job.
-
-- Poorly designed constructors can run slowly, perform functions that are not their own, and greatly hinder the efficient creation of compositions of multiple objects.
-
->[!IMPORTANT]
->The following very important rule, in my opinion, will help in the last point. Now, when a constructor is used to implement dependencies, it should not be loaded with other tasks. Accordingly, constructors should be free of all logic except for checking arguments and saving them for later use. Following this rule, even the largest compositions of objects will be built quickly.
-
-## Singleton
-
-The `Singleton` lifetime ensures that there will be a single instance of the dependency for each composition.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System.Diagnostics.CodeAnalysis;
-using static Pure.DI.Lifetime;
-
-DI.Setup(nameof(Composition))
-    // Bind the cache as Singleton to share it across all services
-    .Bind().As(Singleton).To<Cache>()
-    // Bind the order service as Transient (default) for per-request instances
-    .Bind().To<OrderService>()
-    .Root<IOrderService>("OrderService");
-
-var composition = new Composition();
-var orderService1 = composition.OrderService; // First order service instance
-var orderService2 = composition.OrderService; // Second order service instance
-
-// Verify that both services share the same cache instance (Singleton behavior)
-orderService1.Cache.ShouldBe(orderService2.Cache);
-// Simulate real-world usage: add data to cache via one service and check via another
-orderService1.AddToCache("Order123", "Processed");
-orderService2.GetFromCache("Order123").ShouldBe("Processed");
-
-// Interface for a shared cache (e.g., for storing order statuses)
-interface ICache
-{
-    void Add(string key, string value);
-
-    bool TryGet(string key, [MaybeNullWhen(false)] out string value);
-}
-
-// Implementation of a simple in-memory cache (must be thread-safe in real apps)
-class Cache : ICache
-{
-    private readonly Dictionary<string, string> _data = new();
-
-    public void Add(string key, string value) =>
-        _data[key] = value;
-
-    public bool TryGet(string key, [MaybeNullWhen(false)] out string value) =>
-        _data.TryGetValue(key, out value);
-}
-
-// Interface for order processing service
-interface IOrderService
-{
-    ICache Cache { get; }
-
-    void AddToCache(string orderId, string status);
-
-    string GetFromCache(string orderId);
-}
-
-// Order service that uses the shared cache
-class OrderService(ICache cache) : IOrderService
-{
-    // The cache is injected and shared (Singleton)
-    public ICache Cache { get; } = cache;
-
-    // Real-world method: add order status to cache
-    public void AddToCache(string orderId, string status) =>
-        Cache.Add(orderId, status);
-
-    // Real-world method: retrieve order status from cache
-    public string GetFromCache(string orderId) =>
-        Cache.TryGet(orderId, out var status) ? status : "unknown";
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-Some articles advise using objects with a `Singleton` lifetime as often as possible, but the following details must be considered:
-
-- For .NET the default behavior is to create a new instance of the type each time it is needed, other behavior requires, additional logic that is not free and requires additional resources.
-
-- The use of `Singleton` adds a requirement for thread-safety controls on their use, since singletons are more likely to share their state between different threads without even realizing it.
-
-- The thread-safety control should be automatically extended to all dependencies that _Singleton_ uses, since their state is also now shared.
-
-- Logic for thread-safety control can be resource-costly, error-prone, interlocking, and difficult to test.
-
-- _Singleton_ can retain dependency references longer than their expected lifetime, this is especially significant for objects that hold "non-renewable" resources, such as the operating system Handler.
-
-- Sometimes additional logic is required to dispose of _Singleton_.
-
 ## PerResolve
 
 The `PerResolve` lifetime ensures that there will be one instance of the dependency for each composition root instance.
@@ -2572,113 +2679,6 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >`PerBlock` lifetime provides a balance between `PerResolve` and `Transient`, reducing instance count within a resolution block.
-
-## Scoped
-
-The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-var composition = new Composition();
-var app = composition.AppRoot;
-
-// Real-world analogy:
-// each HTTP request (or message consumer handling) creates its own scope.
-// Scoped services live exactly as long as the request is being processed.
-
-// Request #1
-var request1 = app.CreateRequestScope();
-var checkout1 = request1.RequestRoot;
-
-var ctx11 = checkout1.Context;
-var ctx12 = checkout1.Context;
-
-// Same request => same scoped instance
-ctx11.ShouldBe(ctx12);
-
-// Request #2
-var request2 = app.CreateRequestScope();
-var checkout2 = request2.RequestRoot;
-
-var ctx2 = checkout2.Context;
-
-// Different request => different scoped instance
-ctx11.ShouldNotBe(ctx2);
-
-// End of Request #1 => scoped instance is disposed
-request1.Dispose();
-ctx11.IsDisposed.ShouldBeTrue();
-
-// End of Request #2 => scoped instance is disposed
-request2.Dispose();
-ctx2.IsDisposed.ShouldBeTrue();
-
-interface IRequestContext
-{
-    Guid CorrelationId { get; }
-
-    bool IsDisposed { get; }
-}
-
-// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
-sealed class RequestContext : IRequestContext, IDisposable
-{
-    public Guid CorrelationId { get; } = Guid.NewGuid();
-
-    public bool IsDisposed { get; private set; }
-
-    public void Dispose() => IsDisposed = true;
-}
-
-interface ICheckoutService
-{
-    IRequestContext Context { get; }
-}
-
-// "Controller/service" that participates in request processing.
-// It depends on a scoped context (per-request resource).
-sealed class CheckoutService(IRequestContext context) : ICheckoutService
-{
-    public IRequestContext Context => context;
-}
-
-// Implements a request scope (per-request composition)
-sealed class RequestScope(Composition parent) : Composition(parent);
-
-partial class App(Func<RequestScope> requestScopeFactory)
-{
-    // In a web app this would roughly map to: "create scope for request"
-    public RequestScope CreateRequestScope() => requestScopeFactory();
-}
-
-partial class Composition
-{
-    static void Setup() =>
-
-        DI.Setup()
-            // Per-request lifetime
-            .Bind().As(Scoped).To<RequestContext>()
-
-            // Regular service that consumes scoped context
-            .Bind().To<CheckoutService>()
-
-            // "Request root" (what your controller/handler resolves)
-            .Root<ICheckoutService>("RequestRoot")
-
-            // "Application root" (what creates request scopes)
-            .Root<App>("AppRoot");
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
 
 ## Scope
 
@@ -10311,7 +10311,7 @@ partial class Composition
 
         DI.Setup()
             .Bind().To<DbConnection>()
-            .Bind("shared").As(Pure.DI.Lifetime.Singleton).To<DbConnection>()
+            .Bind("shared").As(Lifetime.Singleton).To<DbConnection>()
             .Bind().To<DataService>()
 
             // Composition root

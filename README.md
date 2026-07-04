@@ -282,6 +282,21 @@ dotnet run
 
 ## Examples
 
+### Quick Start
+- [Auto-bindings](readme/auto-bindings.md)
+- [Injections of abstractions](readme/injections-of-abstractions.md)
+- [Simplified binding](readme/simplified-binding.md)
+- [Composition roots](readme/composition-roots.md)
+- [Transient](readme/transient.md)
+- [Singleton](readme/singleton.md)
+- [Scoped](readme/scoped.md)
+- [Tags](readme/tags.md)
+- [Factory](readme/factory.md)
+- [Simplified factory](readme/simplified-factory.md)
+- [Injection on demand](readme/injection-on-demand.md)
+- [Composition arguments](readme/composition-arguments.md)
+- [Root arguments](readme/root-arguments.md)
+- [Resolve methods](readme/resolve-methods.md)
 ### Basics
 - [Auto-bindings](readme/auto-bindings.md)
 - [Injections of abstractions](readme/injections-of-abstractions.md)
@@ -772,7 +787,7 @@ If there is at least one binding with `Lifetime.Scoped`, Pure.DI generates two c
 
 2. Internal constructor with parent scope
 
-> Used for creating child scope instances. This constructor is internal and accepts a single parameter � the parent scope.
+> Used for creating child scope instances. This constructor is internal and accepts a single parameter: the parent scope.
 > ```c#
 > internal Composition(Composition parentScope) { /* ... */ }
 > ```
@@ -2306,6 +2321,18 @@ For more information about the template, please see [this page](https://github.c
 
 ## Troubleshooting
 
+### Common first errors
+
+| Symptom                              | Usually means                                                                 | What to do first                                                                                         |
+|--------------------------------------|-------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| `Composition` type is missing        | The source generator did not run or the project does not reference `Pure.DI`. | Add the `Pure.DI` package, build the project, and restart the IDE/build server if IntelliSense is stale. |
+| A dependency cannot be resolved      | An abstraction is requested, but no binding maps it to an implementation.     | Add `.Bind<IContract>().To<Implementation>()`, or request a concrete type only for small demos.          |
+| The root is a method, not a property | The root uses `RootArg<T>(...)` or generic type arguments.                    | Call the generated method and pass the arguments explicitly.                                             |
+| `Resolve` cannot create a root       | The root needs root arguments, but `Resolve` has nowhere to receive them.     | Use the generated root method directly and consider `.Hint(Hint.Resolve, "Off")`.                        |
+| Generated files are not visible      | Roslyn generated the code in memory.                                          | Enable `EmitCompilerGeneratedFiles` and set `CompilerGeneratedFilesOutputPath`.                          |
+| A lock appears in generated code     | Pure.DI protects cached instances for thread-safe access.                     | Keep it unless composition access is known to be single-threaded; then use `Hint.ThreadSafe`.            |
+| `Dispose` or `DisposeAsync` appeared | The composition owns singleton or scoped disposable instances.                | Dispose the composition with `using` or `await using`.                                                   |
+
 <details>
 <summary>Version update</summary>
 
@@ -2482,8 +2509,8 @@ AI needs to understand the situation it’s in (context). This means knowing det
 
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 40KB | 10K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 114KB | 29K |
+| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 50KB | 13K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 117KB | 30K |
 | [AGENTS.md](AGENTS.md) | 442KB | 113K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._

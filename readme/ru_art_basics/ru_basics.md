@@ -194,12 +194,14 @@ sealed class NotificationService(IEmailSender sender) : INotificationService
 
 На этом шаге генератор создаст partial‑класс `Composition` и свойство `Notifications`, которое вернёт собранный граф. Все очень просто.
 
-См. также реальные примеры в репозитории:
+См. также:
 
-- [Пример с котом Щредингера](https://github.com/DevTeam/Pure.DI?tab=readme-ov-file#schr%C3%B6dingers-cat-demonstrates-how-it-all-works-)
-- [Пример привязки абстракций к реализациям](https://github.com/DevTeam/Pure.DI/blob/master/readme/injections-of-abstractions.md)
-- [Пример автоматического связывания (auto‑bindings)](https://github.com/DevTeam/Pure.DI/blob/master/readme/auto-bindings.md)
-- [Как устроены корни композиции](https://github.com/DevTeam/Pure.DI/blob/master/readme/composition-roots.md)
+- [Автосвязывание](../auto-bindings.md) - самый короткий вариант для прототипов.
+- [Внедрение абстракций](../injections-of-abstractions.md) - рекомендуемый стиль для production-кода.
+- [Упрощённая привязка](../simplified-binding.md) - меньше конфигурации, когда контракты можно вывести автоматически.
+- [Корни композиции](../composition-roots.md) - явные точки входа в сгенерированный граф.
+- [Фабрика](../factory.md) и [упрощённая фабрика](../simplified-factory.md) - пользовательская логика создания объектов.
+- [Теги](../tags.md) - выбор между несколькими реализациями.
 
 ---
 

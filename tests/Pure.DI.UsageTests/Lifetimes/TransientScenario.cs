@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Lifetimes
 $p=0
+$p=QuickStart:4
 $d=Transient
 $sa=Singleton
 $sa=PerResolve

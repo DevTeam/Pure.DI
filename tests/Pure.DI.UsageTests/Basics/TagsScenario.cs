@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=11
+$p=QuickStart:7
 $d=Tags
 $sa=Smart tags
 $sa=Tag attribute

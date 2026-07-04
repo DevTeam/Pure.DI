@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=6
+$p=QuickStart:9
 $d=Simplified factory
 $sa=Factory
 $sa=Simplified lifetime-specific factory

@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=5
+$p=QuickStart:8
 $d=Factory
 $sa=Simplified factory
 $sa=Injection on demand

@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=2
+$p=QuickStart:3
 $d=Composition roots
 $sa=Root binding
 $sa=Roots

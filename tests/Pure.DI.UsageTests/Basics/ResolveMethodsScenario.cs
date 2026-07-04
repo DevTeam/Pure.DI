@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=3
+$p=QuickStart:13
 $d=Resolve methods
 $sa=Composition roots
 $sa=Resolve hint

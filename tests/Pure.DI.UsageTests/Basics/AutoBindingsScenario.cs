@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=0
+$p=QuickStart:0
 $d=Auto-bindings
 $sa=Injections of abstractions
 $sa=Simplified binding

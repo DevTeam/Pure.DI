@@ -109,156 +109,6 @@ Common pitfalls:
 - Forgetting to bind alternate implementations for tagged use cases.
 See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 
-## Composition roots
-
-This example shows several ways to define composition roots as explicit entry points into the graph.
->[!TIP]
->There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
-
-In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
-
-```c#
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<IInvoiceGenerator>().To<PdfInvoiceGenerator>()
-    .Bind<IInvoiceGenerator>("Online").To<HtmlInvoiceGenerator>()
-    .Bind<ILogger>().To<FileLogger>()
-
-    // Specifies to create a regular composition root
-    // of type "IInvoiceGenerator" with the name "InvoiceGenerator".
-    // This will be the main entry point for invoice generation.
-    .Root<IInvoiceGenerator>("InvoiceGenerator")
-
-    // Specifies to create an anonymous composition root
-    // that is only accessible from "Resolve()" methods.
-    // This is useful for auxiliary types or testing.
-    .Root<ILogger>()
-
-    // Specifies to create a regular composition root
-    // of type "IInvoiceGenerator" with the name "OnlineInvoiceGenerator"
-    // using the "Online" tag to differentiate implementations.
-    .Root<IInvoiceGenerator>("OnlineInvoiceGenerator", "Online");
-
-var composition = new Composition();
-
-// Resolves the default invoice generator (PDF) with all its dependencies
-// invoiceGenerator = new PdfInvoiceGenerator(new FileLogger());
-var invoiceGenerator = composition.InvoiceGenerator;
-
-// Resolves the online invoice generator (HTML)
-// onlineInvoiceGenerator = new HtmlInvoiceGenerator();
-var onlineInvoiceGenerator = composition.OnlineInvoiceGenerator;
-
-// All and only the roots of the composition
-// can be obtained by Resolve method.
-// Here we resolve the private root 'ILogger'.
-var logger = composition.Resolve<ILogger>();
-
-// We can also resolve tagged roots dynamically if needed
-var tagged = composition.Resolve<IInvoiceGenerator>("Online");
-
-// Common logger interface used across the system
-interface ILogger;
-
-// Concrete implementation of a logger that writes to a file
-class FileLogger : ILogger;
-
-// Abstract definition of an invoice generator
-interface IInvoiceGenerator;
-
-// Implementation for generating PDF invoices, dependent on ILogger
-class PdfInvoiceGenerator(ILogger logger) : IInvoiceGenerator;
-
-// Implementation for generating HTML invoices for online viewing
-class HtmlInvoiceGenerator : IInvoiceGenerator;
-```
-
-To run the above code, the following NuGet package must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-
-The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the `Root` property has the form:
-```c#
-public IService Root
-{
-  get
-  {
-    return new Service(new Dependency());
-  }
-}
-```
-To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
-```c#
-// Resolve = Off
-DI.Setup("Composition")
-  .Bind<IDependency>().To<Dependency>()
-  ...
-```
-This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
-Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
-Common pitfalls:
-- Exposing internal services as roots instead of keeping them private.
-- Depending on `Resolve` everywhere instead of explicit root members.
-See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
-
-## Resolve methods
-
-This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
-Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
-
-```c#
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind<IDevice>().To<Device>()
-    .Bind<ISensor>().To<TemperatureSensor>()
-    .Bind<ISensor>("Humidity").To<HumiditySensor>()
-
-    // Specifies to create a private root
-    // that is only accessible from _Resolve_ methods
-    .Root<ISensor>()
-
-    // Specifies to create a public root named _HumiditySensor_
-    // using the "Humidity" tag
-    .Root<ISensor>("HumiditySensor", "Humidity");
-
-var composition = new Composition();
-
-// The next 3 lines of code do the same thing:
-var sensor1 = composition.Resolve<ISensor>();
-var sensor2 = composition.Resolve(typeof(ISensor));
-var sensor3 = composition.Resolve(typeof(ISensor), null);
-
-// Resolve by "Humidity" tag
-// The next 3 lines of code do the same thing too:
-var humiditySensor1 = composition.Resolve<ISensor>("Humidity");
-var humiditySensor2 = composition.Resolve(typeof(ISensor), "Humidity");
-var humiditySensor3 = composition.HumiditySensor; // Resolve via the public root
-
-interface IDevice;
-
-class Device : IDevice;
-
-interface ISensor;
-
-class TemperatureSensor(IDevice device) : ISensor;
-
-class HumiditySensor : ISensor;
-```
-
-To run the above code, the following NuGet package must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
-
-_Resolve_ methods are similar to calling composition roots, which are properties (or methods). Roots are efficient and do not throw, so they are preferred. In contrast, _Resolve_ methods have drawbacks:
-- They provide access to an unlimited set of dependencies (_Service Locator_).
-- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
-- They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
-Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
-Common pitfalls:
-- Using `Resolve` as the default access pattern across the codebase.
-- Assuming runtime resolve calls are always safe when no matching root exists.
-See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
-
 ## Simplified binding
 
 You can call `Bind()` without type parameters to infer contracts from the implementation type.
@@ -365,143 +215,97 @@ Common pitfalls:
 - Forgetting that special framework types are intentionally excluded.
 See also: [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md), [Special types](simplified-lifetime-specific-bindings.md).
 
-## Factory
+## Composition roots
 
-Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
-A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
+This example shows several ways to define composition roots as explicit entry points into the graph.
+>[!TIP]
+>There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
+
+In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
 
 ```c#
-using Shouldly;
 using Pure.DI;
 
 DI.Setup(nameof(Composition))
-    .Bind<IDatabaseService>().To<DatabaseService>(ctx => {
-        // Some logic for creating an instance.
-        // For example, we need to manually initialize the connection.
-        ctx.Inject(out DatabaseService service);
-        service.Connect();
-        return service;
-    })
-    .Bind<IUserRegistry>().To<UserRegistry>()
+    .Bind<IInvoiceGenerator>().To<PdfInvoiceGenerator>()
+    .Bind<IInvoiceGenerator>("Online").To<HtmlInvoiceGenerator>()
+    .Bind<ILogger>().To<FileLogger>()
 
-    // Composition root
-    .Root<IUserRegistry>("Registry");
+    // Specifies to create a regular composition root
+    // of type "IInvoiceGenerator" with the name "InvoiceGenerator".
+    // This will be the main entry point for invoice generation.
+    .Root<IInvoiceGenerator>("InvoiceGenerator")
+
+    // Specifies to create an anonymous composition root
+    // that is only accessible from "Resolve()" methods.
+    // This is useful for auxiliary types or testing.
+    .Root<ILogger>()
+
+    // Specifies to create a regular composition root
+    // of type "IInvoiceGenerator" with the name "OnlineInvoiceGenerator"
+    // using the "Online" tag to differentiate implementations.
+    .Root<IInvoiceGenerator>("OnlineInvoiceGenerator", "Online");
 
 var composition = new Composition();
-var registry = composition.Registry;
-registry.Database.IsConnected.ShouldBeTrue();
 
-interface IDatabaseService
-{
-    bool IsConnected { get; }
-}
+// Resolves the default invoice generator (PDF) with all its dependencies
+// invoiceGenerator = new PdfInvoiceGenerator(new FileLogger());
+var invoiceGenerator = composition.InvoiceGenerator;
 
-class DatabaseService : IDatabaseService
-{
-    public bool IsConnected { get; private set; }
+// Resolves the online invoice generator (HTML)
+// onlineInvoiceGenerator = new HtmlInvoiceGenerator();
+var onlineInvoiceGenerator = composition.OnlineInvoiceGenerator;
 
-    // Simulates a connection establishment that must be called explicitly
-    public void Connect() => IsConnected = true;
-}
+// All and only the roots of the composition
+// can be obtained by Resolve method.
+// Here we resolve the private root 'ILogger'.
+var logger = composition.Resolve<ILogger>();
 
-interface IUserRegistry
-{
-    IDatabaseService Database { get; }
-}
+// We can also resolve tagged roots dynamically if needed
+var tagged = composition.Resolve<IInvoiceGenerator>("Online");
 
-class UserRegistry(IDatabaseService database) : IUserRegistry
-{
-    public IDatabaseService Database { get; } = database;
-}
+// Common logger interface used across the system
+interface ILogger;
+
+// Concrete implementation of a logger that writes to a file
+class FileLogger : ILogger;
+
+// Abstract definition of an invoice generator
+interface IInvoiceGenerator;
+
+// Implementation for generating PDF invoices, dependent on ILogger
+class PdfInvoiceGenerator(ILogger logger) : IInvoiceGenerator;
+
+// Implementation for generating HTML invoices for online viewing
+class HtmlInvoiceGenerator : IInvoiceGenerator;
 ```
 
-To run the above code, the following NuGet packages must be added:
+To run the above code, the following NuGet package must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-There are scenarios where manual control over the creation process is required, such as
-- When additional initialization logic is needed
-- When complex construction steps are required
-- When specific object states need to be set during creation
-
->[!IMPORTANT]
->The method `Inject()` cannot be used outside of the binding setup.
-Limitations: factory bindings introduce custom construction logic that must be maintained and tested.
-Common pitfalls:
-- Moving business decisions into DI factory code.
-- Overusing `Inject()` where normal constructor binding is enough.
-See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
-
-## Simplified factory
-
-This example shows a simplified manual factory. Each lambda parameter represents an injected dependency, and starting with C# 10 you can add `Tag(...)` to specify a tagged dependency.
-
+The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the `Root` property has the form:
 ```c#
-using Shouldly;
-using Pure.DI;
-
-DI.Setup(nameof(Composition))
-    .Bind("today").To(() => DateTime.Today)
-    // Injects FileLogger and DateTime
-    // and applies additional initialization logic
-    .Bind<IFileLogger>().To((
-        FileLogger logger,
-        [Tag("today")] DateTime date) => {
-        logger.Init($"app-{date:yyyy-MM-dd}.log");
-        return logger;
-    })
-    .Bind().To<OrderProcessingService>()
-
-    // Composition root
-    .Root<IOrderProcessingService>("OrderService");
-
-var composition = new Composition();
-var service = composition.OrderService;
-
-service.Logger.FileName.ShouldBe($"app-{DateTime.Today:yyyy-MM-dd}.log");
-
-interface IFileLogger
+public IService Root
 {
-    string FileName { get; }
-
-    void Log(string message);
-}
-
-class FileLogger : IFileLogger
-{
-    public string FileName { get; private set; } = "";
-
-    public void Init(string fileName) => FileName = fileName;
-
-    public void Log(string message)
-    {
-        // Write to file
-    }
-}
-
-interface IOrderProcessingService
-{
-    IFileLogger Logger { get; }
-}
-
-class OrderProcessingService(IFileLogger logger) : IOrderProcessingService
-{
-    public IFileLogger Logger { get; } = logger;
+  get
+  {
+    return new Service(new Dependency());
+  }
 }
 ```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The example creates a service that depends on a logger initialized with a date-based file name.
-This style keeps the setup concise while still allowing explicit initialization logic.
-The `Tag` attribute enables named dependencies for more complex setups.
-Limitations: compact lambda factories stay readable only while initialization logic remains small.
+To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
+```c#
+// Resolve = Off
+DI.Setup("Composition")
+  .Bind<IDependency>().To<Dependency>()
+  ...
+```
+This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
+Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
 Common pitfalls:
-- Putting heavy imperative setup code into short lambda factories.
-- Forgetting explicit tags when several same-type dependencies exist.
-See also: [Factory](factory.md), [Tags](tags.md).
+- Exposing internal services as roots instead of keeping them private.
+- Depending on `Resolve` everywhere instead of explicit root members.
+See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
 
 ## Transient
 
@@ -654,6 +458,616 @@ Some articles advise using objects with a `Singleton` lifetime as often as possi
 - _Singleton_ can retain dependency references longer than their expected lifetime, this is especially significant for objects that hold "non-renewable" resources, such as the operating system Handler.
 
 - Sometimes additional logic is required to dispose of _Singleton_.
+
+## Scoped
+
+The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+var composition = new Composition();
+var app = composition.AppRoot;
+
+// Real-world analogy:
+// each HTTP request (or message consumer handling) creates its own scope.
+// Scoped services live exactly as long as the request is being processed.
+
+// Request #1
+var request1 = app.CreateRequestScope();
+var checkout1 = request1.RequestRoot;
+
+var ctx11 = checkout1.Context;
+var ctx12 = checkout1.Context;
+
+// Same request => same scoped instance
+ctx11.ShouldBe(ctx12);
+
+// Request #2
+var request2 = app.CreateRequestScope();
+var checkout2 = request2.RequestRoot;
+
+var ctx2 = checkout2.Context;
+
+// Different request => different scoped instance
+ctx11.ShouldNotBe(ctx2);
+
+// End of Request #1 => scoped instance is disposed
+request1.Dispose();
+ctx11.IsDisposed.ShouldBeTrue();
+
+// End of Request #2 => scoped instance is disposed
+request2.Dispose();
+ctx2.IsDisposed.ShouldBeTrue();
+
+interface IRequestContext
+{
+    Guid CorrelationId { get; }
+
+    bool IsDisposed { get; }
+}
+
+// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
+sealed class RequestContext : IRequestContext, IDisposable
+{
+    public Guid CorrelationId { get; } = Guid.NewGuid();
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface ICheckoutService
+{
+    IRequestContext Context { get; }
+}
+
+// "Controller/service" that participates in request processing.
+// It depends on a scoped context (per-request resource).
+sealed class CheckoutService(IRequestContext context) : ICheckoutService
+{
+    public IRequestContext Context => context;
+}
+
+// Implements a request scope (per-request composition)
+sealed class RequestScope(Composition parent) : Composition(parent);
+
+partial class App(Func<RequestScope> requestScopeFactory)
+{
+    // In a web app this would roughly map to: "create scope for request"
+    public RequestScope CreateRequestScope() => requestScopeFactory();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            // Per-request lifetime
+            .Bind().As(Scoped).To<RequestContext>()
+
+            // Regular service that consumes scoped context
+            .Bind().To<CheckoutService>()
+
+            // "Request root" (what your controller/handler resolves)
+            .Root<ICheckoutService>("RequestRoot")
+
+            // "Application root" (what creates request scopes)
+            .Root<App>("AppRoot");
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
+
+## Tags
+
+Tags let you control dependency selection when multiple implementations exist:
+This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    // The `default` tag is used when the consumer does not specify a tag
+    .Bind<IApiClient>("Public", default).To<RestApiClient>()
+    .Bind<IApiClient>("Internal").As(Lifetime.Singleton).To<InternalApiClient>()
+    .Bind<IApiFacade>().To<ApiFacade>()
+
+    // "InternalRoot" is a root name, "Internal" is a tag
+    .Root<IApiClient>("InternalRoot", "Internal")
+
+    // Specifies to create the composition root named "Root"
+    .Root<IApiFacade>("Api");
+
+var composition = new Composition();
+var api = composition.Api;
+api.PublicClient.ShouldBeOfType<RestApiClient>();
+api.InternalClient.ShouldBeOfType<InternalApiClient>();
+api.InternalClient.ShouldBe(composition.InternalRoot);
+api.DefaultClient.ShouldBeOfType<RestApiClient>();
+
+interface IApiClient;
+
+class RestApiClient : IApiClient;
+
+class InternalApiClient : IApiClient;
+
+interface IApiFacade
+{
+    IApiClient PublicClient { get; }
+
+    IApiClient InternalClient { get; }
+
+    IApiClient DefaultClient { get; }
+}
+
+class ApiFacade(
+    [Tag("Public")] IApiClient publicClient,
+    [Tag("Internal")] IApiClient internalClient,
+    IApiClient defaultClient)
+    : IApiFacade
+{
+    public IApiClient PublicClient { get; } = publicClient;
+
+    public IApiClient InternalClient { get; } = internalClient;
+
+    public IApiClient DefaultClient { get; } = defaultClient;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example shows how to:
+- Define multiple bindings for the same interface
+- Use tags to differentiate between implementations
+- Control lifetime management
+- Inject tagged dependencies into constructors
+
+The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
+Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
+Common pitfalls:
+- Using many ad-hoc string tags without central conventions.
+- Forgetting to define a `default` tag path for untagged consumers.
+See also: [Smart tags](smart-tags.md), [Composition roots](composition-roots.md).
+
+## Factory
+
+Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
+A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDatabaseService>().To<DatabaseService>(ctx => {
+        // Some logic for creating an instance.
+        // For example, we need to manually initialize the connection.
+        ctx.Inject(out DatabaseService service);
+        service.Connect();
+        return service;
+    })
+    .Bind<IUserRegistry>().To<UserRegistry>()
+
+    // Composition root
+    .Root<IUserRegistry>("Registry");
+
+var composition = new Composition();
+var registry = composition.Registry;
+registry.Database.IsConnected.ShouldBeTrue();
+
+interface IDatabaseService
+{
+    bool IsConnected { get; }
+}
+
+class DatabaseService : IDatabaseService
+{
+    public bool IsConnected { get; private set; }
+
+    // Simulates a connection establishment that must be called explicitly
+    public void Connect() => IsConnected = true;
+}
+
+interface IUserRegistry
+{
+    IDatabaseService Database { get; }
+}
+
+class UserRegistry(IDatabaseService database) : IUserRegistry
+{
+    public IDatabaseService Database { get; } = database;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+There are scenarios where manual control over the creation process is required, such as
+- When additional initialization logic is needed
+- When complex construction steps are required
+- When specific object states need to be set during creation
+
+>[!IMPORTANT]
+>The method `Inject()` cannot be used outside of the binding setup.
+Limitations: factory bindings introduce custom construction logic that must be maintained and tested.
+Common pitfalls:
+- Moving business decisions into DI factory code.
+- Overusing `Inject()` where normal constructor binding is enough.
+See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
+
+## Simplified factory
+
+This example shows a simplified manual factory. Each lambda parameter represents an injected dependency, and starting with C# 10 you can add `Tag(...)` to specify a tagged dependency.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind("today").To(() => DateTime.Today)
+    // Injects FileLogger and DateTime
+    // and applies additional initialization logic
+    .Bind<IFileLogger>().To((
+        FileLogger logger,
+        [Tag("today")] DateTime date) => {
+        logger.Init($"app-{date:yyyy-MM-dd}.log");
+        return logger;
+    })
+    .Bind().To<OrderProcessingService>()
+
+    // Composition root
+    .Root<IOrderProcessingService>("OrderService");
+
+var composition = new Composition();
+var service = composition.OrderService;
+
+service.Logger.FileName.ShouldBe($"app-{DateTime.Today:yyyy-MM-dd}.log");
+
+interface IFileLogger
+{
+    string FileName { get; }
+
+    void Log(string message);
+}
+
+class FileLogger : IFileLogger
+{
+    public string FileName { get; private set; } = "";
+
+    public void Init(string fileName) => FileName = fileName;
+
+    public void Log(string message)
+    {
+        // Write to file
+    }
+}
+
+interface IOrderProcessingService
+{
+    IFileLogger Logger { get; }
+}
+
+class OrderProcessingService(IFileLogger logger) : IOrderProcessingService
+{
+    public IFileLogger Logger { get; } = logger;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The example creates a service that depends on a logger initialized with a date-based file name.
+This style keeps the setup concise while still allowing explicit initialization logic.
+The `Tag` attribute enables named dependencies for more complex setups.
+Limitations: compact lambda factories stay readable only while initialization logic remains small.
+Common pitfalls:
+- Putting heavy imperative setup code into short lambda factories.
+- Forgetting explicit tags when several same-type dependencies exist.
+See also: [Factory](factory.md), [Tags](tags.md).
+
+## Injection on demand
+
+This example creates dependencies on demand using a factory delegate. The service (`GameLevel`) needs multiple instances of `IEnemy`, so it receives a `Func<IEnemy>` that can create new instances when needed.
+This approach is useful when instances are created lazily or repeatedly during business execution.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Generic;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<Enemy>()
+    .Bind().To<GameLevel>()
+
+    // Composition root
+    .Root<IGameLevel>("GameLevel");
+
+var composition = new Composition();
+var gameLevel = composition.GameLevel;
+
+// Verifies that two distinct enemies have been spawned
+gameLevel.Enemies.Count.ShouldBe(2);
+
+// Represents a game entity that acts as an enemy
+interface IEnemy;
+
+class Enemy : IEnemy;
+
+// Represents a game level that manages entities
+interface IGameLevel
+{
+    IReadOnlyList<IEnemy> Enemies { get; }
+}
+
+class GameLevel(Func<IEnemy> enemySpawner) : IGameLevel
+{
+    // The factory spawns a fresh enemy instance on each call.
+    public IReadOnlyList<IEnemy> Enemies { get; } =
+    [
+        enemySpawner(),
+        enemySpawner()
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+Key elements:
+- `Enemy` is bound to the `IEnemy` interface, and `GameLevel` is bound to `IGameLevel`.
+- The `GameLevel` constructor accepts `Func<IEnemy>`, enabling deferred creation of entities.
+- The `GameLevel` calls the factory twice, resulting in two distinct `Enemy` instances stored in its `Enemies` collection.
+
+This approach lets factories control lifetime and instantiation timing. Pure.DI resolves a new `IEnemy` each time the factory is invoked.
+Limitations: factory delegate calls can create many objects, so lifetime choices still matter for performance and state.
+Common pitfalls:
+- Assuming `Func<T>` always returns new instances regardless of configured lifetime.
+- Hiding expensive work behind repeated on-demand calls.
+See also: [Injections on demand with arguments](injections-on-demand-with-arguments.md), [Func<T>](func.md).
+
+## Composition arguments
+
+Use composition arguments when you need to pass state into the composition. Define them with `Arg<T>(string argName)` (optionally with tags) and use them like any other dependency. Only arguments that are used in the object graph become constructor parameters.
+This is a clean way to inject external runtime state without global static variables.
+>[!NOTE]
+>Actually, composition arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
+
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IBankGateway>().To<BankGateway>()
+    .Bind<IPaymentProcessor>().To<PaymentProcessor>()
+
+    // Composition root "PaymentService"
+    .Root<IPaymentProcessor>("PaymentService")
+
+    // Composition argument: Connection timeout (e.g., from config)
+    .Arg<int>("timeoutSeconds")
+
+    // Composition argument: API Token (using a tag to distinguish from other strings)
+    .Arg<string>("authToken", "api token")
+
+    // Composition argument: Bank gateway address
+    .Arg<string>("gatewayUrl");
+
+// Create the composition, passing real settings from outside
+var composition = new Composition(
+    timeoutSeconds: 30,
+    authToken: "secret_token_123",
+    gatewayUrl: "https://api.bank.com/v1");
+
+var paymentService = composition.PaymentService;
+
+paymentService.Token.ShouldBe("secret_token_123");
+paymentService.Gateway.Timeout.ShouldBe(30);
+paymentService.Gateway.Url.ShouldBe("https://api.bank.com/v1");
+
+interface IBankGateway
+{
+    int Timeout { get; }
+
+    string Url { get; }
+}
+
+// Simulation of a bank gateway client
+class BankGateway(int timeoutSeconds, string gatewayUrl) : IBankGateway
+{
+    public int Timeout { get; } = timeoutSeconds;
+
+    public string Url { get; } = gatewayUrl;
+}
+
+interface IPaymentProcessor
+{
+    string Token { get; }
+
+    IBankGateway Gateway { get; }
+}
+
+// Payment processing service
+class PaymentProcessor(
+    // The tag allows specifying exactly which string to inject here
+    [Tag("api token")] string token,
+    IBankGateway gateway) : IPaymentProcessor
+{
+    public string Token { get; } = token;
+
+    public IBankGateway Gateway { get; } = gateway;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>Composition arguments provide a way to inject runtime values into the composition, making your DI configuration more flexible.
+Limitations: too many composition arguments can bloat composition constructors and blur configuration boundaries.
+Common pitfalls:
+- Using untagged primitive arguments where several values of the same type exist.
+- Treating composition arguments as mutable runtime state holders.
+See also: [Root arguments](root-arguments.md), [Tags](tags.md).
+
+## Root arguments
+
+Use root arguments when you need to pass state into a specific root. Define them with `RootArg<T>(string argName)` (optionally with tags) and use them like any other dependency. A root that uses at least one root argument becomes a method, and only arguments used in that root's object graph appear in the method signature. Use unique argument names to avoid collisions.
+Root arguments are useful when runtime values belong to one entry point, not to the whole composition.
+>[!NOTE]
+>Actually, root arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
+
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Tag;
+
+DI.Setup(nameof(Composition))
+    // Disable Resolve methods because root arguments are not compatible
+    .Hint(Hint.Resolve, "Off")
+    .Bind<IDatabaseService>().To<DatabaseService>()
+    .Bind<IApplication>().To<Application>()
+
+    // Root arguments serve as values passed
+    // to the composition root method
+    .RootArg<int>("port")
+    .RootArg<string>("connectionString")
+
+    // An argument can be tagged
+    // to be injectable by type and this tag
+    .RootArg<string>("appName", AppDetail)
+
+    // Composition root
+    .Root<IApplication>("CreateApplication");
+
+var composition = new Composition();
+
+// Creates an application with specific arguments
+var app = composition.CreateApplication(
+    appName: "MySuperApp",
+    port: 8080,
+    connectionString: "Server=.;Database=MyDb;");
+
+app.Name.ShouldBe("MySuperApp");
+app.Database.Port.ShouldBe(8080);
+app.Database.ConnectionString.ShouldBe("Server=.;Database=MyDb;");
+
+interface IDatabaseService
+{
+    int Port { get; }
+
+    string ConnectionString { get; }
+}
+
+class DatabaseService(int port, string connectionString) : IDatabaseService
+{
+    public int Port { get; } = port;
+
+    public string ConnectionString { get; } = connectionString;
+}
+
+interface IApplication
+{
+    string Name { get; }
+
+    IDatabaseService Database { get; }
+}
+
+class Application(
+    [Tag(AppDetail)] string name,
+    IDatabaseService database)
+    : IApplication
+{
+    public string Name { get; } = name;
+
+    public IDatabaseService Database { get; } = database;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+When using root arguments, compilation warnings are emitted if `Resolve` methods are generated because these methods cannot create such roots. Disable `Resolve` via `Hint(Hint.Resolve, "Off")`, or ignore the warnings and accept the risks.
+Limitations: roots with root arguments become methods and are incompatible with generated `Resolve` methods.
+Common pitfalls:
+- Reusing ambiguous argument names for different concepts.
+- Forgetting to disable or avoid `Resolve` usage in these setups.
+See also: [Composition arguments](composition-arguments.md), [Resolve hint](resolve-hint.md).
+
+## Resolve methods
+
+This example shows how to resolve dependencies via generated `Resolve` methods, i.e. through the _Service Locator_ style.
+Use this style mainly for integration scenarios; explicit roots are usually cleaner and safer.
+
+```c#
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IDevice>().To<Device>()
+    .Bind<ISensor>().To<TemperatureSensor>()
+    .Bind<ISensor>("Humidity").To<HumiditySensor>()
+
+    // Specifies to create a private root
+    // that is only accessible from _Resolve_ methods
+    .Root<ISensor>()
+
+    // Specifies to create a public root named _HumiditySensor_
+    // using the "Humidity" tag
+    .Root<ISensor>("HumiditySensor", "Humidity");
+
+var composition = new Composition();
+
+// The next 3 lines of code do the same thing:
+var sensor1 = composition.Resolve<ISensor>();
+var sensor2 = composition.Resolve(typeof(ISensor));
+var sensor3 = composition.Resolve(typeof(ISensor), null);
+
+// Resolve by "Humidity" tag
+// The next 3 lines of code do the same thing too:
+var humiditySensor1 = composition.Resolve<ISensor>("Humidity");
+var humiditySensor2 = composition.Resolve(typeof(ISensor), "Humidity");
+var humiditySensor3 = composition.HumiditySensor; // Resolve via the public root
+
+interface IDevice;
+
+class Device : IDevice;
+
+interface ISensor;
+
+class TemperatureSensor(IDevice device) : ISensor;
+
+class HumiditySensor : ISensor;
+```
+
+To run the above code, the following NuGet package must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+
+_Resolve_ methods are similar to calling composition roots, which are properties (or methods). Roots are efficient and do not throw, so they are preferred. In contrast, _Resolve_ methods have drawbacks:
+- They provide access to an unlimited set of dependencies (_Service Locator_).
+- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
+- They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
+Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
+Common pitfalls:
+- Using `Resolve` as the default access pattern across the codebase.
+- Assuming runtime resolve calls are always safe when no matching root exists.
+See also: [Composition roots](composition-roots.md), [Resolve hint](resolve-hint.md).
 
 ## PerResolve
 
@@ -808,113 +1222,6 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >`PerBlock` lifetime provides a balance between `PerResolve` and `Transient`, reducing instance count within a resolution block.
-
-## Scoped
-
-The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using static Pure.DI.Lifetime;
-
-var composition = new Composition();
-var app = composition.AppRoot;
-
-// Real-world analogy:
-// each HTTP request (or message consumer handling) creates its own scope.
-// Scoped services live exactly as long as the request is being processed.
-
-// Request #1
-var request1 = app.CreateRequestScope();
-var checkout1 = request1.RequestRoot;
-
-var ctx11 = checkout1.Context;
-var ctx12 = checkout1.Context;
-
-// Same request => same scoped instance
-ctx11.ShouldBe(ctx12);
-
-// Request #2
-var request2 = app.CreateRequestScope();
-var checkout2 = request2.RequestRoot;
-
-var ctx2 = checkout2.Context;
-
-// Different request => different scoped instance
-ctx11.ShouldNotBe(ctx2);
-
-// End of Request #1 => scoped instance is disposed
-request1.Dispose();
-ctx11.IsDisposed.ShouldBeTrue();
-
-// End of Request #2 => scoped instance is disposed
-request2.Dispose();
-ctx2.IsDisposed.ShouldBeTrue();
-
-interface IRequestContext
-{
-    Guid CorrelationId { get; }
-
-    bool IsDisposed { get; }
-}
-
-// Typically: DbContext / UnitOfWork / RequestTelemetry / Activity, etc.
-sealed class RequestContext : IRequestContext, IDisposable
-{
-    public Guid CorrelationId { get; } = Guid.NewGuid();
-
-    public bool IsDisposed { get; private set; }
-
-    public void Dispose() => IsDisposed = true;
-}
-
-interface ICheckoutService
-{
-    IRequestContext Context { get; }
-}
-
-// "Controller/service" that participates in request processing.
-// It depends on a scoped context (per-request resource).
-sealed class CheckoutService(IRequestContext context) : ICheckoutService
-{
-    public IRequestContext Context => context;
-}
-
-// Implements a request scope (per-request composition)
-sealed class RequestScope(Composition parent) : Composition(parent);
-
-partial class App(Func<RequestScope> requestScopeFactory)
-{
-    // In a web app this would roughly map to: "create scope for request"
-    public RequestScope CreateRequestScope() => requestScopeFactory();
-}
-
-partial class Composition
-{
-    static void Setup() =>
-
-        DI.Setup()
-            // Per-request lifetime
-            .Bind().As(Scoped).To<RequestContext>()
-
-            // Regular service that consumes scoped context
-            .Bind().To<CheckoutService>()
-
-            // "Request root" (what your controller/handler resolves)
-            .Root<ICheckoutService>("RequestRoot")
-
-            // "Application root" (what creates request scopes)
-            .Root<App>("AppRoot");
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
->[!NOTE]
->`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
 
 ## Scope
 

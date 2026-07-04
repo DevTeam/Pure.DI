@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=9
+$p=QuickStart:11
 $d=Composition arguments
 $sa=Root arguments
 $sa=Overrides

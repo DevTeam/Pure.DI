@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=4
+$p=QuickStart:2
 $d=Simplified binding
 $sa=Simplified lifetime-specific bindings
 $sa=Auto-bindings

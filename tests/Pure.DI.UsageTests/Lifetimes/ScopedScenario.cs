@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Lifetimes
 $p=4
+$p=QuickStart:6
 $d=Scoped
 $sa=Scope
 $sa=Auto scoped

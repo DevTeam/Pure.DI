@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=7
+$p=QuickStart:10
 $d=Injection on demand
 $sa=Func
 $sa=Injections on demand with arguments

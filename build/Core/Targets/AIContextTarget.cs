@@ -46,12 +46,18 @@ class AIContextTarget(
             await writer.WriteLineAsync("This Markdown-formatted document contains information about working with Pure.DI");
             await writer.WriteLineAsync();
             await writer.WriteLineAsync("# Usage scenarios.");
+            var usedExamples = new HashSet<string>(StringComparer.Ordinal);
             foreach (var (groupName, exampleItems) in examples)
             {
                 foreach (var example in exampleItems)
                 {
-                    var priority = int.Parse(example[CreateExamplesTarget.PriorityKey]);
+                    var priority = CreateExamplesTarget.GetPriority(example, groupName);
                     if (!filterTools.AddExample(size, priority, groupName))
+                    {
+                        continue;
+                    }
+
+                    if (!usedExamples.Add(example[CreateExamplesTarget.SourceKey]))
                     {
                         continue;
                     }

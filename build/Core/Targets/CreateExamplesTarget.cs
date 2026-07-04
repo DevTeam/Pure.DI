@@ -22,6 +22,7 @@ class CreateExamplesTarget(
 
     private static readonly string[] Groups =
     [
+        "QuickStart",
         "Basics",
         "Lifetimes",
         "BaseClassLibrary",
@@ -95,11 +96,12 @@ class CreateExamplesTarget(
         foreach (var file in files)
         {
             var relativePath = Path.GetRelativePath(Environment.CurrentDirectory, file);
+            var title = Path.GetDirectoryName(Path.GetRelativePath(testsDir, file)) ?? "";
             Part? part = null;
             var vars = new Dictionary<string, string>
             {
                 [VisibleKey] = "false",
-                [TitleKey] = Path.GetDirectoryName(Path.GetRelativePath(testsDir, file)) ?? "",
+                [TitleKey] = string.Empty,
                 [PriorityKey] = string.Empty,
                 [DescriptionKey] = string.Empty,
                 [IntegrationTestKey] = "true",
@@ -197,6 +199,11 @@ class CreateExamplesTarget(
 
             if (body.Count != 0)
             {
+                if (string.IsNullOrWhiteSpace(vars[TitleKey]))
+                {
+                    vars[TitleKey] = title;
+                }
+
                 var references = vars[ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 vars[BodyKey] = string.Join(Environment.NewLine, references.Select(i => $"using {i};").Concat(body));
             }
@@ -208,12 +215,37 @@ class CreateExamplesTarget(
 
         return items
             .Where(i => i.ContainsKey(BodyKey) && i[VisibleKey] != "False")
-            .GroupBy(i => i[TitleKey])
+            .SelectMany(i => i[TitleKey]
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Distinct()
+                .Select(title => (Title: title, Example: i)))
+            .GroupBy(i => i.Title, i => i.Example)
             .OrderBy(i => groups.TryGetValue(i.Key, out var index) ? index : int.MaxValue)
             .Select(i => new ExampleGroup(
                 i.Key,
-                i.OrderBy(j => int.Parse(j[PriorityKey])).ThenBy(j => j[DescriptionKey]).Select(j => new Example(j)).ToList()))
+                i.OrderBy(j => GetPriority(j, i.Key)).ThenBy(j => j[DescriptionKey]).Select(j => new Example(j)).ToList()))
             .ToList();
+    }
+
+    public static int GetPriority(IReadOnlyDictionary<string, string> example, string groupName)
+    {
+        var defaultPriority = int.MaxValue;
+        foreach (var priority in example[PriorityKey].Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            var parts = priority.Split(':', 2, StringSplitOptions.TrimEntries);
+            if (parts.Length == 1)
+            {
+                defaultPriority = int.Parse(parts[0]);
+                continue;
+            }
+
+            if (string.Equals(parts[0], groupName, StringComparison.Ordinal))
+            {
+                return int.Parse(parts[1]);
+            }
+        }
+
+        return defaultPriority;
     }
 
     private enum Part

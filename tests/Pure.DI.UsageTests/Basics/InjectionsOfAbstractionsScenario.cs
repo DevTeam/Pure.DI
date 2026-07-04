@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Basics
 $p=1
+$p=QuickStart:1
 $d=Injections of abstractions
 $sa=Auto-bindings
 $sa=Composition roots

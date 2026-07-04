@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=QuickStart
+$t=Lifetimes
 $p=1
+$p=QuickStart:5
 $d=Singleton
 $sa=Transient
 $sa=Disposable singleton

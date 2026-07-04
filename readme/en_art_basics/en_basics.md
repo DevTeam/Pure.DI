@@ -188,18 +188,20 @@ interface INotificationService
 sealed class NotificationService(IEmailSender sender) : INotificationService
 {
 	public void SendWelcome(string email) =>
-		sender.Send(email, "Добро пожаловать!", "Рады видеть вас в системе.");
+		sender.Send(email, "Welcome!", "Glad to see you in the system.");
 }
 ```
 
 At this step, the generator will create a partial class `Composition` and a property `Notifications` that returns the assembled graph. It's very simple.
 
-See also real examples in the repository:
+See also:
 
-- [Example with Schrödinger's cat](https://github.com/DevTeam/Pure.DI?tab=readme-ov-file#schr%C3%B6dingers-cat-demonstrates-how-it-all-works-)
-- [Example of binding abstractions to implementations](https://github.com/DevTeam/Pure.DI/blob/master/readme/injections-of-abstractions.md)
-- [Example of automatic binding (auto‑bindings)](https://github.com/DevTeam/Pure.DI/blob/master/readme/auto-bindings.md)
-- [How composition roots work](https://github.com/DevTeam/Pure.DI/blob/master/readme/composition-roots.md)
+- [Auto-bindings](../auto-bindings.md) - the smallest prototype-style setup.
+- [Injections of abstractions](../injections-of-abstractions.md) - the recommended production style.
+- [Simplified binding](../simplified-binding.md) - less setup code when contracts can be inferred.
+- [Composition roots](../composition-roots.md) - explicit entry points into the generated graph.
+- [Factory](../factory.md) and [Simplified factory](../simplified-factory.md) - custom creation logic.
+- [Tags](../tags.md) - choosing between several implementations.
 
 ---
 

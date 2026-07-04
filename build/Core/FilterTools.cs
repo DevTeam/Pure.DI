@@ -9,11 +9,12 @@ class FilterTools
         switch (size)
         {
             case AIContextSize.Small
-                when priority <= 6 && groupName is "Basics" or "Lifetimes":
+                when groupName is "QuickStart" || priority <= 6 && groupName is ("Basics" or "Lifetimes"):
 
             case AIContextSize.Medium
                 when
-                groupName is "Basics"
+                groupName is "QuickStart"
+                || groupName is "Basics"
                 || priority < 3 && groupName is not "Advanced" and not "Unity" and not "Hints" and not "UseCases":
 
             case AIContextSize.Large:
