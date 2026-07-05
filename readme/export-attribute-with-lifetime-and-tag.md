@@ -90,28 +90,28 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private IGpu? _singletonIGpu2147482282;
-  private GraphicsAdapter? _singletonGraphicsAdapter71;
+  private IGpu? _singletonIGpu;
+  private GraphicsAdapter? _singletonCompositionInOtherProject;
 
   public IRenderer Renderer
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonIGpu2147482282 is null)
+      if (_singletonIGpu is null)
         lock (_lock)
-          if (_singletonIGpu2147482282 is null)
+          if (_singletonIGpu is null)
           {
-            if (_singletonGraphicsAdapter71 is null)
+            if (_singletonCompositionInOtherProject is null)
             {
-              _singletonGraphicsAdapter71 = new GraphicsAdapter();
+              _singletonCompositionInOtherProject = new GraphicsAdapter();
             }
 
-            GraphicsAdapter localInstance_1182D127 = _singletonGraphicsAdapter71;
-            _singletonIGpu2147482282 = localInstance_1182D127.HighPerfGpu;
+            GraphicsAdapter localInstance_1182D127 = _singletonCompositionInOtherProject;
+            _singletonIGpu = localInstance_1182D127.HighPerfGpu;
           }
 
-      return new RayTracer(_singletonIGpu2147482282);
+      return new RayTracer(_singletonIGpu);
     }
   }
 }

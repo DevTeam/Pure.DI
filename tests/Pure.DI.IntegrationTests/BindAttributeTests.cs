@@ -5,6 +5,51 @@ using Core;
 public class BindAttributeTests
 {
     [Fact]
+    public async Task ShouldUseReadablePersistentVariableNamesForSpecialBindings()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService {}
+
+                               [Type(typeof(IService))]
+                               [Lifetime(Lifetime.Singleton)]
+                               class Service : IService {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<IService>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(ReferenceEquals(composition.Root, composition.Root));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain($"private global::Sample.Service? _singletonService{Names.Salt};");
+        result.GeneratedCode.ShouldNotContain("_singletonService214748");
+    }
+
+    [Fact]
     public async Task ShouldSupportCustomAttributeOnImplementationType()
     {
         // Given

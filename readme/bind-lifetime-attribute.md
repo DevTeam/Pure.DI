@@ -65,21 +65,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private SystemClock? _singletonSystemClock2147482602;
+  private SystemClock? _singletonSystemClock;
 
   public IClock Clock
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonSystemClock2147482602 is null)
+      if (_singletonSystemClock is null)
         lock (_lock)
-          if (_singletonSystemClock2147482602 is null)
+          if (_singletonSystemClock is null)
           {
-            _singletonSystemClock2147482602 = new SystemClock();
+            _singletonSystemClock = new SystemClock();
           }
 
-      return _singletonSystemClock2147482602;
+      return _singletonSystemClock;
     }
   }
 }

@@ -73,21 +73,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private ConsoleMessageWriter? _singletonConsoleMessageWriter2147482626;
+  private ConsoleMessageWriter? _singletonConsoleMessageWriter;
 
   public IMessageWriter Writer
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonConsoleMessageWriter2147482626 is null)
+      if (_singletonConsoleMessageWriter is null)
         lock (_lock)
-          if (_singletonConsoleMessageWriter2147482626 is null)
+          if (_singletonConsoleMessageWriter is null)
           {
-            _singletonConsoleMessageWriter2147482626 = new ConsoleMessageWriter();
+            _singletonConsoleMessageWriter = new ConsoleMessageWriter();
           }
 
-      return _singletonConsoleMessageWriter2147482626;
+      return _singletonConsoleMessageWriter;
     }
   }
 }

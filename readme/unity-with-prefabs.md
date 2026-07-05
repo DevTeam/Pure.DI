@@ -184,7 +184,7 @@ partial class Scope: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private ClockService? _singletonClockService72;
+  private ClockService? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Clock BuildUp(Clock buildingInstance)
@@ -192,16 +192,16 @@ partial class Scope: IDisposable
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     Clock transientClock;
     Clock localBuildingInstance = buildingInstance;
-    if (_singletonClockService72 is null)
+    if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
       lock (_lock)
-        if (_singletonClockService72 is null)
+        if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         {
           ClockConfig transientClockConfig = clockConfig;
-          _singletonClockService72 = new ClockService(transientClockConfig);
-          _disposables[_disposeIndex++] = _singletonClockService72;
+          _singletonCompositionWithGenericRootsAndArgsInOtherProject = new ClockService(transientClockConfig);
+          _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
         }
 
-    localBuildingInstance.ClockService = _singletonClockService72;
+    localBuildingInstance.ClockService = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
     transientClock = localBuildingInstance;
     return transientClock;
   }
@@ -212,16 +212,16 @@ partial class Scope: IDisposable
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     ClockDigital transientClockDigital;
     ClockDigital localBuildingInstance = buildingInstance;
-    if (_singletonClockService72 is null)
+    if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
       lock (_lock)
-        if (_singletonClockService72 is null)
+        if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         {
           ClockConfig transientClockConfig = clockConfig;
-          _singletonClockService72 = new ClockService(transientClockConfig);
-          _disposables[_disposeIndex++] = _singletonClockService72;
+          _singletonCompositionWithGenericRootsAndArgsInOtherProject = new ClockService(transientClockConfig);
+          _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
         }
 
-    localBuildingInstance.ClockService = _singletonClockService72;
+    localBuildingInstance.ClockService = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
     transientClockDigital = localBuildingInstance;
     return transientClockDigital;
   }
@@ -347,7 +347,7 @@ partial class Scope: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonClockService72 = null;
+      _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)

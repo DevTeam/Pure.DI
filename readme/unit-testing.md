@@ -113,21 +113,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private SystemClock? _singletonSystemClock72;
+  private SystemClock? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public IOrderService OrderService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonSystemClock72 is null)
+      if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         lock (_lock)
-          if (_singletonSystemClock72 is null)
+          if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
-            _singletonSystemClock72 = new SystemClock();
+            _singletonCompositionWithGenericRootsAndArgsInOtherProject = new SystemClock();
           }
 
-      return new OrderService(_singletonSystemClock72);
+      return new OrderService(_singletonCompositionWithGenericRootsAndArgsInOtherProject);
     }
   }
 }
@@ -146,7 +146,7 @@ partial class TestComposition
   private readonly Object _lock = new Object();
 #endif
 
-  private Moq.Mock<IClock>? _singletonMock72;
+  private Moq.Mock<IClock>? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public IOrderService OrderService
   {
@@ -154,17 +154,17 @@ partial class TestComposition
     get
     {
       IClock transientIClock;
-      if (_singletonMock72 is null)
+      if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         lock (_lock)
-          if (_singletonMock72 is null)
+          if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
             // The test replaces the clock with a deterministic mock
             var localClock = new Mock<IClock>();
             localClock.SetupGet(i => i.Now).Returns(new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero));
-            _singletonMock72 = localClock;
+            _singletonCompositionWithGenericRootsAndArgsInOtherProject = localClock;
           }
 
-      Moq.Mock<IClock> localMock = _singletonMock72;
+      Moq.Mock<IClock> localMock = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
       transientIClock = localMock.Object;
       return new OrderService(transientIClock);
     }
@@ -175,17 +175,17 @@ partial class TestComposition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonMock72 is null)
+      if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         lock (_lock)
-          if (_singletonMock72 is null)
+          if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
             // The test replaces the clock with a deterministic mock
             var localClock = new Mock<IClock>();
             localClock.SetupGet(i => i.Now).Returns(new DateTimeOffset(2024, 1, 1, 12, 0, 0, TimeSpan.Zero));
-            _singletonMock72 = localClock;
+            _singletonCompositionWithGenericRootsAndArgsInOtherProject = localClock;
           }
 
-      return _singletonMock72;
+      return _singletonCompositionWithGenericRootsAndArgsInOtherProject;
     }
   }
 }

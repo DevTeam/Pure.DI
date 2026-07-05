@@ -113,8 +113,8 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple2147481292;
-  private bool _singletonValueTuple2147481292Created;
+  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple1;
+  private bool _singletonValueTuple1Created;
 
   public TrainTripPlanner Planner
   {
@@ -122,18 +122,18 @@ partial class Composition
     get
     {
       var perResolveRoutePlanningSession = default(RoutePlanningSession);
-      if (!_singletonValueTuple2147481292Created)
+      if (!_singletonValueTuple1Created)
         lock (_lock)
-          if (!_singletonValueTuple2147481292Created)
+          if (!_singletonValueTuple1Created)
           {
             if (perResolveRoutePlanningSession is null)
             {
               perResolveRoutePlanningSession = new RoutePlanningSession();
             }
 
-            _singletonValueTuple2147481292 = (perResolveRoutePlanningSession, perResolveRoutePlanningSession);
+            _singletonValueTuple1 = (perResolveRoutePlanningSession, perResolveRoutePlanningSession);
             Thread.MemoryBarrier();
-            _singletonValueTuple2147481292Created = true;
+            _singletonValueTuple1Created = true;
           }
 
       if (perResolveRoutePlanningSession is null)
@@ -143,7 +143,7 @@ partial class Composition
             perResolveRoutePlanningSession = new RoutePlanningSession();
           }
 
-      return new TrainTripPlanner(perResolveRoutePlanningSession, perResolveRoutePlanningSession, _singletonValueTuple2147481292);
+      return new TrainTripPlanner(perResolveRoutePlanningSession, perResolveRoutePlanningSession, _singletonValueTuple1);
     }
   }
 }

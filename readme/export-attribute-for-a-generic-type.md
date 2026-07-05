@@ -94,7 +94,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private CommentsFactory? _singletonCommentsFactory71;
+  private CommentsFactory? _singletonCompositionInOtherProject;
 
   public IArticleService ArticleService
   {
@@ -102,14 +102,14 @@ partial class Composition
     get
     {
       IComments<Article> transientICommentsArticle;
-      if (_singletonCommentsFactory71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_singletonCommentsFactory71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _singletonCommentsFactory71 = new CommentsFactory();
+            _singletonCompositionInOtherProject = new CommentsFactory();
           }
 
-      CommentsFactory localInstance_1182D127 = _singletonCommentsFactory71;
+      CommentsFactory localInstance_1182D127 = _singletonCompositionInOtherProject;
       transientICommentsArticle = localInstance_1182D127.Create<Article>();
       return new ArticleService(transientICommentsArticle);
     }

@@ -100,21 +100,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private PayPalGateway? _singletonPayPalGateway72;
+  private PayPalGateway? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public IPaymentGateway PayPalRoot
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonPayPalGateway72 is null)
+      if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         lock (_lock)
-          if (_singletonPayPalGateway72 is null)
+          if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
-            _singletonPayPalGateway72 = new PayPalGateway();
+            _singletonCompositionWithGenericRootsAndArgsInOtherProject = new PayPalGateway();
           }
 
-      return _singletonPayPalGateway72;
+      return _singletonCompositionWithGenericRootsAndArgsInOtherProject;
     }
   }
 
@@ -123,14 +123,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonPayPalGateway72 is null)
+      if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         lock (_lock)
-          if (_singletonPayPalGateway72 is null)
+          if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
-            _singletonPayPalGateway72 = new PayPalGateway();
+            _singletonCompositionWithGenericRootsAndArgsInOtherProject = new PayPalGateway();
           }
 
-      return new PaymentProcessor(new CreditCardGateway(), _singletonPayPalGateway72, new CreditCardGateway());
+      return new PaymentProcessor(new CreditCardGateway(), _singletonCompositionWithGenericRootsAndArgsInOtherProject, new CreditCardGateway());
     }
   }
 }

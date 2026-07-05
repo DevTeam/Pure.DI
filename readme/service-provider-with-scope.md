@@ -135,8 +135,8 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Configuration? _singletonConfiguration71;
-  private Session? _scopedSession72;
+  private Configuration? _singletonCompositionInOtherProject;
+  private Session? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -170,23 +170,23 @@ partial class Composition: IDisposable
       {
         // Creates a deferred value
         EnsureConfigurationExists();
-        return root._singletonConfiguration71;
+        return root._singletonCompositionInOtherProject;
       });
       Func<ISession> perBlockFuncISession = new Func<ISession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         // Creates a deferred value
-        if (_scopedSession72 is null)
+        if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           lock (_lock)
-            if (_scopedSession72 is null)
+            if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               EnsureConfigurationExists();
-              _scopedSession72 = new Session(root._singletonConfiguration71);
-              _disposables[_disposeIndex++] = _scopedSession72;
+              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Session(root._singletonCompositionInOtherProject);
+              _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
             }
 
-        return _scopedSession72;
+        return _singletonCompositionWithGenericRootsAndArgsInOtherProject;
       });
       return new LightweightRoot()
       {
@@ -196,11 +196,11 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
       {
-        if (root._singletonConfiguration71 is null)
+        if (root._singletonCompositionInOtherProject is null)
           lock (_lock)
-            if (root._singletonConfiguration71 is null)
+            if (root._singletonCompositionInOtherProject is null)
             {
-              root._singletonConfiguration71 = new Configuration();
+              root._singletonCompositionInOtherProject = new Configuration();
             }
       }
     }
@@ -302,8 +302,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonConfiguration71 = null;
-      _scopedSession72 = null;
+      _singletonCompositionInOtherProject = null;
+      _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)

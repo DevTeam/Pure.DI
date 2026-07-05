@@ -63,14 +63,14 @@ For more hints, see [this](../README.md#setup-hints) page.
 partial class Composition
 {
 
-  private ReportGenerator? _singletonReportGenerator72;
+  private ReportGenerator? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public IReportGenerator Generator
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonReportGenerator72 is null)
+      if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
       {
         Func<IDatabaseConnection> perBlockFuncIDatabaseConnection = new Func<IDatabaseConnection>(
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -79,10 +79,10 @@ partial class Composition
           // Creates a deferred value
           return new SqlDatabaseConnection();
         });
-        _singletonReportGenerator72 = new ReportGenerator(perBlockFuncIDatabaseConnection);
+        _singletonCompositionWithGenericRootsAndArgsInOtherProject = new ReportGenerator(perBlockFuncIDatabaseConnection);
       }
 
-      return _singletonReportGenerator72;
+      return _singletonCompositionWithGenericRootsAndArgsInOtherProject;
     }
   }
 }

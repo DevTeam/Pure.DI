@@ -106,24 +106,24 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private StructConsumer<int> _singletonStructConsumer2147481780;
-  private bool _singletonStructConsumer2147481780Created;
+  private StructConsumer<int> _singletonStructConsumer;
+  private bool _singletonStructConsumerCreated;
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program<T1> GetRoot<T1>(T1 name)
     where T1: notnull
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
-    if (!_singletonStructConsumer2147481780Created)
+    if (!_singletonStructConsumerCreated)
       lock (_lock)
-        if (!_singletonStructConsumer2147481780Created)
+        if (!_singletonStructConsumerCreated)
         {
-          _singletonStructConsumer2147481780 = new StructConsumer<int>();
+          _singletonStructConsumer = new StructConsumer<int>();
           Thread.MemoryBarrier();
-          _singletonStructConsumer2147481780Created = true;
+          _singletonStructConsumerCreated = true;
         }
 
-    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _singletonStructConsumer2147481780));
+    return new Program<T1>(new Workflow<T1, int, List<T1>, Dictionary<T1, int>>(new Consumer<T1>(name), _singletonStructConsumer));
   }
 }
 ```

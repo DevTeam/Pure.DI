@@ -132,7 +132,7 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _scopedDependency71;
+  private Dependency? _singletonCompositionInOtherProject;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -159,15 +159,15 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedDependency71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_scopedDependency71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _scopedDependency71 = new Dependency();
-            _disposables[_disposeIndex++] = _scopedDependency71;
+            _singletonCompositionInOtherProject = new Dependency();
+            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
           }
 
-      return new Service(_scopedDependency71);
+      return new Service(_singletonCompositionInOtherProject);
     }
   }
 
@@ -197,7 +197,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency71 = null;
+      _singletonCompositionInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)
@@ -233,7 +233,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedDependency71 = null;
+      _singletonCompositionInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)

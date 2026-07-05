@@ -70,21 +70,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private ConsoleChannel? _singletonConsoleChannel2147482590;
+  private ConsoleChannel? _singletonConsoleChannel;
 
   public IDiagnosticsSink ConsoleDiagnostics
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonConsoleChannel2147482590 is null)
+      if (_singletonConsoleChannel is null)
         lock (_lock)
-          if (_singletonConsoleChannel2147482590 is null)
+          if (_singletonConsoleChannel is null)
           {
-            _singletonConsoleChannel2147482590 = new ConsoleChannel();
+            _singletonConsoleChannel = new ConsoleChannel();
           }
 
-      return _singletonConsoleChannel2147482590;
+      return _singletonConsoleChannel;
     }
   }
 
@@ -93,14 +93,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonConsoleChannel2147482590 is null)
+      if (_singletonConsoleChannel is null)
         lock (_lock)
-          if (_singletonConsoleChannel2147482590 is null)
+          if (_singletonConsoleChannel is null)
           {
-            _singletonConsoleChannel2147482590 = new ConsoleChannel();
+            _singletonConsoleChannel = new ConsoleChannel();
           }
 
-      return _singletonConsoleChannel2147482590;
+      return _singletonConsoleChannel;
     }
   }
 
@@ -109,14 +109,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonConsoleChannel2147482590 is null)
+      if (_singletonConsoleChannel is null)
         lock (_lock)
-          if (_singletonConsoleChannel2147482590 is null)
+          if (_singletonConsoleChannel is null)
           {
-            _singletonConsoleChannel2147482590 = new ConsoleChannel();
+            _singletonConsoleChannel = new ConsoleChannel();
           }
 
-      return _singletonConsoleChannel2147482590;
+      return _singletonConsoleChannel;
     }
   }
 }

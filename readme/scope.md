@@ -156,8 +156,8 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private RequestContext? _scopedRequestContext71;
-  private IdGenerator? _singletonIdGenerator72;
+  private RequestContext? _singletonCompositionInOtherProject;
+  private IdGenerator? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   internal static Composition SetupScope(Composition parentScope, Composition childScope)
   {
@@ -176,20 +176,20 @@ partial class Composition: IDisposable
     get
     {
       var root = _root ?? this;
-      if (_scopedRequestContext71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_scopedRequestContext71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            if (root._singletonIdGenerator72 is null)
+            if (root._singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
-              root._singletonIdGenerator72 = new IdGenerator();
+              root._singletonCompositionWithGenericRootsAndArgsInOtherProject = new IdGenerator();
             }
 
-            _scopedRequestContext71 = new RequestContext(root._singletonIdGenerator72);
-            _disposables[_disposeIndex++] = _scopedRequestContext71;
+            _singletonCompositionInOtherProject = new RequestContext(root._singletonCompositionWithGenericRootsAndArgsInOtherProject);
+            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
           }
 
-      return new CheckoutService(_scopedRequestContext71);
+      return new CheckoutService(_singletonCompositionInOtherProject);
     }
   }
 
@@ -212,8 +212,8 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedRequestContext71 = null;
-      _singletonIdGenerator72 = null;
+      _singletonCompositionInOtherProject = null;
+      _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)

@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
 {
     private readonly ConcurrentDictionary<int, string> _overrideVariableNames = new();
+    private readonly ConcurrentDictionary<int, string> _persistentVariableNames = new();
     private Dictionary<string, int>? _rootVariableNames;
 
     public IDisposable Root()
@@ -22,8 +23,8 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
         node switch
         {
             { Construct.Source: { Kind: MdConstructKind.Override, State: DpOverride @override } } => GetOverrideVariableName(@override.Source),
-            { ActualLifetime: Lifetime.Singleton } => GetVariableName(Names.SingletonVariablePrefix, node.Node.Type.Name, node.BindingId),
-            { ActualLifetime: Lifetime.Scoped } => GetVariableName(Names.ScopedVariablePrefix, node.Node.Type.Name, node.BindingId),
+            { ActualLifetime: Lifetime.Singleton } => GetPersistentVariableName(Names.SingletonVariablePrefix, node.Node.Type.Name, node.BindingId),
+            { ActualLifetime: Lifetime.Scoped } => GetPersistentVariableName(Names.ScopedVariablePrefix, node.Node.Type.Name, node.BindingId),
             { ActualLifetime: Lifetime.PerResolve } => GetUniqueVariableName(Names.PerResolveVariablePrefix, GetTypeName(node.Node.Type)),
             { Arg: { Source.Kind: ArgKind.Composition } arg } => arg.Source.IsSetupContext
                 ? arg.Source.ArgName
@@ -42,8 +43,8 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
     public string GetUniqueRootName(string name, ITypeSymbol rootType) =>
         uniqueNameProvider.GetUniqueName(string.IsNullOrWhiteSpace(name) ? ToTitleCase(rootType.Name) : name);
 
-    private static string GetVariableName(string prefix, string baseName, int id) =>
-        $"{prefix}{ToTitleCase(baseName)}{Names.Salt}{(id != 0 ? id.ToString() : "")}";
+    private string GetPersistentVariableName(string prefix, string baseName, int id) =>
+        _persistentVariableNames.GetOrAdd(id, _ => uniqueNameProvider.GetUniqueName($"{prefix}{ToTitleCase(baseName)}{Names.Salt}"));
 
     private string GetUniqueVariableName(string prefix, string baseName) =>
         GetRootUniqueName($"{prefix}{ToTitleCase(baseName)}");

@@ -2511,7 +2511,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 50KB | 13K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 117KB | 30K |
-| [AGENTS.md](AGENTS.md) | 442KB | 113K |
+| [AGENTS.md](AGENTS.md) | 444KB | 113K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

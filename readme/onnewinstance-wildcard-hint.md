@@ -115,25 +115,25 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private UserRepository? _singletonUserRepository71;
+  private UserRepository? _singletonCompositionInOtherProject;
 
   public IOrderService Root
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonUserRepository71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_singletonUserRepository71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            UserRepository _singletonUserRepository71Temp;
-            _singletonUserRepository71Temp = new UserRepository();
-            OnNewInstance<UserRepository>(ref _singletonUserRepository71Temp, null, Lifetime.Singleton);
+            UserRepository _singletonCompositionInOtherProjectTemp;
+            _singletonCompositionInOtherProjectTemp = new UserRepository();
+            OnNewInstance<UserRepository>(ref _singletonCompositionInOtherProjectTemp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _singletonUserRepository71 = _singletonUserRepository71Temp;
+            _singletonCompositionInOtherProject = _singletonCompositionInOtherProjectTemp;
           }
 
-      var transientOrderService = new OrderService(_singletonUserRepository71, new ConsoleLogger());
+      var transientOrderService = new OrderService(_singletonCompositionInOtherProject, new ConsoleLogger());
       OnNewInstance<OrderService>(ref transientOrderService, null, Lifetime.Transient);
       return transientOrderService;
     }

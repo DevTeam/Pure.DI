@@ -157,7 +157,7 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private DbConnection? _singletonDbConnection72;
+  private DbConnection? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public DataService DataService
   {
@@ -197,15 +197,15 @@ partial class Composition: IDisposable
         Abstractions.Own<IDbConnection> perBlockOwnIDbConnection1;
         // Creates the owner of an instance
         Abstractions.Own localOwn1 = perBlockOwn1;
-        if (_singletonDbConnection72 is null)
+        if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           lock (_lock)
-            if (_singletonDbConnection72 is null)
+            if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
-              _singletonDbConnection72 = new DbConnection();
-              _disposables[_disposeIndex++] = _singletonDbConnection72;
+              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new DbConnection();
+              _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
             }
 
-        IDbConnection localValue3 = _singletonDbConnection72;
+        IDbConnection localValue3 = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
         perBlockOwnIDbConnection1 = new Abstractions.Own<IDbConnection>(localValue3, localOwn1);
         lock (_lock)
         {
@@ -228,7 +228,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonDbConnection72 = null;
+      _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)

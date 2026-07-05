@@ -69,21 +69,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Preferences? _singletonPreferences71;
+  private Preferences? _singletonCompositionInOtherProject;
 
   public SettingsWindow SettingsWindow
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonPreferences71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_singletonPreferences71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _singletonPreferences71 = new Preferences();
+            _singletonCompositionInOtherProject = new Preferences();
           }
 
-      return new SettingsWindow(_singletonPreferences71);
+      return new SettingsWindow(_singletonCompositionInOtherProject);
     }
   }
 
@@ -92,14 +92,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonPreferences71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_singletonPreferences71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _singletonPreferences71 = new Preferences();
+            _singletonCompositionInOtherProject = new Preferences();
           }
 
-      return new MainWindow(_singletonPreferences71);
+      return new MainWindow(_singletonCompositionInOtherProject);
     }
   }
 }

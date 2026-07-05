@@ -131,7 +131,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private PlaybackQueue? _scopedPlaybackQueue71;
+  private PlaybackQueue? _singletonCompositionInOtherProject;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -177,14 +177,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedPlaybackQueue71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_scopedPlaybackQueue71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _scopedPlaybackQueue71 = new PlaybackQueue();
+            _singletonCompositionInOtherProject = new PlaybackQueue();
           }
 
-      return new ListeningSession(_scopedPlaybackQueue71);
+      return new ListeningSession(_singletonCompositionInOtherProject);
     }
   }
 }

@@ -125,21 +125,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Cache? _singletonCache71;
+  private Cache? _singletonCompositionInOtherProject;
 
   public IOrderService OrderService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCache71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_singletonCache71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _singletonCache71 = new Cache();
+            _singletonCompositionInOtherProject = new Cache();
           }
 
-      return new OrderService(_singletonCache71);
+      return new OrderService(_singletonCompositionInOtherProject);
     }
   }
 }

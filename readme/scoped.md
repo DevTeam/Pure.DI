@@ -144,7 +144,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private RequestContext? _scopedRequestContext71;
+  private RequestContext? _singletonCompositionInOtherProject;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -171,15 +171,15 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_scopedRequestContext71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_scopedRequestContext71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _scopedRequestContext71 = new RequestContext();
-            _disposables[_disposeIndex++] = _scopedRequestContext71;
+            _singletonCompositionInOtherProject = new RequestContext();
+            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
           }
 
-      return new CheckoutService(_scopedRequestContext71);
+      return new CheckoutService(_singletonCompositionInOtherProject);
     }
   }
 
@@ -209,7 +209,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _scopedRequestContext71 = null;
+      _singletonCompositionInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)

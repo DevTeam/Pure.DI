@@ -149,7 +149,7 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private Connection? _singletonConnection72;
+  private Connection? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public QueryHandler QueryHandler
   {
@@ -207,15 +207,15 @@ partial class Composition: IDisposable
 
         IOwned localOwned2 = transientOwned1;
         // Creates the owned value
-        if (_singletonConnection72 is null)
+        if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           lock (_lock)
-            if (_singletonConnection72 is null)
+            if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
-              _singletonConnection72 = new Connection();
-              _disposables[_disposeIndex++] = _singletonConnection72;
+              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Connection();
+              _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
             }
 
-        IConnection localValue3 = _singletonConnection72;
+        IConnection localValue3 = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
         perBlockOwnedIConnection1 = new Owned<IConnection>(localValue3, localOwned2);
         lock (_lock)
         {
@@ -238,7 +238,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonConnection72 = null;
+      _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 
     while (disposeIndex-- > 0)

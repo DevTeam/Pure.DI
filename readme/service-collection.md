@@ -90,7 +90,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private TemperatureSensor? _singletonTemperatureSensor71;
+  private TemperatureSensor? _singletonCompositionInOtherProject;
 
   private LightweightRoot LightRoot
   {
@@ -103,7 +103,7 @@ partial class Composition
       {
         // Creates a deferred value
         EnsureTemperatureSensorLivingRoomExists();
-        return _singletonTemperatureSensor71;
+        return _singletonCompositionInOtherProject;
       });
       Func<IThermostat> perBlockFuncIThermostat = new Func<IThermostat>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -111,7 +111,7 @@ partial class Composition
       {
         // Creates a deferred value
         EnsureTemperatureSensorLivingRoomExists();
-        return new Thermostat(_singletonTemperatureSensor71);
+        return new Thermostat(_singletonCompositionInOtherProject);
       });
       return new LightweightRoot()
       {
@@ -121,11 +121,11 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureTemperatureSensorLivingRoomExists()
       {
-        if (_singletonTemperatureSensor71 is null)
+        if (_singletonCompositionInOtherProject is null)
           lock (_lock)
-            if (_singletonTemperatureSensor71 is null)
+            if (_singletonCompositionInOtherProject is null)
             {
-              _singletonTemperatureSensor71 = new TemperatureSensor();
+              _singletonCompositionInOtherProject = new TemperatureSensor();
             }
       }
     }

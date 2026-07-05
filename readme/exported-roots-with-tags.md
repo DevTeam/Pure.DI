@@ -74,7 +74,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private OtherAssembly.CompositionWithTagsInOtherProject? _singletonCompositionWithTagsInOtherProject71;
+  private OtherAssembly.CompositionWithTagsInOtherProject? _singletonCompositionInOtherProject;
 
   public Program Program
   {
@@ -82,14 +82,14 @@ partial class Composition
     get
     {
       OtherAssembly.IMyService transientIMyService;
-      if (_singletonCompositionWithTagsInOtherProject71 is null)
+      if (_singletonCompositionInOtherProject is null)
         lock (_lock)
-          if (_singletonCompositionWithTagsInOtherProject71 is null)
+          if (_singletonCompositionInOtherProject is null)
           {
-            _singletonCompositionWithTagsInOtherProject71 = new OtherAssembly.CompositionWithTagsInOtherProject();
+            _singletonCompositionInOtherProject = new OtherAssembly.CompositionWithTagsInOtherProject();
           }
 
-      OtherAssembly.CompositionWithTagsInOtherProject localInstance_1182D127 = _singletonCompositionWithTagsInOtherProject71;
+      OtherAssembly.CompositionWithTagsInOtherProject localInstance_1182D127 = _singletonCompositionInOtherProject;
       transientIMyService = localInstance_1182D127.MyService;
       return new Program(transientIMyService);
     }

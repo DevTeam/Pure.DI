@@ -113,7 +113,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Clock? _singletonClock71;
+  private Clock? _singletonCompositionInOtherProject;
 
   public ITeam Team
   {
@@ -127,14 +127,14 @@ partial class Composition
         // Creates the result
         int overriddenInt32 = localArg11;
         string overriddenString = localArg2;
-        if (_singletonClock71 is null)
+        if (_singletonCompositionInOtherProject is null)
           lock (_lock)
-            if (_singletonClock71 is null)
+            if (_singletonCompositionInOtherProject is null)
             {
-              _singletonClock71 = new Clock();
+              _singletonCompositionInOtherProject = new Clock();
             }
 
-        return new Person(overriddenString, _singletonClock71, overriddenInt32);
+        return new Person(overriddenString, _singletonCompositionInOtherProject, overriddenInt32);
       });
       perBlockFuncInt32StringIPerson = localFactory;
       return new Team(perBlockFuncInt32StringIPerson);

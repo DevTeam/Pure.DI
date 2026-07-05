@@ -144,7 +144,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Clock? _singletonClock72;
+  private Clock? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public IDashboard Dashboard
   {
@@ -167,14 +167,14 @@ partial class Composition
         // Overrides the 'color' argument with the resolved value
         // Creates the instance using the overridden values
         Drawing.Color overriddenColor = localColor;
-        if (_singletonClock72 is null)
+        if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           lock (_lock)
-            if (_singletonClock72 is null)
+            if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
-              _singletonClock72 = new Clock();
+              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Clock();
             }
 
-        return new Widget(overriddenString, _singletonClock72, overriddenInt32, overriddenInt321, overriddenColor);
+        return new Widget(overriddenString, _singletonCompositionWithGenericRootsAndArgsInOtherProject, overriddenInt32, overriddenInt321, overriddenColor);
       };
       return new Dashboard(transientFuncInt32Int32IWidget);
     }

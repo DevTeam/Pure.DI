@@ -108,31 +108,31 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private RagChatAssistant? _singletonRagChatAssistant72;
-  private LlmGateway? _singletonLlmGateway71;
+  private RagChatAssistant? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+  private LlmGateway? _singletonCompositionInOtherProject;
 
   public IChatAssistant Assistant
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonRagChatAssistant72 is null)
+      if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         lock (_lock)
-          if (_singletonRagChatAssistant72 is null)
+          if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
             EnsureLlmGatewayExists();
-            _singletonRagChatAssistant72 = new RagChatAssistant(_singletonLlmGateway71, _singletonLlmGateway71);
+            _singletonCompositionWithGenericRootsAndArgsInOtherProject = new RagChatAssistant(_singletonCompositionInOtherProject, _singletonCompositionInOtherProject);
           }
 
-      return _singletonRagChatAssistant72;
+      return _singletonCompositionWithGenericRootsAndArgsInOtherProject;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLlmGatewayExists()
       {
-        if (_singletonLlmGateway71 is null)
+        if (_singletonCompositionInOtherProject is null)
           lock (_lock)
-            if (_singletonLlmGateway71 is null)
+            if (_singletonCompositionInOtherProject is null)
             {
-              _singletonLlmGateway71 = new LlmGateway();
+              _singletonCompositionInOtherProject = new LlmGateway();
             }
       }
     }
