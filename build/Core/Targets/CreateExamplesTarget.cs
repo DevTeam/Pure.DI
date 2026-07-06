@@ -10,7 +10,7 @@ class CreateExamplesTarget(
 {
     private const string VisibleKey = "v";
     private const string TitleKey = "t";
-    public const string PriorityKey = "p";
+    private const string PriorityKey = "p";
     public const string DescriptionKey = "d";
     public const string IntegrationTestKey = "i";
     public const string HeaderKey = "h";
