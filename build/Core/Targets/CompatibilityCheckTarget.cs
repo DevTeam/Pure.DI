@@ -88,6 +88,8 @@ class CompatibilityCheckTarget(
                 .WithName("MyApp")
                 .WithOutput(tempDirectory)
                 .WithForce(true)
+                // Parallel `dotnet new` runs race on ~/.templateengine/packages.json during the template update check
+                .AddArgs("--no-update-check")
                 .WithFramework(framework)
                 .WithShortName($"creating the project from the dilib template for {framework}")
                 .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
@@ -142,6 +144,7 @@ class CompatibilityCheckTarget(
                     .WithTemplateName(templateName)
                     .WithName("MyApp")
                     .WithOutput(tempDirForFramework)
+                    .AddArgs("--no-update-check")
                     .WithFramework(framework)
                     .WithShortName($"creating the project from the {templateName} template for {framework}")
                     .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
