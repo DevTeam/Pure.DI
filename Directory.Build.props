@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <VersionRange>2.5.*</VersionRange>
-        <InternalVersion>2.4.3</InternalVersion>
+        <InternalVersion>2.5.0</InternalVersion>
         <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>latest</LangVersion>
         <!--Make sure that Build.Settings.BaseDotNetFrameworkMajorVersion has been updated.-->
