@@ -9,7 +9,8 @@ partial class DesignTimeComposition: Composition
     [Conditional("DI")]
     private void Setup() => DI.Setup()
         .Hint(Hint.Resolve, "Off")
-        // Single composition root for the application
+
+        // Overrides the application root with design-time view models
         .Root<Root>(nameof(Root), kind: Override)
 
         .Bind().To<DesignTimeAppViewModel>()

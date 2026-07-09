@@ -11,6 +11,7 @@ partial class DesignTimeComposition: Composition
     private void Setup() => DI.Setup()
         .Hint(Hint.Resolve, "Off")
 
+        // Overrides virtual roots with design-time view models
         .Root<IAppViewModel>(nameof(App), kind: Override)
         .Root<IClockViewModel>(nameof(Clock), kind: Override)
 

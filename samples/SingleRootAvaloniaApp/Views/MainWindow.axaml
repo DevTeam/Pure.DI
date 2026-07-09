@@ -5,16 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AvaloniaApp.Views.MainWindow"
-        DataContext="{StaticResource Composition}"
         xmlns:app="clr-namespace:AvaloniaApp"
-        x:DataType="app:Composition"
-        Design.DataContext="{StaticResource DesignTimeComposition}"
-        Title="{Binding Root.App.Title}"
+        DataContext="{ReflectionBinding Root, Source={StaticResource Composition}}"
+        x:DataType="app:Root"
+        Design.DataContext="{ReflectionBinding Root, Source={StaticResource DesignTimeComposition}}"
+        Title="{Binding App.Title}"
         Icon="/Assets/avalonia-logo.ico"
         FontFamily="Consolas"
         FontWeight="Bold">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Root.Clock}">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding Clock}">
         <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center" />
         <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center" />
     </StackPanel>

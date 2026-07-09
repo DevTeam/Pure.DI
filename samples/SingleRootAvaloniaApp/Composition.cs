@@ -8,7 +8,8 @@ namespace AvaloniaApp;
 
 partial class Composition
 {
-    void Setup() => DI.Setup()
+    [Conditional("DI")]
+    private void Setup() => DI.Setup()
         // Single composition root for the application
         .Root<Root>(nameof(Root), kind: Virtual)
         .Bind().As(Singleton).To<Root>()

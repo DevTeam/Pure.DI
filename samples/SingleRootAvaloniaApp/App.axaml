@@ -11,10 +11,10 @@
 
     <Application.Resources>
         <!--Creates a shared resource of type Composition and with key "Composition",
-        which will be further used as a data context in the views.-->
+        which provides the single application root for the views.-->
         <app:Composition x:Key="Composition"  />
 
-        <!--Design time composition-->
+        <!--Design-time composition-->
         <app:DesignTimeComposition x:Key="DesignTimeComposition" />
     </Application.Resources>
 

@@ -12,15 +12,17 @@ public class App : Application
     {
         if (Resources[nameof(Composition)] is Composition composition)
         {
+            var root = composition.Root;
+
             // Assigns the main window/view
             switch (ApplicationLifetime)
             {
                 case IClassicDesktopStyleApplicationLifetime desktop:
-                    desktop.MainWindow = composition.Root.CreateMainWindow();
+                    desktop.MainWindow = root.CreateMainWindow();
                     break;
 
                 case ISingleViewApplicationLifetime singleView:
-                    singleView.MainView = composition.Root.CreateMainWindow();
+                    singleView.MainView = root.CreateMainWindow();
                     break;
             }
 
@@ -29,7 +31,7 @@ public class App : Application
             {
                 controlledLifetime.Exit += (_, _) => {
                     // Disposal of root objects with lifetime Transient, PerBlock, PerResolve
-                    composition.Root.Owned.Dispose();
+                    root.Owned.Dispose();
                     // Dispose of singletons
                     composition.Dispose();
                 };

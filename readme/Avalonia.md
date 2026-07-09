@@ -26,7 +26,7 @@ partial class Composition
         .Hint(Hint.Resolve, "Off")
 
         // Virtual roots are properties on the composition class but are not
-        // backed by a separate private field — XAML reads them through the
+        // backed by a separate private field - XAML reads them through the
         // DataContext binding chain, so no dedicated storage is needed.
         .Root<IAppViewModel>(nameof(App), kind: Virtual)
         .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
@@ -38,6 +38,29 @@ partial class Composition
         // Infrastructure
         .Bind().To<DebugLog<TT>>()
         .Bind().To<AvaloniaDispatcher>();
+}
+```
+
+A design-time composition can override the same virtual roots with predictable view models for the Avalonia designer. The design-time setup is in [DesignTimeComposition.cs](/samples/AvaloniaApp/DesignTimeComposition.cs):
+
+```c#
+using Pure.DI;
+using static Pure.DI.RootKinds;
+
+namespace AvaloniaApp;
+
+partial class DesignTimeComposition: Composition
+{
+    [System.Diagnostics.Conditional("DI")]
+    private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
+        // Overrides virtual roots with design-time view models
+        .Root<IAppViewModel>(nameof(App), kind: Override)
+        .Root<IClockViewModel>(nameof(Clock), kind: Override)
+
+        .Bind().To<DesignTimeAppViewModel>()
+        .Bind().To<DesignTimeClockViewModel>();
 }
 ```
 
@@ -112,7 +135,7 @@ public class App : Application
 }
 ```
 
-You can now use bindings and the code-behind-free approach. All previously defined composition roots are now available from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, e.g. _Clock_:
+You can now use bindings and the code-behind-free approach. All previously defined composition roots are now available from [markup](/samples/AvaloniaApp/MainWindow.axaml) without any effort, e.g. _Clock_:
 
 ```xml
 <Window xmlns="https://github.com/avaloniaui"
