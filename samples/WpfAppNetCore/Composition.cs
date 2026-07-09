@@ -1,6 +1,7 @@
 // ReSharper disable UnusedMember.Local
 using Pure.DI;
 using static Pure.DI.Lifetime;
+using static Pure.DI.RootKinds;
 
 namespace WpfAppNetCore;
 
@@ -10,8 +11,8 @@ partial class Composition
     private void Setup() => DI.Setup()
         .Hint(Hint.Resolve, "Off")
 
-        .Root<IAppViewModel>(nameof(App))
-        .Root<IClockViewModel>(nameof(Clock))
+        .Root<IAppViewModel>(nameof(App), kind: Virtual)
+        .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
         .Bind().As(Singleton).To<ClockViewModel>()
         .Bind().To<ClockModel>()

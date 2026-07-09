@@ -12,6 +12,7 @@ The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/
 ```c#
 using Pure.DI;
 using static Pure.DI.Lifetime;
+using static Pure.DI.RootKinds;
 
 namespace WpfAppNetCore;
 
@@ -21,8 +22,8 @@ partial class Composition
     private void Setup() => DI.Setup()
         .Hint(Hint.Resolve, "Off")
 
-        .Root<IAppViewModel>(nameof(App))
-        .Root<IClockViewModel>(nameof(Clock))
+        .Root<IAppViewModel>(nameof(App), kind: Virtual)
+        .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
         .Bind().As(Singleton).To<ClockViewModel>()
         .Bind().To<ClockModel>()
@@ -31,6 +32,29 @@ partial class Composition
         // Infrastructure
         .Bind().To<DebugLog<TT>>()
         .Bind().To<WpfDispatcher>();
+}
+```
+
+A design-time composition can override the same virtual roots with predictable view models for the WPF designer. The design-time setup is in [DesignTimeComposition.cs](/samples/WpfAppNetCore/DesignTimeComposition.cs):
+
+```c#
+using Pure.DI;
+using static Pure.DI.RootKinds;
+
+namespace WpfAppNetCore;
+
+partial class DesignTimeComposition: Composition
+{
+    [System.Diagnostics.Conditional("DI")]
+    private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
+        // Overrides virtual roots with design-time view models
+        .Root<IAppViewModel>(nameof(App), kind: Override)
+        .Root<IClockViewModel>(nameof(Clock), kind: Override)
+
+        .Bind().To<DesignTimeAppViewModel>()
+        .Bind().To<DesignTimeClockViewModel>();
 }
 ```
 
@@ -65,7 +89,7 @@ creates a shared resource of type `Composition` and with key _"Composition"_, wh
 
 Dispose the shared composition from the WPF `Exit` event when the application closes, especially if singleton services implement `IDisposable`.
 
-You can now use bindings to model views without even editing the views `.cs` code files. All previously defined composition roots are now accessible from [markup](/samples/WpfAppNetCore/Views/MainWindow.xaml) without any effort, such as _ClockViewModel_:
+You can now use bindings to model views without even editing the views `.cs` code files. All previously defined composition roots are now accessible from [markup](/samples/WpfAppNetCore/MainWindow.xaml) without any effort, such as _ClockViewModel_:
 
 ```xaml
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
