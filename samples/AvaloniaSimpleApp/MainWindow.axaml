@@ -4,8 +4,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AvaloniaSimpleApp.MainWindow"
-        DataContext="{StaticResource Composition}"
         xmlns:app="clr-namespace:AvaloniaSimpleApp"
-        x:DataType="app:Composition"
-        Title="{Binding MainViewModel.Title}"
-        Content="{Binding MainViewModel.Greetings}" />
+        DataContext="{ReflectionBinding MainViewModel, Source={StaticResource Composition}}"
+        x:DataType="app:IMainViewModel"
+        Design.DataContext="{ReflectionBinding MainViewModel, Source={StaticResource DesignTimeComposition}}"
+        Title="{Binding Title}"
+        Content="{Binding Greetings}" />

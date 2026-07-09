@@ -12,6 +12,7 @@
 
     <Application.Resources>
         <app:Composition x:Key="Composition" />
+        <app:DesignTimeComposition x:Key="DesignTimeComposition" />
     </Application.Resources>
 
 </Application>
