@@ -300,7 +300,7 @@ sealed class RootMethodsBuilder(
         rootSignature.Append(root.DisplayName);
         rootSignature.Append(GetTypeArguments(root));
 
-        rootSignature.Append($"({string.Join(", ", root.RootArgs.Select(arg => $"{typeResolver.Resolve(composition.Setup, arg.InstanceType)} {arg.Name}"))})");
+        rootSignature.Append($"({string.Join(", ", root.RootArgs.Select(arg => $"{GetRootArgPrefix(arg)}{typeResolver.Resolve(composition.Setup, arg.InstanceType)} {arg.Name}"))})");
         return rootSignature.ToString();
     }
 
@@ -315,6 +315,9 @@ sealed class RootMethodsBuilder(
             Accessibility.Public => "public",
             _ => ""
         };
+
+    private static string GetRootArgPrefix(VarDeclaration arg) =>
+        arg.InstanceType.IsRefLikeType ? "scoped " : "";
 
     private TypeDescription GetAttributeType(CompositionCode composition, Root root) =>
         marker.IsMarkerBased(composition.Setup, root.Injection.Type)

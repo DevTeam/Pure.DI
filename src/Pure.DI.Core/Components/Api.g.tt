@@ -2393,7 +2393,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <param name="tags">Tags used to distinguish arguments of the same type.</param>
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="RootArg{T}"/>
-        IConfiguration Arg<T>(string name, params object[] tags);
+        IConfiguration Arg<T>(string name, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Adds a root argument that must be supplied when calling the root method.
@@ -2409,7 +2413,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <param name="tags">Tags used to distinguish arguments of the same type.</param>
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="Arg{T}"/>
-        IConfiguration RootArg<T>(string name, params object[] tags);
+        IConfiguration RootArg<T>(string name, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines a composition root and generates a property or method based on <see cref="RootKinds"/>.
@@ -3526,12 +3534,18 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 
             /// <inheritdoc />
             public IConfiguration Arg<T>(string name, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration RootArg<T>(string name, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }

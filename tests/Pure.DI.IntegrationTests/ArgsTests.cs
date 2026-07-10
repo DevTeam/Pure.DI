@@ -541,6 +541,63 @@ public class ArgsTests
         result.StdOut.ShouldBe(["Some Name_99"], result);
     }
 
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportScopedReadOnlySpanRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              class Parser
+                              {
+                                  private int _length;
+
+                                  [Ordinal]
+                                  public void Initialize(ReadOnlySpan<char> text)
+                                  {
+                                      _length = text.Length;
+                                  }
+
+                                  public int Length => _length;
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // Resolve = Off
+                                      DI.Setup("Composition")
+                                          .RootArg<ReadOnlySpan<char>>("text")
+                                          .Root<Parser>("Parse");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.Parse("Hello".AsSpan()).Length);
+                                  }
+                              }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["5"], result);
+        result.GeneratedCode.ShouldContain("public global::Sample.Parser Parse(scoped System.ReadOnlySpan<char> text)");
+    }
+#endif
+
     [Fact]
     public async Task ShouldSupportSeveralArgs()
     {

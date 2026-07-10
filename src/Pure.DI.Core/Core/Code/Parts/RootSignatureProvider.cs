@@ -51,7 +51,7 @@ class RootSignatureProvider(
 
         if (root.IsMethod)
         {
-            rootSignature.Append($"({string.Join(", ", root.RootArgs.Select(arg => $"{typeResolver.Resolve(composition.Setup, arg.InstanceType)} {arg.Name}"))})");
+            rootSignature.Append($"({string.Join(", ", root.RootArgs.Select(arg => $"{GetRootArgPrefix(arg)}{typeResolver.Resolve(composition.Setup, arg.InstanceType)} {arg.Name}"))})");
         }
 
         return rootSignature.ToString();
@@ -126,6 +126,8 @@ class RootSignatureProvider(
             _ => ""
         };
 
+    private static string GetRootArgPrefix(VarDeclaration arg) =>
+        arg.InstanceType.IsRefLikeType ? "scoped " : "";
 
     private static void FillConstraints(ITypeParameterSymbol typeParam, List<string> constrains)
     {
