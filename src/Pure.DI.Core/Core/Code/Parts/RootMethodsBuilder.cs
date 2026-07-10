@@ -13,6 +13,7 @@ sealed class RootMethodsBuilder(
     IUniqueNameProvider uniqueNameProvider,
     INameFormatter nameFormatter,
     ITypeResolver typeResolver,
+    IRefSafety refSafety,
     CancellationToken cancellationToken)
     : IClassPartBuilder
 {
@@ -316,8 +317,8 @@ sealed class RootMethodsBuilder(
             _ => ""
         };
 
-    private static string GetRootArgPrefix(VarDeclaration arg) =>
-        arg.InstanceType.IsRefLikeType ? "scoped " : "";
+    private string GetRootArgPrefix(VarDeclaration arg) =>
+        refSafety.IsMaybeRefLike(arg.InstanceType) ? "scoped " : "";
 
     private TypeDescription GetAttributeType(CompositionCode composition, Root root) =>
         marker.IsMarkerBased(composition.Setup, root.Injection.Type)

@@ -320,14 +320,14 @@ example scenarios. IDs and anchors are stable; message text is localized.
 
 ### DIE046
 - Description: Cannot use stack-only dependency with stored lifetime.
-- Problem: Stored lifetimes such as Singleton, Scoped, and PerResolve may keep instances beyond the current stack frame.
+- Problem: Stored lifetimes such as Singleton, Scoped, and PerResolve may keep instances beyond the current stack frame. This also applies to generic `T` with `where T : allows ref struct`.
 - Fix: Keep stack-only values transient and consume them immediately through method injection.
 - See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
 - Examples: `Bind().As(Lifetime.Singleton).To<Parser>()` where `Parser` needs `ReadOnlySpan<char>`.
 
 ### DIE047
 - Description: Cannot inject stack-only dependency into field or property.
-- Problem: Field and property injection may expose a scoped `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` root argument outside its declaration scope. Even a setter-only property is opaque to the compiler at the call site.
+- Problem: Field and property injection may expose a scoped `Span<T>`, `ReadOnlySpan<T>`, custom `ref struct`, or generic `T` with `where T : allows ref struct` root argument outside its declaration scope. Even a setter-only property is opaque to the compiler at the call site.
 - Fix: Replace the field/property injection with method injection that consumes the stack-only value immediately.
 - See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
 - Examples: `[Ordinal] public ReadOnlySpan<char> Text;`, `[Ordinal] public ReadOnlySpan<char> Text { set { ... } }`, or `public ReadOnlySpan<char> Text { get; init; }`.
@@ -427,7 +427,7 @@ example scenarios. IDs and anchors are stable; message text is localized.
 
 ### DIW012
 - Description: Stack-only dependency is injected into constructor of heap type.
-- Problem: Constructor injection may be valid when the constructor consumes `Span<T>`, `ReadOnlySpan<T>`, or a custom `ref struct` immediately, but it is easy to accidentally store stack-only state in a heap object.
+- Problem: Constructor injection may be valid when the constructor consumes `Span<T>`, `ReadOnlySpan<T>`, a custom `ref struct`, or generic `T` with `where T : allows ref struct` immediately, but it is easy to accidentally store stack-only state in a heap object.
 - Fix: Prefer method injection with a scoped root argument for new code when the stack-only value is only needed during initialization.
 - See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
 - Examples: `class Parser(ReadOnlySpan<char> text)` resolved by a composition root.

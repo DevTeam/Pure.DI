@@ -274,6 +274,195 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericRootArgWithImmediateMethodUse()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .RootArg<T>("text")
+                                           .Root<Parser<T>>("Parse");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Parse("Hello".AsSpan()).Initialized);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain("partial class Composition<T>");
+        result.GeneratedCode.ShouldContain("Parse(scoped T text)");
+        result.GeneratedCode.ShouldContain("where T : allows ref struct");
+    }
+
+    [Fact]
+    public async Task ShouldShowWarningWhenAllowsRefStructGenericInjectedIntoHeapTypeConstructor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   public Parser(T text)
+                                   {
+                                       _ = text;
+                                       Initialized = true;
+                                   }
+
+                                   public bool Initialized { get; }
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .RootArg<T>("text")
+                                           .Root<Parser<T>>("Parse");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Parse("Hello".AsSpan()).Initialized);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyConstructorInjectionIntoHeapType).ShouldBe(1, result);
+        result.GeneratedCode.ShouldContain("Parse(scoped T text)");
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAllowsRefStructGenericInjectedIntoProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   [Ordinal]
+                                   public T Text
+                                   {
+                                       set {}
+                                   }
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .RootArg<T>("text")
+                                           .Root<Parser<T>>("Parse");
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyFieldOrPropertyInjection).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAllowsRefStructGenericUsesStoredLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   [Ordinal]
+                                   public void Initialize(T text) {}
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind().As(Singleton).To<Parser<T>>()
+                                           .RootArg<T>("text")
+                                           .Root<Parser<T>>("Parse");
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDependencyWithStoredLifetime).ShouldBe(1, result);
+    }
+
+    [Fact]
     public async Task ShouldShowErrorWhenStackOnlyImplementationRequiresInterfaceConversion()
     {
         // Given

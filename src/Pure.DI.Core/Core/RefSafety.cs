@@ -28,6 +28,36 @@ sealed class RefSafety : IRefSafety
         }
     }
 
+    public bool IsMaybeRefLike(ITypeSymbol type) =>
+        IsRefLike(type)
+#if ROSLYN5_6_OR_GREATER
+        || type is ITypeParameterSymbol { AllowsRefLikeType: true }
+#endif
+        ;
+
+    public bool ContainsMaybeRefLike(ITypeSymbol type)
+    {
+        if (IsMaybeRefLike(type))
+        {
+            return true;
+        }
+
+        switch (type)
+        {
+            case INamedTypeSymbol namedType:
+                return namedType.TypeArguments.Any(ContainsMaybeRefLike);
+
+            case IArrayTypeSymbol arrayType:
+                return ContainsMaybeRefLike(arrayType.ElementType);
+
+            case IPointerTypeSymbol pointerType:
+                return ContainsMaybeRefLike(pointerType.PointedAtType);
+
+            default:
+                return false;
+        }
+    }
+
     public bool IsScopedParameter(IParameterSymbol parameter) =>
         parameter.ScopedKind != ScopedKind.None;
 }

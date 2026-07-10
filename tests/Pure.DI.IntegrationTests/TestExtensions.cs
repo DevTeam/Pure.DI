@@ -315,14 +315,17 @@ public static class TestExtensions
 
         output.Add($"Language version is {compilation.LanguageVersion}");
         output.Add(Environment.NewLine);
-        foreach (var diagnosticsBySourceTree in diagnostics.GroupBy(i => i.Location.SourceTree!))
+        foreach (var diagnosticsBySourceTree in diagnostics.GroupBy(i => i.Location.SourceTree))
         {
             output.AddRange(diagnosticsBySourceTree.Select(diagnostic => diagnostic.ToString()));
             output.Add(Environment.NewLine);
 
-            var sourceCode = diagnosticsBySourceTree.Key.ToString();
-            output.AddRange(AddLineNumbers(sourceCode));
-            output.Add(Environment.NewLine);
+            if (diagnosticsBySourceTree.Key is {} sourceTree)
+            {
+                var sourceCode = sourceTree.ToString();
+                output.AddRange(AddLineNumbers(sourceCode));
+                output.Add(Environment.NewLine);
+            }
         }
 
         if (!(options?.CheckCompilationErrors ?? true))

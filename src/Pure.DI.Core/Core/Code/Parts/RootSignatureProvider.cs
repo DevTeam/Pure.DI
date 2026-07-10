@@ -2,7 +2,8 @@
 
 class RootSignatureProvider(
     IRootAccessModifierResolver rootAccessModifierResolver,
-    ITypeResolver typeResolver)
+    ITypeResolver typeResolver,
+    IRefSafety refSafety)
     : IRootSignatureProvider
 {
     private const string ClassConstraint = "class";
@@ -10,6 +11,7 @@ class RootSignatureProvider(
     private const string NotnullConstraint = "notnull";
     private const string StructConstraint = "struct";
     private const string NewConstraint = "new()";
+    private const string AllowsRefStructConstraint = "allows ref struct";
 
     public string GetRootSignature(CompositionCode composition, Root root)
     {
@@ -126,8 +128,8 @@ class RootSignatureProvider(
             _ => ""
         };
 
-    private static string GetRootArgPrefix(VarDeclaration arg) =>
-        arg.InstanceType.IsRefLikeType ? "scoped " : "";
+    private string GetRootArgPrefix(VarDeclaration arg) =>
+        refSafety.IsMaybeRefLike(arg.InstanceType) ? "scoped " : "";
 
     private static void FillConstraints(ITypeParameterSymbol typeParam, List<string> constrains)
     {
@@ -155,5 +157,12 @@ class RootSignatureProvider(
         {
             constrains.Add(NewConstraint);
         }
+
+#if ROSLYN5_6_OR_GREATER
+        if (typeParam.AllowsRefLikeType)
+        {
+            constrains.Add(AllowsRefStructConstraint);
+        }
+#endif
     }
 }

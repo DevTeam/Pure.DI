@@ -22,7 +22,7 @@ sealed class RefSafetyValidator(
         foreach (var dependency in dependencyGraph.Graph.Edges)
         {
             var targetType = dependency.Target.Type;
-            if (!refSafety.ContainsRefLike(targetType) && !refSafety.ContainsRefLike(dependency.Injection.Type))
+            if (!refSafety.ContainsMaybeRefLike(targetType) && !refSafety.ContainsMaybeRefLike(dependency.Injection.Type))
             {
                 continue;
             }
@@ -43,7 +43,7 @@ sealed class RefSafetyValidator(
     {
         var consumer = dependency.Target;
         if (consumer.Lifetime is not (Singleton or Scoped or PerResolve)
-            || !refSafety.ContainsRefLike(dependency.Injection.Type))
+            || !refSafety.ContainsMaybeRefLike(dependency.Injection.Type))
         {
             return true;
         }
@@ -69,7 +69,7 @@ sealed class RefSafetyValidator(
         if (MatchesConstructor(implementation, dependency))
         {
             if (implementation.Source.Type.TypeKind == TypeKind.Class
-                && refSafety.ContainsRefLike(injection.Type))
+                && refSafety.ContainsMaybeRefLike(injection.Type))
             {
                 ReportWarning(
                     reported,

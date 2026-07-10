@@ -6,5 +6,9 @@ interface IRefSafety
 
     bool ContainsRefLike(ITypeSymbol type);
 
+    bool IsMaybeRefLike(ITypeSymbol type);
+
+    bool ContainsMaybeRefLike(ITypeSymbol type);
+
     bool IsScopedParameter(IParameterSymbol parameter);
 }
