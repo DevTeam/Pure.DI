@@ -447,6 +447,184 @@ public class PropertyInjectionTests
         result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
     }
 
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportRequiredFieldBackedInitPropertyInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   string Name { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public string Name => "dependency";
+                               }
+                           
+                               class Service
+                               {
+                                   public required IDependency Dependency
+                                   {
+                                       get;
+                                       init => field = value;
+                                   }
+
+                                   public string Name => Dependency.Name;
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["dependency"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportRequiredFieldBackedInitPropertyValidation()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   string Name { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public string Name => "valid";
+                               }
+                           
+                               class Service
+                               {
+                                   public required IDependency Dependency
+                                   {
+                                       get;
+                                       init
+                                       {
+                                           Console.WriteLine(value.Name);
+                                           field = value.Name == "valid"
+                                               ? value
+                                               : throw new InvalidOperationException("Invalid dependency.");
+                                       }
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["valid"], result);
+    }
+
+    [Fact]
+    public async Task ShouldUseObjectInitializerForRequiredFieldBackedInitPropertyInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency
+                               {        
+                               }
+                           
+                               class Service
+                               {
+                                   public required IDependency Dependency
+                                   {
+                                       get;
+                                       init => field = value;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.ShouldContain("new global::Sample.Service() { Dependency = new global::Sample.Dependency() }");
+        result.GeneratedCode.ShouldNotContain(".Dependency = new global::Sample.Dependency();");
+    }
+#endif
+
     [Fact]
     public async Task ShouldSupportPropertyInjectionWithTag()
     {
