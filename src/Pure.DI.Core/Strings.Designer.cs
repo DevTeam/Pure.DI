@@ -1021,6 +1021,15 @@ namespace Pure.DI {
                 return ResourceManager.GetString("Description_ErrorStackOnlyInterfaceConversion", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately..
+        /// </summary>
+        internal static string Description_ErrorStackOnlyDelegateCapture {
+            get {
+                return ResourceManager.GetString("Description_ErrorStackOnlyDelegateCapture", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Binding has been overridden..

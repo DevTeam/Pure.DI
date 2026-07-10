@@ -339,6 +339,13 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
 - Examples: `Bind<IParser>().To<Parser>()` where `Parser` is a `ref struct`.
 
+### DIE049
+- Description: Cannot capture stack-only dependency in a generated delegate or factory.
+- Problem: A generated delegate or deferred factory can outlive the current stack frame. Capturing `Span<T>`, `ReadOnlySpan<T>`, a custom `ref struct`, or generic `T` with `where T : allows ref struct` would allow a stack-only value to escape.
+- Fix: Resolve and consume the stack-only value immediately in a root method or immediate factory body. Do not hide it behind `Func<>`, `Action`, or a custom delegate.
+- See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
+- Examples: `Bind<ParserAction<T>>().To(ctx => new ParserAction<T>(() => ctx.Inject<T>(out _)))` where `T : allows ref struct`.
+
 ## Warnings
 
 ### DIW000

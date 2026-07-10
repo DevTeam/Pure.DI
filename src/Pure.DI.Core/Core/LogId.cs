@@ -99,6 +99,8 @@ static class LogId
     public const string ErrorStackOnlyFieldOrPropertyInjection = "DIE047";
     // Stack-only implementation cannot be injected through an interface conversion.
     public const string ErrorStackOnlyInterfaceConversion = "DIE048";
+    // Stack-only dependency cannot be captured by a generated delegate or factory.
+    public const string ErrorStackOnlyDelegateCapture = "DIE049";
 
     // Warnings
     // Binding has been overridden.

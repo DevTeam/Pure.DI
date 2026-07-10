@@ -337,7 +337,10 @@
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
     <value>Нельзя внедрить stack-only реализацию через преобразование к интерфейсу.</value>
   </data>
-    <data name="Description_WarningOverriddenBinding" xml:space="preserve">
+    <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
+    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+  </data>
+  <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Привязка была переопределена.</value>
     </data>
     <data name="Description_WarningNoRoots" xml:space="preserve">

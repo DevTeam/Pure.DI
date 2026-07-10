@@ -81,7 +81,8 @@ public IPath Path
 ```
 Constructor injection into a heap type is available for compatibility and reports warning `DIW012`. Prefer method injection for new code when the stack-only value is only needed during initialization.
 Generic root arguments with `where T : allows ref struct` follow the same rules. Pure.DI treats such `T` as maybe stack-only and emits `scoped T` in generated root signatures.
-Pure.DI reports errors when `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` values are injected into fields, properties, stored lifetimes, or interface conversions.
+Factory bodies may resolve and consume stack-only values immediately via `ctx.Inject<T>(...)` when the API target supports `allows ref struct`. Pure.DI reports `DIE049` when such values are captured behind a generated delegate or deferred factory.
+Pure.DI reports errors when `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` values are injected into fields, properties, stored lifetimes, delegate captures, or interface conversions.
 
 <details>
 <summary>The following partial class will be generated</summary>

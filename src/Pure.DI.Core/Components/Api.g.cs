@@ -5782,7 +5782,11 @@ namespace Pure.DI
         /// <param name="value">Resolved instance.</param>
         /// <typeparam name="T">Instance type.</typeparam>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
-        void Inject<T>(out T value);
+        void Inject<T>(out T value)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Injects an instance of type <c>T</c> marked with a tag. Cannot be used outside the binding setup.
@@ -5802,7 +5806,11 @@ namespace Pure.DI
         /// <param name="value">Resolved instance.</param>
         /// <typeparam name="T">Instance type.</typeparam>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
-        void Inject<T>(object tag, out T value);
+        void Inject<T>(object tag, out T value)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Builds up an existing object by injecting dependencies into methods, properties, or fields.

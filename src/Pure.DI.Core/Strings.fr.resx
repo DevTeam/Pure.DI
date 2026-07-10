@@ -328,6 +328,9 @@
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
     <value>Cannot inject stack-only implementation through an interface conversion.</value>
   </data>
+  <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
+    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Le binding a été surchargé.</value>
     </data>

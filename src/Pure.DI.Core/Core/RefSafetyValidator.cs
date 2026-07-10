@@ -28,6 +28,7 @@ sealed class RefSafetyValidator(
             }
 
             isValid &= ValidateStorageLifetime(dependency, reported);
+            isValid &= ValidateDelegateCapture(dependency, reported);
             isValid &= ValidateInjectionSite(dependency, reported);
         }
 
@@ -54,6 +55,25 @@ sealed class RefSafetyValidator(
             nameof(Strings.Description_ErrorStackOnlyDependencyWithStoredLifetime),
             Strings.Description_ErrorStackOnlyDependencyWithStoredLifetime,
             locationProvider.GetLocation(consumer.Binding.Source));
+        return false;
+    }
+
+    private bool ValidateDelegateCapture(Dependency dependency, HashSet<ReportKey> reported)
+    {
+        var consumer = dependency.Target;
+        if (consumer.Factory is null
+            || consumer.Type.TypeKind != TypeKind.Delegate
+            || !refSafety.ContainsMaybeRefLike(dependency.Injection.Type))
+        {
+            return true;
+        }
+
+        Report(
+            reported,
+            LogId.ErrorStackOnlyDelegateCapture,
+            nameof(Strings.Description_ErrorStackOnlyDelegateCapture),
+            Strings.Description_ErrorStackOnlyDelegateCapture,
+            GetLocation(dependency.Injection));
         return false;
     }
 

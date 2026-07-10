@@ -463,6 +463,103 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericInImmediateFactoryUse()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   public Parser(bool initialized) => Initialized = initialized;
+
+                                   public bool Initialized { get; }
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .RootArg<T>("text")
+                                           .Bind<Parser>().To(ctx =>
+                                           {
+                                               ctx.Inject<T>(out var text);
+                                               _ = text;
+                                               return new Parser(true);
+                                           })
+                                           .Root<Parser>("Parse");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Parse("Hello".AsSpan()).Initialized);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAllowsRefStructGenericCapturedByGeneratedDelegate()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               delegate void ParserAction<T>()
+                                   where T : allows ref struct;
+
+                               class Runner<T>
+                                   where T : allows ref struct
+                               {
+                                   public Runner(ParserAction<T> parse) {}
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .RootArg<T>("text")
+                                           .Bind<ParserAction<T>>().To(ctx => new ParserAction<T>(() =>
+                                           {
+                                               ctx.Inject<T>(out var text);
+                                               _ = text;
+                                           }))
+                                           .Root<Runner<T>>("Runner");
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDelegateCapture).ShouldBe(1, result);
+    }
+
+    [Fact]
     public async Task ShouldShowErrorWhenStackOnlyImplementationRequiresInterfaceConversion()
     {
         // Given

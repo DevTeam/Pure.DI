@@ -56,6 +56,7 @@ static class LogMetadata
             LogId.ErrorStackOnlyDependencyWithStoredLifetime => $"{HelpLinkBaseUrl}#die046",
             LogId.ErrorStackOnlyFieldOrPropertyInjection => $"{HelpLinkBaseUrl}#die047",
             LogId.ErrorStackOnlyInterfaceConversion => $"{HelpLinkBaseUrl}#die048",
+            LogId.ErrorStackOnlyDelegateCapture => $"{HelpLinkBaseUrl}#die049",
             LogId.WarningOverriddenBinding => $"{HelpLinkBaseUrl}#diw000",
             LogId.WarningNoRoots => $"{HelpLinkBaseUrl}#diw001",
             LogId.WarningNotImplementedContract => $"{HelpLinkBaseUrl}#diw002",
@@ -108,6 +109,7 @@ static class LogMetadata
             LogId.ErrorStackOnlyDependencyWithStoredLifetime => "Validation",
             LogId.ErrorStackOnlyFieldOrPropertyInjection => "Validation",
             LogId.ErrorStackOnlyInterfaceConversion => "Validation",
+            LogId.ErrorStackOnlyDelegateCapture => "Validation",
 
             LogId.ErrorAsyncFactoryNotSupported => "Factories",
             LogId.ErrorCannotUseContextDirectly => "Factories",
@@ -199,6 +201,7 @@ static class LogMetadata
             LogId.ErrorStackOnlyDependencyWithStoredLifetime => Strings.Description_ErrorStackOnlyDependencyWithStoredLifetime,
             LogId.ErrorStackOnlyFieldOrPropertyInjection => Strings.Description_ErrorStackOnlyFieldOrPropertyInjection,
             LogId.ErrorStackOnlyInterfaceConversion => Strings.Description_ErrorStackOnlyInterfaceConversion,
+            LogId.ErrorStackOnlyDelegateCapture => Strings.Description_ErrorStackOnlyDelegateCapture,
             LogId.WarningOverriddenBinding => Strings.Description_WarningOverriddenBinding,
             LogId.WarningNoRoots => Strings.Description_WarningNoRoots,
             LogId.WarningNotImplementedContract => Strings.Description_WarningNotImplementedContract,
