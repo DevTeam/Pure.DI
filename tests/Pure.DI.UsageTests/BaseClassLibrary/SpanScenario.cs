@@ -3,7 +3,7 @@ $v=true
 $p=6
 $d=Span and ReadOnlySpan
 $sa=Array
-$h=Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
+$h=Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]` for immediate constructor or method use.
 $f=This scenario is even more efficient in the case of `Span<T>` or `ReadOnlySpan<T>` when `T` is a value type. In this case, there is no heap allocation, and the composition root `IPath` looks like this:
 $f=```c#
 $f=public IPath Path
@@ -15,6 +15,8 @@ $f=    return new Path(points);
 $f=  }
 $f=}
 $f=```
+$f=Constructor injection into a heap type is available for compatibility and reports warning `DIW012`. Prefer method injection for new code when the stack-only value is only needed during initialization.
+$f=Pure.DI reports errors when `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` values are injected into fields, properties, stored lifetimes, or interface conversions.
 $r=Shouldly
 */
 
@@ -22,6 +24,8 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("WRN", "DIW012:WRN")]
+
 namespace Pure.DI.UsageTests.BCL.SpanScenario;
 
 using Shouldly;

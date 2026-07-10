@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -325,6 +325,18 @@
     <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
         <value>Тип не может быть выведен.</value>
     </data>
+  <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
+    <value>Stack-only зависимость внедряется в конструктор heap-типа. Предпочтительно использовать method injection или scoped root argument для Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+  </data>
+    <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
+    <value>Нельзя использовать stack-only зависимость с сохраняемым временем жизни. Используйте внедрение через метод или scoped root argument для Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+  </data>
+  <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
+    <value>Нельзя внедрить stack-only зависимость в поле или свойство. Используйте внедрение через метод или scoped root argument для Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+  </data>
+  <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
+    <value>Нельзя внедрить stack-only реализацию через преобразование к интерфейсу.</value>
+  </data>
     <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Привязка была переопределена.</value>
     </data>

@@ -318,6 +318,27 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - Fix: Provide a non-empty `name` value or use `DependsOn(params string[] setupNames)` when a context is not needed. `SetupContextKind.Members` allows omitting `name`.
 - Examples: `DependsOn(setupName, contextKind)` without providing `name` parameter.
 
+### DIE046
+- Description: Cannot use stack-only dependency with stored lifetime.
+- Problem: Stored lifetimes such as Singleton, Scoped, and PerResolve may keep instances beyond the current stack frame.
+- Fix: Keep stack-only values transient and consume them immediately through method injection.
+- See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
+- Examples: `Bind().As(Lifetime.Singleton).To<Parser>()` where `Parser` needs `ReadOnlySpan<char>`.
+
+### DIE047
+- Description: Cannot inject stack-only dependency into field or property.
+- Problem: Field and property injection may expose a scoped `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` root argument outside its declaration scope. Even a setter-only property is opaque to the compiler at the call site.
+- Fix: Replace the field/property injection with method injection that consumes the stack-only value immediately.
+- See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
+- Examples: `[Ordinal] public ReadOnlySpan<char> Text;`, `[Ordinal] public ReadOnlySpan<char> Text { set { ... } }`, or `public ReadOnlySpan<char> Text { get; init; }`.
+
+### DIE048
+- Description: Cannot inject stack-only implementation through an interface conversion.
+- Problem: Converting a `ref struct` implementation to an interface requires an interface conversion path that is not valid for stack-only values.
+- Fix: Use the concrete stack-only type directly in an immediate method call, or replace it with a heap-safe adapter.
+- See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
+- Examples: `Bind<IParser>().To<Parser>()` where `Parser` is a `ref struct`.
+
 ## Warnings
 
 ### DIW000
@@ -403,6 +424,13 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - Fix: Use `Resolve<T>()`, remove one of the runtime-equivalent roots, or disable Resolve methods when runtime resolution is not needed.
 - See: [resolve-methods](readme/resolve-methods.md), [nullable-reference-types](readme/nullable-reference-types.md).
 - Examples: `Root<IService>("Service")` and `Root<IService?>("NullableService")` while Resolve methods are enabled.
+
+### DIW012
+- Description: Stack-only dependency is injected into constructor of heap type.
+- Problem: Constructor injection may be valid when the constructor consumes `Span<T>`, `ReadOnlySpan<T>`, or a custom `ref struct` immediately, but it is easy to accidentally store stack-only state in a heap object.
+- Fix: Prefer method injection with a scoped root argument for new code when the stack-only value is only needed during initialization.
+- See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
+- Examples: `class Parser(ReadOnlySpan<char> text)` resolved by a composition root.
 
 ## Info
 

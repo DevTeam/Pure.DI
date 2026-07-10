@@ -85,13 +85,13 @@ public sealed partial class Generator
                 NodeTools, LocalFunctions, ExceptionHandler, WildcardMatcher, InjectionSiteFactory, Semantic, Attributes, Compilations, GraphWalker<TT, TT1>,
                 LifetimeAnalyzer, InstanceDpProvider, Injections, NameFormatter, BindingsFactory, NodesFactory, LocationProvider,
                 CycleTools, LifetimeProvider, VarDeclarationTools, ContractTagComparer, TypeSymbolComparer, InjectionComparer,
-                CodeNameProvider, DependencyNodePrioritizer, FileHeader, RootUseSiteCounter>()
+                CodeNameProvider, DependencyNodePrioritizer, FileHeader, RootUseSiteCounter, RefSafety>()
             .PerBlock<LifetimesValidatorVisitor, CyclicDependencyValidatorVisitor, RootArgsVisitor, RootStatisticsVisitor>()
             .PerBlock<GraphOverrider>(Overrider)
             .PerBlock<GraphCleaner>(Cleaner)
 
             // Validators
-            .PerBlock<MetadataValidator, DependsOnInstanceMemberValidator, DependencyGraphValidator, CyclicDependenciesValidator, RootValidator, TagOnSitesValidator, BindingsValidator, LifetimesValidator>(Type)
+            .PerBlock<MetadataValidator, DependsOnInstanceMemberValidator, DependencyGraphValidator, CyclicDependenciesValidator, RootValidator, TagOnSitesValidator, BindingsValidator, LifetimesValidator, RefSafetyValidator>(Type)
 
             // Comments
             .PerBlock<ClassCommenter, ParameterizedConstructorCommenter, RootMethodsCommenter>(Type)

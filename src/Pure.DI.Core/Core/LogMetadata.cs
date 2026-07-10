@@ -53,6 +53,9 @@ static class LogMetadata
             LogId.ErrorTypeCannotBeInferred => $"{HelpLinkBaseUrl}#die042",
             LogId.ErrorUnhandled => $"{HelpLinkBaseUrl}#die043",
             LogId.ErrorSetupContextNameIsRequired => $"{HelpLinkBaseUrl}#die044",
+            LogId.ErrorStackOnlyDependencyWithStoredLifetime => $"{HelpLinkBaseUrl}#die046",
+            LogId.ErrorStackOnlyFieldOrPropertyInjection => $"{HelpLinkBaseUrl}#die047",
+            LogId.ErrorStackOnlyInterfaceConversion => $"{HelpLinkBaseUrl}#die048",
             LogId.WarningOverriddenBinding => $"{HelpLinkBaseUrl}#diw000",
             LogId.WarningNoRoots => $"{HelpLinkBaseUrl}#diw001",
             LogId.WarningNotImplementedContract => $"{HelpLinkBaseUrl}#diw002",
@@ -65,6 +68,7 @@ static class LogMetadata
             LogId.WarningGenerateInterfaceOnStaticMember => $"{HelpLinkBaseUrl}#diw009",
             LogId.WarningGenerateInterfaceSelectiveEmpty => $"{HelpLinkBaseUrl}#diw010",
             LogId.WarningNullableRootInResolveMethod => $"{HelpLinkBaseUrl}#diw011",
+            LogId.WarningStackOnlyConstructorInjectionIntoHeapType => $"{HelpLinkBaseUrl}#diw012",
             LogId.InfoGenerationInterrupted => $"{HelpLinkBaseUrl}#dii000",
             LogId.InfoNotImplementedContract => $"{HelpLinkBaseUrl}#dii001",
             _ => null
@@ -101,6 +105,9 @@ static class LogMetadata
             LogId.WarningInstanceMemberInDependsOnSetup => "Setup",
             LogId.WarningNullableRootInResolveMethod => "Setup",
             LogId.ErrorSetupContextNameIsRequired => "Setup",
+            LogId.ErrorStackOnlyDependencyWithStoredLifetime => "Validation",
+            LogId.ErrorStackOnlyFieldOrPropertyInjection => "Validation",
+            LogId.ErrorStackOnlyInterfaceConversion => "Validation",
 
             LogId.ErrorAsyncFactoryNotSupported => "Factories",
             LogId.ErrorCannotUseContextDirectly => "Factories",
@@ -133,6 +140,7 @@ static class LogMetadata
             LogId.WarningGenerateInterfaceOnNonPublicMember => "Validation",
             LogId.WarningGenerateInterfaceOnStaticMember => "Validation",
             LogId.WarningGenerateInterfaceSelectiveEmpty => "Validation",
+            LogId.WarningStackOnlyConstructorInjectionIntoHeapType => "Validation",
 
             // ReSharper disable once RedundantSwitchExpressionArms
             LogId.InfoGenerationInterrupted => "General",
@@ -188,6 +196,9 @@ static class LogMetadata
             LogId.ErrorLifetimeDefect => Strings.Description_ErrorLifetimeDefect,
             LogId.ErrorTypeCannotBeInferred => Strings.Description_ErrorTypeCannotBeInferred,
             LogId.ErrorSetupContextNameIsRequired => Strings.Description_ErrorSetupContextNameIsRequired,
+            LogId.ErrorStackOnlyDependencyWithStoredLifetime => Strings.Description_ErrorStackOnlyDependencyWithStoredLifetime,
+            LogId.ErrorStackOnlyFieldOrPropertyInjection => Strings.Description_ErrorStackOnlyFieldOrPropertyInjection,
+            LogId.ErrorStackOnlyInterfaceConversion => Strings.Description_ErrorStackOnlyInterfaceConversion,
             LogId.WarningOverriddenBinding => Strings.Description_WarningOverriddenBinding,
             LogId.WarningNoRoots => Strings.Description_WarningNoRoots,
             LogId.WarningNotImplementedContract => Strings.Description_WarningNotImplementedContract,
@@ -200,6 +211,7 @@ static class LogMetadata
             LogId.WarningGenerateInterfaceOnStaticMember => Strings.Description_WarningGenerateInterfaceOnStaticMember,
             LogId.WarningGenerateInterfaceSelectiveEmpty => Strings.Description_WarningGenerateInterfaceSelectiveEmpty,
             LogId.WarningNullableRootInResolveMethod => Strings.Description_WarningNullableRootInResolveMethod,
+            LogId.WarningStackOnlyConstructorInjectionIntoHeapType => Strings.Description_WarningStackOnlyConstructorInjectionIntoHeapType,
             LogId.InfoGenerationInterrupted => Strings.Description_InfoGenerationInterrupted,
             LogId.InfoNotImplementedContract => Strings.Description_InfoNotImplementedContract,
             LogId.ErrorUnhandled => Strings.Description_ErrorUnhandled,

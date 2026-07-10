@@ -985,6 +985,42 @@ namespace Pure.DI {
                 return ResourceManager.GetString("Description_ErrorTypeCannotBeInferred", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;..
+        /// </summary>
+        internal static string Description_WarningStackOnlyConstructorInjectionIntoHeapType {
+            get {
+                return ResourceManager.GetString("Description_WarningStackOnlyConstructorInjectionIntoHeapType", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;..
+        /// </summary>
+        internal static string Description_ErrorStackOnlyDependencyWithStoredLifetime {
+            get {
+                return ResourceManager.GetString("Description_ErrorStackOnlyDependencyWithStoredLifetime", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;..
+        /// </summary>
+        internal static string Description_ErrorStackOnlyFieldOrPropertyInjection {
+            get {
+                return ResourceManager.GetString("Description_ErrorStackOnlyFieldOrPropertyInjection", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot inject stack-only implementation through an interface conversion..
+        /// </summary>
+        internal static string Description_ErrorStackOnlyInterfaceConversion {
+            get {
+                return ResourceManager.GetString("Description_ErrorStackOnlyInterfaceConversion", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Binding has been overridden..

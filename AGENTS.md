@@ -3910,7 +3910,7 @@ And of course this list can easily be supplemented on its own.
 
 ## Span and ReadOnlySpan
 
-Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
+Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]` for immediate constructor or method use.
 
 ```c#
 using Shouldly;
@@ -3965,6 +3965,8 @@ public IPath Path
   }
 }
 ```
+Constructor injection into a heap type is available for compatibility and reports warning `DIW012`. Prefer method injection for new code when the stack-only value is only needed during initialization.
+Pure.DI reports errors when `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` values are injected into fields, properties, stored lifetimes, or interface conversions.
 
 ## Dictionary
 

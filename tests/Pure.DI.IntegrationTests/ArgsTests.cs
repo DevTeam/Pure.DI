@@ -596,6 +596,61 @@ public class ArgsTests
         result.StdOut.ShouldBe(["5"], result);
         result.GeneratedCode.ShouldContain("public global::Sample.Parser Parse(scoped System.ReadOnlySpan<char> text)");
     }
+
+    [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericWithImmediateMethodUse()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              class Parser<T>
+                                  where T : allows ref struct
+                              {
+                                  private bool _initialized;
+
+                                  [Ordinal]
+                                  public void Initialize(T text)
+                                  {
+                                      _initialized = true;
+                                  }
+
+                                  public bool Initialized => _initialized;
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // Resolve = Off
+                                      DI.Setup("Composition")
+                                          .RootArg<ReadOnlySpan<char>>("text")
+                                          .Root<Parser<ReadOnlySpan<char>>>("Parse");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.Parse("Hello".AsSpan()).Initialized);
+                                  }
+                              }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 #endif
 
     [Fact]

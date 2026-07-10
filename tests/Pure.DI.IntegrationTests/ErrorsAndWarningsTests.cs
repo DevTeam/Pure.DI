@@ -7,6 +7,308 @@ using Core;
 /// </summary>
 public class ErrorsAndWarningsTests
 {
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldShowWarningWhenStackOnlyDependencyInjectedIntoHeapTypeConstructor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   public Parser(ReadOnlySpan<char> text)
+                                   {
+                                       Length = text.Length;
+                                   }
+
+                                   public int Length { get; }
+                               }
+
+                               class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Parse("Hello").Length);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<ReadOnlySpan<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyConstructorInjectionIntoHeapType).ShouldBe(1, result);
+        result.GeneratedCode.ShouldContain("public global::Sample.Parser Parse(scoped System.ReadOnlySpan<char> text)");
+        result.GeneratedCode.ShouldContain("return new global::Sample.Parser(text);");
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenStackOnlyDependencyInjectedIntoSetterOnlyProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   public int Length { get; private set; }
+
+                                   [Ordinal]
+                                   public ReadOnlySpan<char> Text
+                                   {
+                                       set => Length = value.Length;
+                                   }
+                               }
+
+                               class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Parse("Hello").Length);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<ReadOnlySpan<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyFieldOrPropertyInjection).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenStackOnlyDependencyInjectedIntoField()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   [Ordinal]
+                                   public ReadOnlySpan<char> Text;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<ReadOnlySpan<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyFieldOrPropertyInjection).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenStackOnlyDependencyInjectedIntoRequiredProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   public required ReadOnlySpan<char> Text
+                                   {
+                                       set {}
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<ReadOnlySpan<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyFieldOrPropertyInjection).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenStackOnlyDependencyInjectedIntoInitProperty()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   [Ordinal]
+                                   public ReadOnlySpan<char> Text
+                                   {
+                                       get => default;
+                                       init {}
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<ReadOnlySpan<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyFieldOrPropertyInjection).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenStackOnlyDependencyUsesStoredLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<char> text) {}
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind().As(Singleton).To<Parser>()
+                                           .RootArg<ReadOnlySpan<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDependencyWithStoredLifetime).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenStackOnlyImplementationRequiresInterfaceConversion()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IParser {}
+
+                               ref struct Parser: IParser {}
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<IParser>().To<Parser>()
+                                           .Root<IParser>("Parser");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyInterfaceConversion).ShouldBe(1, result);
+    }
+#endif
+
     [Fact]
     public async Task ShouldShowWarningsForGenericRootWhenResolveMethods()
     {

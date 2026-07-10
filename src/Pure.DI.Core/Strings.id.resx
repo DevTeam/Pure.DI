@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -316,6 +316,18 @@
   <data name="Description_ErrorTypeCannotBeInferred" xml:space="preserve">
         <value>Tipe tidak dapat disimpulkan.</value>
     </data>
+  <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
+    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+  </data>
+    <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
+    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+  </data>
+  <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
+    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+  </data>
+  <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
+    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding telah diganti (overridden).</value>
     </data>

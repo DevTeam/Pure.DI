@@ -404,7 +404,7 @@ public class BclInjectionTests
             });
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
         result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
 
@@ -497,7 +497,7 @@ public class BclInjectionTests
             });
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
         result.StdOut.ShouldBe(["Service creating"], result);
     }
 

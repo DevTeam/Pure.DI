@@ -93,6 +93,12 @@ static class LogId
     public const string ErrorUnhandled = "DIE043";
     // Setup context name is required.
     public const string ErrorSetupContextNameIsRequired = "DIE044";
+    // Stack-only dependency cannot be used with a stored lifetime.
+    public const string ErrorStackOnlyDependencyWithStoredLifetime = "DIE046";
+    // Stack-only dependency cannot be injected into a field or property.
+    public const string ErrorStackOnlyFieldOrPropertyInjection = "DIE047";
+    // Stack-only implementation cannot be injected through an interface conversion.
+    public const string ErrorStackOnlyInterfaceConversion = "DIE048";
 
     // Warnings
     // Binding has been overridden.
@@ -119,6 +125,8 @@ static class LogId
     public const string WarningGenerateInterfaceSelectiveEmpty = "DIW010";
     // Resolve(Type) cannot distinguish nullable and non-nullable roots with the same runtime type.
     public const string WarningNullableRootInResolveMethod = "DIW011";
+    // Stack-only dependency is injected into a heap-type constructor.
+    public const string WarningStackOnlyConstructorInjectionIntoHeapType = "DIW012";
 
     // Info
     // Generation was interrupted.

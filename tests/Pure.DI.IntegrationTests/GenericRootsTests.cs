@@ -98,7 +98,7 @@ public class GenericRootsTests
                 });
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Errors.Count.ShouldBe(0, result);
         result.StdOut.ShouldBe(["2"], result);
     }
 
