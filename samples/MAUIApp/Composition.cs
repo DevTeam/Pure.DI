@@ -8,8 +8,8 @@ partial class Composition: ServiceProviderFactory<Composition>
 {
     [Conditional("DI")]
     private void Setup() => DI.Setup()
-        .Root<IAppViewModel>(nameof(App))
-        .Root<IClockViewModel>(nameof(Clock))
+        .Root<IAppViewModel>(nameof(App), kind: Virtual)
+        .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
         .Bind().As(Singleton).To<ClockViewModel>()
         .Bind().To<ClockModel>()

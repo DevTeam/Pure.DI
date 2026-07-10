@@ -11729,7 +11729,7 @@ partial class Composition
         .Hint(Hint.Resolve, "Off")
 
         // Virtual roots are properties on the composition class but are not
-        // backed by a separate private field — XAML reads them through the
+        // backed by a separate private field - XAML reads them through the
         // DataContext binding chain, so no dedicated storage is needed.
         .Root<IAppViewModel>(nameof(App), kind: Virtual)
         .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
@@ -11741,6 +11741,29 @@ partial class Composition
         // Infrastructure
         .Bind().To<DebugLog<TT>>()
         .Bind().To<AvaloniaDispatcher>();
+}
+```
+
+A design-time composition can override the same virtual roots with predictable view models for the Avalonia designer. The design-time setup is in [DesignTimeComposition.cs](/samples/AvaloniaApp/DesignTimeComposition.cs):
+
+```c#
+using Pure.DI;
+using static Pure.DI.RootKinds;
+
+namespace AvaloniaApp;
+
+partial class DesignTimeComposition: Composition
+{
+    [System.Diagnostics.Conditional("DI")]
+    private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
+        // Overrides virtual roots with design-time view models
+        .Root<IAppViewModel>(nameof(App), kind: Override)
+        .Root<IClockViewModel>(nameof(Clock), kind: Override)
+
+        .Bind().To<DesignTimeAppViewModel>()
+        .Bind().To<DesignTimeClockViewModel>();
 }
 ```
 
@@ -11815,7 +11838,7 @@ public class App : Application
 }
 ```
 
-You can now use bindings and the code-behind-free approach. All previously defined composition roots are now available from [markup](/samples/AvaloniaApp/Views/MainWindow.xaml) without any effort, e.g. _Clock_:
+You can now use bindings and the code-behind-free approach. All previously defined composition roots are now available from [markup](/samples/AvaloniaApp/MainWindow.axaml) without any effort, e.g. _Clock_:
 
 ```xml
 <Window xmlns="https://github.com/avaloniaui"
@@ -11907,7 +11930,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 {
     // IMPORTANT:
     // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root<>(...)` or `RootBind<>()` calls.
+    // These roots must be registered using `Root<>(...)` or `Roots<>()` calls.
     [System.Diagnostics.Conditional("DI")]
     private static void Setup() => DI.Setup()
         .Root<IAppViewModel>()
@@ -11982,7 +12005,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 {
     // IMPORTANT:
     // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root<>(...)` or `RootBind<>()` calls.
+    // These roots must be registered using `Root<>(...)` or `Roots<>()` calls.
     [System.Diagnostics.Conditional("DI")]
     private static void Setup() => DI.Setup()
         .Root<IAppViewModel>()
@@ -12460,7 +12483,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 {
     // IMPORTANT:
     // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root<>(...)` or `RootBind<>()` calls.
+    // These roots must be registered using `Root<>(...)` or `Roots<>()` calls.
     [System.Diagnostics.Conditional("DI")]
     private static void Setup() => DI.Setup()
         .Root<ClockService>()
@@ -12623,7 +12646,7 @@ A single instance of the _Composition_ class is defined as a static resource in 
 </Application>
 ```
 
-All previously defined composition roots are now accessible from [markup](/samples/MAUIApp/MainWindow.xaml) without any effort:
+All previously defined composition roots are now accessible from [markup](/samples/MAUIApp/MainPage.xaml) without any effort:
 
 ```xaml
 <?xml version="1.0" encoding="utf-8"?>
@@ -12707,7 +12730,7 @@ partial class Composition : ServiceProviderFactory<Composition>
 {
     // IMPORTANT:
     // Only composition roots (regular or anonymous) can be resolved through the `IServiceProvider` interface.
-    // These roots must be registered using `Root<>(...)` or `RootBind<>()` calls.
+    // These roots must be registered using `Root<>(...)` or `Roots<>()` calls.
     [System.Diagnostics.Conditional("DI")]
     private void Setup() => DI.Setup()
         // Owned is used here to dispose of all disposable instances associated with the root.
@@ -13244,6 +13267,7 @@ The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/
 ```c#
 using Pure.DI;
 using static Pure.DI.Lifetime;
+using static Pure.DI.RootKinds;
 
 namespace WpfAppNetCore;
 
@@ -13253,8 +13277,8 @@ partial class Composition
     private void Setup() => DI.Setup()
         .Hint(Hint.Resolve, "Off")
 
-        .Root<IAppViewModel>(nameof(App))
-        .Root<IClockViewModel>(nameof(Clock))
+        .Root<IAppViewModel>(nameof(App), kind: Virtual)
+        .Root<IClockViewModel>(nameof(Clock), kind: Virtual)
 
         .Bind().As(Singleton).To<ClockViewModel>()
         .Bind().To<ClockModel>()
@@ -13263,6 +13287,29 @@ partial class Composition
         // Infrastructure
         .Bind().To<DebugLog<TT>>()
         .Bind().To<WpfDispatcher>();
+}
+```
+
+A design-time composition can override the same virtual roots with predictable view models for the WPF designer. The design-time setup is in [DesignTimeComposition.cs](/samples/WpfAppNetCore/DesignTimeComposition.cs):
+
+```c#
+using Pure.DI;
+using static Pure.DI.RootKinds;
+
+namespace WpfAppNetCore;
+
+partial class DesignTimeComposition: Composition
+{
+    [System.Diagnostics.Conditional("DI")]
+    private void Setup() => DI.Setup()
+        .Hint(Hint.Resolve, "Off")
+
+        // Overrides virtual roots with design-time view models
+        .Root<IAppViewModel>(nameof(App), kind: Override)
+        .Root<IClockViewModel>(nameof(Clock), kind: Override)
+
+        .Bind().To<DesignTimeAppViewModel>()
+        .Bind().To<DesignTimeClockViewModel>();
 }
 ```
 
@@ -13297,7 +13344,7 @@ creates a shared resource of type `Composition` and with key _"Composition"_, wh
 
 Dispose the shared composition from the WPF `Exit` event when the application closes, especially if singleton services implement `IDisposable`.
 
-You can now use bindings to model views without even editing the views `.cs` code files. All previously defined composition roots are now accessible from [markup](/samples/WpfAppNetCore/Views/MainWindow.xaml) without any effort, such as _ClockViewModel_:
+You can now use bindings to model views without even editing the views `.cs` code files. All previously defined composition roots are now accessible from [markup](/samples/WpfAppNetCore/MainWindow.xaml) without any effort, such as _ClockViewModel_:
 
 ```xaml
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"

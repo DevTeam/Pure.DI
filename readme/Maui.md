@@ -108,7 +108,7 @@ A single instance of the _Composition_ class is defined as a static resource in 
 </Application>
 ```
 
-All previously defined composition roots are now accessible from [markup](/samples/MAUIApp/MainWindow.xaml) without any effort:
+All previously defined composition roots are now accessible from [markup](/samples/MAUIApp/MainPage.xaml) without any effort:
 
 ```xaml
 <?xml version="1.0" encoding="utf-8"?>
