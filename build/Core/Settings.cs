@@ -50,6 +50,7 @@ partial class Settings
 
     public ImmutableArray<CodeAnalysis> CodeAnalysis { get; } =
     [
+        new(new Version(5, 6, 0)),
         new(new Version(4, 8, 0)),
         new(new Version(4, 3, 1))
     ];
