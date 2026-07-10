@@ -585,6 +585,63 @@ public class LightweightRootsTests
         result.StdOut.ShouldBe(["Int32"]);
     }
 
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericLightweightRootWithArgument()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           class Parser<T>
+                               where T : allows ref struct
+                           {
+                               private bool _initialized;
+
+                               [Ordinal]
+                               public void Initialize(T text)
+                               {
+                                   _ = text;
+                                   _initialized = true;
+                               }
+
+                               public bool Initialized => _initialized;
+                           }
+
+                           partial class Composition<T>
+                               where T : allows ref struct
+                           {
+                               void Setup() => DI.Setup()
+                                   .Hint(Hint.Resolve, "Off")
+                                   .RootArg<T>("text")
+                                   .Root<Parser<T>>("Parse", kind: RootKinds.Light);
+                           }
+
+                           class Program
+                           {
+                               static void Main()
+                               {
+                                   var composition = new Composition<ReadOnlySpan<char>>();
+                                   Console.WriteLine(composition.Parse("Hello".AsSpan()).Initialized);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain("Parse(scoped T text)");
+        result.GeneratedCode.ShouldContain("where T : allows ref struct");
+    }
+#endif
+
     [Fact]
     public async Task ShouldSupportGenericLightweightRootWithTwoTypeParameters()
     {
@@ -1035,6 +1092,63 @@ public class LightweightRootsTests
         result.StdOut.ShouldBe(["Decimal"], result);
     }
 
+
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericStaticLightweightRootWithArgument()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           class Parser<T>
+                               where T : allows ref struct
+                           {
+                               private bool _initialized;
+
+                               [Ordinal]
+                               public void Initialize(T text)
+                               {
+                                   _ = text;
+                                   _initialized = true;
+                               }
+
+                               public bool Initialized => _initialized;
+                           }
+
+                           partial class Composition<T>
+                               where T : allows ref struct
+                           {
+                               void Setup() => DI.Setup()
+                                   .Hint(Hint.Resolve, "Off")
+                                   .RootArg<T>("text")
+                                   .Root<Parser<T>>("Parse", kind: RootKinds.Static | RootKinds.Light);
+                           }
+
+                           class Program
+                           {
+                               static void Main()
+                               {
+                                   Console.WriteLine(Composition<ReadOnlySpan<char>>.Parse("Hello".AsSpan()).Initialized);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain("static");
+        result.GeneratedCode.ShouldContain("Parse(scoped T text)");
+        result.GeneratedCode.ShouldContain("where T : allows ref struct");
+    }
+#endif
     [Fact]
     public async Task ShouldSupportExposedLightweightRootWithArguments()
     {
@@ -1120,6 +1234,63 @@ public class LightweightRootsTests
         result.StdOut.ShouldBe(["Guid"], result);
     }
 
+
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericExportedLightweightRootWithArgument()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           class Parser<T>
+                               where T : allows ref struct
+                           {
+                               private bool _initialized;
+
+                               [Ordinal]
+                               public void Initialize(T text)
+                               {
+                                   _ = text;
+                                   _initialized = true;
+                               }
+
+                               public bool Initialized => _initialized;
+                           }
+
+                           partial class Composition<T>
+                               where T : allows ref struct
+                           {
+                               void Setup() => DI.Setup()
+                                   .Hint(Hint.Resolve, "Off")
+                                   .RootArg<T>("text")
+                                   .Root<Parser<T>>("Parse", kind: RootKinds.Exported | RootKinds.Light);
+                           }
+
+                           class Program
+                           {
+                               static void Main()
+                               {
+                                   var composition = new Composition<ReadOnlySpan<char>>();
+                                   Console.WriteLine(composition.Parse("Hello".AsSpan()).Initialized);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain("Parse(scoped T text)");
+        result.GeneratedCode.ShouldContain("where T : allows ref struct");
+    }
+#endif
     [Fact]
     public async Task ShouldSupportPublicLightweightRootWithArguments()
     {

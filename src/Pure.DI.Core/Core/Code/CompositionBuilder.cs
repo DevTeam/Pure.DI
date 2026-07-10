@@ -37,7 +37,7 @@ class CompositionBuilder(
 
             var typeDescription = typeResolver.Resolve(graph.Source, root.Injection.Type);
             var processedRoot = root with { TypeDescription = typeDescription };
-            if (typeDescription.TypeArgs.Count > 0)
+            if (root.Injection.Type is INamedTypeSymbol { IsGenericType: true })
             {
                 processedRoot = processedRoot with { Kind = processedRoot.Kind & ~RootKinds.Light };
             }
@@ -45,7 +45,7 @@ class CompositionBuilder(
             IEnumerable<VarDeclaration> args;
             var lines = new Lines();
             using var rootToken = varsMap.Root(lines);
-            if (root.Source.Kind.HasFlag(RootKinds.Light) && typeDescription.TypeArgs.Count == 0)
+            if (processedRoot.Kind.HasFlag(RootKinds.Light))
             {
                 var rootArgsContext = new RootArgsContext(varsMap, new List<VarDeclaration>());
                 graphArgsWalker.Walk(rootArgsContext, graph, root.Node, rootArgsVisitor, cancellationToken);
