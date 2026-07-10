@@ -560,6 +560,114 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericInterfaceWithHeapImplementation()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IParser<T>
+                                   where T : allows ref struct
+                               {
+                                   bool Initialized { get; }
+                               }
+
+                               class Parser<T>: IParser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .RootArg<T>("text")
+                                           .Bind<IParser<T>>().To<Parser<T>>()
+                                           .Root<IParser<T>>("Parser");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Parser("Hello".AsSpan()).Initialized);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain("IParser<T> Parser(scoped T text)");
+        result.GeneratedCode.ShouldContain("where T : allows ref struct");
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAllowsRefStructGenericRefStructImplementationRequiresInterfaceConversion()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IParser<T>
+                                   where T : allows ref struct
+                               {
+                               }
+
+                               ref struct Parser<T>: IParser<T>
+                                   where T : allows ref struct
+                               {
+                                   [Ordinal]
+                                   public void Initialize(T text) {}
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .RootArg<T>("text")
+                                           .Bind<IParser<T>>().To<Parser<T>>()
+                                           .Root<IParser<T>>("Parser");
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyInterfaceConversion).ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorStackOnlyInterfaceConversion } && i.Locations.FirstOrDefault().GetSource() == "Bind<IParser<T>>()").ShouldBe(1, result);
+    }
+
+    [Fact]
     public async Task ShouldShowErrorWhenStackOnlyImplementationRequiresInterfaceConversion()
     {
         // Given

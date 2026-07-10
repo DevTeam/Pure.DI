@@ -334,10 +334,10 @@ example scenarios. IDs and anchors are stable; message text is localized.
 
 ### DIE048
 - Description: Cannot inject stack-only implementation through an interface conversion.
-- Problem: Converting a `ref struct` implementation to an interface requires an interface conversion path that is not valid for stack-only values.
-- Fix: Use the concrete stack-only type directly in an immediate method call, or replace it with a heap-safe adapter.
+- Problem: Converting a `ref struct` implementation to an interface requires an interface conversion path that is not valid for stack-only values. This also applies to generic implementations such as `Parser<T>` when the implementation itself is a `ref struct`.
+- Fix: Use the concrete stack-only type directly in an immediate method call, or replace it with a heap-safe class/adapter. Generic interfaces such as `IParser<T>` are allowed when the implementation is heap-safe, for example `class Parser<T> : IParser<T>`.
 - See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
-- Examples: `Bind<IParser>().To<Parser>()` where `Parser` is a `ref struct`.
+- Examples: `Bind<IParser>().To<Parser>()` where `Parser` is a `ref struct`, or `Bind<IParser<T>>().To<Parser<T>>()` where `Parser<T>` is a `ref struct`.
 
 ### DIE049
 - Description: Cannot capture stack-only dependency in a generated delegate or factory.

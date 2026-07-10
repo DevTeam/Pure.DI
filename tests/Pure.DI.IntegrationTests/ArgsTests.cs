@@ -651,6 +651,190 @@ public class ArgsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportSeveralAllowsRefStructGenericRootArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              class Parser<TText, TPattern>
+                                  where TText : allows ref struct
+                                  where TPattern : allows ref struct
+                              {
+                                  private int _length;
+
+                                  [Ordinal]
+                                  public void Initialize(TText text, TPattern pattern)
+                                  {
+                                      _ = text;
+                                      _ = pattern;
+                                      _length = 2;
+                                  }
+
+                                  public int Length => _length;
+                              }
+
+                              partial class Composition<TText, TPattern>
+                                  where TText : allows ref struct
+                                  where TPattern : allows ref struct
+                              {
+                                  static void Setup() =>
+                                      // Resolve = Off
+                                      DI.Setup()
+                                          .RootArg<TText>("text")
+                                          .RootArg<TPattern>("pattern")
+                                          .Root<Parser<TText, TPattern>>("Parse");
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition<ReadOnlySpan<char>, ReadOnlySpan<char>>();
+                                      Console.WriteLine(composition.Parse("Hello".AsSpan(), "ell".AsSpan()).Length);
+                                  }
+                              }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+        result.GeneratedCode.ShouldContain("Parse(scoped TText text, scoped TPattern pattern)");
+    }
+
+    [Fact]
+    public async Task ShouldUseScopedOnlyForMaybeRefStructRootArgs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              class Parser<T>
+                                  where T : allows ref struct
+                              {
+                                  private string _value = "";
+
+                                  [Ordinal]
+                                  public void Initialize(T text, string name, int count)
+                                  {
+                                      _ = text;
+                                      _value = $"{name}:{count}";
+                                  }
+
+                                  public string Value => _value;
+                              }
+
+                              partial class Composition<T>
+                                  where T : allows ref struct
+                              {
+                                  static void Setup() =>
+                                      // Resolve = Off
+                                      DI.Setup()
+                                          .RootArg<T>("text")
+                                          .RootArg<string>("name")
+                                          .RootArg<int>("count")
+                                          .Root<Parser<T>>("Parse");
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition<ReadOnlySpan<char>>();
+                                      Console.WriteLine(composition.Parse("Hello".AsSpan(), "name", 3).Value);
+                                  }
+                              }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["name:3"], result);
+        result.GeneratedCode.ShouldContain("Parse(scoped T text, string name, int count)");
+        result.GeneratedCode.ShouldNotContain("scoped int count");
+        result.GeneratedCode.ShouldNotContain("scoped string name");
+    }
+
+    [Fact]
+    public async Task ShouldNotUseScopedForHeapSafeGenericRootArgWrapper()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              sealed class Wrapper<T>
+                                  where T : allows ref struct
+                              {
+                                  public Wrapper(int value) => Value = value;
+
+                                  public int Value { get; }
+                              }
+
+                              class Parser<T>
+                                  where T : allows ref struct
+                              {
+                                  private int _value;
+
+                                  [Ordinal]
+                                  public void Initialize(Wrapper<T> wrapper)
+                                  {
+                                      _value = wrapper.Value;
+                                  }
+
+                                  public int Value => _value;
+                              }
+
+                              partial class Composition<T>
+                                  where T : allows ref struct
+                              {
+                                  static void Setup() =>
+                                      // Resolve = Off
+                                      DI.Setup()
+                                          .RootArg<Wrapper<T>>("wrapper")
+                                          .Root<Parser<T>>("Parse");
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition<ReadOnlySpan<char>>();
+                                      Console.WriteLine(composition.Parse(new Wrapper<ReadOnlySpan<char>>(7)).Value);
+                                  }
+                              }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["7"], result);
+        result.GeneratedCode.ShouldContain("Parse(Sample.Wrapper<T> wrapper)");
+        result.GeneratedCode.ShouldNotContain("Parse(scoped Sample.Wrapper<T> wrapper)");
+    }
 #endif
 
     [Fact]
