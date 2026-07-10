@@ -1768,6 +1768,123 @@ public class CtorTests
         result.StdOut.ShouldBe(["Record"], result);
     }
 
+#if ROSLYN4_8_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportTaggedClassPrimaryCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   string Name { get; }
+                               }
+
+                               class PrimaryDependency : IDependency
+                               {
+                                   public string Name => "primary";
+                               }
+
+                               class SecondaryDependency : IDependency
+                               {
+                                   public string Name => "secondary";
+                               }
+
+                               class Service(
+                                   [Tag("primary")] IDependency dependency,
+                                   IDependency defaultDependency)
+                               {
+                                   public string Name => $"{dependency.Name}:{defaultDependency.Name}";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>("primary").To<PrimaryDependency>()
+                                           .Bind<IDependency>().To<SecondaryDependency>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["primary:secondary"], result);
+    }
+#endif
+
+#if ROSLYN5_0_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportParamsReadOnlyListOfDependencies()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                               class Dependency1: IDependency {}
+                               class Dependency2: IDependency {}
+
+                               class Service
+                               {
+                                   public Service(params IReadOnlyList<IDependency> deps)
+                                   {
+                                       Console.WriteLine(deps.Count);
+                                   }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency1>()
+                                           .Bind<IDependency>(2).To<Dependency2>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
+    }
+#endif
+
     [Fact]
     public async Task ShouldSupportRecordStruct()
     {
