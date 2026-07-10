@@ -34,6 +34,7 @@ sealed class RefSafetyValidator(
 
         foreach (var node in dependencyGraph.Graph.Vertices)
         {
+            isValid &= ValidateDelegateFactoryOverrides(node, reported);
             isValid &= ValidateInterfaceConversion(node, reported);
         }
 
@@ -75,6 +76,36 @@ sealed class RefSafetyValidator(
             Strings.Description_ErrorStackOnlyDelegateCapture,
             GetLocation(dependency.Injection));
         return false;
+    }
+
+    private bool ValidateDelegateFactoryOverrides(DependencyNode node, HashSet<ReportKey> reported)
+    {
+        if (node is not { Factory: {} factory, Type.TypeKind: TypeKind.Delegate })
+        {
+            return true;
+        }
+
+        var isValid = true;
+        var overrides = factory.Resolvers
+            .SelectMany(i => i.Overrides)
+            .Concat(factory.Initializers.SelectMany(i => i.Overrides));
+        foreach (var @override in overrides)
+        {
+            if (!refSafety.ContainsMaybeRefLike(@override.Source.ContractType))
+            {
+                continue;
+            }
+
+            Report(
+                reported,
+                LogId.ErrorStackOnlyDelegateCapture,
+                nameof(Strings.Description_ErrorStackOnlyDelegateCapture),
+                Strings.Description_ErrorStackOnlyDelegateCapture,
+                locationProvider.GetLocation(@override.Source.Source));
+            isValid = false;
+        }
+
+        return isValid;
     }
 
     private bool ValidateInjectionSite(Dependency dependency, HashSet<ReportKey> reported)

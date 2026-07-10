@@ -5882,7 +5882,11 @@ namespace Pure.DI
         /// <typeparam name="T">Object type that will be used to override a binding.</typeparam>
         /// <param name="tags">Injection tags that will be used to override a binding. See also <see cref="IBinding.Tags"/></param>
         /// <seealso cref="IBinding.To{T}(System.Func{TArg1,T})"/>
-        void Override<T>(T value, params object[] tags);
+        void Override<T>(T value, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Overrides the binding with the specified value for the current factory invocation, but only for the immediate injection level.
@@ -5890,7 +5894,11 @@ namespace Pure.DI
         /// <param name="value">The value used to override a binding.</param>
         /// <typeparam name="T">Object type that will be used to override a binding.</typeparam>
         /// <param name="tags">Injection tags that will be used to override a binding. See also <see cref="IBinding.Tags"/></param>
-        void Let<T>(T value, params object[] tags);
+        void Let<T>(T value, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
     }
 
     /// <summary>
