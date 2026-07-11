@@ -623,6 +623,130 @@ public class PropertyInjectionTests
         result.GeneratedCode.ShouldContain("new global::Sample.Service() { Dependency = new global::Sample.Dependency() }");
         result.GeneratedCode.ShouldNotContain(".Dependency = new global::Sample.Dependency();");
     }
+
+    [Fact]
+    public async Task ShouldUseObjectInitializerForFieldBackedInitPropertyInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   string Name { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public string Name => "dependency";
+                               }
+                           
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public IDependency? Dependency
+                                   {
+                                       get;
+                                       init => field = value;
+                                   }
+
+                                   public string Name => Dependency?.Name ?? "";
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["dependency"], result);
+        result.GeneratedCode.ShouldContain("new global::Sample.Service() { Dependency = new global::Sample.Dependency() }");
+        result.GeneratedCode.ShouldNotContain(".Dependency = new global::Sample.Dependency();");
+    }
+
+    [Fact]
+    public async Task ShouldSupportFieldBackedSetPropertyInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                   string Name { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   public string Name => "dependency";
+                               }
+                           
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public IDependency? Dependency
+                                   {
+                                       get;
+                                       set => field = value;
+                                   }
+
+                                   public string Name => Dependency?.Name ?? "";
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["dependency"], result);
+        result.GeneratedCode.ShouldContain(".Dependency = new global::Sample.Dependency();");
+        result.GeneratedCode.ShouldNotContain("new global::Sample.Service() { Dependency = new global::Sample.Dependency() }");
+    }
 #endif
 
     [Fact]
