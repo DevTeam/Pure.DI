@@ -317,23 +317,23 @@
         <value>לא ניתן להסיק את הסוג.</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>תלות המוגבלת למחסנית מוזרקת לבנאי של טיפוס heap. עדיף להשתמש בהזרקת מתודה או בארגומנט שורש תחום עבור Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>יש לסנכרן override המוגבל למחסנית בתוך delegate של factory באמצעות lock (ctx.Lock).</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>לא ניתן להשתמש בתלות המוגבלת למחסנית עם זמן חיים מאוחסן. השתמש בהזרקת מתודה או בארגומנט שורש תחום עבור Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>לא ניתן להזריק תלות המוגבלת למחסנית לשדה או למאפיין. השתמש בהזרקת מתודה או בארגומנט שורש תחום עבור Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>לא ניתן להזריק מימוש המוגבל למחסנית באמצעות המרה לממשק.</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>לא ניתן ללכוד תלות המוגבלת למחסנית בתוך delegate או factory שנוצרו. השתמש בהזרקת מתודה או בארגומנט שורש תחום וצרוך את הערך מיד.</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>ה-Binding נדרס.</value>

@@ -317,23 +317,23 @@
         <value>प्रकार का अनुमान नहीं लगाया जा सकता।</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Stack-only dependency को heap type के constructor में inject किया जा रहा है। Span&lt;T&gt;/ReadOnlySpan&lt;T&gt; के लिए method injection या scoped root argument को प्राथमिकता दें।</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>Factory delegate में stack-only override को lock (ctx.Lock) से synchronize करना चाहिए।</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Stored lifetime के साथ stack-only dependency का उपयोग नहीं किया जा सकता। Span&lt;T&gt;/ReadOnlySpan&lt;T&gt; के लिए method injection या scoped root argument का उपयोग करें।</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Field या property में stack-only dependency inject नहीं की जा सकती। Span&lt;T&gt;/ReadOnlySpan&lt;T&gt; के लिए method injection या scoped root argument का उपयोग करें।</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>Interface conversion के माध्यम से stack-only implementation inject नहीं की जा सकती।</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>Generated delegate या factory में stack-only dependency capture नहीं की जा सकती। Method injection या scoped root argument का उपयोग करें और value को तुरंत consume करें।</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding ओवरराइड कर दी गई है।</value>

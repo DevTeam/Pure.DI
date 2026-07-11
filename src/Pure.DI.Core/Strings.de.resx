@@ -317,23 +317,23 @@
         <value>Typ kann nicht abgeleitet werden.</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Eine stackgebundene Abhängigkeit wird in den Konstruktor eines Heap-Typs injiziert. Bevorzugen Sie Methoden-Injektion oder ein bereichsgebundenes Root-Argument für Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>Ein stackgebundener Override in einem Factory-Delegaten sollte mit lock (ctx.Lock) synchronisiert werden.</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Eine stackgebundene Abhängigkeit kann nicht mit einer gespeicherten Lebensdauer verwendet werden. Verwenden Sie Methoden-Injektion oder ein bereichsgebundenes Root-Argument für Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Eine stackgebundene Abhängigkeit kann nicht in ein Feld oder eine Eigenschaft injiziert werden. Verwenden Sie Methoden-Injektion oder ein bereichsgebundenes Root-Argument für Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>Eine stackgebundene Implementierung kann nicht über eine Interface-Konvertierung injiziert werden.</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>Eine stackgebundene Abhängigkeit kann nicht in einem generierten Delegaten oder einer Factory erfasst werden. Verwenden Sie Methoden-Injektion oder ein bereichsgebundenes Root-Argument und verbrauchen Sie den Wert sofort.</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding wurde überschrieben.</value>

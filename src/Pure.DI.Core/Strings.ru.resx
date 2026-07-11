@@ -326,11 +326,11 @@
         <value>Тип не может быть выведен.</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only зависимость внедряется в конструктор heap-типа. Предпочтительно использовать method injection или scoped root argument для Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Stack-only зависимость внедряется в конструктор heap-типа. Предпочтительно использовать внедрение через метод или scoped root argument для Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override в фабричном делегате должен быть синхронизирован с помощью lock (ctx.Lock).</value>
+        <value>Stack-only override в фабричном делегате следует синхронизировать с помощью lock (ctx.Lock).</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
     <value>Нельзя использовать stack-only зависимость с сохраняемым временем жизни. Используйте внедрение через метод или scoped root argument для Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
@@ -342,7 +342,7 @@
     <value>Нельзя внедрить stack-only реализацию через преобразование к интерфейсу.</value>
   </data>
     <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>Нельзя захватывать stack-only зависимость в сгенерированном делегате или фабрике. Используйте внедрение через метод или scoped root argument и потребляйте значение сразу.</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Привязка была переопределена.</value>
@@ -390,4 +390,3 @@
         <value>Необработанная ошибка генератора.</value>
     </data>
 </root>
-

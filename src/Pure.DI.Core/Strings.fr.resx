@@ -317,23 +317,23 @@
         <value>Le type ne peut pas être déduit.</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Une dépendance limitée à la pile est injectée dans le constructeur d’un type alloué sur le tas. Préférez l’injection par méthode ou un argument racine borné à la portée pour Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>Une substitution limitée à la pile dans un délégué de fabrique devrait être synchronisée avec lock (ctx.Lock).</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Impossible d’utiliser une dépendance limitée à la pile avec une durée de vie stockée. Utilisez l’injection par méthode ou un argument racine borné à la portée pour Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>Impossible d’injecter une dépendance limitée à la pile dans un champ ou une propriété. Utilisez l’injection par méthode ou un argument racine borné à la portée pour Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>Impossible d’injecter une implémentation limitée à la pile via une conversion d’interface.</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>Impossible de capturer une dépendance limitée à la pile dans un délégué ou une fabrique généré. Utilisez l’injection par méthode ou un argument racine borné à la portée et consommez la valeur immédiatement.</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Le binding a été surchargé.</value>

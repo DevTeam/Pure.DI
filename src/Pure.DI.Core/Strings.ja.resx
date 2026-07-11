@@ -317,23 +317,23 @@
         <value>型を推論できません。</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>スタック専用の依存関係がヒープ型のコンストラクターに注入されています。Span&lt;T&gt;/ReadOnlySpan&lt;T&gt; にはメソッド注入またはスコープ付きルート引数を優先してください。</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>ファクトリ デリゲート内のスタック専用 override は lock (ctx.Lock) で同期する必要があります。</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>スタック専用の依存関係は、保存される lifetime では使用できません。Span&lt;T&gt;/ReadOnlySpan&lt;T&gt; にはメソッド注入またはスコープ付きルート引数を使用してください。</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>スタック専用の依存関係をフィールドまたはプロパティに注入できません。Span&lt;T&gt;/ReadOnlySpan&lt;T&gt; にはメソッド注入またはスコープ付きルート引数を使用してください。</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>スタック専用の実装は、インターフェイス変換を介して注入できません。</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>生成されたデリゲートまたはファクトリでスタック専用の依存関係をキャプチャできません。メソッド注入またはスコープ付きルート引数を使用し、値をすぐに消費してください。</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>バインディングがオーバーライドされました。</value>

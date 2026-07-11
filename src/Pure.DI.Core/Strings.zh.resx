@@ -317,23 +317,23 @@
         <value>无法推断类型。</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>正在将仅限栈的依赖项注入到堆类型的构造函数中。对于 Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;，建议使用方法注入或带作用域的根参数。</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>工厂委托中的仅限栈 override 应使用 lock (ctx.Lock) 进行同步。</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>不能将仅限栈的依赖项用于会被存储的生命周期。对于 Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;，请使用方法注入或带作用域的根参数。</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>不能将仅限栈的依赖项注入到字段或属性中。对于 Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;，请使用方法注入或带作用域的根参数。</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>不能通过接口转换注入仅限栈的实现。</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>不能在生成的委托或工厂中捕获仅限栈的依赖项。请使用方法注入或带作用域的根参数，并立即消费该值。</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>绑定已被重写。</value>

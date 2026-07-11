@@ -317,23 +317,23 @@
         <value>ไม่สามารถอนุมานประเภทได้</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>มีการฉีด dependency แบบ stack-only เข้าไปใน constructor ของชนิด heap ควรใช้ method injection หรือ scoped root argument สำหรับ Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>Stack-only override ใน factory delegate ควรถูกซิงโครไนซ์ด้วย lock (ctx.Lock).</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>ไม่สามารถใช้ dependency แบบ stack-only กับ lifetime ที่ถูกเก็บไว้ได้ ใช้ method injection หรือ scoped root argument สำหรับ Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>ไม่สามารถฉีด dependency แบบ stack-only เข้าไปใน field หรือ property ได้ ใช้ method injection หรือ scoped root argument สำหรับ Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>ไม่สามารถฉีด implementation แบบ stack-only ผ่านการแปลงเป็น interface ได้.</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>ไม่สามารถ capture dependency แบบ stack-only ใน delegate หรือ factory ที่ถูกสร้างขึ้นได้ ใช้ method injection หรือ scoped root argument และ consume ค่าในทันที.</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding ถูกเขียนทับ</value>

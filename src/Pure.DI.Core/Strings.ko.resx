@@ -317,23 +317,23 @@
         <value>유형을 유추할 수 없습니다.</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>스택 전용 종속성이 힙 형식의 생성자에 주입됩니다. Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;에는 메서드 주입 또는 범위가 지정된 루트 인수를 사용하는 것이 좋습니다.</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>팩터리 대리자의 스택 전용 override는 lock (ctx.Lock)으로 동기화해야 합니다.</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>저장되는 lifetime에는 스택 전용 종속성을 사용할 수 없습니다. Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;에는 메서드 주입 또는 범위가 지정된 루트 인수를 사용하세요.</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>스택 전용 종속성을 필드 또는 속성에 주입할 수 없습니다. Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;에는 메서드 주입 또는 범위가 지정된 루트 인수를 사용하세요.</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>스택 전용 구현은 인터페이스 변환을 통해 주입할 수 없습니다.</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>생성된 대리자 또는 팩터리에서 스택 전용 종속성을 캡처할 수 없습니다. 메서드 주입 또는 범위가 지정된 루트 인수를 사용하고 값을 즉시 소비하세요.</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding이 재정의되었습니다.</value>

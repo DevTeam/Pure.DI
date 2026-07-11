@@ -317,23 +317,23 @@
         <value>لا يمكن استنتاج النوع.</value>
     </data>
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
-    <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>يتم حقن تبعية مقيّدة بالمكدس في مُنشئ نوع مخزّن في الذاكرة المُدارة. فضّل الحقن عبر الأسلوب أو وسيطة جذر ذات نطاق لـ Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
 
     <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
-        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+        <value>يجب مزامنة تجاوز تبعية مقيّدة بالمكدس في مفوض مصنع باستخدام lock (ctx.Lock).</value>
     </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
-    <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>لا يمكن استخدام تبعية مقيّدة بالمكدس مع عمر تخزين محفوظ. استخدم الحقن عبر الأسلوب أو وسيطة جذر ذات نطاق لـ Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyFieldOrPropertyInjection" xml:space="preserve">
-    <value>Cannot inject stack-only dependency into field or property. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
+    <value>لا يمكن حقن تبعية مقيّدة بالمكدس في حقل أو خاصية. استخدم الحقن عبر الأسلوب أو وسيطة جذر ذات نطاق لـ Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
   <data name="Description_ErrorStackOnlyInterfaceConversion" xml:space="preserve">
-    <value>Cannot inject stack-only implementation through an interface conversion.</value>
+    <value>لا يمكن حقن تنفيذ مقيّد بالمكدس عبر تحويل إلى واجهة.</value>
   </data>
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
-    <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
+    <value>لا يمكن التقاط تبعية مقيّدة بالمكدس في مفوض أو مصنع مولّد. استخدم الحقن عبر الأسلوب أو وسيطة جذر ذات نطاق واستهلك القيمة فورًا.</value>
   </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>تم تجاوز الارتباط.</value>
