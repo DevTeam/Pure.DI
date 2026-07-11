@@ -4831,6 +4831,59 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >This enables compatibility with Microsoft's DI container ecosystem when using keyed service resolution.
 
+## Allows ref struct factory
+
+A delegate factory can accept stack-only values when the value is consumed immediately inside the same invocation. For generic APIs that use `where T : allows ref struct`, pass the delegate argument through `ctx.Override<T>(...)` or `ctx.Let<T>(...)`, resolve the target immediately, and keep the override plus injection inside `lock (ctx.Lock)` when thread safety is enabled.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System;
+
+DI.Setup(nameof(Composition))
+    .Bind<ParserFactory<ReadOnlySpan<char>>>().To(ctx => new ParserFactory<ReadOnlySpan<char>>(text =>
+    {
+        lock (ctx.Lock)
+        {
+            ctx.Override<ReadOnlySpan<char>>(text);
+            ctx.Inject<Parser<ReadOnlySpan<char>>>(out var parser);
+            return parser.Initialized;
+        }
+    }))
+
+    // Composition root
+    .Root<ParserFactory<ReadOnlySpan<char>>>("ParserFactory");
+
+var composition = new Composition();
+var initialized = composition.ParserFactory("Hello".AsSpan());
+
+initialized.ShouldBeTrue();
+
+delegate bool ParserFactory<T>(T text)
+    where T : allows ref struct;
+
+class Parser<T>
+    where T : allows ref struct
+{
+    private bool _initialized;
+
+    [Ordinal]
+    public void Initialize(T text)
+    {
+        _ = text;
+        _initialized = true;
+    }
+
+    public bool Initialized => _initialized;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+This pattern keeps `ReadOnlySpan<T>` and other stack-only values inside the current synchronous frame. Pure.DI reports `DIE049` if the value is captured by a nested or returned delegate, and `DIW013` if the stack-only override is not synchronized while thread safety is enabled.
+
 ## Generics
 
 Generic types are supported out of the box: a single binding like `Bind<IRepository<TT>>().To<Repository<TT>>()` covers `IRepository<User>`, `IRepository<Order>` and any other instantiation used in the object graph. Since Pure.DI is a source generator, each of them is turned into concrete, reflection-free code at compile time.

@@ -939,6 +939,332 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldSupportAllowsRefStructGenericDelegateArgumentWithImmediateLet()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+                           using System;
+
+                           namespace Sample
+                           {
+                               delegate bool ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Hint(Hint.ThreadSafe, "Off")
+                                           .Bind<ParserFactory<T>>().To(ctx => new ParserFactory<T>(text =>
+                                           {
+                                               ctx.Let<T>(text);
+                                               ctx.Inject<Parser<T>>(out var parser);
+                                               return parser.Initialized;
+                                           }))
+                                           .Root<ParserFactory<T>>("Factory");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Factory("Hello".AsSpan()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldShowWarningWhenAllowsRefStructGenericDelegateArgumentLetIsNotLocked()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+                           using System;
+
+                           namespace Sample
+                           {
+                               delegate bool ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind<ParserFactory<T>>().To(ctx => new ParserFactory<T>(text =>
+                                           {
+                                               ctx.Let<T>(text);
+                                               ctx.Inject<Parser<T>>(out var parser);
+                                               return parser.Initialized;
+                                           }))
+                                           .Root<ParserFactory<T>>("Factory");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Factory("Hello".AsSpan()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldNotShowWarningWhenThreadSafeIsOffForAllowsRefStructGenericDelegateArgumentLet()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+                           using System;
+
+                           namespace Sample
+                           {
+                               delegate bool ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Hint(Hint.ThreadSafe, "Off")
+                                           .Bind<ParserFactory<T>>().To(ctx => new ParserFactory<T>(text =>
+                                           {
+                                               ctx.Let<T>(text);
+                                               ctx.Inject<Parser<T>>(out var parser);
+                                               return parser.Initialized;
+                                           }))
+                                           .Root<ParserFactory<T>>("Factory");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Factory("Hello".AsSpan()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportManualLockForAllowsRefStructGenericDelegateArgumentLet()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+                           using System;
+
+                           namespace Sample
+                           {
+                               delegate bool ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind<ParserFactory<T>>().To(ctx => new ParserFactory<T>(text =>
+                                           {
+                                               lock (ctx.Lock)
+                                               {
+                                                   ctx.Let<T>(text);
+                                                   ctx.Inject<Parser<T>>(out var parser);
+                                                   return parser.Initialized;
+                                               }
+                                           }))
+                                           .Root<ParserFactory<T>>("Factory");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition<ReadOnlySpan<char>>();
+                                       Console.WriteLine(composition.Factory("Hello".AsSpan()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
+        result.GeneratedCode.ShouldContain("lock (_lock");
+    }
+
+    [Fact]
+    public async Task ShouldSupportClosedReadOnlySpanGenericDelegateArgumentWithImmediateOverride()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+                           using System;
+
+                           namespace Sample
+                           {
+                               delegate bool ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Hint(Hint.ThreadSafe, "Off")
+                                           .Bind<ParserFactory<ReadOnlySpan<char>>>().To(ctx => new ParserFactory<ReadOnlySpan<char>>(text =>
+                                           {
+                                               ctx.Override<ReadOnlySpan<char>>(text);
+                                               ctx.Inject<Parser<ReadOnlySpan<char>>>(out var parser);
+                                               return parser.Initialized;
+                                           }))
+                                           .Root<ParserFactory<ReadOnlySpan<char>>>("Factory");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Factory("Hello".AsSpan()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain("ParserFactory<System.ReadOnlySpan<char>>");
+        result.GeneratedCode.ShouldContain("Parser<System.ReadOnlySpan<char>>");
+    }
+
+    [Fact]
     public async Task ShouldShowErrorWhenAllowsRefStructGenericDelegateArgumentIsInjectedIntoProperty()
     {
         // Given
@@ -1099,6 +1425,177 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDelegateCapture).ShouldBe(1, result);
         result.Errors.Count(i => i is { Id: LogId.ErrorStackOnlyDelegateCapture } && i.Locations.FirstOrDefault().GetSource() == "Override<T>(text)").ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAllowsRefStructGenericDelegateArgumentLetIsCapturedByNestedDelegate()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               delegate Action ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                   }
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind<ParserFactory<T>>().To(ctx => new ParserFactory<T>(text => new Action(() =>
+                                           {
+                                               ctx.Let<T>(text);
+                                               ctx.Inject<Parser<T>>(out var parser);
+                                               _ = parser;
+                                           })))
+                                           .Root<ParserFactory<T>>("Factory");
+                               }
+
+                               class Program
+                               {
+                                   static void Main() {}
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDelegateCapture).ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorStackOnlyDelegateCapture } && i.Locations.FirstOrDefault().GetSource() == "Let<T>(text)").ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAllowsRefStructGenericDelegateArgumentIsCapturedByReturnedDelegate()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               delegate Action ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                   }
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind<ParserFactory<T>>().To(ctx => new ParserFactory<T>(text =>
+                                           {
+                                               return () =>
+                                               {
+                                                   ctx.Override<T>(text);
+                                                   ctx.Inject<Parser<T>>(out var parser);
+                                                   _ = parser;
+                                               };
+                                           }))
+                                           .Root<ParserFactory<T>>("Factory");
+                               }
+
+                               class Program
+                               {
+                                   static void Main() {}
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDelegateCapture).ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorStackOnlyDelegateCapture } && i.Locations.FirstOrDefault().GetSource() == "Override<T>(text)").ShouldBe(1, result);
+    }
+
+    [Fact]
+    public async Task ShouldShowErrorWhenAllowsRefStructGenericDelegateArgumentLetIsCapturedByReturnedDelegate()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               delegate Action ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                   }
+                               }
+
+                               partial class Composition<T>
+                                   where T : allows ref struct
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind<ParserFactory<T>>().To(ctx => new ParserFactory<T>(text =>
+                                           {
+                                               return () =>
+                                               {
+                                                   ctx.Let<T>(text);
+                                                   ctx.Inject<Parser<T>>(out var parser);
+                                                   _ = parser;
+                                               };
+                                           }))
+                                           .Root<ParserFactory<T>>("Factory");
+                               }
+
+                               class Program
+                               {
+                                   static void Main() {}
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDelegateCapture).ShouldBe(1, result);
+        result.Errors.Count(i => i is { Id: LogId.ErrorStackOnlyDelegateCapture } && i.Locations.FirstOrDefault().GetSource() == "Let<T>(text)").ShouldBe(1, result);
     }
 
     [Fact]
