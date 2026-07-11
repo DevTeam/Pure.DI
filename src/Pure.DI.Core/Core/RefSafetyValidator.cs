@@ -45,6 +45,7 @@ sealed class RefSafetyValidator(
     {
         var consumer = dependency.Target;
         if (consumer.Lifetime is not (Singleton or Scoped or PerResolve)
+            || consumer.Type.TypeKind == TypeKind.Delegate
             || !refSafety.ContainsMaybeRefLikeValue(dependency.Injection.Type))
         {
             return true;

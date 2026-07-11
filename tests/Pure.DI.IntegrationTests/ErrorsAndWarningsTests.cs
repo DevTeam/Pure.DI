@@ -1816,6 +1816,298 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldSupportSingletonDefaultFuncWithReadOnlySpanArgument()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<char> text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               partial class Composition
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .DefaultLifetime<Func<ReadOnlySpan<char>, Parser>>(Singleton)
+                                           .Root<Func<ReadOnlySpan<char>, Parser>>("ParserFactory");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var parserFactory = composition.ParserFactory;
+                                       Console.WriteLine(parserFactory("Hello".AsSpan()).Initialized);
+                                       Console.WriteLine(ReferenceEquals(parserFactory, composition.ParserFactory));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDependencyWithStoredLifetime).ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyConstructorInjectionIntoHeapType).ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportConcurrentSingletonDefaultFuncWithReadOnlySpanArgument()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Linq;
+                           using System.Threading;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   private string _value = "";
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<char> text)
+                                   {
+                                       _value = text.ToString();
+                                   }
+
+                                   public string Value => _value;
+                               }
+
+                               partial class Composition
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .DefaultLifetime<Func<ReadOnlySpan<char>, Parser>>(Singleton)
+                                           .Root<Func<ReadOnlySpan<char>, Parser>>("ParserFactory");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var parserFactory = composition.ParserFactory;
+                                       var values = Enumerable.Range(0, 32)
+                                           .Select(i => $"value-{i:D3}")
+                                           .ToArray();
+                                       var threads = values
+                                           .Select(value => new Thread(() =>
+                                           {
+                                               for (var i = 0; i < 512; i++)
+                                               {
+                                                   var parser = parserFactory(value.AsSpan());
+                                                   if (parser.Value != value)
+                                                   {
+                                                       throw new InvalidOperationException($"{value} != {parser.Value}");
+                                                   }
+                                               }
+                                           }))
+                                           .ToArray();
+
+                                       foreach (var thread in threads)
+                                       {
+                                           thread.Start();
+                                       }
+
+                                       foreach (var thread in threads)
+                                       {
+                                           thread.Join();
+                                       }
+
+                                       Console.WriteLine("OK");
+                                       Console.WriteLine(ReferenceEquals(parserFactory, composition.ParserFactory));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["OK", "True"], result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
+        result.GeneratedCode.ShouldNotContain("lock (_lock");
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonCustomDelegateWithReadOnlySpanArgumentWhenInjectedIntoHeapType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               delegate Parser ParserFactory(ReadOnlySpan<char> text);
+
+                               class Parser
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<char> text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               class Service(ParserFactory parserFactory)
+                               {
+                                   public bool Parse(ReadOnlySpan<char> text) => parserFactory(text).Initialized;
+                               }
+
+                               partial class Composition
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind<ParserFactory>().As(Singleton).To(ctx => new ParserFactory(text =>
+                                           {
+                                               lock (ctx.Lock)
+                                               {
+                                                   ctx.Override<ReadOnlySpan<char>>(text);
+                                                   ctx.Inject<Parser>(out var parser);
+                                                   return parser;
+                                               }
+                                           }))
+                                           .Root<Service>("Service");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service.Parse("Hello".AsSpan()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDependencyWithStoredLifetime).ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyConstructorInjectionIntoHeapType).ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportSingletonClosedGenericCustomDelegateWithReadOnlySpanArgumentWhenInjectedIntoHeapType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               delegate Parser<T> ParserFactory<T>(T text)
+                                   where T : allows ref struct;
+
+                               class Parser<T>
+                                   where T : allows ref struct
+                               {
+                                   private bool _initialized;
+
+                                   [Ordinal]
+                                   public void Initialize(T text)
+                                   {
+                                       _ = text;
+                                       _initialized = true;
+                                   }
+
+                                   public bool Initialized => _initialized;
+                               }
+
+                               class Service(ParserFactory<ReadOnlySpan<char>> parserFactory)
+                               {
+                                   public bool Parse(ReadOnlySpan<char> text) => parserFactory(text).Initialized;
+                               }
+
+                               partial class Composition
+                               {
+                                   static void Setup() =>
+                                       // Resolve = Off
+                                       DI.Setup()
+                                           .Bind<ParserFactory<ReadOnlySpan<char>>>().As(Singleton).To(ctx => new ParserFactory<ReadOnlySpan<char>>(text =>
+                                           {
+                                               lock (ctx.Lock)
+                                               {
+                                                   ctx.Override<ReadOnlySpan<char>>(text);
+                                                   ctx.Inject<Parser<ReadOnlySpan<char>>>(out var parser);
+                                                   return parser;
+                                               }
+                                           }))
+                                           .Root<Service>("Service");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service.Parse("Hello".AsSpan()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDependencyWithStoredLifetime).ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyConstructorInjectionIntoHeapType).ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
+    }
+
+    [Fact]
     public async Task ShouldSupportAllowsRefStructGenericInterfaceWithHeapImplementation()
     {
         // Given
