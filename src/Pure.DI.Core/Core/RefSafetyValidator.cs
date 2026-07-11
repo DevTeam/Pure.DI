@@ -45,7 +45,7 @@ sealed class RefSafetyValidator(
     {
         var consumer = dependency.Target;
         if (consumer.Lifetime is not (Singleton or Scoped or PerResolve)
-            || !refSafety.ContainsMaybeRefLike(dependency.Injection.Type))
+            || !refSafety.ContainsMaybeRefLikeValue(dependency.Injection.Type))
         {
             return true;
         }
@@ -185,7 +185,7 @@ sealed class RefSafetyValidator(
         if (MatchesConstructor(implementation, dependency))
         {
             if (implementation.Source.Type.TypeKind == TypeKind.Class
-                && refSafety.ContainsMaybeRefLike(injection.Type))
+                && refSafety.ContainsMaybeRefLikeValue(injection.Type))
             {
                 ReportWarning(
                     reported,
@@ -196,7 +196,8 @@ sealed class RefSafetyValidator(
             }
         }
 
-        if (MatchesField(implementation, dependency) || MatchesProperty(implementation, dependency))
+        if ((MatchesField(implementation, dependency) || MatchesProperty(implementation, dependency))
+            && refSafety.ContainsMaybeRefLikeValue(injection.Type))
         {
             Report(
                 reported,
