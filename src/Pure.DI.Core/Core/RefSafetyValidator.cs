@@ -124,21 +124,14 @@ sealed class RefSafetyValidator(
             return false;
         }
 
+        var lambda = identifier.Ancestors().OfType<LambdaExpressionSyntax>().FirstOrDefault();
         var parameterName = identifier.Identifier.ValueText;
-        foreach (var lambda in identifier.Ancestors().OfType<LambdaExpressionSyntax>())
+        return lambda switch
         {
-            if (lambda switch
-                {
-                    SimpleLambdaExpressionSyntax simpleLambda => simpleLambda.Parameter.Identifier.ValueText == parameterName,
-                    ParenthesizedLambdaExpressionSyntax parenthesizedLambda => parenthesizedLambda.ParameterList.Parameters.Any(parameter => parameter.Identifier.ValueText == parameterName),
-                    _ => false
-                })
-            {
-                return true;
-            }
-        }
-
-        return false;
+            SimpleLambdaExpressionSyntax simpleLambda => simpleLambda.Parameter.Identifier.ValueText == parameterName,
+            ParenthesizedLambdaExpressionSyntax parenthesizedLambda => parenthesizedLambda.ParameterList.Parameters.Any(parameter => parameter.Identifier.ValueText == parameterName),
+            _ => false
+        };
     }
 
     private bool ValidateInjectionSite(Dependency dependency, HashSet<ReportKey> reported)
