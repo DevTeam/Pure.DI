@@ -85,5 +85,9 @@ sealed class RefSafety : IRefSafety
     }
 
     public bool IsScopedParameter(IParameterSymbol parameter) =>
+#if ROSLYN5_6_OR_GREATER
         parameter.ScopedKind != ScopedKind.None;
+#else
+        false;
+#endif
 }
