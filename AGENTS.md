@@ -3970,7 +3970,8 @@ Generic root arguments with `where T : allows ref struct` follow the same rules.
 When a root has several arguments, `scoped` is applied only to arguments that are stack-only or maybe stack-only themselves. Heap-safe wrappers such as `Wrapper<T>` remain regular parameters even when `T` allows ref structs.
 Factory bodies may resolve and consume stack-only values immediately via `ctx.Inject<T>(...)` when the API target supports `allows ref struct`. Pure.DI reports `DIE049` when such values are captured behind a generated delegate or deferred factory.
 Factory overrides may pass stack-only values with `ctx.Override<T>(...)` or `ctx.Let<T>(...)` only inside the current synchronous factory frame or the current delegate invocation. Delegate arguments such as `T text` can be consumed immediately by method injection, but Pure.DI still reports `DIE049` if an outer stack-only value is captured by the delegate or if `text` is passed into a nested/returned delegate.
-When such overrides are used in factory delegates, the usual thread-safety rule still applies: wrap the override and the following injection in `lock (ctx.Lock)` or disable thread safety for known single-threaded compositions. Otherwise Pure.DI reports `DIW013`.
+When manual `ctx.Override<T>(...)` or `ctx.Let<T>(...)` calls are used in factory delegates, the usual thread-safety rule still applies: wrap the override and the following injection in `lock (ctx.Lock)` or disable thread safety for known single-threaded compositions. Otherwise Pure.DI reports `DIW013`.
+The generated default `Func<ReadOnlySpan<char>, T>` binding does not use shared override state and does not require a manual `lock`; use it when the standard `Func` shape is enough.
 Generic interfaces are allowed when the implementation is heap-safe, for example `class Parser<T> : IParser<T>`. Pure.DI reports `DIE048` only when the implementation itself is stack-only, such as `ref struct Parser<T> : IParser<T>`.
 Pure.DI reports errors when `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` values are injected into fields, properties, stored lifetimes, delegate captures, or stack-only interface conversions.
 
@@ -4831,9 +4832,48 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >This enables compatibility with Microsoft's DI container ecosystem when using keyed service resolution.
 
+## Default Func with ReadOnlySpan
+
+Pure.DI can generate the standard `Func<ReadOnlySpan<char>, T>` factory automatically. The runtime span argument is kept as a local value inside the generated delegate invocation, so no manual `ctx.Override(...)` call and no `lock (ctx.Lock)` block are required.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System;
+
+DI.Setup(nameof(Composition))
+
+    // Composition root
+    .Root<Func<ReadOnlySpan<char>, Parser>>("ParserFactory");
+
+var composition = new Composition();
+var parser = composition.ParserFactory("Hello".AsSpan());
+
+parser.Value.ShouldBe("Hello");
+
+class Parser
+{
+    private string _value = "";
+
+    [Ordinal]
+    public void Initialize(ReadOnlySpan<char> text)
+    {
+        _value = text.ToString();
+    }
+
+    public string Value => _value;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+Use this default `Func` binding when the standard delegate shape is enough. Use a custom delegate factory with explicit `ctx.Override<T>(...)` only when you need a custom delegate type or additional factory logic.
+
 ## Allows ref struct factory
 
-A delegate factory can accept stack-only values when the value is consumed immediately inside the same invocation. For generic APIs that use `where T : allows ref struct`, pass the delegate argument through `ctx.Override<T>(...)` or `ctx.Let<T>(...)`, resolve the target immediately, and keep the override plus injection inside `lock (ctx.Lock)` when thread safety is enabled.
+A delegate factory can accept stack-only values when the value is consumed immediately inside the same invocation. For custom generic delegate APIs that use `where T : allows ref struct`, pass the delegate argument through `ctx.Override<T>(...)` or `ctx.Let<T>(...)`, resolve the target immediately, and keep the override plus injection inside `lock (ctx.Lock)` when thread safety is enabled.
 
 ```c#
 using Shouldly;
@@ -4882,7 +4922,8 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-This pattern keeps `ReadOnlySpan<T>` and other stack-only values inside the current synchronous frame. Pure.DI reports `DIE049` if the value is captured by a nested or returned delegate, and `DIW013` if the stack-only override is not synchronized while thread safety is enabled.
+This manual factory pattern keeps `ReadOnlySpan<T>` and other stack-only values inside the current synchronous frame. Pure.DI reports `DIE049` if the value is captured by a nested or returned delegate, and `DIW013` if the stack-only override is not synchronized while thread safety is enabled.
+When the standard delegate shape is enough, prefer the generated default `Func<ReadOnlySpan<char>, T>` binding. It uses local values in the generated delegate invocation and does not require a manual `lock`.
 
 ## Generics
 
