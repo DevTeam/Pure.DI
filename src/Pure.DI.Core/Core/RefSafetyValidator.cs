@@ -64,7 +64,7 @@ sealed class RefSafetyValidator(
         var consumer = dependency.Target;
         if (consumer.Factory is null
             || consumer.Type.TypeKind != TypeKind.Delegate
-            || !refSafety.ContainsMaybeRefLike(dependency.Injection.Type))
+            || !refSafety.IsMaybeRefLike(dependency.Injection.Type))
         {
             return true;
         }
@@ -91,7 +91,8 @@ sealed class RefSafetyValidator(
             .Concat(factory.Initializers.SelectMany(i => i.Overrides));
         foreach (var @override in overrides)
         {
-            if (!refSafety.ContainsMaybeRefLike(@override.Source.ContractType))
+            if (!refSafety.ContainsMaybeRefLike(@override.Source.ContractType)
+                || IsDelegateParameterOverride(@override.Source))
             {
                 continue;
             }
@@ -106,6 +107,38 @@ sealed class RefSafetyValidator(
         }
 
         return isValid;
+    }
+
+    private static bool IsDelegateParameterOverride(in MdOverride @override)
+    {
+        if (@override.Source is not InvocationExpressionSyntax invocation)
+        {
+            return false;
+        }
+
+        var argumentList = invocation.ArgumentList;
+        if (argumentList is null
+            || argumentList.Arguments.Count == 0
+            || argumentList.Arguments[0].Expression is not IdentifierNameSyntax identifier)
+        {
+            return false;
+        }
+
+        var parameterName = identifier.Identifier.ValueText;
+        foreach (var lambda in identifier.Ancestors().OfType<LambdaExpressionSyntax>())
+        {
+            if (lambda switch
+                {
+                    SimpleLambdaExpressionSyntax simpleLambda => simpleLambda.Parameter.Identifier.ValueText == parameterName,
+                    ParenthesizedLambdaExpressionSyntax parenthesizedLambda => parenthesizedLambda.ParameterList.Parameters.Any(parameter => parameter.Identifier.ValueText == parameterName),
+                    _ => false
+                })
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool ValidateInjectionSite(Dependency dependency, HashSet<ReportKey> reported)
