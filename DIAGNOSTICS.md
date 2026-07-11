@@ -439,6 +439,13 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
 - Examples: `class Parser(ReadOnlySpan<char> text)` resolved by a composition root.
 
+### DIW013
+- Description: Stack-only override in a factory delegate should be synchronized.
+- Problem: A factory delegate can be invoked concurrently. Using `ctx.Override<T>(...)` or `ctx.Let<T>(...)` with `Span<T>`, `ReadOnlySpan<T>`, a custom `ref struct`, or generic `T` with `where T : allows ref struct` without `lock (ctx.Lock)` can mix override values between parallel invocations.
+- Fix: Wrap the override and the following `ctx.Inject(...)`/`ctx.BuildUp(...)` in `lock (ctx.Lock)`, or explicitly disable thread safety when the composition is known to be single-threaded.
+- See: [thread-safe-overrides](readme/thread-safe-overrides.md), [span-and-readonlyspan](readme/span-and-readonlyspan.md).
+- Examples: `new ParserFactory<T>(text => { ctx.Override<T>(text); ctx.Inject<Parser<T>>(out var parser); return parser; })` where `T : allows ref struct`.
+
 ## Info
 
 ### DII000

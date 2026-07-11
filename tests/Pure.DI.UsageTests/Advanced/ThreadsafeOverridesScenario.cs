@@ -5,6 +5,7 @@ $d=Thread-safe overrides
 $sa=Overrides
 $sa=Override depth
 $h=When a factory delegate can be invoked from several threads at once — as with the `Func<int, int, IOrderHandler>` called in parallel here — its `ctx.Override(...)` calls must be synchronized. Wrap the overrides together with the subsequent `ctx.Inject(...)` in a `lock (ctx.Lock)` block so that each object graph is built with its own override values and parallel invocations don't overwrite each other.
+$f=The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
 $f=>[!IMPORTANT]
 $f=>Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
 $r=Shouldly

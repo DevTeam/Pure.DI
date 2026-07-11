@@ -132,6 +132,7 @@ dotnet run
 
 </details>
 
+The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
 >[!IMPORTANT]
 >Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
 

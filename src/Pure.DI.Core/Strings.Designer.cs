@@ -996,6 +996,15 @@ namespace Pure.DI {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock)..
+        /// </summary>
+        internal static string Description_WarningStackOnlyOverrideRequiresLock {
+            get {
+                return ResourceManager.GetString("Description_WarningStackOnlyOverrideRequiresLock", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;..
         /// </summary>
         internal static string Description_ErrorStackOnlyDependencyWithStoredLifetime {

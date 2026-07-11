@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -319,6 +319,10 @@
   <data name="Description_WarningStackOnlyConstructorInjectionIntoHeapType" xml:space="preserve">
     <value>Stack-only dependency is injected into constructor of heap type. Prefer method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>
+
+    <data name="Description_WarningStackOnlyOverrideRequiresLock" xml:space="preserve">
+        <value>Stack-only override in a factory delegate should be synchronized with lock (ctx.Lock).</value>
+    </data>
     <data name="Description_ErrorStackOnlyDependencyWithStoredLifetime" xml:space="preserve">
     <value>Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;.</value>
   </data>

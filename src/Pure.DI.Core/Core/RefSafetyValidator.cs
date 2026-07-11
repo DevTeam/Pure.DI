@@ -34,7 +34,7 @@ sealed class RefSafetyValidator(
 
         foreach (var node in dependencyGraph.Graph.Vertices)
         {
-            isValid &= ValidateDelegateFactoryOverrides(node, reported);
+            isValid &= ValidateDelegateFactoryOverrides(node, dependencyGraph.Source.Hints, reported);
             isValid &= ValidateInterfaceConversion(node, reported);
         }
 
@@ -78,7 +78,7 @@ sealed class RefSafetyValidator(
         return false;
     }
 
-    private bool ValidateDelegateFactoryOverrides(DependencyNode node, HashSet<ReportKey> reported)
+    private bool ValidateDelegateFactoryOverrides(DependencyNode node, IHints hints, HashSet<ReportKey> reported)
     {
         if (node is not { Factory: {} factory, Type.TypeKind: TypeKind.Delegate })
         {
@@ -91,9 +91,14 @@ sealed class RefSafetyValidator(
             .Concat(factory.Initializers.SelectMany(i => i.Overrides));
         foreach (var @override in overrides)
         {
-            if (!refSafety.ContainsMaybeRefLike(@override.Source.ContractType)
-                || IsDelegateParameterOverride(@override.Source))
+            if (!refSafety.ContainsMaybeRefLike(@override.Source.ContractType))
             {
+                continue;
+            }
+
+            if (IsDelegateParameterOverride(@override.Source))
+            {
+                ValidateDelegateParameterOverrideLock(hints, @override.Source, reported);
                 continue;
             }
 
@@ -107,6 +112,23 @@ sealed class RefSafetyValidator(
         }
 
         return isValid;
+    }
+
+    private bool ValidateDelegateParameterOverrideLock(IHints hints, in MdOverride @override, HashSet<ReportKey> reported)
+    {
+        if (!hints.IsThreadSafeEnabled
+            || IsUnderContextLock(@override.Source))
+        {
+            return true;
+        }
+
+        ReportWarning(
+            reported,
+            LogId.WarningStackOnlyOverrideRequiresLock,
+            nameof(Strings.Description_WarningStackOnlyOverrideRequiresLock),
+            Strings.Description_WarningStackOnlyOverrideRequiresLock,
+            locationProvider.GetLocation(@override.Source));
+        return true;
     }
 
     private static bool IsDelegateParameterOverride(in MdOverride @override)
@@ -132,6 +154,23 @@ sealed class RefSafetyValidator(
             ParenthesizedLambdaExpressionSyntax parenthesizedLambda => parenthesizedLambda.ParameterList.Parameters.Any(parameter => parameter.Identifier.ValueText == parameterName),
             _ => false
         };
+    }
+
+    private static bool IsUnderContextLock(ExpressionSyntax source)
+    {
+        foreach (var lockStatement in source.Ancestors().OfType<LockStatementSyntax>())
+        {
+            if (lockStatement.Expression is MemberAccessExpressionSyntax
+                {
+                    Expression: IdentifierNameSyntax { Identifier.ValueText: "ctx" },
+                    Name.Identifier.ValueText: nameof(IContext.Lock)
+                })
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private bool ValidateInjectionSite(Dependency dependency, HashSet<ReportKey> reported)

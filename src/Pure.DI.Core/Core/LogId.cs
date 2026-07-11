@@ -129,6 +129,8 @@ static class LogId
     public const string WarningNullableRootInResolveMethod = "DIW011";
     // Stack-only dependency is injected into a heap-type constructor.
     public const string WarningStackOnlyConstructorInjectionIntoHeapType = "DIW012";
+    // Stack-only override in a delegate should be synchronized.
+    public const string WarningStackOnlyOverrideRequiresLock = "DIW013";
 
     // Info
     // Generation was interrupted.
