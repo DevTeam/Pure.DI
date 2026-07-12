@@ -4925,6 +4925,247 @@ To run the above code, the following NuGet packages must be added:
 This manual factory pattern keeps `ReadOnlySpan<T>` and other stack-only values inside the current synchronous frame. Pure.DI reports `DIE049` if the value is captured by a nested or returned delegate, and `DIW013` if the stack-only override is not synchronized while thread safety is enabled.
 When the standard delegate shape is enough, prefer the generated default `Func<ReadOnlySpan<char>, T>` binding. It uses local values in the generated delegate invocation and does not require a manual `lock`.
 
+## Thread-safe overrides
+
+When a factory delegate can be invoked from several threads at once — as with the `Func<int, int, IOrderHandler>` called in parallel here — its `ctx.Override(...)` calls must be synchronized. Wrap the overrides together with the subsequent `ctx.Inject(...)` in a `lock (ctx.Lock)` block so that each object graph is built with its own override values and parallel invocations don't overwrite each other.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Immutable;
+
+DI.Setup(nameof(Composition))
+    .Bind("Global").To(() => new ProcessingToken("TOKEN-123"))
+    .Bind().As(Lifetime.Singleton).To<TimeProvider>()
+    .Bind().To<Func<int, int, IOrderHandler>>(ctx =>
+        (orderId, customerId) => {
+            // Retrieves a global processing token to be passed to the handler
+            ctx.Inject("Global", out ProcessingToken token);
+
+            // The factory is invoked in parallel, so we must lock
+            // the context to safely perform overrides for the specific graph
+            lock (ctx.Lock)
+            {
+                // Overrides the 'int' dependency (OrderId)
+                ctx.Override(orderId);
+
+                // Overrides the tagged 'int' dependency (CustomerId)
+                ctx.Override(customerId, "customer");
+
+                // Overrides the 'string' dependency (TraceId)
+                ctx.Override($"Order:{orderId}-Cust:{customerId}");
+
+                // Overrides the 'ProcessingToken' dependency with the injected value
+                ctx.Override(token);
+
+                // Creates the handler with the overridden dependencies
+                ctx.Inject<OrderHandler>(out var handler);
+                return handler;
+            }
+        })
+    .Bind().To<OrderBatchProcessor>()
+
+    // Composition root
+    .Root<IOrderBatchProcessor>("OrderProcessor");
+
+var composition = new Composition();
+var orderProcessor = composition.OrderProcessor;
+
+orderProcessor.Handlers.Length.ShouldBe(100);
+for (var i = 0; i < 100; i++)
+{
+    orderProcessor.Handlers.Count(h => h.OrderId == i).ShouldBe(1);
+}
+
+record ProcessingToken(string Value);
+
+interface ITimeProvider
+{
+    DateTimeOffset Now { get; }
+}
+
+class TimeProvider : ITimeProvider
+{
+    public DateTimeOffset Now => DateTimeOffset.Now;
+}
+
+interface IOrderHandler
+{
+    string TraceId { get; }
+
+    int OrderId { get; }
+
+    int CustomerId { get; }
+}
+
+class OrderHandler(
+    string traceId,
+    ITimeProvider timeProvider,
+    int orderId,
+    [Tag("customer")] int customerId,
+    ProcessingToken token)
+    : IOrderHandler
+{
+    public string TraceId => traceId;
+
+    public int OrderId => orderId;
+
+    public int CustomerId => customerId;
+}
+
+interface IOrderBatchProcessor
+{
+    ImmutableArray<IOrderHandler> Handlers { get; }
+}
+
+class OrderBatchProcessor(Func<int, int, IOrderHandler> orderHandlerFactory)
+    : IOrderBatchProcessor
+{
+    public ImmutableArray<IOrderHandler> Handlers { get; } =
+    [
+        // Simulates parallel processing of orders
+        ..Enumerable.Range(0, 100)
+            .AsParallel()
+            .Select(i => orderHandlerFactory(i, 99))
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
+>[!IMPORTANT]
+>Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
+
+## Advanced interception
+
+This approach of interception maximizes performance by precompiling the proxy object factory.
+
+```c#
+using Shouldly;
+using Castle.DynamicProxy;
+using System.Collections.Immutable;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using Pure.DI;
+
+// OnDependencyInjection = On
+DI.Setup(nameof(Composition))
+    .Bind().To<DataService>()
+    .Bind().To<BusinessService>()
+    .Root<IBusinessService>("BusinessService");
+
+var log = new List<string>();
+var composition = new Composition(log);
+var businessService = composition.BusinessService;
+
+// Use the services to verify interception.
+businessService.Process();
+businessService.DataService.Count();
+
+log.ShouldBe(
+    ImmutableArray.Create(
+        "Process returns Processed",
+        "get_DataService returns Castle.Proxies.IDataServiceProxy",
+        "Count returns 55"));
+
+public interface IDataService
+{
+    int Count();
+}
+
+class DataService : IDataService
+{
+    public int Count() => 55;
+}
+
+public interface IBusinessService
+{
+    IDataService DataService { get; }
+
+    string Process();
+}
+
+class BusinessService(IDataService dataService) : IBusinessService
+{
+    public IDataService DataService { get; } = dataService;
+
+    public string Process() => "Processed";
+}
+
+internal partial class Composition : IInterceptor
+{
+    private readonly List<string> _log = [];
+    private static readonly IProxyBuilder ProxyBuilder = new DefaultProxyBuilder();
+    private readonly IInterceptor[] _interceptors = [];
+
+    public Composition(List<string> log)
+    {
+        _log = log;
+        _interceptors = [this];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private partial T OnDependencyInjection<T>(
+        in T value,
+        object? tag,
+        Lifetime lifetime)
+    {
+        if (typeof(T).IsValueType)
+        {
+            return value;
+        }
+
+        return ProxyFactory<T>.GetFactory(ProxyBuilder)(
+            value,
+            _interceptors);
+    }
+
+    public void Intercept(IInvocation invocation)
+    {
+        invocation.Proceed();
+        _log.Add($"{invocation.Method.Name} returns {invocation.ReturnValue}");
+    }
+
+    private static class ProxyFactory<T>
+    {
+        private static Func<T, IInterceptor[], T>? _factory;
+
+        public static Func<T, IInterceptor[], T> GetFactory(IProxyBuilder proxyBuilder) =>
+            _factory ?? CreateFactory(proxyBuilder);
+
+        private static Func<T, IInterceptor[], T> CreateFactory(IProxyBuilder proxyBuilder)
+        {
+            // Compiles a delegate to create a proxy for the performance boost
+            var proxyType = proxyBuilder.CreateInterfaceProxyTypeWithTargetInterface(
+                typeof(T),
+                Type.EmptyTypes,
+                ProxyGenerationOptions.Default);
+            var ctor = proxyType.GetConstructors()
+                .Single(i => i.GetParameters().Length == 2);
+            var instance = Expression.Parameter(typeof(T));
+            var interceptors = Expression.Parameter(typeof(IInterceptor[]));
+            var newProxyExpression = Expression.New(ctor, interceptors, instance);
+            return _factory = Expression.Lambda<Func<T, IInterceptor[], T>>(
+                    newProxyExpression,
+                    instance,
+                    interceptors)
+                .Compile();
+        }
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+ - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
+
+>[!NOTE]
+>Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
+
 ## Generics
 
 Generic types are supported out of the box: a single binding like `Bind<IRepository<TT>>().To<Repository<TT>>()` covers `IRepository<User>`, `IRepository<Order>` and any other instantiation used in the object graph. Since Pure.DI is a source generator, each of them is turned into concrete, reflection-free code at compile time.
@@ -7151,133 +7392,6 @@ Using an intercept gives you the ability to add end-to-end functionality such as
 - Error handling
 
 - Providing resistance to failures, etc.
-
-## Advanced interception
-
-This approach of interception maximizes performance by precompiling the proxy object factory.
-
-```c#
-using Shouldly;
-using Castle.DynamicProxy;
-using System.Collections.Immutable;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using Pure.DI;
-
-// OnDependencyInjection = On
-DI.Setup(nameof(Composition))
-    .Bind().To<DataService>()
-    .Bind().To<BusinessService>()
-    .Root<IBusinessService>("BusinessService");
-
-var log = new List<string>();
-var composition = new Composition(log);
-var businessService = composition.BusinessService;
-
-// Use the services to verify interception.
-businessService.Process();
-businessService.DataService.Count();
-
-log.ShouldBe(
-    ImmutableArray.Create(
-        "Process returns Processed",
-        "get_DataService returns Castle.Proxies.IDataServiceProxy",
-        "Count returns 55"));
-
-public interface IDataService
-{
-    int Count();
-}
-
-class DataService : IDataService
-{
-    public int Count() => 55;
-}
-
-public interface IBusinessService
-{
-    IDataService DataService { get; }
-
-    string Process();
-}
-
-class BusinessService(IDataService dataService) : IBusinessService
-{
-    public IDataService DataService { get; } = dataService;
-
-    public string Process() => "Processed";
-}
-
-internal partial class Composition : IInterceptor
-{
-    private readonly List<string> _log = [];
-    private static readonly IProxyBuilder ProxyBuilder = new DefaultProxyBuilder();
-    private readonly IInterceptor[] _interceptors = [];
-
-    public Composition(List<string> log)
-    {
-        _log = log;
-        _interceptors = [this];
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private partial T OnDependencyInjection<T>(
-        in T value,
-        object? tag,
-        Lifetime lifetime)
-    {
-        if (typeof(T).IsValueType)
-        {
-            return value;
-        }
-
-        return ProxyFactory<T>.GetFactory(ProxyBuilder)(
-            value,
-            _interceptors);
-    }
-
-    public void Intercept(IInvocation invocation)
-    {
-        invocation.Proceed();
-        _log.Add($"{invocation.Method.Name} returns {invocation.ReturnValue}");
-    }
-
-    private static class ProxyFactory<T>
-    {
-        private static Func<T, IInterceptor[], T>? _factory;
-
-        public static Func<T, IInterceptor[], T> GetFactory(IProxyBuilder proxyBuilder) =>
-            _factory ?? CreateFactory(proxyBuilder);
-
-        private static Func<T, IInterceptor[], T> CreateFactory(IProxyBuilder proxyBuilder)
-        {
-            // Compiles a delegate to create a proxy for the performance boost
-            var proxyType = proxyBuilder.CreateInterfaceProxyTypeWithTargetInterface(
-                typeof(T),
-                Type.EmptyTypes,
-                ProxyGenerationOptions.Default);
-            var ctor = proxyType.GetConstructors()
-                .Single(i => i.GetParameters().Length == 2);
-            var instance = Expression.Parameter(typeof(T));
-            var interceptors = Expression.Parameter(typeof(IInterceptor[]));
-            var newProxyExpression = Expression.New(ctor, interceptors, instance);
-            return _factory = Expression.Lambda<Func<T, IInterceptor[], T>>(
-                    newProxyExpression,
-                    instance,
-                    interceptors)
-                .Compile();
-        }
-    }
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
- - [Castle.DynamicProxy](https://www.nuget.org/packages/Castle.DynamicProxy)
-
->[!NOTE]
->Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
 
 ## Resolve hint
 
@@ -9596,120 +9710,6 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Thread synchronization in factories should be used carefully as it may impact performance. Only use when necessary for correct initialization behavior.
-
-## Thread-safe overrides
-
-When a factory delegate can be invoked from several threads at once — as with the `Func<int, int, IOrderHandler>` called in parallel here — its `ctx.Override(...)` calls must be synchronized. Wrap the overrides together with the subsequent `ctx.Inject(...)` in a `lock (ctx.Lock)` block so that each object graph is built with its own override values and parallel invocations don't overwrite each other.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System.Collections.Immutable;
-
-DI.Setup(nameof(Composition))
-    .Bind("Global").To(() => new ProcessingToken("TOKEN-123"))
-    .Bind().As(Lifetime.Singleton).To<TimeProvider>()
-    .Bind().To<Func<int, int, IOrderHandler>>(ctx =>
-        (orderId, customerId) => {
-            // Retrieves a global processing token to be passed to the handler
-            ctx.Inject("Global", out ProcessingToken token);
-
-            // The factory is invoked in parallel, so we must lock
-            // the context to safely perform overrides for the specific graph
-            lock (ctx.Lock)
-            {
-                // Overrides the 'int' dependency (OrderId)
-                ctx.Override(orderId);
-
-                // Overrides the tagged 'int' dependency (CustomerId)
-                ctx.Override(customerId, "customer");
-
-                // Overrides the 'string' dependency (TraceId)
-                ctx.Override($"Order:{orderId}-Cust:{customerId}");
-
-                // Overrides the 'ProcessingToken' dependency with the injected value
-                ctx.Override(token);
-
-                // Creates the handler with the overridden dependencies
-                ctx.Inject<OrderHandler>(out var handler);
-                return handler;
-            }
-        })
-    .Bind().To<OrderBatchProcessor>()
-
-    // Composition root
-    .Root<IOrderBatchProcessor>("OrderProcessor");
-
-var composition = new Composition();
-var orderProcessor = composition.OrderProcessor;
-
-orderProcessor.Handlers.Length.ShouldBe(100);
-for (var i = 0; i < 100; i++)
-{
-    orderProcessor.Handlers.Count(h => h.OrderId == i).ShouldBe(1);
-}
-
-record ProcessingToken(string Value);
-
-interface ITimeProvider
-{
-    DateTimeOffset Now { get; }
-}
-
-class TimeProvider : ITimeProvider
-{
-    public DateTimeOffset Now => DateTimeOffset.Now;
-}
-
-interface IOrderHandler
-{
-    string TraceId { get; }
-
-    int OrderId { get; }
-
-    int CustomerId { get; }
-}
-
-class OrderHandler(
-    string traceId,
-    ITimeProvider timeProvider,
-    int orderId,
-    [Tag("customer")] int customerId,
-    ProcessingToken token)
-    : IOrderHandler
-{
-    public string TraceId => traceId;
-
-    public int OrderId => orderId;
-
-    public int CustomerId => customerId;
-}
-
-interface IOrderBatchProcessor
-{
-    ImmutableArray<IOrderHandler> Handlers { get; }
-}
-
-class OrderBatchProcessor(Func<int, int, IOrderHandler> orderHandlerFactory)
-    : IOrderBatchProcessor
-{
-    public ImmutableArray<IOrderHandler> Handlers { get; } =
-    [
-        // Simulates parallel processing of orders
-        ..Enumerable.Range(0, 100)
-            .AsParallel()
-            .Select(i => orderHandlerFactory(i, 99))
-    ];
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
->[!IMPORTANT]
->Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
 
 ## Override depth
 

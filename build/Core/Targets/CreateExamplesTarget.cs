@@ -26,6 +26,7 @@ class CreateExamplesTarget(
         "Basics",
         "Lifetimes",
         "BaseClassLibrary",
+        "HighPerformance",
         "Generics",
         "Attributes",
         "Interception",

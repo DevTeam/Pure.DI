@@ -1,6 +1,9 @@
 ﻿/*
 $v=true
+$t=Interception
+$t=HighPerformance
 $p=2
+$p=HighPerformance:7
 $d=Advanced interception
 $sa=Interception
 $h=This approach of interception maximizes performance by precompiling the proxy object factory.

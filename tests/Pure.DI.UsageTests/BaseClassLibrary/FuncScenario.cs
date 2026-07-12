@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=BaseClassLibrary
+$t=HighPerformance
 $p=0
+$p=HighPerformance:5
 $d=Func
 $sa=Func with arguments
 $sa=Func with tag

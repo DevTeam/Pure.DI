@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=Advanced
+$t=HighPerformance
 $p=21
+$p=HighPerformance:6
 $d=Thread-safe overrides
 $sa=Overrides
 $sa=Override depth

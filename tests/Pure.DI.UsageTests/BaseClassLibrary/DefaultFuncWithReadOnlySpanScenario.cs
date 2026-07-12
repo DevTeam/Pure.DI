@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=BaseClassLibrary
+$t=HighPerformance
 $p=98
+$p=HighPerformance:1
 $d=Default Func with ReadOnlySpan
 $sa=Span and ReadOnlySpan
 $sa=Func

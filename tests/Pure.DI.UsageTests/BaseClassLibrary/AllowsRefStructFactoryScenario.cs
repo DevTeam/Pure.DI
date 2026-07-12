@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=BaseClassLibrary
+$t=HighPerformance
 $p=99
+$p=HighPerformance:2
 $d=Allows ref struct factory
 $sa=Span and ReadOnlySpan
 $sa=Factory

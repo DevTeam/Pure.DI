@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=BaseClassLibrary
+$t=HighPerformance
 $p=12
+$p=HighPerformance:4
 $d=Async Enumerable
 $sa=Enumerable
 $h=Specifying `IAsyncEnumerable<T>` as the injection type allows instances of all bindings implementing type `T` to be injected in an asynchronous-lazy manner - the instances will be provided one at a time, in an order corresponding to the sequence of the bindings.

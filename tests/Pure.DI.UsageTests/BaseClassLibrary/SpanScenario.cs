@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=BaseClassLibrary
+$t=HighPerformance
 $p=6
+$p=HighPerformance:0
 $d=Span and ReadOnlySpan
 $sa=Array
 $h=Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]` for immediate constructor or method use.

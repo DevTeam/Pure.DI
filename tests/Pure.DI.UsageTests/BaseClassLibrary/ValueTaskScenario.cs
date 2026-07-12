@@ -1,6 +1,9 @@
 /*
 $v=true
+$t=BaseClassLibrary
+$t=HighPerformance
 $p=10
+$p=HighPerformance:3
 $d=ValueTask
 $sa=Task
 $h=A dependency can be injected as `ValueTask<T>` and awaited when needed — an allocation-friendly alternative to `Task<T>` for values that are usually available synchronously. Bind the underlying type as usual and request `ValueTask<T>`; here `DataProcessor` awaits `ValueTask<IConnection>` before using the connection.

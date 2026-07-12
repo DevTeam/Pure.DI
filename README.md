@@ -283,6 +283,9 @@ dotnet run
 ## Examples
 
 ### Quick Start
+
+A short path through the smallest examples that show how a composition is declared, generated, and used.
+
 - [Auto-bindings](readme/auto-bindings.md)
 - [Injections of abstractions](readme/injections-of-abstractions.md)
 - [Simplified binding](readme/simplified-binding.md)
@@ -298,6 +301,9 @@ dotnet run
 - [Root arguments](readme/root-arguments.md)
 - [Resolve methods](readme/resolve-methods.md)
 ### Basics
+
+Core Pure.DI concepts: bindings, roots, arguments, members, and everyday object graph construction.
+
 - [Auto-bindings](readme/auto-bindings.md)
 - [Injections of abstractions](readme/injections-of-abstractions.md)
 - [Composition roots](readme/composition-roots.md)
@@ -333,6 +339,9 @@ dotnet run
 - [Consumer type](readme/consumer-type.md)
 - [Ref dependencies](readme/ref-dependencies.md)
 ### Lifetimes
+
+Lifetime choices and disposal patterns for controlling how long generated instances are reused.
+
 - [Transient](readme/transient.md)
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
@@ -348,6 +357,9 @@ dotnet run
 - [Async disposable singleton](readme/async-disposable-singleton.md)
 - [Async disposable scope](readme/async-disposable-scope.md)
 ### Base Class Library
+
+Built-in support for common .NET types such as arrays, delegates, tasks, spans, service providers, and collections.
+
 - [Func](readme/func.md)
 - [Func with arguments](readme/func-with-arguments.md)
 - [Func with tag](readme/func-with-tag.md)
@@ -371,7 +383,22 @@ dotnet run
 - [Keyed service provider](readme/keyed-service-provider.md)
 - [Default Func with ReadOnlySpan](readme/default-func-with-readonlyspan.md)
 - [Allows ref struct factory](readme/allows-ref-struct-factory.md)
+### High Performance
+
+Scenarios focused on reducing allocations, keeping hot paths explicit, avoiding shared override state, and using generated code for stack-only or deferred values.
+
+- [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
+- [Default Func with ReadOnlySpan](readme/default-func-with-readonlyspan.md)
+- [Allows ref struct factory](readme/allows-ref-struct-factory.md)
+- [ValueTask](readme/valuetask.md)
+- [Async Enumerable](readme/async-enumerable.md)
+- [Func](readme/func.md)
+- [Thread-safe overrides](readme/thread-safe-overrides.md)
+- [Advanced interception](readme/advanced-interception.md)
 ### Generics
+
+Generic bindings, roots, type arguments, constraints, and advanced generic graph shapes.
+
 - [Generics](readme/generics.md)
 - [Generic composition roots](readme/generic-composition-roots.md)
 - [Generic composition roots with constraints](readme/generic-composition-roots-with-constraints.md)
@@ -387,6 +414,9 @@ dotnet run
 - [Generic builders](readme/generic-builders.md)
 - [Generic roots](readme/generic-roots.md)
 ### Attributes
+
+Attribute-based setup options for declaring bindings, tags, metadata, and injection sites near the application code.
+
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)
 - [Dependency attribute](readme/dependency-attribute.md)
@@ -410,10 +440,16 @@ dotnet run
 - [Bind metadata merge](readme/bind-metadata-merge.md)
 - [Bind attribute groups](readme/bind-attribute-groups.md)
 ### Interception
+
+Decorator and interception examples for wrapping services without moving cross-cutting behavior into consumers.
+
 - [Decorator](readme/decorator.md)
 - [Interception](readme/interception.md)
 - [Advanced interception](readme/advanced-interception.md)
 ### Hints
+
+Code generation hints that tune diagnostics, generated APIs, thread-safety, names, and fallback behavior.
+
 - [Resolve hint](readme/resolve-hint.md)
 - [ThreadSafe hint](readme/threadsafe-hint.md)
 - [OnDependencyInjection regular expression hint](readme/ondependencyinjection-regular-expression-hint.md)
@@ -425,6 +461,9 @@ dotnet run
 - [ToString hint](readme/tostring-hint.md)
 - [Check for a root](readme/check-for-a-root.md)
 ### Interfaces
+
+Generated interface scenarios for exposing a stable composition API while keeping implementation details generated.
+
 - [Generate an interface from a class](readme/generate-an-interface-from-a-class.md)
 - [Ignore members in the generated interface](readme/ignore-members-in-the-generated-interface.md)
 - [Generate interfaces with generics](readme/generate-interfaces-with-generics.md)
@@ -432,6 +471,9 @@ dotnet run
 - [Generate several interfaces from one class](readme/generate-several-interfaces-from-one-class.md)
 - [Control generated interfaces by members](readme/control-generated-interfaces-by-members.md)
 ### Advanced
+
+Less common but practical composition techniques for overrides, builders, dependent compositions, setup context, and tracking.
+
 - [Composition root kinds](readme/composition-root-kinds.md)
 - [Root with name template](readme/root-with-name-template.md)
 - [Light roots](readme/light-roots.md)
@@ -473,12 +515,18 @@ dotnet run
 - [Exported generic roots](readme/exported-generic-roots.md)
 - [Exported generic roots with args](readme/exported-generic-roots-with-args.md)
 ### Use Cases
+
+End-to-end integrations and application-style examples that show Pure.DI in realistic project contexts.
+
 - [Unit testing](readme/unit-testing.md)
 - [Serilog](readme/serilog.md)
 - [JSON serialization](readme/json-serialization.md)
 - [AutoMapper](readme/automapper.md)
 - [Request overrides](readme/request-overrides.md)
 ### Unity
+
+Unity-specific composition patterns for scenes, prefabs, and editor-friendly dependency injection.
+
 - [Unity Basics](readme/unity-basics.md)
 - [Unity with prefabs](readme/unity-with-prefabs.md)
 - [Unity scene scopes](readme/unity-scene-scopes.md)
@@ -2512,7 +2560,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 50KB | 13K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 117KB | 30K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 124KB | 31K |
 | [AGENTS.md](AGENTS.md) | 452KB | 115K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._

@@ -35,6 +35,22 @@ class ReadmeTarget(
     [
         "Method", "Mean", "Error", "StdDev", "Ratio", "RatioSD", "Gen0", "Gen1", "Allocated", "Alloc Ratio"
     ];
+    private static readonly Dictionary<string, string> GroupDescriptions = new(StringComparer.Ordinal)
+    {
+        ["QuickStart"] = "A short path through the smallest examples that show how a composition is declared, generated, and used.",
+        ["Basics"] = "Core Pure.DI concepts: bindings, roots, arguments, members, and everyday object graph construction.",
+        ["Lifetimes"] = "Lifetime choices and disposal patterns for controlling how long generated instances are reused.",
+        ["BaseClassLibrary"] = "Built-in support for common .NET types such as arrays, delegates, tasks, spans, service providers, and collections.",
+        ["HighPerformance"] = "Scenarios focused on reducing allocations, keeping hot paths explicit, avoiding shared override state, and using generated code for stack-only or deferred values.",
+        ["Generics"] = "Generic bindings, roots, type arguments, constraints, and advanced generic graph shapes.",
+        ["Attributes"] = "Attribute-based setup options for declaring bindings, tags, metadata, and injection sites near the application code.",
+        ["Interception"] = "Decorator and interception examples for wrapping services without moving cross-cutting behavior into consumers.",
+        ["Hints"] = "Code generation hints that tune diagnostics, generated APIs, thread-safety, names, and fallback behavior.",
+        ["Interfaces"] = "Generated interface scenarios for exposing a stable composition API while keeping implementation details generated.",
+        ["Advanced"] = "Less common but practical composition techniques for overrides, builders, dependent compositions, setup context, and tracking.",
+        ["UseCases"] = "End-to-end integrations and application-style examples that show Pure.DI in realistic project contexts.",
+        ["Unity"] = "Unity-specific composition patterns for scenes, prefabs, and editor-friendly dependency injection."
+    };
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this, $"Generate {CommonReadmeFile}", "readme", "r");
@@ -174,6 +190,13 @@ class ReadmeTarget(
             var groupTitle = new string(readmeTools.FormatTitle(groupName).ToArray());
             Info($"Processing examples group \"{groupTitle}\"");
             await writer.WriteLineAsync($"### {groupTitle}");
+            if (GroupDescriptions.TryGetValue(groupName, out var groupDescription))
+            {
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync(groupDescription);
+                await writer.WriteLineAsync();
+            }
+
             foreach (var example in exampleItems)
             {
                 var description = example[CreateExamplesTarget.DescriptionKey];
