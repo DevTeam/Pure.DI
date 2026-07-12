@@ -1,7 +1,7 @@
 #### Static root
 
 Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type — `Composition.GlobalConfiguration` — without creating a composition object.
-This comes in handy at application entry points or in code that has no composition instance to hand.
+This is useful for stateless entry-point services such as static configuration readers, validators, or one-shot command helpers where the composition itself does not carry state.
 
 
 ```c#
@@ -53,7 +53,8 @@ dotnet run
 </details>
 
 >[!NOTE]
->Static roots are useful when you want to access services without creating a composition instance.
+>Static roots keep the call site compact and avoid allocating a composition instance for graphs that do not need composition-level state.
+Avoid static roots for graphs that depend on scoped state, per-composition caches, or externally supplied constructor arguments. In those cases, an instance composition keeps ownership and lifetime boundaries clearer.
 
 <details>
 <summary>The following partial class will be generated</summary>

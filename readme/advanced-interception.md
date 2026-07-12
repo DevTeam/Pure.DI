@@ -1,6 +1,7 @@
 #### Advanced interception
 
-This approach of interception maximizes performance by precompiling the proxy object factory.
+Advanced interception is useful when cross-cutting behavior is required on a hot path and the proxy factory itself must not become the bottleneck. Instead of asking Castle DynamicProxy to discover the construction path repeatedly, this scenario compiles and caches a strongly typed proxy factory per service type.
+The example wraps business services with a logging interceptor and caches the proxy creation delegate in a generic nested `ProxyFactory<T>`. The generated Pure.DI graph still creates the target services directly, while the interception hook applies the cached proxy layer after each dependency is built.
 
 
 ```c#
@@ -149,6 +150,7 @@ dotnet run
 
 >[!NOTE]
 >Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
+Use this only when decorators are not expressive enough or when an existing interception ecosystem is required. For simple cross-cutting behavior, decorators are easier to read and cheaper to reason about.
 
 <details>
 <summary>The following partial class will be generated</summary>

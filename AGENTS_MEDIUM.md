@@ -2264,7 +2264,7 @@ To run the above code, the following NuGet packages must be added:
 ## Static root
 
 Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type — `Composition.GlobalConfiguration` — without creating a composition object.
-This comes in handy at application entry points or in code that has no composition instance to hand.
+This is useful for stateless entry-point services such as static configuration readers, validators, or one-shot command helpers where the composition itself does not carry state.
 
 ```c#
 using Shouldly;
@@ -2292,7 +2292,8 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 >[!NOTE]
->Static roots are useful when you want to access services without creating a composition instance.
+>Static roots keep the call site compact and avoid allocating a composition instance for graphs that do not need composition-level state.
+Avoid static roots for graphs that depend on scoped state, per-composition caches, or externally supplied constructor arguments. In those cases, an instance composition keeps ownership and lifetime boundaries clearer.
 
 ## Async Root
 
@@ -2805,6 +2806,61 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >Func with tags allows you to create instances with specific tags dynamically, useful for factory patterns with multiple implementations.
 
+## Method injection for a hot path
+
+Method injection is useful when a service has stable dependencies but the hot-path input changes on every call. Instead of storing request state in a heap object, pass the per-call value as a root argument and consume it immediately in an initialization method.
+The route matcher below has a singleton-like route table and receives a `ReadOnlySpan<char>` request path for each call. The generated root method passes the span into `Match(...)`, so the stack-only value stays inside the current call frame and is not stored in a field or property.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System;
+
+DI.Setup(nameof(Composition))
+    .Bind<IRouteTable>().To<RouteTable>()
+    .Bind<IRouteMatcher>().To<RouteMatcher>()
+    .RootArg<ReadOnlySpan<char>>("path")
+    .Root<IRouteMatcher>("CreateMatcher");
+
+var composition = new Composition();
+
+var matcher = composition.CreateMatcher("/orders/42".AsSpan());
+matcher.Route.ShouldBe("orders");
+
+interface IRouteTable
+{
+    string Find(ReadOnlySpan<char> path);
+}
+
+sealed class RouteTable : IRouteTable
+{
+    public string Find(ReadOnlySpan<char> path) =>
+        path.StartsWith("/orders/".AsSpan(), StringComparison.Ordinal)
+            ? "orders"
+            : "not-found";
+}
+
+interface IRouteMatcher
+{
+    string Route { get; }
+}
+
+sealed class RouteMatcher(IRouteTable routeTable) : IRouteMatcher
+{
+    public string Route { get; private set; } = "";
+
+    [Ordinal(0)]
+    public void Match(ReadOnlySpan<char> path) =>
+        Route = routeTable.Find(path);
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+This is a good shape for parsers, routers, protocol decoders, validation pipelines, and other code that reads request data immediately. Keep the method side-effect small and do not store `Span<T>`/`ReadOnlySpan<T>` in the created object; Pure.DI reports diagnostics when stack-only values are routed to storage-like injection sites.
+
 ## Span and ReadOnlySpan
 
 Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]` for immediate constructor or method use.
@@ -2910,60 +2966,6 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Use this default `Func` binding when the standard delegate shape is enough. Use a custom delegate factory with explicit `ctx.Override<T>(...)` only when you need a custom delegate type or additional factory logic.
-
-## Allows ref struct factory
-
-A delegate factory can accept stack-only values when the value is consumed immediately inside the same invocation. For custom generic delegate APIs that use `where T : allows ref struct`, pass the delegate argument through `ctx.Override<T>(...)` or `ctx.Let<T>(...)`, resolve the target immediately, and keep the override plus injection inside `lock (ctx.Lock)` when thread safety is enabled.
-
-```c#
-using Shouldly;
-using Pure.DI;
-using System;
-
-DI.Setup(nameof(Composition))
-    .Bind<ParserFactory<ReadOnlySpan<char>>>().To(ctx => new ParserFactory<ReadOnlySpan<char>>(text =>
-    {
-        lock (ctx.Lock)
-        {
-            ctx.Override<ReadOnlySpan<char>>(text);
-            ctx.Inject<Parser<ReadOnlySpan<char>>>(out var parser);
-            return parser.Initialized;
-        }
-    }))
-
-    // Composition root
-    .Root<ParserFactory<ReadOnlySpan<char>>>("ParserFactory");
-
-var composition = new Composition();
-var initialized = composition.ParserFactory("Hello".AsSpan());
-
-initialized.ShouldBeTrue();
-
-delegate bool ParserFactory<T>(T text)
-    where T : allows ref struct;
-
-class Parser<T>
-    where T : allows ref struct
-{
-    private bool _initialized;
-
-    [Ordinal]
-    public void Initialize(T text)
-    {
-        _ = text;
-        _initialized = true;
-    }
-
-    public bool Initialized => _initialized;
-}
-```
-
-To run the above code, the following NuGet packages must be added:
- - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
- - [Shouldly](https://www.nuget.org/packages/Shouldly)
-
-This manual factory pattern keeps `ReadOnlySpan<T>` and other stack-only values inside the current synchronous frame. Pure.DI reports `DIE049` if the value is captured by a nested or returned delegate, and `DIW013` if the stack-only override is not synchronized while thread safety is enabled.
-When the standard delegate shape is enough, prefer the generated default `Func<ReadOnlySpan<char>, T>` binding. It uses local values in the generated delegate invocation and does not require a manual `lock`.
 
 ## Generics
 
@@ -3533,7 +3535,8 @@ Using an intercept gives you the ability to add end-to-end functionality such as
 
 ## Advanced interception
 
-This approach of interception maximizes performance by precompiling the proxy object factory.
+Advanced interception is useful when cross-cutting behavior is required on a hot path and the proxy factory itself must not become the bottleneck. Instead of asking Castle DynamicProxy to discover the construction path repeatedly, this scenario compiles and caches a strongly typed proxy factory per service type.
+The example wraps business services with a logging interceptor and caches the proxy creation delegate in a generic nested `ProxyFactory<T>`. The generated Pure.DI graph still creates the target services directly, while the interception hook applies the cached proxy layer after each dependency is built.
 
 ```c#
 using Shouldly;
@@ -3657,6 +3660,7 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
+Use this only when decorators are not expressive enough or when an existing interception ecosystem is required. For simple cross-cutting behavior, decorators are easier to read and cheaper to reason about.
 
 ## Generate an interface from a class
 

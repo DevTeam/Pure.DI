@@ -3,12 +3,14 @@ $v=true
 $t=Interception
 $t=HighPerformance
 $p=2
-$p=HighPerformance:7
+$p=HighPerformance:14
 $d=Advanced interception
 $sa=Interception
-$h=This approach of interception maximizes performance by precompiling the proxy object factory.
+$h=Advanced interception is useful when cross-cutting behavior is required on a hot path and the proxy factory itself must not become the bottleneck. Instead of asking Castle DynamicProxy to discover the construction path repeatedly, this scenario compiles and caches a strongly typed proxy factory per service type.
+$h=The example wraps business services with a logging interceptor and caches the proxy creation delegate in a generic nested `ProxyFactory<T>`. The generated Pure.DI graph still creates the target services directly, while the interception hook applies the cached proxy layer after each dependency is built.
 $f=>[!NOTE]
 $f=>Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
+$f=Use this only when decorators are not expressive enough or when an existing interception ecosystem is required. For simple cross-cutting behavior, decorators are easier to read and cheaper to reason about.
 $r=Shouldly;Castle.DynamicProxy
 */
 

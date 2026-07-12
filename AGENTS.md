@@ -2264,7 +2264,7 @@ To run the above code, the following NuGet packages must be added:
 ## Static root
 
 Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type — `Composition.GlobalConfiguration` — without creating a composition object.
-This comes in handy at application entry points or in code that has no composition instance to hand.
+This is useful for stateless entry-point services such as static configuration readers, validators, or one-shot command helpers where the composition itself does not carry state.
 
 ```c#
 using Shouldly;
@@ -2292,7 +2292,8 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 >[!NOTE]
->Static roots are useful when you want to access services without creating a composition instance.
+>Static roots keep the call site compact and avoid allocating a composition instance for graphs that do not need composition-level state.
+Avoid static roots for graphs that depend on scoped state, per-composition caches, or externally supplied constructor arguments. In those cases, an instance composition keeps ownership and lifetime boundaries clearer.
 
 ## Async Root
 
@@ -2607,7 +2608,8 @@ To run the above code, the following NuGet packages must be added:
 
 ## PerBlock
 
-The `PerBlock` lifetime does not guarantee that there will be a single dependency instance for each instance of the composition root (as for the `PerResolve` lifetime), but is useful for reducing the number of instances of a type.
+The `PerBlock` lifetime reuses an instance inside a generated construction block. It is useful when several constructor parameters in the same object graph need the same expensive helper, but keeping that helper for the whole root (`PerResolve`) or composition (`Singleton`) would be too broad.
+The order repository below receives the same database connection for both primary and secondary constructor paths within one block, then receives a fresh connection for the next root call. This reduces duplicate construction while keeping request-like operations isolated.
 
 ```c#
 using Shouldly;
@@ -2678,7 +2680,8 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 >[!NOTE]
->`PerBlock` lifetime provides a balance between `PerResolve` and `Transient`, reducing instance count within a resolution block.
+>`PerBlock` provides a balance between `Transient` and `PerResolve`: fewer allocations inside a local block without turning the dependency into long-lived shared state.
+Use it for short-lived helpers, local adapters, and operation-level collaborators. Prefer `Scoped` or `PerResolve` when the reuse boundary must be visible at the application level.
 
 ## Scope
 
@@ -4925,109 +4928,52 @@ To run the above code, the following NuGet packages must be added:
 This manual factory pattern keeps `ReadOnlySpan<T>` and other stack-only values inside the current synchronous frame. Pure.DI reports `DIE049` if the value is captured by a nested or returned delegate, and `DIW013` if the stack-only override is not synchronized while thread safety is enabled.
 When the standard delegate shape is enough, prefer the generated default `Func<ReadOnlySpan<char>, T>` binding. It uses local values in the generated delegate invocation and does not require a manual `lock`.
 
-## Thread-safe overrides
+## Method injection for a hot path
 
-When a factory delegate can be invoked from several threads at once — as with the `Func<int, int, IOrderHandler>` called in parallel here — its `ctx.Override(...)` calls must be synchronized. Wrap the overrides together with the subsequent `ctx.Inject(...)` in a `lock (ctx.Lock)` block so that each object graph is built with its own override values and parallel invocations don't overwrite each other.
+Method injection is useful when a service has stable dependencies but the hot-path input changes on every call. Instead of storing request state in a heap object, pass the per-call value as a root argument and consume it immediately in an initialization method.
+The route matcher below has a singleton-like route table and receives a `ReadOnlySpan<char>` request path for each call. The generated root method passes the span into `Match(...)`, so the stack-only value stays inside the current call frame and is not stored in a field or property.
 
 ```c#
 using Shouldly;
 using Pure.DI;
-using System.Collections.Immutable;
+using System;
 
 DI.Setup(nameof(Composition))
-    .Bind("Global").To(() => new ProcessingToken("TOKEN-123"))
-    .Bind().As(Lifetime.Singleton).To<TimeProvider>()
-    .Bind().To<Func<int, int, IOrderHandler>>(ctx =>
-        (orderId, customerId) => {
-            // Retrieves a global processing token to be passed to the handler
-            ctx.Inject("Global", out ProcessingToken token);
-
-            // The factory is invoked in parallel, so we must lock
-            // the context to safely perform overrides for the specific graph
-            lock (ctx.Lock)
-            {
-                // Overrides the 'int' dependency (OrderId)
-                ctx.Override(orderId);
-
-                // Overrides the tagged 'int' dependency (CustomerId)
-                ctx.Override(customerId, "customer");
-
-                // Overrides the 'string' dependency (TraceId)
-                ctx.Override($"Order:{orderId}-Cust:{customerId}");
-
-                // Overrides the 'ProcessingToken' dependency with the injected value
-                ctx.Override(token);
-
-                // Creates the handler with the overridden dependencies
-                ctx.Inject<OrderHandler>(out var handler);
-                return handler;
-            }
-        })
-    .Bind().To<OrderBatchProcessor>()
-
-    // Composition root
-    .Root<IOrderBatchProcessor>("OrderProcessor");
+    .Bind<IRouteTable>().To<RouteTable>()
+    .Bind<IRouteMatcher>().To<RouteMatcher>()
+    .RootArg<ReadOnlySpan<char>>("path")
+    .Root<IRouteMatcher>("CreateMatcher");
 
 var composition = new Composition();
-var orderProcessor = composition.OrderProcessor;
 
-orderProcessor.Handlers.Length.ShouldBe(100);
-for (var i = 0; i < 100; i++)
+var matcher = composition.CreateMatcher("/orders/42".AsSpan());
+matcher.Route.ShouldBe("orders");
+
+interface IRouteTable
 {
-    orderProcessor.Handlers.Count(h => h.OrderId == i).ShouldBe(1);
+    string Find(ReadOnlySpan<char> path);
 }
 
-record ProcessingToken(string Value);
-
-interface ITimeProvider
+sealed class RouteTable : IRouteTable
 {
-    DateTimeOffset Now { get; }
+    public string Find(ReadOnlySpan<char> path) =>
+        path.StartsWith("/orders/".AsSpan(), StringComparison.Ordinal)
+            ? "orders"
+            : "not-found";
 }
 
-class TimeProvider : ITimeProvider
+interface IRouteMatcher
 {
-    public DateTimeOffset Now => DateTimeOffset.Now;
+    string Route { get; }
 }
 
-interface IOrderHandler
+sealed class RouteMatcher(IRouteTable routeTable) : IRouteMatcher
 {
-    string TraceId { get; }
+    public string Route { get; private set; } = "";
 
-    int OrderId { get; }
-
-    int CustomerId { get; }
-}
-
-class OrderHandler(
-    string traceId,
-    ITimeProvider timeProvider,
-    int orderId,
-    [Tag("customer")] int customerId,
-    ProcessingToken token)
-    : IOrderHandler
-{
-    public string TraceId => traceId;
-
-    public int OrderId => orderId;
-
-    public int CustomerId => customerId;
-}
-
-interface IOrderBatchProcessor
-{
-    ImmutableArray<IOrderHandler> Handlers { get; }
-}
-
-class OrderBatchProcessor(Func<int, int, IOrderHandler> orderHandlerFactory)
-    : IOrderBatchProcessor
-{
-    public ImmutableArray<IOrderHandler> Handlers { get; } =
-    [
-        // Simulates parallel processing of orders
-        ..Enumerable.Range(0, 100)
-            .AsParallel()
-            .Select(i => orderHandlerFactory(i, 99))
-    ];
+    [Ordinal(0)]
+    public void Match(ReadOnlySpan<char> path) =>
+        Route = routeTable.Find(path);
 }
 ```
 
@@ -5035,13 +4981,327 @@ To run the above code, the following NuGet packages must be added:
  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
-The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
->[!IMPORTANT]
->Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
+This is a good shape for parsers, routers, protocol decoders, validation pipelines, and other code that reads request data immediately. Keep the method side-effect small and do not store `Span<T>`/`ReadOnlySpan<T>` in the created object; Pure.DI reports diagnostics when stack-only values are routed to storage-like injection sites.
+
+## ArrayPool buffer
+
+Use `ArrayPool<T>` when a hot path needs temporary buffers whose size is too large or too variable for `stackalloc`. Pure.DI supports `ArrayPool<T>` out of the box, so the setup does not need to bind `ArrayPool<byte>.Shared` manually; request `ArrayPool<byte>` like any other dependency.
+In this example a CSV export endpoint creates a per-request `ExportBuffer`. The buffer owner receives the shared `ArrayPool<byte>` from Pure.DI, rents an array using application options, exposes only `Memory<byte>` to the exporter, and returns the array when the `Owned<IReportExporter>` operation scope is disposed.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Buffers;
+using System.Text;
+
+DI.Setup(nameof(Composition))
+    .Bind().To(_ => new ExportBufferOptions(Size: 256))
+    .Bind().To<ExportBuffer>()
+    .Bind<IReportExporter>().To<CsvReportExporter>()
+    .Root<Owned<IReportExporter>>("Exporter");
+
+var composition = new Composition();
+var exporter = composition.Exporter;
+
+var bytesWritten = exporter.Value.Export(
+    [
+        new Order(17, 42.50m),
+        new Order(18, 13.25m)
+    ]);
+
+bytesWritten.ShouldBeGreaterThan(0);
+exporter.Value.Buffer.Returned.ShouldBeFalse();
+
+readonly record struct Order(int Id, decimal Total);
+
+readonly record struct ExportBufferOptions(int Size);
+
+interface IReportExporter
+{
+    ExportBuffer Buffer { get; }
+
+    int Export(IReadOnlyList<Order> orders);
+}
+
+sealed class CsvReportExporter(ExportBuffer buffer) : IReportExporter
+{
+    public ExportBuffer Buffer => buffer;
+
+    public int Export(IReadOnlyList<Order> orders)
+    {
+        var writer = new ArrayBufferWriter<byte>(buffer.Memory.Length);
+        foreach (var order in orders)
+        {
+            var line = $"order-{order.Id},{order.Total:0.00}\n";
+            writer.Write(Encoding.UTF8.GetBytes(line));
+        }
+
+        writer.WrittenSpan.CopyTo(buffer.Memory.Span);
+        return writer.WrittenCount;
+    }
+}
+
+sealed class ExportBuffer(
+    ArrayPool<byte> pool,
+    ExportBufferOptions options)
+    : IDisposable
+{
+    private byte[]? _buffer = pool.Rent(options.Size);
+
+    public Memory<byte> Memory => _buffer;
+
+    public bool Returned => _buffer is null;
+
+    public void Dispose()
+    {
+        if (_buffer is {} buffer)
+        {
+            Array.Clear(buffer);
+            pool.Return(buffer);
+            _buffer = null;
+        }
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+This pattern is useful for serialization, compression, protocol framing, and batch export pipelines. Keep the owner lifetime short, clear sensitive buffers before returning them, and do not store the rented `Memory<T>` after the owner is disposed.
+The important DI detail is ownership: bind or auto-bind the owner as the dependency that is tracked and disposed, not the raw array. The pool itself is a built-in BCL dependency; the owner is the application-specific object that defines rent size, cleanup, and return rules. `Owned<T>` keeps that cleanup tied to one root call instead of the whole composition.
+
+## Object pool
+
+Object pools help when a service is expensive to allocate but can be reset and reused safely. A pool keeps a small set of warm objects and gives each request a short-lived lease that returns the instance when disposed.
+Here a notification pipeline rents an `EmailTemplateRenderer` for every message. The renderer owns reusable buffers that are cleared before it goes back to the pool, so the hot path avoids repeatedly allocating the renderer and its internal state.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    .Bind().As(Singleton).To<RendererPool>()
+    .Bind().To<RendererLease>()
+    .Bind<INotificationComposer>().To<NotificationComposer>()
+    .Root<INotificationComposer>("Composer");
+
+var composition = new Composition();
+var composer1 = composition.Composer;
+using var composer2 = composition.Composer;
+
+composer1.Compose("Ada", "Ready").ShouldBe("Hello Ada, Ready");
+composer2.Compose("Linus", "Done").ShouldBe("Hello Linus, Done");
+
+composer1.Lease.Renderer.ShouldNotBe(composer2.Lease.Renderer);
+
+interface INotificationComposer : IDisposable
+{
+    RendererLease Lease { get; }
+
+    string Compose(string userName, string message);
+}
+
+sealed class NotificationComposer(RendererLease lease) : INotificationComposer
+{
+    public RendererLease Lease => lease;
+
+    public string Compose(string userName, string message) =>
+        lease.Renderer.Render(userName, message);
+
+    public void Dispose() => lease.Dispose();
+}
+
+sealed class RendererLease(RendererPool pool) : IDisposable
+{
+    public EmailTemplateRenderer Renderer { get; } = pool.Rent();
+
+    public void Dispose()
+    {
+        Renderer.Reset();
+        pool.Return(Renderer);
+    }
+}
+
+sealed class RendererPool
+{
+    private readonly Stack<EmailTemplateRenderer> _renderers = [];
+
+    public EmailTemplateRenderer Rent() =>
+        _renderers.Count > 0 ? _renderers.Pop() : new EmailTemplateRenderer();
+
+    public void Return(EmailTemplateRenderer renderer) =>
+        _renderers.Push(renderer);
+}
+
+sealed class EmailTemplateRenderer
+{
+    private readonly List<string> _parts = [];
+
+    public string Render(string userName, string message)
+    {
+        _parts.Add("Hello ");
+        _parts.Add(userName);
+        _parts.Add(", ");
+        _parts.Add(message);
+        return string.Concat(_parts);
+    }
+
+    public void Reset() => _parts.Clear();
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+This pattern fits serializers, encoders, template renderers, parsers, and compression helpers. It is not a replacement for regular DI lifetimes: only pool objects that have a clear reset rule, are not used concurrently while leased, and do not keep request-specific references after `Reset()`.
+The composition owns the pool as a singleton, while each root call creates a lightweight lease. That keeps reuse explicit and avoids leaking pooled instances outside the operation scope.
+
+## Struct dependency
+
+Small immutable value-type services are useful on hot paths where the dependency represents a policy, a formatter, or a calculator with no identity and no shared mutable state. Pure.DI can compose those values directly, so consumers receive a strongly typed value without runtime lookup.
+This example uses a `readonly struct` shipping-price policy in a checkout quote calculator. The policy is cheap to copy, deterministic, and has no lifetime state, which makes it a good fit for value semantics.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<ShippingPolicy>()
+    .Bind<IQuoteCalculator>().To<QuoteCalculator>()
+    .Root<IQuoteCalculator>("Calculator");
+
+var composition = new Composition();
+var calculator = composition.Calculator;
+
+calculator.GetTotal(new Cart(120m, 2.5m)).ShouldBe(125.99m);
+
+readonly record struct Cart(decimal Subtotal, decimal WeightKg);
+
+readonly struct ShippingPolicy
+{
+    public decimal Calculate(decimal weightKg) =>
+        weightKg <= 1m ? 2.99m : 5.99m;
+}
+
+interface IQuoteCalculator
+{
+    decimal GetTotal(Cart cart);
+}
+
+sealed class QuoteCalculator(ShippingPolicy shippingPolicy) : IQuoteCalculator
+{
+    public decimal GetTotal(Cart cart) =>
+        cart.Subtotal + shippingPolicy.Calculate(cart.WeightKg);
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+Prefer this pattern for tiny stateless rules and calculations. Do not turn large mutable objects into structs just to avoid allocation; copying a large struct can be more expensive than allocating one object. Keep value-type services small, immutable, and obvious.
+
+## ValueTask root
+
+A root can return `ValueTask<T>` when the caller naturally awaits the result but most executions complete synchronously. This avoids allocating a `Task<T>` for the fast path while still allowing the same API to grow into asynchronous initialization later.
+The example models a feature flag snapshot used by request routing. The snapshot is normally available from an in-memory cache, so the composition root returns a completed `ValueTask<IFeatureSnapshot>` and the caller can await it without forcing a heap allocation for the common case.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IFeatureSnapshot>().To<FeatureSnapshot>()
+    .Root<ValueTask<IFeatureSnapshot>>("GetSnapshotAsync");
+
+var composition = new Composition();
+
+var snapshot = await composition.GetSnapshotAsync;
+snapshot.IsEnabled("checkout-v2").ShouldBeTrue();
+
+interface IFeatureSnapshot
+{
+    bool IsEnabled(string name);
+}
+
+sealed class FeatureSnapshot : IFeatureSnapshot
+{
+    private readonly HashSet<string> _enabled =
+    [
+        "checkout-v2",
+        "new-search"
+    ];
+
+    public bool IsEnabled(string name) => _enabled.Contains(name);
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+Use `ValueTask<T>` for roots that are awaited frequently and usually complete synchronously. Keep the usual `ValueTask<T>` rules: await it once, do not store it for later, and use `Task<T>` when the result is naturally shared or awaited multiple times.
+Pure.DI still generates regular strongly typed code; the performance benefit comes from choosing an allocation-friendly asynchronous shape at the root boundary.
+
+## ThreadSafe Off for single-thread composition
+
+Pure.DI generates thread-safe code by default because composition instances are often shared. When a composition is created and used on one thread, such as inside a command-line import step, a game-loop setup phase, or a short-lived benchmark harness, the synchronization path can be disabled explicitly.
+This example builds a report import pipeline that is created, used, and discarded inside one job. `ThreadSafe = Off` removes generated locking for composition-owned cached instances, while the application keeps the single-threaded ownership rule at the boundary.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using static Pure.DI.Hint;
+using static Pure.DI.Lifetime;
+
+DI.Setup(nameof(Composition))
+    .Hint(ThreadSafe, "Off")
+    .Bind().As(Singleton).To<ImportCache>()
+    .Bind<IImportJob>().To<ImportJob>()
+    .Root<IImportJob>("Job");
+
+var composition = new Composition();
+var job = composition.Job;
+
+job.Import(["A-100", "A-100", "B-200"]).ShouldBe(2);
+
+interface IImportJob
+{
+    int Import(IReadOnlyList<string> productCodes);
+}
+
+sealed class ImportJob(ImportCache cache) : IImportJob
+{
+    public int Import(IReadOnlyList<string> productCodes)
+    {
+        foreach (var code in productCodes)
+        {
+            cache.SeenCodes.Add(code);
+        }
+
+        return cache.SeenCodes.Count;
+    }
+}
+
+sealed class ImportCache
+{
+    public HashSet<string> SeenCodes { get; } = [];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+Use this only when the composition instance is not shared across threads. If delegates, factories, or roots can be invoked concurrently, keep thread safety enabled or synchronize the critical factory section yourself with `ctx.Lock`.
 
 ## Advanced interception
 
-This approach of interception maximizes performance by precompiling the proxy object factory.
+Advanced interception is useful when cross-cutting behavior is required on a hot path and the proxy factory itself must not become the bottleneck. Instead of asking Castle DynamicProxy to discover the construction path repeatedly, this scenario compiles and caches a strongly typed proxy factory per service type.
+The example wraps business services with a logging interceptor and caches the proxy creation delegate in a generic nested `ProxyFactory<T>`. The generated Pure.DI graph still creates the target services directly, while the interception hook applies the cached proxy layer after each dependency is built.
 
 ```c#
 using Shouldly;
@@ -5165,6 +5425,176 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
+Use this only when decorators are not expressive enough or when an existing interception ecosystem is required. For simple cross-cutting behavior, decorators are easier to read and cheaper to reason about.
+
+## Factory without closure capture
+
+Factory delegates often appear in hot object creation paths. Keep them deterministic and allocation-friendly by taking dependencies as factory parameters instead of capturing outer variables. Pure.DI can see those parameters as dependencies and generate the code that supplies them.
+The receipt formatter below needs a currency formatter and tax policy. Both are declared as lambda parameters, so the factory does not close over mutable setup-local state and the generated graph remains explicit.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Globalization;
+
+DI.Setup(nameof(Composition))
+    .Bind().To<CurrencyFormatter>()
+    .Bind().To<TaxPolicy>()
+    .Bind<IReceiptFormatter>().To((
+        CurrencyFormatter currency,
+        TaxPolicy tax) => new ReceiptFormatter(currency, tax))
+    .Root<IReceiptFormatter>("Formatter");
+
+var composition = new Composition();
+var formatter = composition.Formatter;
+
+formatter.Format(100m).ShouldBe("$120.00");
+
+interface IReceiptFormatter
+{
+    string Format(decimal subtotal);
+}
+
+sealed class ReceiptFormatter(
+    CurrencyFormatter currency,
+    TaxPolicy tax)
+    : IReceiptFormatter
+{
+    public string Format(decimal subtotal) =>
+        currency.Format(tax.Apply(subtotal));
+}
+
+sealed class CurrencyFormatter
+{
+    public string Format(decimal value) =>
+        $"${value.ToString("0.00", CultureInfo.InvariantCulture)}";
+}
+
+readonly struct TaxPolicy
+{
+    public decimal Apply(decimal subtotal) => subtotal * 1.20m;
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+This is most useful when a factory adds a small construction decision or validates dependencies before creating an object. If the factory needs runtime values, prefer root arguments or `Func<TArg, TResult>` instead of capturing variables from the setup method.
+
+## Thread-safe overrides
+
+When a factory delegate can be invoked from several threads at once — as with the `Func<int, int, IOrderHandler>` called in parallel here — its `ctx.Override(...)` calls must be synchronized. Wrap the overrides together with the subsequent `ctx.Inject(...)` in a `lock (ctx.Lock)` block so that each object graph is built with its own override values and parallel invocations don't overwrite each other.
+
+```c#
+using Shouldly;
+using Pure.DI;
+using System.Collections.Immutable;
+
+DI.Setup(nameof(Composition))
+    .Bind("Global").To(() => new ProcessingToken("TOKEN-123"))
+    .Bind().As(Lifetime.Singleton).To<TimeProvider>()
+    .Bind().To<Func<int, int, IOrderHandler>>(ctx =>
+        (orderId, customerId) => {
+            // Retrieves a global processing token to be passed to the handler
+            ctx.Inject("Global", out ProcessingToken token);
+
+            // The factory is invoked in parallel, so we must lock
+            // the context to safely perform overrides for the specific graph
+            lock (ctx.Lock)
+            {
+                // Overrides the 'int' dependency (OrderId)
+                ctx.Override(orderId);
+
+                // Overrides the tagged 'int' dependency (CustomerId)
+                ctx.Override(customerId, "customer");
+
+                // Overrides the 'string' dependency (TraceId)
+                ctx.Override($"Order:{orderId}-Cust:{customerId}");
+
+                // Overrides the 'ProcessingToken' dependency with the injected value
+                ctx.Override(token);
+
+                // Creates the handler with the overridden dependencies
+                ctx.Inject<OrderHandler>(out var handler);
+                return handler;
+            }
+        })
+    .Bind().To<OrderBatchProcessor>()
+
+    // Composition root
+    .Root<IOrderBatchProcessor>("OrderProcessor");
+
+var composition = new Composition();
+var orderProcessor = composition.OrderProcessor;
+
+orderProcessor.Handlers.Length.ShouldBe(100);
+for (var i = 0; i < 100; i++)
+{
+    orderProcessor.Handlers.Count(h => h.OrderId == i).ShouldBe(1);
+}
+
+record ProcessingToken(string Value);
+
+interface ITimeProvider
+{
+    DateTimeOffset Now { get; }
+}
+
+class TimeProvider : ITimeProvider
+{
+    public DateTimeOffset Now => DateTimeOffset.Now;
+}
+
+interface IOrderHandler
+{
+    string TraceId { get; }
+
+    int OrderId { get; }
+
+    int CustomerId { get; }
+}
+
+class OrderHandler(
+    string traceId,
+    ITimeProvider timeProvider,
+    int orderId,
+    [Tag("customer")] int customerId,
+    ProcessingToken token)
+    : IOrderHandler
+{
+    public string TraceId => traceId;
+
+    public int OrderId => orderId;
+
+    public int CustomerId => customerId;
+}
+
+interface IOrderBatchProcessor
+{
+    ImmutableArray<IOrderHandler> Handlers { get; }
+}
+
+class OrderBatchProcessor(Func<int, int, IOrderHandler> orderHandlerFactory)
+    : IOrderBatchProcessor
+{
+    public ImmutableArray<IOrderHandler> Handlers { get; } =
+    [
+        // Simulates parallel processing of orders
+        ..Enumerable.Range(0, 100)
+            .AsParallel()
+            .Select(i => orderHandlerFactory(i, 99))
+    ];
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
+>[!IMPORTANT]
+>Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
 
 ## Generics
 

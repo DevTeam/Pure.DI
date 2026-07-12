@@ -1,12 +1,17 @@
 /*
 $v=true
+$t=Lifetimes
+$t=HighPerformance
 $p=3
+$p=HighPerformance:13
 $d=PerBlock
 $sa=PerResolve
 $sa=Transient
-$h=The `PerBlock` lifetime does not guarantee that there will be a single dependency instance for each instance of the composition root (as for the `PerResolve` lifetime), but is useful for reducing the number of instances of a type.
+$h=The `PerBlock` lifetime reuses an instance inside a generated construction block. It is useful when several constructor parameters in the same object graph need the same expensive helper, but keeping that helper for the whole root (`PerResolve`) or composition (`Singleton`) would be too broad.
+$h=The order repository below receives the same database connection for both primary and secondary constructor paths within one block, then receives a fresh connection for the next root call. This reduces duplicate construction while keeping request-like operations isolated.
 $f=>[!NOTE]
-$f=>`PerBlock` lifetime provides a balance between `PerResolve` and `Transient`, reducing instance count within a resolution block.
+$f=>`PerBlock` provides a balance between `Transient` and `PerResolve`: fewer allocations inside a local block without turning the dependency into long-lived shared state.
+$f=Use it for short-lived helpers, local adapters, and operation-level collaborators. Prefer `Scoped` or `PerResolve` when the reuse boundary must be visible at the application level.
 $r=Shouldly
 */
 

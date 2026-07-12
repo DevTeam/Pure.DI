@@ -387,14 +387,23 @@ Built-in support for common .NET types such as arrays, delegates, tasks, spans, 
 
 Scenarios focused on reducing allocations, keeping hot paths explicit, avoiding shared override state, and using generated code for stack-only or deferred values.
 
+- [Method injection for a hot path](readme/method-injection-for-a-hot-path.md)
 - [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
 - [Default Func with ReadOnlySpan](readme/default-func-with-readonlyspan.md)
 - [Allows ref struct factory](readme/allows-ref-struct-factory.md)
+- [ArrayPool buffer](readme/arraypool-buffer.md)
+- [Object pool](readme/object-pool.md)
+- [Struct dependency](readme/struct-dependency.md)
+- [ValueTask root](readme/valuetask-root.md)
 - [ValueTask](readme/valuetask.md)
 - [Async Enumerable](readme/async-enumerable.md)
 - [Func](readme/func.md)
-- [Thread-safe overrides](readme/thread-safe-overrides.md)
+- [Static root](readme/static-root.md)
+- [ThreadSafe Off for single-thread composition](readme/threadsafe-off-for-single-thread-composition.md)
+- [PerBlock](readme/perblock.md)
 - [Advanced interception](readme/advanced-interception.md)
+- [Factory without closure capture](readme/factory-without-closure-capture.md)
+- [Thread-safe overrides](readme/thread-safe-overrides.md)
 ### Generics
 
 Generic bindings, roots, type arguments, constraints, and advanced generic graph shapes.
@@ -2559,9 +2568,9 @@ AI needs to understand the situation it’s in (context). This means knowing det
 
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
-| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 50KB | 13K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 124KB | 31K |
-| [AGENTS.md](AGENTS.md) | 452KB | 115K |
+| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 51KB | 13K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 125KB | 32K |
+| [AGENTS.md](AGENTS.md) | 469KB | 120K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI
