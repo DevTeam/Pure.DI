@@ -67,13 +67,13 @@ sealed class FactoryApiWalker : CSharpSyntaxWalker, IFactoryApiWalker
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName)
                              && IsContextIdentifier(contextIdentifierName):
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _metaPosition++, CurrentOverrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _metaPosition++, [..CurrentOverrides]));
                         CurrentOverrides.Clear();
                         break;
 
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _metaPosition++, CurrentOverrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _metaPosition++, [..CurrentOverrides]));
                         CurrentOverrides.Clear();
                         break;
 
@@ -104,13 +104,13 @@ sealed class FactoryApiWalker : CSharpSyntaxWalker, IFactoryApiWalker
                              && memberAccess is { Expression: IdentifierNameSyntax contextIdentifierName }
                              && contextIdentifierName.IsKind(SyntaxKind.IdentifierName)
                              && IsContextIdentifier(contextIdentifierName):
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _metaPosition++, CurrentOverrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Resolver, invocation, _metaPosition++, [..CurrentOverrides]));
                         CurrentOverrides.Clear();
                         break;
 
                     case nameof(IContext.BuildUp)
                         when invocation.ArgumentList.Arguments.Count is 1:
-                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _metaPosition++, CurrentOverrides.ToImmutableArray()));
+                        _meta.Add(new FactoryMeta(FactoryMetaKind.Initializer, invocation, _metaPosition++, [..CurrentOverrides]));
                         CurrentOverrides.Clear();
                         break;
 

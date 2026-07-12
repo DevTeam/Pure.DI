@@ -83,7 +83,7 @@ class RootSignatureProvider(
                     join relatedRoot in root.Source.BuilderRoots on publicRoot.Source.OriginalId equals relatedRoot.OriginalId
                     select publicRoot;
 
-                typeParameters = relatedRoots.SelectMany(i => i.TypeDescription.TypeArgs).Where(i => i.Name == typeArg.Name && i.TypeParam != null).Select(i => i.TypeParam!).ToImmutableArray();
+                typeParameters = [..relatedRoots.SelectMany(i => i.TypeDescription.TypeArgs).Where(i => i.Name == typeArg.Name && i.TypeParam != null).Select(i => i.TypeParam!)];
             }
 
             var constraints = new List<string>();
@@ -110,7 +110,7 @@ class RootSignatureProvider(
                 return null;
             }
 
-            result = result.Add(typeArg, constraints.ToImmutableArray());
+            result = result.Add(typeArg, [..constraints]);
         }
 
         return result;

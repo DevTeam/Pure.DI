@@ -35,10 +35,7 @@ sealed class RootsBuilder(
             var builderRoots = root.Source.BuilderRoots;
             if (!builderRoots.IsDefaultOrEmpty)
             {
-                builderRoots= root.Source.BuilderRoots
-                    .Where(i => IsValidRoot(i, compositionType))
-                    .ToImmutableArray();
-
+                builderRoots= [..root.Source.BuilderRoots.Where(i => IsValidRoot(i, compositionType))];
                 if (builderRoots.IsDefaultOrEmpty)
                 {
                     continue;

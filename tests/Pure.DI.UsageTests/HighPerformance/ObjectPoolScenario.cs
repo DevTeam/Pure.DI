@@ -19,7 +19,7 @@ namespace Pure.DI.UsageTests.HighPerformance.ObjectPoolScenario;
 
 using Shouldly;
 using Xunit;
-using static Pure.DI.Lifetime;
+using static Lifetime;
 
 // {
 //# using Pure.DI;

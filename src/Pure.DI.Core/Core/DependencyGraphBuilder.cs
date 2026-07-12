@@ -85,7 +85,7 @@ sealed class DependencyGraphBuilder(
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_TooLargeComposition, counter),
-                    ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                    [locationProvider.GetLocation(setup.Source)],
                     LogId.ErrorTooLargeComposition,
                     nameof(Strings.Error_Template_TooLargeComposition));
             }

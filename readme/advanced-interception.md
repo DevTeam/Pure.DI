@@ -27,10 +27,11 @@ businessService.Process();
 businessService.DataService.Count();
 
 log.ShouldBe(
-    ImmutableArray.Create(
+    [
         "Process returns Processed",
         "get_DataService returns Castle.Proxies.IDataServiceProxy",
-        "Count returns 55"));
+        "Count returns 55"
+    ]);
 
 public interface IDataService
 {

@@ -19,11 +19,9 @@ $r=Shouldly;Castle.DynamicProxy
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable ArrangeTypeModifiers
-
 // ReSharper disable UnusedMethodReturnValue.Global
 namespace Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario;
 
-using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Castle.DynamicProxy;
@@ -60,10 +58,11 @@ public class Scenario
         businessService.DataService.Count();
 
         log.ShouldBe(
-            ImmutableArray.Create(
+            [
                 "Process returns Processed",
                 "get_DataService returns Castle.Proxies.IDataServiceProxy",
-                "Count returns 55"));
+                "Count returns 55"
+            ]);
 // }
         composition.SaveClassDiagram();
     }
@@ -96,9 +95,9 @@ class BusinessService(IDataService dataService) : IBusinessService
 
 internal partial class Composition : IInterceptor
 {
-    private readonly List<string> _log = [];
+    private readonly List<string> _log;
     private static readonly IProxyBuilder ProxyBuilder = new DefaultProxyBuilder();
-    private readonly IInterceptor[] _interceptors = [];
+    private readonly IInterceptor[] _interceptors;
 
     public Composition(List<string> log)
     {

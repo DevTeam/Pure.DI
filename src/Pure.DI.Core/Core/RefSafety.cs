@@ -5,29 +5,6 @@ sealed class RefSafety : IRefSafety
 {
     public bool IsRefLike(ITypeSymbol type) => type.IsRefLikeType;
 
-    public bool ContainsRefLike(ITypeSymbol type)
-    {
-        if (type.IsRefLikeType)
-        {
-            return true;
-        }
-
-        switch (type)
-        {
-            case INamedTypeSymbol namedType:
-                return namedType.TypeArguments.Any(ContainsRefLike);
-
-            case IArrayTypeSymbol arrayType:
-                return ContainsRefLike(arrayType.ElementType);
-
-            case IPointerTypeSymbol pointerType:
-                return ContainsRefLike(pointerType.PointedAtType);
-
-            default:
-                return false;
-        }
-    }
-
     public bool IsMaybeRefLike(ITypeSymbol type) =>
         IsRefLike(type)
 #if ROSLYN5_6_OR_GREATER
@@ -42,20 +19,13 @@ sealed class RefSafety : IRefSafety
             return true;
         }
 
-        switch (type)
+        return type switch
         {
-            case INamedTypeSymbol namedType:
-                return namedType.TypeArguments.Any(ContainsMaybeRefLike);
-
-            case IArrayTypeSymbol arrayType:
-                return ContainsMaybeRefLike(arrayType.ElementType);
-
-            case IPointerTypeSymbol pointerType:
-                return ContainsMaybeRefLike(pointerType.PointedAtType);
-
-            default:
-                return false;
-        }
+            INamedTypeSymbol namedType => namedType.TypeArguments.Any(ContainsMaybeRefLike),
+            IArrayTypeSymbol arrayType => ContainsMaybeRefLike(arrayType.ElementType),
+            IPointerTypeSymbol pointerType => ContainsMaybeRefLike(pointerType.PointedAtType),
+            _ => false
+        };
     }
 
     public bool ContainsMaybeRefLikeValue(ITypeSymbol type)
@@ -65,29 +35,13 @@ sealed class RefSafety : IRefSafety
             return true;
         }
 
-        switch (type)
+        return type switch
         {
-            case INamedTypeSymbol { TypeKind: TypeKind.Delegate }:
-                return false;
-
-            case INamedTypeSymbol namedType:
-                return namedType.TypeArguments.Any(ContainsMaybeRefLikeValue);
-
-            case IArrayTypeSymbol arrayType:
-                return ContainsMaybeRefLikeValue(arrayType.ElementType);
-
-            case IPointerTypeSymbol pointerType:
-                return ContainsMaybeRefLikeValue(pointerType.PointedAtType);
-
-            default:
-                return false;
-        }
+            INamedTypeSymbol { TypeKind: TypeKind.Delegate } => false,
+            INamedTypeSymbol namedType => namedType.TypeArguments.Any(ContainsMaybeRefLikeValue),
+            IArrayTypeSymbol arrayType => ContainsMaybeRefLikeValue(arrayType.ElementType),
+            IPointerTypeSymbol pointerType => ContainsMaybeRefLikeValue(pointerType.PointedAtType),
+            _ => false
+        };
     }
-
-    public bool IsScopedParameter(IParameterSymbol parameter) =>
-#if ROSLYN5_6_OR_GREATER
-        parameter.ScopedKind != ScopedKind.None;
-#else
-        false;
-#endif
 }

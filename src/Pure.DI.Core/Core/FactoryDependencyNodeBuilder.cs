@@ -46,11 +46,12 @@ sealed class FactoryDependencyNodeBuilder(
                 initializers.Add(new DpInitializer(initializer, targetDp.Methods, targetDp.Properties, targetDp.Fields, CreateOverrides(initializer.Overrides), locationProvider));
             }
 
-            var dpFactory = new DpFactory(factory, binding, resolvers.ToImmutableArray(), initializers.ToImmutableArray(), new Dictionary<int, DpOverride>(), locationProvider);
+            var dpFactory = new DpFactory(factory, binding, [..resolvers], [..initializers], new Dictionary<int, DpOverride>(), locationProvider);
             yield return new DependencyNode(0, binding, ctx.TypeConstructor, Factory: dpFactory);
         }
     }
 
+    [SuppressMessage("ReSharper", "UseCollectionExpression")]
     private ImmutableArray<DpOverride> CreateOverrides(in ImmutableArray<MdOverride> overrides) =>
         overrides.IsDefault
             ? ImmutableArray<DpOverride>.Empty
@@ -61,6 +62,6 @@ sealed class FactoryDependencyNodeBuilder(
                         RefKind.None,
                         i.ContractType,
                         tag.Value,
-                        ImmutableArray.Create(locationProvider.GetLocation(i.Source)).AddRange(i.ContractType.Locations))).ToImmutableArray()))
+                        [locationProvider.GetLocation(i.Source), .. i.ContractType.Locations])).ToImmutableArray()))
                 .ToImmutableArray();
 }

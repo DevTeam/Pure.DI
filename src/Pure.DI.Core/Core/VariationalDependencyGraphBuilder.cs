@@ -74,7 +74,7 @@ sealed class VariationalDependencyGraphBuilder(
                                 nameof(Strings.Warning_Template_BindingHasBeenOverridden),
                                 Strings.Warning_Template_BindingHasBeenOverridden,
                                 item.Key),
-                            ImmutableArray.Create(locationProvider.GetLocation(warningSource)),
+                            [locationProvider.GetLocation(warningSource)],
                             LogId.WarningOverriddenBinding);
                     }
                 }
@@ -109,7 +109,7 @@ sealed class VariationalDependencyGraphBuilder(
                         nameof(Strings.Error_Template_MaximumNumberOfIterations),
                         Strings.Error_Template_MaximumNumberOfIterations,
                         globalProperties.MaxVariations),
-                    ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                    [locationProvider.GetLocation(setup.Source)],
                     LogId.ErrorMaximumNumberOfIterations);
 
                 break;

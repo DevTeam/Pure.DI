@@ -35,7 +35,7 @@ sealed class ImplementationDependencyNodeBuilder(
             {
                 throw new CompileErrorException(
                     string.Format(Strings.Error_Template_CannotConstructAbstractType, implementationType),
-                    ImmutableArray.Create(locationProvider.GetLocation(implementation.Source)),
+                    [locationProvider.GetLocation(implementation.Source)],
                     LogId.ErrorCannotConstructAbstractType,
                     nameof(Strings.Error_Template_CannotConstructAbstractType));
             }
@@ -79,7 +79,7 @@ sealed class ImplementationDependencyNodeBuilder(
             {
                 var error = new CompileErrorException(
                     string.Format(Strings.Error_Template_CannotBeInstantiatedNoAccessibleConstructor, implementationType),
-                    ImmutableArray.Create(locationProvider.GetLocation(implementation.Source)),
+                    [locationProvider.GetLocation(implementation.Source)],
                     LogId.ErrorNoAccessibleConstructor,
                     nameof(Strings.Error_Template_CannotBeInstantiatedNoAccessibleConstructor));
 

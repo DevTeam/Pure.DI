@@ -60,7 +60,7 @@ sealed class RootCodeBuilder(
         var varsMap = varCtx.VarsMap;
         var isBlock = nodeTools.IsBlock(var.AbstractNode);
         var isLazy = nodeTools.IsLazy(var.AbstractNode.Node, parentCtx.RootContext.Graph);
-        var acc = isLazy ? accumulators.GetAccumulators(varCtx.RootContext.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
+        var acc = isLazy ? [..accumulators.GetAccumulators(varCtx.RootContext.Graph, var.AbstractNode)] : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
         var isLocalFunction = localFunctions.UseFor(varCtx);
         var mapToken =
             isLocalFunction

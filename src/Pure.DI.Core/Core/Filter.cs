@@ -53,7 +53,7 @@ sealed class Filter(
                             Strings.Error_Template_InvalidRegularExpression,
                             regularExpression,
                             ex.Message),
-                        ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                        [locationProvider.GetLocation(setup.Source)],
                         LogId.ErrorInvalidRegularExpression);
                 }
             }
@@ -79,7 +79,7 @@ sealed class Filter(
                             Strings.Error_Template_InvalidWildcard,
                             wildcard,
                             ex.Message),
-                        ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
+                        [locationProvider.GetLocation(setup.Source)],
                         LogId.ErrorInvalidWildcard);
                 }
             }

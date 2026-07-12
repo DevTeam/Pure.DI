@@ -18,8 +18,8 @@ namespace Pure.DI.UsageTests.HighPerformance.ThreadSafeOffScenario;
 
 using Shouldly;
 using Xunit;
-using static Pure.DI.Hint;
-using static Pure.DI.Lifetime;
+using static Hint;
+using static Lifetime;
 
 // {
 //# using Pure.DI;

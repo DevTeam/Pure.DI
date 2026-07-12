@@ -115,6 +115,7 @@ sealed class RefSafetyValidator(
         return isValid;
     }
 
+    // ReSharper disable once UnusedMethodReturnValue.Local
     private bool ValidateDelegateParameterOverrideLock(IHints hints, in MdOverride @override, HashSet<ReportKey> reported)
     {
         if (!hints.IsThreadSafeEnabled
@@ -140,8 +141,7 @@ sealed class RefSafetyValidator(
         }
 
         var argumentList = invocation.ArgumentList;
-        if (argumentList is null
-            || argumentList.Arguments.Count == 0
+        if (argumentList.Arguments.Count == 0
             || argumentList.Arguments[0].Expression is not IdentifierNameSyntax identifier)
         {
             return false;
@@ -197,6 +197,7 @@ sealed class RefSafetyValidator(
             }
         }
 
+        // ReSharper disable once InvertIf
         if ((MatchesField(implementation, dependency) || MatchesProperty(implementation, dependency))
             && refSafety.ContainsMaybeRefLikeValue(injection.Type))
         {
@@ -252,7 +253,7 @@ sealed class RefSafetyValidator(
         injectionComparer.Equals(injection, dependency.Injection)
         && dependency.Position is null;
 
-    private Location GetLocation(Injection injection) =>
+    private static Location GetLocation(Injection injection) =>
         injection.Locations.FirstOrDefault() ?? Location.None;
 
     private void Report(
@@ -269,7 +270,7 @@ sealed class RefSafetyValidator(
 
         logger.CompileError(
             LogMessage.From(messageKey, message),
-            ImmutableArray.Create(location),
+            [location],
             id);
     }
 
@@ -287,7 +288,7 @@ sealed class RefSafetyValidator(
 
         logger.CompileWarning(
             LogMessage.From(messageKey, message),
-            ImmutableArray.Create(location),
+            [location],
             id);
     }
 

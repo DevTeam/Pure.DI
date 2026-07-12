@@ -16,7 +16,7 @@ sealed class RootArgsVisitor
         Dependency dependency,
         ImmutableArray<Dependency> parent = default) =>
         parent.IsDefaultOrEmpty
-            ? ImmutableArray.Create(dependency)
+            ? [dependency]
             : parent.Add(dependency);
 
     public bool Visit(

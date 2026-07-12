@@ -16,7 +16,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
-
+// ReSharper disable ConvertToAutoPropertyWithPrivateSetter
 namespace Pure.DI.UsageTests.BCL.DefaultFuncWithReadOnlySpanScenario;
 
 using Shouldly;

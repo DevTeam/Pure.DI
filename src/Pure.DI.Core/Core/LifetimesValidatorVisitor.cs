@@ -19,7 +19,7 @@ sealed class LifetimesValidatorVisitor(
         Dependency dependency,
         ImmutableArray<Dependency> parent = default) =>
         parent.IsDefaultOrEmpty
-            ? ImmutableArray.Create(dependency)
+            ? [dependency]
             : parent.Add(dependency);
 
     public bool Visit(
@@ -49,7 +49,7 @@ sealed class LifetimesValidatorVisitor(
                             actualTargetLifetimeNode.Lifetime,
                             targetNode.Type,
                             targetNode.Lifetime),
-                        ImmutableArray.Create(locationProvider.GetLocation(targetNode.Binding.Source)),
+                        [locationProvider.GetLocation(targetNode.Binding.Source)],
                         LogId.ErrorLifetimeDefect);
                 }
             }

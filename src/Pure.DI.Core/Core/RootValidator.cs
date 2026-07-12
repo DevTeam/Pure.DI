@@ -32,7 +32,7 @@ sealed class RootValidator(
                     Strings.Warning_Template_RootCannotBeResolvedByResolveMethods,
                     Format(invalidRoot),
                     string.Join(", ", invalidRoot.RootArgs.Select(i => i.Name))),
-                ImmutableArray.Create(locationProvider.GetLocation(invalidRoot.Source.Source)),
+                [locationProvider.GetLocation(invalidRoot.Source.Source)],
                 LogId.WarningRootArgInResolveMethod);
         }
 
@@ -50,7 +50,7 @@ sealed class RootValidator(
                     Strings.Warning_Template_RootCannotBeResolvedByResolveMethods,
                     Format(root),
                     string.Join(", ", root.TypeDescription.TypeArgs)),
-                ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)),
+                [locationProvider.GetLocation(root.Source.Source)],
                 LogId.WarningTypeArgInResolveMethod);
         }
 
@@ -67,7 +67,7 @@ sealed class RootValidator(
                     nameof(Strings.Warning_Template_NullableRootCannotBeDistinguishedByResolveTypeMethods),
                     Strings.Warning_Template_NullableRootCannotBeDistinguishedByResolveTypeMethods,
                     Format(root)),
-                ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)),
+                [locationProvider.GetLocation(root.Source.Source)],
                 LogId.WarningNullableRootInResolveMethod);
         }
 

@@ -26,7 +26,7 @@ class Constructors(
     private bool IsEnabledInternal(DependencyGraph graph) => (
         from entry in graph.Graph.Entries
         from edge in entry.Edges
-        from node in ImmutableArray.Create(edge.Source, edge.Target)
+        from node in (ImmutableArray<DependencyNode>)[edge.Source, edge.Target]
         where node.Arg is { Source.Kind: ArgKind.Composition }
         where bindingsRegistry.IsRegistered(graph.Source, node.BindingId)
         select node).Any() || HasSetupContextArgs(graph) || IsScopeEnabled(graph);

@@ -281,7 +281,7 @@ sealed class SetupsBuilder(
         var exportedRoots = ImmutableArray<MdRoot>.Empty;
         if (setupMap.TryGetValue(name, out var boundSetup))
         {
-            exportedRoots = boundSetup.Roots.Where(i => (i.Kind & RootKinds.Exported) == RootKinds.Exported).ToImmutableArray();
+            exportedRoots = [..boundSetup.Roots.Where(i => (i.Kind & RootKinds.Exported) == RootKinds.Exported)];
         }
 
         if (membersToBind.Count == 0 && exportedRoots.Length == 0)
@@ -456,7 +456,7 @@ sealed class SetupsBuilder(
                     factoryExpression,
                     true,
                     RootBuilder.DefaultCtxParameter,
-                    resolvers.ToImmutableArray(),
+                    [..resolvers],
                     ImmutableArray<MdInitializer>.Empty,
                     false,
                     memberResolver));
@@ -488,7 +488,7 @@ sealed class SetupsBuilder(
         }
 
         // Adds bindings for exported roots from related compositions.
-        // At this stage, exported root members may not exist in semantic model yet, so we bind by member name.
+        // At this stage, exported root members may not exist in the semantic model yet, so we bind by member name.
         foreach (var root in exportedRoots)
         {
             if (string.IsNullOrWhiteSpace(root.Name))
@@ -587,7 +587,7 @@ sealed class SetupsBuilder(
                     factoryLambda,
                     true,
                     RootBuilder.DefaultCtxParameter,
-                    resolvers.ToImmutableArray(),
+                    [..resolvers],
                     ImmutableArray<MdInitializer>.Empty,
                     false,
                     memberResolver));
@@ -728,19 +728,19 @@ sealed class SetupsBuilder(
         setup = setup with
         {
             Hints = _hints,
-            Roots = _roots.ToImmutableArray(),
-            DependsOn = _dependsOn.ToImmutableArray(),
-            GenericTypeArguments = _genericTypeArguments.ToImmutableArray(),
-            GenericTypeArgumentAttributes = _genericTypeArgumentAttributes.ToImmutableArray(),
-            TypeAttributes = _typeAttributes.ToImmutableArray(),
-            TagAttributes = _tagAttributes.ToImmutableArray(),
-            LifetimeAttributes = _lifetimeAttributes.ToImmutableArray(),
-            OrdinalAttributes = _ordinalAttributes.ToImmutableArray(),
-            SpecialTypes = _specialTypes.ToImmutableArray(),
-            UsingDirectives = _usingDirectives.ToImmutableArray(),
-            Accumulators = _accumulators.Distinct().ToImmutableArray(),
-            SetupContextMembers = _setupContextMembers.ToImmutableArray(),
-            DefaultLifetimes = _defaultLifetimes.ToImmutableArray()
+            Roots = [.._roots],
+            DependsOn = [.._dependsOn],
+            GenericTypeArguments = [.._genericTypeArguments],
+            GenericTypeArgumentAttributes = [.._genericTypeArgumentAttributes],
+            TypeAttributes = [.._typeAttributes],
+            TagAttributes = [.._tagAttributes],
+            LifetimeAttributes = [.._lifetimeAttributes],
+            OrdinalAttributes = [.._ordinalAttributes],
+            SpecialTypes = [.._specialTypes],
+            UsingDirectives = [.._usingDirectives],
+            Accumulators = [.._accumulators.Distinct()],
+            SetupContextMembers = [.._setupContextMembers],
+            DefaultLifetimes = [.._defaultLifetimes]
         };
 
         // Creates bindings with all relevant information.
@@ -752,7 +752,7 @@ sealed class SetupsBuilder(
             _bindings.Add(binding);
         }
 
-        setup = setup with { Bindings = _bindings.Select(i => i with { SourceSetup = source ?? i.SourceSetup }).ToImmutableArray() };
+        setup = setup with { Bindings = [.._bindings.Select(i => i with { SourceSetup = source ?? i.SourceSetup })] };
 
         _setups.Add(setup);
         _hints = new Hints();
@@ -828,7 +828,7 @@ sealed class SetupsBuilder(
                                 setup.Source,
                                 null,
                                 ContractKind.Explicit,
-                                binding.Tags.Select((tag, index) => new MdTag(index, tag)).ToImmutableArray()));
+                                [..binding.Tags.Select((tag, index) => new MdTag(index, tag))]));
                     }
 
                     if (binding.Lifetime is {} lifetime)
@@ -1030,7 +1030,7 @@ sealed class SetupsBuilder(
                 new LogMessage(
                     string.Format(Strings.Error_Template_MultipleBindingLifetimes, type),
                     nameof(Strings.Error_Template_MultipleBindingLifetimes)),
-                type.Locations.Where(location => location != Location.None).ToImmutableArray(),
+                [..type.Locations.Where(location => location != Location.None)],
                 LogId.ErrorInvalidBinding);
             yield break;
         }

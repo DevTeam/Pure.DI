@@ -18,7 +18,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
-
+// ReSharper disable ConvertToAutoPropertyWithPrivateSetter
 namespace Pure.DI.UsageTests.BCL.AllowsRefStructFactoryScenario;
 
 using Shouldly;
@@ -61,7 +61,7 @@ public class Scenario
 }
 
 // {
-delegate bool ParserFactory<T>(T text)
+delegate bool ParserFactory<in T>(T text)
     where T : allows ref struct;
 
 class Parser<T>

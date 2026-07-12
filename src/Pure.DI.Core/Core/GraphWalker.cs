@@ -43,7 +43,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
                 }
 
                 var isLazy = nodeTools.IsLazy(dependency.Source, dependencyGraph);
-                var depIndices = isLazy ? nodeInfo.DepIndices.Add(depIndex++) : ImmutableArray.Create(depIndex++);
+                var depIndices = isLazy ? nodeInfo.DepIndices.Add(depIndex++) : [depIndex++];
                 var processedKey = new ProcessedKey(dependency.Target, dependency.Source, depIndices);
                 if (processed.Add(processedKey))
                 {

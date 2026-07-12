@@ -344,7 +344,7 @@ sealed class ApiInvocationProcessor(
                                     new MdDependsOn(
                                         semanticModel,
                                         invocation,
-                                        ImmutableArray.Create(new MdDependsOnItem(compositionName)),
+                                        [new MdDependsOnItem(compositionName)],
                                         false));
                             }
                         }
@@ -383,18 +383,19 @@ sealed class ApiInvocationProcessor(
                                 {
                                     throw new CompileErrorException(
                                         Strings.Error_SetupContextNameIsRequired,
-                                        ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                        [locationProvider.GetLocation(invocation)],
                                         LogId.ErrorSetupContextNameIsRequired,
                                         nameof(Strings.Error_SetupContextNameIsRequired));
                                 }
                             }
 
-                            var items = ImmutableArray.Create(
-                                new MdDependsOnItem(
-                                    CreateCompositionName(setupName, @namespace, invocation.ArgumentList),
+                            ImmutableArray<MdDependsOnItem> items =
+                            [
+                                new(CreateCompositionName(setupName, @namespace, invocation.ArgumentList),
                                     contextArgName,
                                     contextArgExpression,
-                                    contextArgKind ?? SetupContextKind.Argument));
+                                    contextArgKind ?? SetupContextKind.Argument)
+                            ];
                             metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation, items, true));
                         }
                         else
@@ -424,7 +425,7 @@ sealed class ApiInvocationProcessor(
                         {
                             throw new CompileErrorException(
                                 Strings.Error_InvalidRootType,
-                                ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                [locationProvider.GetLocation(invocation)],
                                 LogId.ErrorInvalidRootType,
                                 nameof(Strings.Error_InvalidRootType));
                         }
@@ -577,7 +578,7 @@ sealed class ApiInvocationProcessor(
                         {
                             throw new CompileErrorException(
                                 Strings.Error_InvalidRootsRype,
-                                ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                [locationProvider.GetLocation(invocation)],
                                 LogId.ErrorInvalidRootsType,
                                 nameof(Strings.Error_InvalidRootsRype));
                         }
@@ -598,7 +599,7 @@ sealed class ApiInvocationProcessor(
                         {
                             throw new CompileErrorException(
                                 string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter),
-                                ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                [locationProvider.GetLocation(invocation)],
                                 LogId.ErrorNoTypeForWildcard,
                                 nameof(Strings.Error_Template_NoTypeForWildcard));
                         }
@@ -610,7 +611,7 @@ sealed class ApiInvocationProcessor(
                         {
                             throw new CompileErrorException(
                                 Strings.Error_InvalidRootType,
-                                ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                [locationProvider.GetLocation(invocation)],
                                 LogId.ErrorInvalidRootType,
                                 nameof(Strings.Error_InvalidRootType));
                         }
@@ -627,7 +628,7 @@ sealed class ApiInvocationProcessor(
                         {
                             throw new CompileErrorException(
                                 Strings.Error_InvalidBuildersType,
-                                ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                [locationProvider.GetLocation(invocation)],
                                 LogId.ErrorInvalidBuildersType,
                                 nameof(Strings.Error_InvalidBuildersType));
                         }
@@ -646,7 +647,7 @@ sealed class ApiInvocationProcessor(
                         {
                             throw new CompileErrorException(
                                 string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter),
-                                ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                [locationProvider.GetLocation(invocation)],
                                 LogId.ErrorNoTypeForWildcard,
                                 nameof(Strings.Error_Template_NoTypeForWildcard));
                         }
@@ -657,7 +658,7 @@ sealed class ApiInvocationProcessor(
                         var builderTag = new MdTag(0, builderArgId + "Builder" + Names.Salt);
 
                         // Building instance arg
-                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, buildersRootType, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
+                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, buildersRootType, ContractKind.Explicit, [builderArgTag]));
                         metadataVisitor.VisitArg(new MdArg(semanticModel, invocation, buildersRootType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
 
                         // Fake factory expression, it is actually implemented in RootsBuilder
@@ -671,11 +672,11 @@ sealed class ApiInvocationProcessor(
 
                         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
-                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, buildersRootType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
+                        metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, buildersRootType, ContractKind.Explicit, [builderTag]));
                         VisitFactory(invocation, metadataVisitor, semanticModel, buildersRootType, builderLambdaExpression);
 
                         var builderRootName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersRootType) ?? Names.DefaultBuilderName;
-                        var root = new MdRoot(idGenerator.Generate(), invocation, semanticModel, buildersRootType, builderRootName, nameProvider.GetUniqueRootName(builderRootName, buildersRootType), builderTag, buildersKind, invocationComments, buildersRootType, true, builderRoots.ToImmutableArray());
+                        var root = new MdRoot(idGenerator.Generate(), invocation, semanticModel, buildersRootType, builderRootName, nameProvider.GetUniqueRootName(builderRootName, buildersRootType), builderTag, buildersKind, invocationComments, buildersRootType, true, [..builderRoots]);
                         metadataVisitor.VisitRoot(root);
                         break;
 
@@ -684,7 +685,7 @@ sealed class ApiInvocationProcessor(
                         {
                             throw new CompileErrorException(
                                 Strings.Error_InvalidBuilderType,
-                                ImmutableArray.Create(locationProvider.GetLocation(invocation)),
+                                [locationProvider.GetLocation(invocation)],
                                 LogId.ErrorInvalidBuilderType,
                                 nameof(Strings.Error_InvalidBuilderType));
                         }
@@ -889,7 +890,7 @@ sealed class ApiInvocationProcessor(
             {
                 throw new CompileErrorException(
                     Strings.Error_TooManyTypeParameters,
-                    ImmutableArray.Create(locationProvider.GetLocation(source)),
+                    [locationProvider.GetLocation(source)],
                     LogId.ErrorTooManyTypeParameters,
                     nameof(Strings.Error_TooManyTypeParameters));
             }
@@ -913,7 +914,7 @@ sealed class ApiInvocationProcessor(
         var builderTag = new MdTag(0, id + "Builder" + Names.Salt);
 
         // RootArg
-        metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, ImmutableArray.Create(builderArgTag)));
+        metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, [builderArgTag]));
         metadataVisitor.VisitArg(new MdArg(semanticModel, source, builderType, Names.BuildingInstance, ArgKind.Root, true, ["Instance for the build-up."]));
 
         // Factory
@@ -928,7 +929,7 @@ sealed class ApiInvocationProcessor(
 
         var builderLambdaExpression = (LambdaExpressionSyntax)SyntaxFactory.ParseExpression(factory.ToString());
 
-        metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, ImmutableArray.Create(builderTag)));
+        metadataVisitor.VisitContract(new MdContract(semanticModel, source, builderType, ContractKind.Explicit, [builderTag]));
         VisitFactory(source, metadataVisitor, semanticModel, builderType, builderLambdaExpression);
 
         // Root
@@ -983,7 +984,7 @@ sealed class ApiInvocationProcessor(
                 ArgumentType = argTypeSyntax,
                 Parameter = parameters[i],
                 Position = i,
-                Attributes = attributes.ToImmutableArray()
+                Attributes = [..attributes]
             });
         }
 
@@ -996,7 +997,7 @@ sealed class ApiInvocationProcessor(
                 lambdaExpression,
                 true,
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127")),
-                resolvers.ToImmutableArray(),
+                [..resolvers],
                 ImmutableArray<MdInitializer>.Empty,
                 false));
 
@@ -1121,7 +1122,7 @@ sealed class ApiInvocationProcessor(
                 argType,
                 tags.IsEmpty ? null : tags[0].Value) ?? "";
 
-            metadataVisitor.VisitContract(new MdContract(semanticModel, source, argType, ContractKind.Explicit, tags.ToImmutableArray()));
+            metadataVisitor.VisitContract(new MdContract(semanticModel, source, argType, ContractKind.Explicit, [..tags]));
             metadataVisitor.VisitArg(new MdArg(semanticModel, source, argType, name, kind, false, argComments));
         }
     }
@@ -1222,7 +1223,7 @@ sealed class ApiInvocationProcessor(
         {
                     throw new CompileErrorException(
                         Strings.Error_TypeCannotBeInferred,
-                        ImmutableArray.Create(locationProvider.GetLocation(atgSyntax)),
+                        [locationProvider.GetLocation(atgSyntax)],
                         LogId.ErrorTypeCannotBeInferred,
                         nameof(Strings.Error_TypeCannotBeInferred));
         }
@@ -1339,7 +1340,7 @@ sealed class ApiInvocationProcessor(
             meta.Position,
             targetType,
             targetArg.Expression,
-            overrides.ToImmutableArray());
+            [..overrides]);
     }
 
     private MdResolver CreateResolver(
@@ -1382,7 +1383,7 @@ sealed class ApiInvocationProcessor(
                 {
                     throw new CompileErrorException(
                         Strings.Error_TypeCannotBeInferred,
-                        ImmutableArray.Create(locationProvider.GetLocation(argSyntax)),
+                        [locationProvider.GetLocation(argSyntax)],
                         LogId.ErrorTypeCannotBeInferred);
                 }
 
@@ -1393,7 +1394,7 @@ sealed class ApiInvocationProcessor(
                     argType,
                     null,
                     targetValue.Expression,
-                    overrides.ToImmutableArray());
+                    [..overrides]);
 
             default:
                 var args = arguments.GetArgs(invocation.ArgumentList, "tag", "value");
@@ -1409,7 +1410,7 @@ sealed class ApiInvocationProcessor(
                     {
                         throw new CompileErrorException(
                             Strings.Error_TypeCannotBeInferred,
-                            ImmutableArray.Create(locationProvider.GetLocation(argSyntax2)),
+                            [locationProvider.GetLocation(argSyntax2)],
                             LogId.ErrorTypeCannotBeInferred,
                             nameof(Strings.Error_TypeCannotBeInferred));
                     }
@@ -1421,7 +1422,7 @@ sealed class ApiInvocationProcessor(
                         argType2,
                         resolverTag,
                         argSyntax2.Expression,
-                        overrides.ToImmutableArray());
+                        [..overrides]);
                 }
 
                 break;
@@ -1572,7 +1573,7 @@ sealed class ApiInvocationProcessor(
         {
             throw new CompileErrorException(
                 Strings.Error_AsynchronousFactoryWithAsyncNotSupported,
-                ImmutableArray.Create(locationProvider.GetLocation(lambdaExpression.AsyncKeyword)),
+                [locationProvider.GetLocation(lambdaExpression.AsyncKeyword)],
                 LogId.ErrorAsyncFactoryNotSupported,
                 nameof(Strings.Error_AsynchronousFactoryWithAsyncNotSupported));
         }
@@ -1582,7 +1583,7 @@ sealed class ApiInvocationProcessor(
     private void NotSupported(SyntaxNode source) =>
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_NotSupported, source),
-            ImmutableArray.Create(locationProvider.GetLocation(source)),
+            [locationProvider.GetLocation(source)],
             LogId.ErrorNotSupportedSyntax,
             nameof(Strings.Error_Template_NotSupported));
 
@@ -1599,7 +1600,7 @@ sealed class ApiInvocationProcessor(
                 {
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_MustBeValueOfType, arg.Expression, typeof(T)),
-                        ImmutableArray.Create(locationProvider.GetLocation(arg.Expression)),
+                        [locationProvider.GetLocation(arg.Expression)],
                         LogId.ErrorMustBeValueOfType,
                         nameof(Strings.Error_Template_MustBeValueOfType));
                 }
@@ -1624,7 +1625,7 @@ sealed class ApiInvocationProcessor(
             }
         }
 
-        return tags.ToImmutableArray();
+        return [..tags];
     }
 
     private static CompositionName CreateCompositionName(
@@ -1698,7 +1699,7 @@ sealed class ApiInvocationProcessor(
         {
             throw new CompileErrorException(
                 string.Format(Strings.Error_Template_InvalidIdentifier, name),
-                ImmutableArray.Create(locationProvider.GetLocation(source)),
+                [locationProvider.GetLocation(source)],
                 LogId.ErrorInvalidIdentifier,
                 nameof(Strings.Error_Template_InvalidIdentifier));
         }

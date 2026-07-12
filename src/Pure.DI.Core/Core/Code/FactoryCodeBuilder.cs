@@ -277,7 +277,7 @@ sealed class FactoryCodeBuilder(
         {
             throw new CompileErrorException(
                 string.Format(Strings.Error_Template_LifetimeDoesNotSupportCyclicDependencies, var.AbstractNode.ActualLifetime),
-                ImmutableArray.Create(locationProvider.GetLocation(factory.Source.Source)),
+                [locationProvider.GetLocation(factory.Source.Source)],
                 LogId.ErrorLifetimeDoesNotSupportCyclicDependencies,
                 nameof(Strings.Error_Template_LifetimeDoesNotSupportCyclicDependencies));
         }
@@ -286,7 +286,7 @@ sealed class FactoryCodeBuilder(
         {
             throw new CompileErrorException(
                 Strings.Error_InvalidNumberOfInitializers,
-                ImmutableArray.Create(locationProvider.GetLocation(factory.Source.Source)),
+                [locationProvider.GetLocation(factory.Source.Source)],
                 LogId.ErrorInvalidNumberOfInitializers,
                 nameof(Strings.Error_InvalidNumberOfInitializers));
         }

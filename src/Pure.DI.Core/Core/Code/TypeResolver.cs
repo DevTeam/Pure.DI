@@ -37,7 +37,7 @@ sealed class TypeResolver(
                         _names.Add(type, typeName);
                     }
 
-                    description = new TypeDescription(typeName, ImmutableArray.Create(new TypeDescription(typeName, ImmutableArray<TypeDescription>.Empty, typeParam)), typeParam);
+                    description = new TypeDescription(typeName, [new TypeDescription(typeName, ImmutableArray<TypeDescription>.Empty, typeParam)], typeParam);
                 }
                 else
                 {

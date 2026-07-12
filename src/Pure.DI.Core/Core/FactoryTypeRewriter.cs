@@ -19,13 +19,14 @@ sealed class FactoryTypeRewriter(
         {
             Type = context.TypeConstructor.Construct(context.Setup, factory.Type),
             Factory = newFactory,
-            Resolvers = factory.Resolvers
-                .Select(resolver => resolver with
-                {
-                    ContractType = _context.TypeConstructor.Construct(_context.Setup, resolver.ContractType),
-                    Tag = CreateTag(_context.Injection, resolver.Tag)
-                })
-                .ToImmutableArray()
+            Resolvers = [
+                ..factory.Resolvers
+                    .Select(resolver => resolver with
+                    {
+                        ContractType = _context.TypeConstructor.Construct(_context.Setup, resolver.ContractType),
+                        Tag = CreateTag(_context.Injection, resolver.Tag)
+                    })
+            ]
         };
     }
 

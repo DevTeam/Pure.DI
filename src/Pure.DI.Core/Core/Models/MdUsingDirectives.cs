@@ -10,9 +10,9 @@ readonly record struct MdUsingDirectives(
         IEnumerable<string> staticUsingDirectives,
         IEnumerable<(string name, string type)> aliases)
         :this(
-            usingDirectives.Distinct().ToImmutableArray(),
-            staticUsingDirectives.Distinct().ToImmutableArray(),
-            aliases.ToImmutableArray())
+            [..usingDirectives.Distinct()],
+            [..staticUsingDirectives.Distinct()],
+            [..aliases])
     {
     }
 }

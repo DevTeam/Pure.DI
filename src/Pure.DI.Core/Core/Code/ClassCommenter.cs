@@ -97,7 +97,7 @@ sealed class ClassCommenter(
                         return [term.ToString()];
                     }
 
-                    var resolvers = resolversBuilder.Build(new RootsContext(composition.Setup, ImmutableArray.Create(root)));
+                    var resolvers = resolversBuilder.Build(new RootsContext(composition.Setup, [root]));
                     if (!resolvers.Any())
                     {
                         return [term.ToString()];
