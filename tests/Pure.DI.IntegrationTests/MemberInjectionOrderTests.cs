@@ -179,6 +179,53 @@ public class MemberInjectionOrderTests
     }
 
     [Fact]
+    public async Task ShouldUseCustomOrdinalAttributeOnMethodParameters()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
+                               class PriorityAttribute : Attribute
+                               {
+                                   public PriorityAttribute(int value) => Value = value;
+
+                                   public int Value { get; }
+                               }
+
+                               class Dependency { }
+
+                               class Service
+                               {
+                                   public void Last([Priority(2)] Dependency dependency) => Console.WriteLine("last");
+
+                                   public void First([Priority(-1)] Dependency dependency) => Console.WriteLine("first");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .OrdinalAttribute<PriorityAttribute>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["first", "last"], result);
+    }
+
+    [Fact]
     public async Task ShouldAssignRequiredFieldsBeforeRequiredInitProperties()
     {
         var result = await """
@@ -313,6 +360,50 @@ public class MemberInjectionOrderTests
     }
 
     [Fact]
+    public async Task ShouldOrderEqualInheritedMemberOrdinalsFromDerivedToBaseWithoutWarning()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency { }
+
+                               class BaseService
+                               {
+                                   [Ordinal(0)]
+                                   public void InitializeBase(Dependency dependency) => Console.WriteLine("base");
+                               }
+
+                               class Service : BaseService
+                               {
+                                   [Ordinal(0)]
+                                   public void InitializeDerived(Dependency dependency) => Console.WriteLine("derived");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        result.Success.ShouldBeTrue(result);
+        result.Warnings.ShouldBeEmpty(result);
+        result.StdOut.ShouldBe(["derived", "base"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportNegativeMemberOrdinals()
     {
         var result = await """
@@ -394,5 +485,58 @@ public class MemberInjectionOrderTests
 
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["property", "first", "second"], result);
+    }
+
+    [Fact]
+    public async Task ShouldGenerateRequiredAndRegularMembersInContractOrder()
+    {
+        var result = await """
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency { }
+
+                               class Service
+                               {
+                                   [Ordinal(100)] public required Dependency RequiredField;
+
+                                   [Ordinal(-100)] public required Dependency RequiredProperty { get; init; }
+
+                                   [Ordinal(0)] public Dependency Field = null!;
+
+                                   [Ordinal(0)] public Dependency Property { private get; set; } = null!;
+
+                                   [Ordinal(0)] public void Initialize(Dependency dependency) { }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        result.Success.ShouldBeTrue(result);
+        var requiredField = result.GeneratedCode.IndexOf("RequiredField =", StringComparison.Ordinal);
+        var requiredProperty = result.GeneratedCode.IndexOf("RequiredProperty =", StringComparison.Ordinal);
+        var field = result.GeneratedCode.IndexOf(".Field =", StringComparison.Ordinal);
+        var property = result.GeneratedCode.IndexOf(".Property =", StringComparison.Ordinal);
+        var method = result.GeneratedCode.IndexOf(".Initialize(", StringComparison.Ordinal);
+
+        requiredField.ShouldBeGreaterThan(-1, result);
+        requiredProperty.ShouldBeGreaterThan(requiredField, result);
+        field.ShouldBeGreaterThan(requiredProperty, result);
+        property.ShouldBeGreaterThan(field, result);
+        method.ShouldBeGreaterThan(property, result);
     }
 }

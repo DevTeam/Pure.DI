@@ -8,7 +8,7 @@ $h=When applied to a field, property, method, or method parameter, the member pa
 $f=The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
 $f=For an injection method, `Ordinal` can be placed on the method or its parameters. A method-level ordinal takes precedence; otherwise, the lowest parameter ordinal determines the method's execution order.
 $f=Required fields and required or selected `init` properties are assigned in the object initializer before regular member injection. Within regular member injection, lower ordinals run first; equal ordinals are ordered by field, property, and method, then by declaration order within each kind.
-$f=Negative ordinal values are supported. Use distinct values whenever business behavior depends on an exact order, especially across inherited members.
+$f=For equal ordinals and the same member kind, members declared on a derived type run before members inherited from its base types. Equal ordinals are valid and do not produce a diagnostic. Negative ordinal values are also supported.
 $r=Shouldly
 */
 

@@ -214,7 +214,7 @@ Injection is generated in this execution order:
 |    3     | Required or selected `init` properties are assigned in the object initializer, ordered by ascending `Ordinal`. |
 |    4     | Remaining fields, properties, and methods are processed together in ascending `Ordinal` order.                 |
 
-Lower ordinal values therefore run earlier, and negative values are valid. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. For equal ordinals, regular members are processed deterministically: fields first, then properties, then methods; declaration order is preserved within each kind. Across an inheritance hierarchy, use distinct ordinals when the exact order matters.
+Lower ordinal values therefore run earlier, and negative values are valid. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. For equal ordinals, regular members are processed deterministically: fields first, then properties, then methods; declaration order is preserved within each kind. Members of the same kind declared on a derived type are processed before members inherited from its base types. Equal ordinals are valid and do not produce a diagnostic.
 
 These rules control when the generated assignment or method call is performed. Pure.DI may construct the member dependencies earlier while building the object graph, so do not use `Ordinal` to order dependency-constructor side effects. Put order-sensitive work in the member setter or injection method itself.
 
