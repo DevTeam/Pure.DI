@@ -258,18 +258,20 @@ Constructor candidates are considered in the following priority order:
 
 #### Method, property, and field injection
 
-A member participates in injection when it is accessible and is marked by a recognized injection attribute such as `Ordinal`, `Tag`, or `Type`. An injection method can be selected by an attribute on the method or on one of its parameters; the lowest parameter ordinal becomes the method ordinal. Mutable `required` properties and fields participate automatically. A selected `init` property is assigned in the object initializer.
+A member participates in injection when it is accessible and is marked by a recognized injection attribute such as `Ordinal`, `Tag`, or `Type`. An injection method can be selected by an attribute on the method or on one of its parameters. A method-level ordinal takes precedence; otherwise, the lowest ordinal specified on its parameters becomes the method ordinal. Mutable `required` properties and fields participate automatically. A selected `init` property is assigned in the object initializer.
 
 Injection is generated in this execution order:
 
-| Priority | Injection stage |
-|:--:|---|
-| 1 | Constructor arguments are resolved and the selected constructor is invoked. |
-| 2 | Required fields are assigned in the object initializer, ordered by ascending `Ordinal`. |
-| 3 | Required or selected `init` properties are assigned in the object initializer, ordered by ascending `Ordinal`. |
-| 4 | Remaining fields, properties, and methods are processed together in ascending `Ordinal` order. |
+| Priority | Injection stage                                                                                                |
+|:--------:|----------------------------------------------------------------------------------------------------------------|
+|    1     | Constructor arguments are resolved and the selected constructor is invoked.                                    |
+|    2     | Required fields are assigned in the object initializer, ordered by ascending `Ordinal`.                        |
+|    3     | Required or selected `init` properties are assigned in the object initializer, ordered by ascending `Ordinal`. |
+|    4     | Remaining fields, properties, and methods are processed together in ascending `Ordinal` order.                 |
 
-Lower ordinal values therefore run earlier. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. Use distinct ordinal values when relative execution order matters; the order of members with equal ordinals is intentionally unspecified.
+Lower ordinal values therefore run earlier, and negative values are valid. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. For equal ordinals, regular members are processed deterministically: fields first, then properties, then methods; declaration order is preserved within each kind. Across an inheritance hierarchy, use distinct ordinals when the exact order matters.
+
+These rules control when the generated assignment or method call is performed. Pure.DI may construct the member dependencies earlier while building the object graph, so do not use `Ordinal` to order dependency-constructor side effects. Put order-sensitive work in the member setter or injection method itself.
 
 </details>
 
@@ -2608,7 +2610,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 51KB | 13K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 128KB | 32K |
-| [AGENTS.md](AGENTS.md) | 474KB | 121K |
+| [AGENTS.md](AGENTS.md) | 472KB | 121K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

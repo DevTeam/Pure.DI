@@ -41,6 +41,7 @@ class AIContextTarget(
         CancellationToken cancellationToken)
     {
         await using var writer = File.CreateText(fileName);
+        writer.NewLine = "\n";
 
         {
             await writer.WriteLineAsync("This Markdown-formatted document contains information about working with Pure.DI");

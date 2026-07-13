@@ -55,11 +55,6 @@ sealed class ImplementationCodeBuilder(
             }
         }
 
-        if (requiredFields.Count > 1)
-        {
-            requiredFields.Sort((a, b) => (a.RequiredField.Ordinal ?? int.MaxValue - 1).CompareTo(b.RequiredField.Ordinal ?? int.MaxValue - 1));
-        }
-
         var requiredProperties = ImmutableArray.CreateBuilder<(VarInjection RequiredVarInjection, DpProperty RequiredProperty)>();
         foreach (var requiredProperty in implementation.Properties)
         {
@@ -71,19 +66,15 @@ sealed class ImplementationCodeBuilder(
             }
         }
 
-        if (requiredProperties.Count > 1)
-        {
-            requiredProperties.Sort((a, b) => (a.RequiredProperty.Ordinal ?? int.MaxValue).CompareTo(b.RequiredProperty.Ordinal ?? int.MaxValue));
-        }
-
-        var visits = new List<(Action<CodeContext, string> Run, int? Ordinal)>();
+        var visits = new List<(Action<CodeContext, string> Run, int? Ordinal, int Kind, int Order)>();
+        var visitOrder = 0;
         foreach (var field in implementation.Fields)
         {
             if (!field.Field.IsRequired)
             {
                 varsWalker.VisitField(Unit.Shared, field, null);
                 var dependencyVar = varsWalker.GetResult().Single();
-                visits.Add((VisitFieldAction, field.Ordinal));
+                visits.Add((VisitFieldAction, field.Ordinal, 0, visitOrder++));
                 continue;
 
                 void VisitFieldAction(CodeContext context, string name) => injections.FieldInjection(name, context, field, dependencyVar);
@@ -96,7 +87,7 @@ sealed class ImplementationCodeBuilder(
             {
                 varsWalker.VisitProperty(Unit.Shared, property, null);
                 var dependencyVar = varsWalker.GetResult().Single();
-                visits.Add((VisitFieldAction, property.Ordinal));
+                visits.Add((VisitFieldAction, property.Ordinal, 1, visitOrder++));
                 continue;
 
                 void VisitFieldAction(CodeContext context, string name) => injections.PropertyInjection(name, context, property, dependencyVar);
@@ -107,13 +98,11 @@ sealed class ImplementationCodeBuilder(
         {
             varsWalker.VisitMethod(Unit.Shared, method, null);
             var methodVars = varsWalker.GetResult();
-            visits.Add((VisitMethodAction, method.Ordinal));
+            visits.Add((VisitMethodAction, method.Ordinal, 2, visitOrder++));
             continue;
 
             void VisitMethodAction(CodeContext context, string name) => injections.MethodInjection(name, context, method, methodVars);
         }
-
-        visits.Sort((a, b) => (a.Ordinal ?? int.MaxValue).CompareTo(b.Ordinal ?? int.MaxValue));
 
         var onCreatedStatements = buildTools.OnCreated(ctx, varInjection);
         var hasOnCreatedStatements = onCreatedStatements.Count > 0;
@@ -149,7 +138,10 @@ sealed class ImplementationCodeBuilder(
             var.CodeExpression = instantiation;
         }
 
-        foreach (var visit in visits.OrderBy(i => i.Ordinal ?? int.MaxValue))
+        foreach (var visit in visits
+                     .OrderBy(i => i.Ordinal ?? int.MaxValue)
+                     .ThenBy(i => i.Kind)
+                     .ThenBy(i => i.Order))
         {
             cancellationToken.ThrowIfCancellationRequested();
             visit.Run(ctx, tempVar.Name);
@@ -171,8 +163,12 @@ sealed class ImplementationCodeBuilder(
     {
         var var = ctx.VarInjection.Var;
         var code = new StringBuilder();
-        var required = requiredFields.Select(i => (Variable: i.RequiredVariable, i.RequiredField.Field.Name))
-            .Concat(requiredProperties.Select(i => (Variable: i.RequiredVariable, i.RequiredProperty.Property.Name)))
+        var required = requiredFields
+            .OrderBy(i => i.RequiredField.Ordinal ?? int.MaxValue)
+            .Select(i => (Variable: i.RequiredVariable, i.RequiredField.Field.Name))
+            .Concat(requiredProperties
+                .OrderBy(i => i.RequiredProperty.Ordinal ?? int.MaxValue)
+                .Select(i => (Variable: i.RequiredVariable, i.RequiredProperty.Property.Name)))
             .ToList();
 
         var args = string.Join(", ", ctorArgs.Select(i => buildTools.OnInjected(ctx, i)));

@@ -191,30 +191,32 @@ Pure.DI treats constructor injection and member injection differently. Exactly o
 
 Constructor candidates are considered in the following priority order:
 
-| Priority | Rule |
-|:--:|---|
-| 1 | If at least one accessible constructor has [`OrdinalAttribute`](readme/constructor-ordinal-attribute.md), only constructors marked with `Ordinal` participate. Lower ordinal values are tried first. |
-| 2 | Otherwise, constructors with a higher [`OverloadResolutionPriorityAttribute`](readme/overload-resolution-priority.md) value are preferred. A constructor without the attribute has priority `0`; negative values de-prioritize a constructor. |
-| 3 | A constructor with more injection parameters is preferred. |
-| 4 | A more accessible constructor is preferred: `public` before `internal`. |
-| 5 | When neither `Ordinal` mode nor an explicit `OverloadResolutionPriorityAttribute` is active, a primary constructor is preferred as the final tie-breaker. |
+| Priority | Rule                                                                                                                                                                                                                                          |
+|:--------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|    1     | If at least one accessible constructor has [`OrdinalAttribute`](readme/constructor-ordinal-attribute.md), only constructors marked with `Ordinal` participate. Lower ordinal values are tried first.                                          |
+|    2     | Otherwise, constructors with a higher [`OverloadResolutionPriorityAttribute`](readme/overload-resolution-priority.md) value are preferred. A constructor without the attribute has priority `0`; negative values de-prioritize a constructor. |
+|    3     | A constructor with more injection parameters is preferred.                                                                                                                                                                                    |
+|    4     | A more accessible constructor is preferred: `public` before `internal`.                                                                                                                                                                       |
+|    5     | When neither `Ordinal` mode nor an explicit `OverloadResolutionPriorityAttribute` is active, a primary constructor is preferred as the final tie-breaker.                                                                                     |
 
 `OrdinalAttribute` is the explicit Pure.DI override and takes precedence over `OverloadResolutionPriorityAttribute`. Constructors with the same ordinal use the number of injection parameters and accessibility as secondary criteria; `OverloadResolutionPriorityAttribute` and the implicit primary-constructor preference remain disabled in this mode. For a primary constructor, constructor attributes use the `method:` target, for example `[method: Ordinal(0)]` or `[method: OverloadResolutionPriority(1)]`. If candidates are still equal, do not rely on their declaration or Roslyn symbol order; use distinct ordinal values when the choice affects behavior.
 
 #### Method, property, and field injection
 
-A member participates in injection when it is accessible and is marked by a recognized injection attribute such as `Ordinal`, `Tag`, or `Type`. An injection method can be selected by an attribute on the method or on one of its parameters; the lowest parameter ordinal becomes the method ordinal. Mutable `required` properties and fields participate automatically. A selected `init` property is assigned in the object initializer.
+A member participates in injection when it is accessible and is marked by a recognized injection attribute such as `Ordinal`, `Tag`, or `Type`. An injection method can be selected by an attribute on the method or on one of its parameters. A method-level ordinal takes precedence; otherwise, the lowest ordinal specified on its parameters becomes the method ordinal. Mutable `required` properties and fields participate automatically. A selected `init` property is assigned in the object initializer.
 
 Injection is generated in this execution order:
 
-| Priority | Injection stage |
-|:--:|---|
-| 1 | Constructor arguments are resolved and the selected constructor is invoked. |
-| 2 | Required fields are assigned in the object initializer, ordered by ascending `Ordinal`. |
-| 3 | Required or selected `init` properties are assigned in the object initializer, ordered by ascending `Ordinal`. |
-| 4 | Remaining fields, properties, and methods are processed together in ascending `Ordinal` order. |
+| Priority | Injection stage                                                                                                |
+|:--------:|----------------------------------------------------------------------------------------------------------------|
+|    1     | Constructor arguments are resolved and the selected constructor is invoked.                                    |
+|    2     | Required fields are assigned in the object initializer, ordered by ascending `Ordinal`.                        |
+|    3     | Required or selected `init` properties are assigned in the object initializer, ordered by ascending `Ordinal`. |
+|    4     | Remaining fields, properties, and methods are processed together in ascending `Ordinal` order.                 |
 
-Lower ordinal values therefore run earlier. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. Use distinct ordinal values when relative execution order matters; the order of members with equal ordinals is intentionally unspecified.
+Lower ordinal values therefore run earlier, and negative values are valid. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. For equal ordinals, regular members are processed deterministically: fields first, then properties, then methods; declaration order is preserved within each kind. Across an inheritance hierarchy, use distinct ordinals when the exact order matters.
+
+These rules control when the generated assignment or method call is performed. Pure.DI may construct the member dependencies earlier while building the object graph, so do not use `Ordinal` to order dependency-constructor side effects. Put order-sensitive work in the member setter or injection method itself.
 
 </details>
 

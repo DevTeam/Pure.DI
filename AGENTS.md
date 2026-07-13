@@ -6574,7 +6574,7 @@ Constructors with the same ordinal use the regular secondary criteria: more inje
 
 ## Member ordinal attribute
 
-When applied to a property or field, the member participates in DI, ordered by ordinal (ascending).
+When applied to a field, property, method, or method parameter, the member participates in DI, ordered by ordinal (ascending).
 
 ```c#
 using Shouldly;
@@ -6625,14 +6625,10 @@ class Person : IPerson
         }
     }
 
-    [Ordinal(2)]
-    public DateTime Birthday
+    public void SetBirthday([Ordinal(2)] DateTime value)
     {
-        set
-        {
-            _name.Append(' ');
-            _name.Append($"{value:yyyy-MM-dd}");
-        }
+        _name.Append(' ');
+        _name.Append($"{value:yyyy-MM-dd}");
     }
 }
 ```
@@ -6642,6 +6638,9 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
+For an injection method, `Ordinal` can be placed on the method or its parameters. A method-level ordinal takes precedence; otherwise, the lowest parameter ordinal determines the method's execution order.
+Required fields and required or selected `init` properties are assigned in the object initializer before regular member injection. Within regular member injection, lower ordinals run first; equal ordinals are ordered by field, property, and method, then by declaration order within each kind.
+Negative ordinal values are supported. Use distinct values whenever business behavior depends on an exact order, especially across inherited members.
 
 ## Dependency attribute
 
