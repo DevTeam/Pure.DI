@@ -270,7 +270,7 @@ sealed class RefSafetyValidator(
 
         logger.CompileError(
             LogMessage.From(messageKey, message),
-            [location],
+            ImmutableArray.Create(location),
             id);
     }
 
@@ -288,7 +288,7 @@ sealed class RefSafetyValidator(
 
         logger.CompileWarning(
             LogMessage.From(messageKey, message),
-            [location],
+            ImmutableArray.Create(location),
             id);
     }
 

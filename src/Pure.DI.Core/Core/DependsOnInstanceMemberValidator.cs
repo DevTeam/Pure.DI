@@ -50,7 +50,7 @@ sealed class DependsOnInstanceMemberValidator(
                         Strings.Warning_Template_InstanceMemberInDependsOnSetup,
                         access.Member?.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) ?? "this",
                         binding.SourceSetup.Name),
-                    [locationProvider.GetLocation(access.Node)],
+                    ImmutableArray.Create(locationProvider.GetLocation(access.Node)),
                     LogId.WarningInstanceMemberInDependsOnSetup);
             }
         }

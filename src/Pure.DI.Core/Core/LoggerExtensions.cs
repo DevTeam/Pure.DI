@@ -38,7 +38,7 @@ static class LoggerExtensions
     }
 
     private static ImmutableArray<Location> Sort(in ImmutableArray<Location> locations) =>
-        [..locations.OrderBy(GetPriority)];
+        locations.OrderBy(GetPriority).ToImmutableArray();
 
     private static int GetPriority(Location location)
     {

@@ -159,7 +159,7 @@ sealed class InterfaceBuilder(
         {
             return new GeneratedInterfacesResult(
                 ImmutableArray<GeneratedInterfaceSource>.Empty,
-                [..warnings]);
+                warnings.ToImmutableArray());
         }
 
         var nullableContextEnabled = semanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
@@ -201,7 +201,7 @@ sealed class InterfaceBuilder(
                 interfaceCodeBuilderFactory().Build(symbolDetails)));
         }
 
-        return new GeneratedInterfacesResult(generatedSources.ToImmutable(), [..warnings]);
+        return new GeneratedInterfacesResult(generatedSources.ToImmutable(), warnings.ToImmutableArray());
     }
 
     private ImmutableArray<MethodInfo> GetMethods(SemanticModel semanticModel, List<ISymbol> members, bool nullableContextEnabled)
@@ -218,7 +218,7 @@ sealed class InterfaceBuilder(
             methods.Add(GetMethodInfo(method, nullableContextEnabled));
         }
 
-        return [..methods];
+        return methods.ToImmutableArray();
     }
 
     private MethodInfo GetMethodInfo(IMethodSymbol method, bool nullableContextEnabled)
@@ -233,8 +233,8 @@ sealed class InterfaceBuilder(
             method.Name,
             GetMethodReturnType(method),
             InheritDoc(method),
-            [..parameters],
-            [..typedArgs]);
+            parameters.ToImmutableArray(),
+            typedArgs.ToImmutableArray());
     }
 
     private static string GetMethodReturnType(IMethodSymbol method)
@@ -288,7 +288,7 @@ sealed class InterfaceBuilder(
             events.Add(new EventInfo(evt.Name, evt.Type.ToDisplayString(FullyQualifiedDisplayFormat), InheritDoc(evt)));
         }
 
-        return [..events];
+        return events.ToImmutableArray();
     }
 
     private static ImmutableArray<PropertyInfo> GetProperties(List<ISymbol> members)
@@ -309,7 +309,7 @@ sealed class InterfaceBuilder(
                 InheritDoc(prop)));
         }
 
-        return [..properties];
+        return properties.ToImmutableArray();
     }
 
     private static PropertySetKind GetSetKind(IMethodSymbol? setMethodSymbol) =>

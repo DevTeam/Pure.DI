@@ -20,14 +20,14 @@ class BindingsFactory(
             .Select(contract => contract with
             {
                 ContractType = typeConstructor.Construct(setup, contract.ContractType!),
-                Tags = [..contract.Tags.Select(tag => CreateTag(injection, tag)).Where(tag => tag.HasValue).Select(tag => tag!.Value)]
+                Tags = contract.Tags.Select(tag => CreateTag(injection, tag)).Where(tag => tag.HasValue).Select(tag => tag!.Value).ToImmutableArray()
             })
             .ToImmutableArray();
 
         return sourceNode.Binding with
         {
             Id = bindingId,
-            OriginalIds = [sourceNode.Binding.Id],
+            OriginalIds = ImmutableArray.Create(sourceNode.Binding.Id),
             TypeConstructor = typeConstructor,
             Contracts = newContracts,
             Implementation = sourceNode.Binding.Implementation.HasValue
@@ -63,7 +63,7 @@ class BindingsFactory(
             targetNode.Binding.Source,
             setup,
             targetNode.Binding.SemanticModel,
-            [new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty)],
+            ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty)),
             ImmutableArray<MdTag>.Empty,
             new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.PerBlock),
             null,
@@ -107,7 +107,7 @@ class BindingsFactory(
             root.Source,
             setup,
             root.SemanticModel,
-            [contract],
+            ImmutableArray.Create(contract),
             ImmutableArray<MdTag>.Empty,
             Lifetime: lifetime,
             Implementation: implementation);
@@ -129,10 +129,10 @@ class BindingsFactory(
         }
 
         var newTags = injection.Tag is not null
-            ? [new MdTag(0, injection.Tag)]
+            ? ImmutableArray.Create(new MdTag(0, injection.Tag))
             : ImmutableArray<MdTag>.Empty;
 
-        ImmutableArray<MdContract> newContracts = [new(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty)];
+        var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ContractKind.Implicit, ImmutableArray<MdTag>.Empty));
         var actualLifetime = lifetimeProvider.GetActualLifetime(setup.DefaultLifetimes, null, sourceType, ImmutableArray<MdTag>.Empty, newContracts, false);
 
         return new MdBinding(
@@ -202,9 +202,9 @@ class BindingsFactory(
         }
 
         var newTags = tag is not null
-            ? [new MdTag(0, tag)]
+            ? ImmutableArray.Create(new MdTag(0, tag))
             : ImmutableArray<MdTag>.Empty;
-        ImmutableArray<MdContract> newContracts = [new(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, ContractKind.Implicit, newTags)];
+        var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, ContractKind.Implicit, newTags));
         var newBinding = new MdBinding(
             bindingId,
             targetNode.Binding.Source,
@@ -222,11 +222,11 @@ class BindingsFactory(
                 injection.Type,
                 elementType,
                 constructKind,
-                [..dependencyContracts],
+                dependencyContracts.ToImmutableArray(),
                 hasExplicitDefaultValue,
                 explicitDefaultValue,
                 state),
-            OriginalIds: [..originalIds]);
+            OriginalIds: originalIds.ToImmutableArray());
 
         return newBinding;
     }

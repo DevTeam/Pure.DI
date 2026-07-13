@@ -38,7 +38,7 @@ sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
                 0,
                 binding,
                 ctx.TypeConstructor,
-                Construct: new DpConstruct(construct, binding, [..injections], locationProvider));
+                Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(),locationProvider));
         }
     }
 }

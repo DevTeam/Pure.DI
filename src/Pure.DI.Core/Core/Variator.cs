@@ -49,7 +49,7 @@ sealed class Variator<T> : IVariator<T>
                     }
                 }
 
-                options = [..enumerators.Select(v => v.Current!)];
+                options = enumerators.Select(v => v.Current!).ToImmutableArray();
                 return true;
             }
 

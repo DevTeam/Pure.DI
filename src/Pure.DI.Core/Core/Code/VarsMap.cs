@@ -42,7 +42,7 @@ class VarsMap(
                 if (!_map.TryGetValue(node.BindingId, out var var))
                 {
 #if DEBUG
-                    varTrace = [trace.ToString()];
+                    varTrace = ImmutableArray.Create(trace.ToString());
 #endif
                     var = CreateVar(graph, node, varTrace);
                     _map.Add(node.BindingId, var);
@@ -59,7 +59,7 @@ class VarsMap(
             case Lifetime.Transient:
             default:
 #if DEBUG
-                varTrace = [trace.ToString()];
+                varTrace = ImmutableArray.Create(trace.ToString());
 #endif
                 varInjection = new VarInjection(CreateVar(graph, node, varTrace), injection);
                 break;

@@ -23,7 +23,7 @@ sealed class BindingsValidator(
 
                 logger.CompileWarning(
                     LogMessage.From(nameof(Strings.Warning_BindingIsNotUsed), Strings.Warning_BindingIsNotUsed),
-                    [locationProvider.GetLocation(binding.Source), locationProvider.GetLocation(graph.Source.Source)],
+                    ImmutableArray.Create(locationProvider.GetLocation(binding.Source), locationProvider.GetLocation(graph.Source.Source)),
                     LogId.WarningBindingNotUsed);
             }
         }

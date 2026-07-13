@@ -18,7 +18,7 @@ sealed class CyclicDependencyValidatorVisitor(INodeTools nodeTools)
         Dependency dependency,
         ImmutableArray<Dependency> parent = default) =>
         parent.IsDefaultOrEmpty
-            ? [dependency]
+            ? ImmutableArray.Create(dependency)
             : parent.Add(dependency);
 
     public bool Visit(

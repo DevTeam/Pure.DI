@@ -41,7 +41,7 @@ sealed class ImplementationVariantsBuilder(
                 yield break;
             }
 
-            yield return new ImplementationVariant(kind, method with { Parameters = [..method.Parameters.Take(i)] });
+            yield return new ImplementationVariant(kind, method with { Parameters = method.Parameters.Take(i).ToImmutableArray() });
         }
     }
 }

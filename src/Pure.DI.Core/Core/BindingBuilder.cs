@@ -76,7 +76,7 @@ sealed class BindingBuilder(
         {
             throw new CompileErrorException(
                 Strings.Error_InvalidBinding,
-                [locationProvider.GetLocation(setup.Source)],
+                ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
                 LogId.ErrorInvalidBinding,
                 nameof(Strings.Error_InvalidBinding));
         }
@@ -98,7 +98,7 @@ sealed class BindingBuilder(
 
         // Map tags for all contracts
         var contractsWithTags = contracts
-            .Select(c => c with { Tags = [..c.Tags.Select(tag => BuildTag(tag, implementationType, id))] })
+            .Select(c => c with { Tags = c.Tags.Select(tag => BuildTag(tag, implementationType, id)).ToImmutableArray() })
             .ToImmutableArray();
 
         var lifetime = lifetimeProvider.GetActualLifetime(_defaultLifetimes, _lifetime, implementationType, implementationTags, contractsWithTags, true);

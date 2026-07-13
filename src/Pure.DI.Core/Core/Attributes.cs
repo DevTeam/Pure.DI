@@ -57,7 +57,7 @@ sealed class Attributes(
                             AttributeKind.Ordinal when typeof(T).IsAssignableFrom(typeof(int)) => (T)(object)0,
                             _ => throw new CompileErrorException(
                                 string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
-                                [locationProvider.GetLocation(attributeMetadata.Source)],
+                                ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
                                 LogId.ErrorInvalidAttributeArgumentPosition,
                                 nameof(Strings.Error_Template_InvalidAttributeArgumentPosition))
                         };
@@ -74,7 +74,7 @@ sealed class Attributes(
                 case > 1:
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_AttributeMemberCannotBeProcessed, member, member.ContainingType),
-                        [locationProvider.GetLocation(attributeMetadata.Source)],
+                        ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
                         LogId.ErrorAttributeMemberCannotBeProcessed,
                         nameof(Strings.Error_Template_AttributeMemberCannotBeProcessed));
             }
@@ -110,7 +110,7 @@ sealed class Attributes(
                         AttributeKind.Ordinal when typeof(T).IsAssignableFrom(typeof(int)) => (T)(object)0,
                         _ => throw new CompileErrorException(
                             string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Count),
-                            [locationProvider.GetLocation(attributeMetadata.Source)],
+                            ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
                             LogId.ErrorInvalidAttributeArgumentPosition,
                             nameof(Strings.Error_Template_InvalidAttributeArgumentPosition))
                     };

@@ -31,14 +31,14 @@ sealed class InstanceDpProvider(
                 var rootType = typeConstructor.Construct(setup, depType.WithNullableAnnotation(NullableAnnotation.NotAnnotated));
                 fields.Add(
                     new DpField(
-                        new Field(root.UniqueName, rootType, Accessibility.Public, true, false, null, [root.Source.GetLocation()], rootType.ContainingType),
+                        new Field(root.UniqueName, rootType, Accessibility.Public, true, false, null, ImmutableArray.Create(root.Source.GetLocation()), rootType.ContainingType),
                         0,
                         new Injection(
                             InjectionKind.Field,
                             RefKind.None,
                             rootType,
                             root.Tag?.Value,
-                            [root.Source.GetLocation()])));
+                            ImmutableArray.Create(root.Source.GetLocation()))));
             }
         }
         else
@@ -112,9 +112,9 @@ sealed class InstanceDpProvider(
         }
 
         return new InstanceDp(
-            [..methods],
-            [..fields],
-            [..properties]);
+            methods.ToImmutableArray(),
+            fields.ToImmutableArray(),
+            properties.ToImmutableArray());
     }
 
     private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member, IMethodSymbol method) =>

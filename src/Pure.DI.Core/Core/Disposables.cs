@@ -27,7 +27,7 @@ static class Disposables
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IDisposable Create(IEnumerable<IDisposable> disposables) =>
-        new CompositeDisposable([..disposables]);
+        new CompositeDisposable(disposables.ToImmutableArray());
 
     private class DisposableAction(Action action, object? key = null) : IDisposable
     {

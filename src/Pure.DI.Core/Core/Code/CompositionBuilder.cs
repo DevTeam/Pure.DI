@@ -117,7 +117,7 @@ class CompositionBuilder(
 
             processedRoot = processedRoot with
             {
-                RootArgs = [..currentRootArgs],
+                RootArgs = currentRootArgs.ToImmutableArray(),
                 IsMethod = isMethod
                 // , Kind = processedRoot.Kind & ~RootKinds.Light
             };
@@ -211,7 +211,7 @@ class CompositionBuilder(
             new Lines(),
             singletons,
             classArgsToStore,
-            [..setupContextArgs],
+            setupContextArgs.ToImmutableArray(),
             setupContextMembers,
             setupContextArgsToCopy,
             setupContextMembersToCopy,
@@ -256,7 +256,7 @@ class CompositionBuilder(
             }
         }
 
-        return [..memberNames];
+        return memberNames.ToImmutableArray();
     }
 
     private static bool IsPropertyAssignable(PropertyDeclarationSyntax property)

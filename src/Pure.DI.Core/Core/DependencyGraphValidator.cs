@@ -65,7 +65,7 @@ sealed class DependencyGraphValidator(
         {
             logger.CompileError(
                 LogMessage.From(nameof(Strings.Error_CannotBuildDependencyGraph), Strings.Error_CannotBuildDependencyGraph),
-                [locationProvider.GetLocation(dependencyGraph.Source.Source)],
+                ImmutableArray.Create(locationProvider.GetLocation(dependencyGraph.Source.Source)),
                 LogId.ErrorUnableToResolve);
         }
 

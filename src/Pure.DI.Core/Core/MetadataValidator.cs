@@ -20,7 +20,7 @@ sealed class MetadataValidator(
         {
             logger.CompileWarning(
                 LogMessage.From(nameof(Strings.Warning_NoRoots), Strings.Warning_NoRoots),
-                [locationProvider.GetLocation(setup.Source)],
+                ImmutableArray.Create(locationProvider.GetLocation(setup.Source)),
                 LogId.WarningNoRoots);
         }
 
@@ -43,7 +43,7 @@ sealed class MetadataValidator(
                     nameof(Strings.Error_Template_InvalidCompositionTypeName),
                     Strings.Error_Template_InvalidCompositionTypeName,
                     setup.Name),
-                [locationProvider.GetLocation(setup.Name.Source ?? setup.Source)],
+                ImmutableArray.Create(locationProvider.GetLocation(setup.Name.Source ?? setup.Source)),
                 LogId.ErrorInvalidCompositionTypeName);
             isValid = false;
         }
@@ -60,7 +60,7 @@ sealed class MetadataValidator(
                     nameof(Strings.Error_Template_InvalidRootName),
                     Strings.Error_Template_InvalidRootName,
                     root.Name),
-                [locationProvider.GetLocation(root.Source)],
+                ImmutableArray.Create(locationProvider.GetLocation(root.Source)),
                 LogId.ErrorInvalidRootName);
             isValid = false;
         }
@@ -81,7 +81,7 @@ sealed class MetadataValidator(
                         Strings.Error_Template_RootDuplicate,
                         root.Name,
                         roots[0].Name),
-                    [locationProvider.GetLocation(root.Source)],
+                    ImmutableArray.Create(locationProvider.GetLocation(root.Source)),
                     LogId.ErrorDuplicateRootName);
                 isValid = false;
             }
@@ -95,7 +95,7 @@ sealed class MetadataValidator(
                     LogMessage.From(
                         nameof(Strings.Error_AccumulatorTypeCannotBeGenericTypeMarker),
                         Strings.Error_AccumulatorTypeCannotBeGenericTypeMarker),
-                    [locationProvider.GetLocation(accumulator.Source)],
+                    ImmutableArray.Create(locationProvider.GetLocation(accumulator.Source)),
                     LogId.ErrorAccumulatorTypeGenericMarker);
             }
 
@@ -105,7 +105,7 @@ sealed class MetadataValidator(
                     LogMessage.From(
                         nameof(Strings.Error_AccumulatorCannotAccumulateGenericTypeMarker),
                         Strings.Error_AccumulatorCannotAccumulateGenericTypeMarker),
-                    [locationProvider.GetLocation(accumulator.Source)],
+                    ImmutableArray.Create(locationProvider.GetLocation(accumulator.Source)),
                     LogId.ErrorAccumulatorCannotAccumulateGenericMarker);
             }
         }
@@ -118,7 +118,7 @@ sealed class MetadataValidator(
                     LogMessage.From(
                         nameof(Strings.Error_SpecialTypeCannotBeGenericTypeMarker),
                         Strings.Error_SpecialTypeCannotBeGenericTypeMarker),
-                    [specialType.Source.GetLocation()],
+                    ImmutableArray.Create(specialType.Source.GetLocation()),
                     LogId.ErrorSpecialTypeGenericMarker);
             }
         }
@@ -180,7 +180,7 @@ sealed class MetadataValidator(
                                 nameof(Strings.Error_Template_InvalidArgumentName),
                                 Strings.Error_Template_InvalidArgumentName,
                                 arg.ArgName),
-                            [location()],
+                            ImmutableArray.Create(location()),
                             LogId.ErrorInvalidArgumentName);
                         isValid = false;
                     }
@@ -191,7 +191,7 @@ sealed class MetadataValidator(
                             LogMessage.From(
                                 nameof(Strings.Error_CompositionArgumentTypeCannotBeGenericTypeMarker),
                                 Strings.Error_CompositionArgumentTypeCannotBeGenericTypeMarker),
-                            [location()],
+                            ImmutableArray.Create(location()),
                             LogId.ErrorCompositionArgGenericMarker);
                     }
                 }
@@ -204,7 +204,7 @@ sealed class MetadataValidator(
                 LogMessage.From(
                     nameof(Strings.Error_InvalidBindingDueToCompilationError),
                     Strings.Error_InvalidBindingDueToCompilationError),
-                [location()],
+                ImmutableArray.Create(location()),
                 LogId.ErrorInvalidBindingDueToCompilation);
             return false;
         }
@@ -232,7 +232,7 @@ sealed class MetadataValidator(
                     case DiagnosticSeverity.Error:
                         logger.CompileError(
                             LogMessage.From(nameof(Strings.Error_Template_NotImplement), message),
-                            [location()],
+                            ImmutableArray.Create(location()),
                             LogId.ErrorNotImplementedContract);
                         isValid = false;
                         break;
@@ -240,14 +240,14 @@ sealed class MetadataValidator(
                     case DiagnosticSeverity.Warning:
                         logger.CompileWarning(
                             LogMessage.From(nameof(Strings.Error_Template_NotImplement), message),
-                            [location()],
+                            ImmutableArray.Create(location()),
                             LogId.WarningNotImplementedContract);
                         break;
 
                     case DiagnosticSeverity.Info:
                         logger.CompileInfo(
                             LogMessage.From(nameof(Strings.Error_Template_NotImplement), message),
-                            [location()],
+                            ImmutableArray.Create(location()),
                             LogId.InfoNotImplementedContract);
                         break;
                 }

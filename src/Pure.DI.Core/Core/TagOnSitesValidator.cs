@@ -19,7 +19,7 @@ sealed class TagOnSitesValidator(
                         nameof(Strings.Warning_Template_InjectionSiteIsNotUsed),
                         Strings.Warning_Template_InjectionSiteIsNotUsed,
                         injectionSite.Site),
-                    [locationProvider.GetLocation(injectionSite.Source)],
+                    ImmutableArray.Create(locationProvider.GetLocation(injectionSite.Source)),
                     LogId.WarningInjectionSiteNotUsed);
             }
         }

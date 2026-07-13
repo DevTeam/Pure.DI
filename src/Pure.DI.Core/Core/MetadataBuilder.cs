@@ -84,7 +84,7 @@ sealed class MetadataBuilder(
         {
             throw new CompileErrorException(
                 string.Format(Strings.Error_Template_UnsupportLanguage, Names.GeneratorName, languageVersion.ToDisplayString(), LanguageVersion.CSharp8.ToDisplayString()),
-                [locationProvider.GetLocation(update.Node)],
+                ImmutableArray.Create(locationProvider.GetLocation(update.Node)),
                 LogId.ErrorNotSupportedLanguageVersion,
                 nameof(Strings.Error_Template_UnsupportLanguage));
         }
@@ -131,7 +131,7 @@ sealed class MetadataBuilder(
 
                     throw new CompileErrorException(
                         string.Format(Strings.Error_Template_CannotFindSetup, item.CompositionTypeName),
-                        [locationProvider.GetLocation(dependsOn.Source)],
+                        ImmutableArray.Create(locationProvider.GetLocation(dependsOn.Source)),
                         LogId.ErrorCannotFindSetup,
                         nameof(Strings.Error_Template_CannotFindSetup));
                 }
@@ -287,7 +287,7 @@ sealed class MetadataBuilder(
                     argLocation,
                     lastSetup,
                     semanticModel,
-                    [new MdContract(semanticModel, argLocation, argType, ContractKind.Explicit, ImmutableArray<MdTag>.Empty)],
+                    ImmutableArray.Create(new MdContract(semanticModel, argLocation, argType, ContractKind.Explicit, ImmutableArray<MdTag>.Empty)),
                     ImmutableArray<MdTag>.Empty,
                     null,
                     null,
@@ -307,11 +307,10 @@ sealed class MetadataBuilder(
             .Select(group => new SetupContextMembers(
                 group.Key,
                 group.Select(i => i.ContextName).FirstOrDefault() ?? "",
-                [
-                    ..group.SelectMany(i => i.Members)
-                        .GroupBy(i => (i.SyntaxTree, i.Span))
-                        .Select(i => i.First())
-                ]))
+                group.SelectMany(i => i.Members)
+                    .GroupBy(i => (i.SyntaxTree, i.Span))
+                    .Select(i => i.First())
+                    .ToImmutableArray()))
             .ToImmutableArray();
 
         mergedSetup = new MdSetup(
@@ -335,7 +334,7 @@ sealed class MetadataBuilder(
             mergedSetupContextMembers,
             tagOn,
             comments,
-            [..defaultLifetimes]);
+            defaultLifetimes.ToImmutableArray());
 
         return;
 

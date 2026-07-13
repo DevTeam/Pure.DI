@@ -49,7 +49,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_NotSupported, node),
-            [locationProvider.GetLocation(node)],
+            ImmutableArray.Create(locationProvider.GetLocation(node)),
             LogId.ErrorNotSupportedSyntax,
             nameof(Strings.Error_Template_NotSupported));
     }
@@ -64,7 +64,7 @@ sealed class Semantic(
 
         throw new CompileErrorException(
             string.Format(Strings.Error_Template_MustBeValueOfType, node, typeof(T)),
-            [locationProvider.GetLocation(node)],
+            ImmutableArray.Create(locationProvider.GetLocation(node)),
             LogId.ErrorMustBeValueOfType,
             nameof(Strings.Error_Template_MustBeValueOfType));
     }
@@ -195,13 +195,13 @@ sealed class Semantic(
                     {
                         throw new CompileErrorException(
                             string.Format(Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
-                            [locationProvider.GetLocation(invocation)],
+                            ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                             LogId.ErrorNoAccessibleConstructorForTagOn,
                             nameof(Strings.Error_Template_NoAccessibleConstructor));
                     }
 
                     var injectionSite = injectionSiteFactory.CreateInjectionSite(ctorArgName.Expression, ctor, name);
-                    return (T)MdTag.CreateTagOnValue(invocation, [injectionSite]);
+                    return (T)MdTag.CreateTagOnValue(invocation, ImmutableArray.Create(injectionSite));
                 }
                 break;
 
@@ -223,13 +223,13 @@ sealed class Semantic(
                     {
                         throw new CompileErrorException(
                             string.Format(Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
-                            [locationProvider.GetLocation(invocation)],
+                            ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                             LogId.ErrorNoAccessibleMethodForTagOn,
                             nameof(Strings.Error_Template_NoAccessibleMethod));
                     }
 
                     var injectionSite = injectionSiteFactory.CreateInjectionSite(methodArgName.Expression, method, methodArg);
-                    if (MdTag.CreateTagOnValue(invocation, [injectionSite]) is T tagValue)
+                    if (MdTag.CreateTagOnValue(invocation, ImmutableArray.Create(injectionSite)) is T tagValue)
                     {
                         return tagValue;
                     }
@@ -252,13 +252,13 @@ sealed class Semantic(
                     {
                         throw new CompileErrorException(
                             string.Format(Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
-                            [locationProvider.GetLocation(invocation)],
+                            ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                             LogId.ErrorNoAccessibleFieldOrPropertyForTagOn,
                             nameof(Strings.Error_Template_NoAccessibleFieldOrProperty));
                     }
 
                     var injectionSite = injectionSiteFactory.CreateInjectionSite(memberNameArg, type, name);
-                    return (T)MdTag.CreateTagOnValue(invocation, [injectionSite]);
+                    return (T)MdTag.CreateTagOnValue(invocation, ImmutableArray.Create(injectionSite));
                 }
                 break;
         }

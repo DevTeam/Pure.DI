@@ -44,7 +44,7 @@ class DependenciesWalker<TContext>(
 
     public virtual void VisitRoot(in TContext ctx, in DpRoot root)
     {
-        VisitInjection(ctx, root.Injection, false, null, [locationProvider.GetLocation(root.Source.Source)], null);
+        VisitInjection(ctx, root.Injection, false, null, ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)), null);
     }
 
     public virtual void VisitImplementation(in TContext ctx, in DpImplementation implementation)
@@ -91,7 +91,7 @@ class DependenciesWalker<TContext>(
     {
         foreach (var injection in construct.Injections)
         {
-            VisitInjection(ctx, injection, false, null, [locationProvider.GetLocation(construct.Binding.Source)], null);
+            VisitInjection(ctx, injection, false, null, ImmutableArray.Create(locationProvider.GetLocation(construct.Binding.Source)), null);
         }
     }
 
@@ -196,7 +196,7 @@ class DependenciesWalker<TContext>(
             resolver.Injection,
             false,
             null,
-            [locationProvider.GetLocation(resolver.Source.Source)],
+            ImmutableArray.Create(locationProvider.GetLocation(resolver.Source.Source)),
             resolver.Source.Position);
     }
 
