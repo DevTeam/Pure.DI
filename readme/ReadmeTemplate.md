@@ -1,4 +1,4 @@
-﻿![](di.gif)
+![](di.gif)
 
 ## Schrödinger's cat demonstrates how it all works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
 
@@ -182,7 +182,8 @@ This code does not depend on other libraries, does not use type reflection, and 
 
 The `public Program Root { get; }` property is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/), the only place in the application where the composition of the object graph takes place. Each instance is created using basic language constructs, which compile with all optimizations and minimal impact on performance and memory consumption. In general, applications may have multiple composition roots and thus such properties. Each composition root must have its own unique name, which is defined when the `Root<T>(string name)` method is called, as shown in the code above.
 
-### Injection selection and execution priorities
+<details>
+<summary>Injection selection and execution priorities</summary>
 
 Pure.DI treats constructor injection and member injection differently. Exactly one constructor is selected for an instance, while every eligible injection method, property, and field is applied. If the dependency graph for a preferred constructor cannot be resolved, Pure.DI continues with the next constructor candidate.
 
@@ -196,9 +197,9 @@ Constructor candidates are considered in the following priority order:
 | 2 | Otherwise, constructors with a higher [`OverloadResolutionPriorityAttribute`](readme/overload-resolution-priority.md) value are preferred. A constructor without the attribute has priority `0`; negative values de-prioritize a constructor. |
 | 3 | A constructor with more injection parameters is preferred. |
 | 4 | A more accessible constructor is preferred: `public` before `internal`. |
-| 5 | When no constructor has an explicit `OverloadResolutionPriorityAttribute`, a primary constructor is preferred as the final tie-breaker. |
+| 5 | When neither `Ordinal` mode nor an explicit `OverloadResolutionPriorityAttribute` is active, a primary constructor is preferred as the final tie-breaker. |
 
-`OrdinalAttribute` is the explicit Pure.DI override and takes precedence over `OverloadResolutionPriorityAttribute`. For a primary constructor, constructor attributes use the `method:` target, for example `[method: Ordinal(0)]` or `[method: OverloadResolutionPriority(1)]`. If candidates are still equal, do not rely on their declaration or Roslyn symbol order; use an explicit priority when the choice affects behavior.
+`OrdinalAttribute` is the explicit Pure.DI override and takes precedence over `OverloadResolutionPriorityAttribute`. Constructors with the same ordinal use the number of injection parameters and accessibility as secondary criteria; `OverloadResolutionPriorityAttribute` and the implicit primary-constructor preference remain disabled in this mode. For a primary constructor, constructor attributes use the `method:` target, for example `[method: Ordinal(0)]` or `[method: OverloadResolutionPriority(1)]`. If candidates are still equal, do not rely on their declaration or Roslyn symbol order; use distinct ordinal values when the choice affects behavior.
 
 #### Method, property, and field injection
 
@@ -214,6 +215,8 @@ Injection is generated in this execution order:
 | 4 | Remaining fields, properties, and methods are processed together in ascending `Ordinal` order. |
 
 Lower ordinal values therefore run earlier. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. Use distinct ordinal values when relative execution order matters; the order of members with equal ordinals is intentionally unspecified.
+
+</details>
 
 ### Time to open boxes!
 

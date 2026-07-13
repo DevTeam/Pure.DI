@@ -106,7 +106,7 @@ sealed class ImplementationDependencyNodeBuilder(
 
             if (implementationsWithOrdinal.Count > 0)
             {
-                foreach (var node in CreateNodes(ctx, setup.SemanticModel.Compilation, injectionsCounter, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal), false))
+                foreach (var node in CreateNodes(ctx, setup.SemanticModel.Compilation, injectionsCounter, implementationsWithOrdinal, false, true))
                 {
                     yield return node;
                 }
@@ -114,7 +114,7 @@ sealed class ImplementationDependencyNodeBuilder(
                 continue;
             }
 
-            foreach (var node in CreateNodes(ctx, setup.SemanticModel.Compilation, injectionsCounter, implementations, true))
+            foreach (var node in CreateNodes(ctx, setup.SemanticModel.Compilation, injectionsCounter, implementations, true, false))
             {
                 yield return node;
             }
@@ -126,23 +126,33 @@ sealed class ImplementationDependencyNodeBuilder(
         Compilation compilation,
         IConstructorInjectionsCounterWalker walker,
         IEnumerable<DpImplementation> implementations,
-        bool useOverloadResolutionPriority)
+        bool useOverloadResolutionPriority,
+        bool useOrdinal)
     {
         var candidates = implementations
-            .Select(implementation =>
+            .Select((implementation, order) =>
             {
                 var priority = 0;
                 var isPriorityExplicit = useOverloadResolutionPriority
                                          && overloadResolutionPriority.TryGet(compilation, implementation.Constructor.Method, out priority);
-                return (Implementation: implementation, Priority: priority, IsPriorityExplicit: isPriorityExplicit);
+                return (
+                    Implementation: implementation,
+                    Ordinal: useOrdinal ? implementation.Constructor.Ordinal ?? int.MaxValue : int.MaxValue,
+                    Priority: priority,
+                    IsPriorityExplicit: isPriorityExplicit,
+                    Order: order);
             })
             .ToList();
-        var usePrimaryConstructorPriority = useOverloadResolutionPriority && candidates.All(i => !i.IsPriorityExplicit);
+        var usePrimaryConstructorPriority = !useOrdinal
+                                            && useOverloadResolutionPriority
+                                            && candidates.All(i => !i.IsPriorityExplicit);
         return candidates
-            .OrderByDescending(i => i.Priority)
+            .OrderBy(i => i.Ordinal)
+            .ThenByDescending(i => i.Priority)
             .ThenByDescending(i => GetInjectionsCount(walker, i.Implementation.Constructor))
             .ThenByDescending(i => i.Implementation.Constructor.Method.DeclaredAccessibility)
             .ThenByDescending(i => usePrimaryConstructorPriority && IsPrimaryConstructor(i.Implementation.Constructor.Method))
+            .ThenBy(i => i.Order)
             .Select(i => i.Implementation)
             .SelectMany(implementationVariantsBuilder.Build)
             .Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, ctx.TypeConstructor, Implementation: implementation));

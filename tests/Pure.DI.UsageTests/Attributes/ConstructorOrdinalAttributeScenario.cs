@@ -6,6 +6,8 @@ $sa=Member ordinal attribute
 $sa=Dependency attribute
 $h=Applying this attribute disables automatic constructor selection. Only constructors marked with this attribute are considered, ordered by ordinal (ascending).
 $f=The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
+$f=A lower constructor ordinal takes precedence over the number of injection parameters and accessibility. If that constructor cannot be resolved, Pure.DI tries the next ordinal.
+$f=Constructors with the same ordinal use the regular secondary criteria: more injection parameters first, then `public` before `internal`. Use distinct ordinal values when the choice affects behavior.
 $r=Shouldly
 */
 

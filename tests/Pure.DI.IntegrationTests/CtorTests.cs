@@ -293,6 +293,155 @@ public class CtorTests
         result.StdOut.ShouldBe(["99"], result);
     }
 
+    [Fact]
+    public async Task ShouldPreferLowerConstructorOrdinalOverMoreInjections()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class FirstDependency { }
+                               class SecondDependency { }
+                               class ThirdDependency { }
+                               class FourthDependency { }
+
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public Service(FirstDependency dependency) =>
+                                       Console.WriteLine("ordinal-0");
+
+                                   [Ordinal(1)]
+                                   public Service(
+                                       SecondDependency second,
+                                       ThirdDependency third,
+                                       FourthDependency fourth) =>
+                                       Console.WriteLine("ordinal-1");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ordinal-0"], result);
+    }
+
+    [Fact]
+    public async Task ShouldFallBackToNextConstructorOrdinalWhenPreferredCannotBeResolved()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               abstract class MissingDependency { }
+                               class FallbackDependency { }
+
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public Service(MissingDependency dependency) =>
+                                       Console.WriteLine("ordinal-0");
+
+                                   [Ordinal(1)]
+                                   public Service(FallbackDependency dependency) =>
+                                       Console.WriteLine("ordinal-1");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ordinal-1"], result);
+    }
+
+    [Fact]
+    public async Task ShouldUseInjectionCountForEqualConstructorOrdinals()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class FirstDependency { }
+                               class SecondDependency { }
+                               class ThirdDependency { }
+
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public Service(FirstDependency dependency) =>
+                                       Console.WriteLine("one-injection");
+
+                                   [Ordinal(0)]
+                                   public Service(
+                                       SecondDependency second,
+                                       ThirdDependency third) =>
+                                       Console.WriteLine("two-injections");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["two-injections"], result);
+    }
+
 #if ROSLYN5_6_OR_GREATER
     [Fact]
     public async Task ShouldPreferConstructorWithHigherOverloadResolutionPriority()
@@ -1109,6 +1258,186 @@ public class CtorTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["ordinary"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreferRecordPrimaryConstructorWhenCandidatesOtherwiseEqual()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class PrimaryDependency;
+                               public sealed class OrdinaryDependency;
+
+                               public sealed record Service(PrimaryDependency Dependency)
+                               {
+                                   public string Source { get; init; } = "primary";
+
+                                   public Service(OrdinaryDependency dependency)
+                                       : this(new PrimaryDependency()) => Source = "ordinary";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Root.Source);
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["primary"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreferRecordStructPrimaryConstructorWhenCandidatesOtherwiseEqual()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class PrimaryDependency;
+                               public sealed class OrdinaryDependency;
+
+                               public readonly record struct Service(PrimaryDependency Dependency)
+                               {
+                                   public string Source { get; init; } = "primary";
+
+                                   public Service(OrdinaryDependency dependency)
+                                       : this(new PrimaryDependency()) => Source = "ordinary";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Root.Source);
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["primary"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepStableTieOrderWhenOverloadResolutionPriorityIsExplicitlyZero()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Runtime.CompilerServices;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class PrimaryDependency;
+                               public sealed class OrdinaryDependency;
+
+                               public partial class Service
+                               {
+                                   [OverloadResolutionPriority(0)]
+                                   public Service(OrdinaryDependency dependency)
+                                       : this(new PrimaryDependency()) => Source = "ordinary";
+                               }
+
+                               public partial class Service(PrimaryDependency dependency)
+                               {
+                                   public PrimaryDependency Dependency { get; } = dependency;
+
+                                   public string Source { get; private set; } = "primary";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Root.Source);
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["primary"], result);
+    }
+
+    [Fact]
+    public void ShouldRecognizeExplicitZeroOverloadResolutionPriority()
+    {
+        // Given
+        var syntaxTree = CSharpSyntaxTree.ParseText(
+            """
+            using System.Runtime.CompilerServices;
+
+            class Service
+            {
+                [OverloadResolutionPriority(0)]
+                public Service() { }
+            }
+            """,
+            CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Preview));
+        var compilation = CSharpCompilation.Create("Sample")
+            .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+            .AddSyntaxTrees(syntaxTree);
+        var attributeType = compilation.GetTypeByMetadataName(
+            "System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute");
+        var constructor = compilation.GetTypeByMetadataName("Service")!
+            .InstanceConstructors
+            .Single(i => !i.IsImplicitlyDeclared);
+        var types = new Moq.Mock<ITypes>();
+        types.Setup(i => i.TryGet(Core.SpecialType.OverloadResolutionPriorityAttribute, compilation))
+            .Returns(attributeType);
+        types.Setup(i => i.TypeEquals(Moq.It.IsAny<ISymbol?>(), Moq.It.IsAny<ISymbol?>()))
+            .Returns((ISymbol? left, ISymbol? right) => SymbolEqualityComparer.Default.Equals(left, right));
+        var sut = new Core.OverloadResolutionPriority(types.Object);
+
+        // When
+        var isExplicit = sut.TryGet(compilation, constructor, out var priority);
+
+        // Then
+        isExplicit.ShouldBeTrue();
+        priority.ShouldBe(0);
     }
 #endif
 

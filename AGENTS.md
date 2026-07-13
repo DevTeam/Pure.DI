@@ -6569,6 +6569,8 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
+A lower constructor ordinal takes precedence over the number of injection parameters and accessibility. If that constructor cannot be resolved, Pure.DI tries the next ordinal.
+Constructors with the same ordinal use the regular secondary criteria: more injection parameters first, then `public` before `internal`. Use distinct ordinal values when the choice affects behavior.
 
 ## Member ordinal attribute
 
