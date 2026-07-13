@@ -625,4 +625,262 @@ public class MethodInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Init1", "Init2"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportParamsArrayMethodInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { string Name { get; } }
+                               class Dependency1 : IDependency { public string Name => "one"; }
+                               class Dependency2 : IDependency { public string Name => "two"; }
+
+                               class Service
+                               {
+                                   [Ordinal]
+                                   public void Initialize(params IDependency[] dependencies) =>
+                                       Console.WriteLine(string.Join(",", Array.ConvertAll(dependencies, dependency => dependency.Name)));
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency1>()
+                                           .Bind<IDependency>(2).To<Dependency2>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["one,two"], result);
+    }
+
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldSupportParamsReadOnlyListMethodInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { string Name { get; } }
+                               class Dependency1 : IDependency { public string Name => "one"; }
+                               class Dependency2 : IDependency { public string Name => "two"; }
+
+                               class Service
+                               {
+                                   [Ordinal]
+                                   public void Initialize(params IReadOnlyList<IDependency> dependencies) =>
+                                       Console.WriteLine(string.Join(",", dependencies.Select(dependency => dependency.Name)));
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency1>()
+                                           .Bind<IDependency>(2).To<Dependency2>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["one,two"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportParamsEnumerableMethodInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency { string Name { get; } }
+                               class Dependency1 : IDependency { public string Name => "one"; }
+                               class Dependency2 : IDependency { public string Name => "two"; }
+
+                               class Service
+                               {
+                                   [Ordinal]
+                                   public void Initialize(params IEnumerable<IDependency> dependencies) =>
+                                       Console.WriteLine(string.Join(",", dependencies.Select(dependency => dependency.Name)));
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency1>()
+                                           .Bind<IDependency>(2).To<Dependency2>()
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["one,two"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportParamsReadOnlySpanRootArgumentMethodInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   public int Length { get; private set; }
+
+                                   [Ordinal]
+                                   public void Initialize(params ReadOnlySpan<char> text) =>
+                                       Length = text.Length;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<ReadOnlySpan<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Parse("Hello".AsSpan()).Length);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["5"], result);
+        result.GeneratedCode.ShouldContain("public global::Sample.Parser Parse(scoped System.ReadOnlySpan<char> text)");
+    }
+
+    [Fact]
+    public async Task ShouldSupportParamsSpanRootArgumentMethodInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   [Ordinal]
+                                   public void Initialize(params Span<char> text) =>
+                                       text[0] = char.ToUpperInvariant(text[0]);
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<Span<char>>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var text = "hello".ToCharArray();
+                                       _ = composition.Parse(text.AsSpan());
+                                       Console.WriteLine(text);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.Preview,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Hello"], result);
+        result.GeneratedCode.ShouldContain("public global::Sample.Parser Parse(scoped System.Span<char> text)");
+    }
+#endif
 }

@@ -3561,10 +3561,11 @@ businessService.Process();
 businessService.DataService.Count();
 
 log.ShouldBe(
-    ImmutableArray.Create(
+    [
         "Process returns Processed",
         "get_DataService returns Castle.Proxies.IDataServiceProxy",
-        "Count returns 55"));
+        "Count returns 55"
+    ]);
 
 public interface IDataService
 {
@@ -3592,9 +3593,9 @@ class BusinessService(IDataService dataService) : IBusinessService
 
 internal partial class Composition : IInterceptor
 {
-    private readonly List<string> _log = [];
+    private readonly List<string> _log;
     private static readonly IProxyBuilder ProxyBuilder = new DefaultProxyBuilder();
-    private readonly IInterceptor[] _interceptors = [];
+    private readonly IInterceptor[] _interceptors;
 
     public Composition(List<string> log)
     {

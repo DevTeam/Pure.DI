@@ -27,7 +27,7 @@ var initialized = composition.ParserFactory("Hello".AsSpan());
 
 initialized.ShouldBeTrue();
 
-delegate bool ParserFactory<T>(T text)
+delegate bool ParserFactory<in T>(T text)
     where T : allows ref struct;
 
 class Parser<T>
