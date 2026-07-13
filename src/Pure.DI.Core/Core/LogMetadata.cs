@@ -71,6 +71,7 @@ static class LogMetadata
             LogId.WarningNullableRootInResolveMethod => $"{HelpLinkBaseUrl}#diw011",
             LogId.WarningStackOnlyConstructorInjectionIntoHeapType => $"{HelpLinkBaseUrl}#diw012",
             LogId.WarningStackOnlyOverrideRequiresLock => $"{HelpLinkBaseUrl}#diw013",
+            LogId.WarningInjectionMethodOverloadResolutionPriority => $"{HelpLinkBaseUrl}#diw014",
             LogId.InfoGenerationInterrupted => $"{HelpLinkBaseUrl}#dii000",
             LogId.InfoNotImplementedContract => $"{HelpLinkBaseUrl}#dii001",
             _ => null
@@ -145,6 +146,7 @@ static class LogMetadata
             LogId.WarningGenerateInterfaceSelectiveEmpty => "Validation",
             LogId.WarningStackOnlyConstructorInjectionIntoHeapType => "Validation",
             LogId.WarningStackOnlyOverrideRequiresLock => "Validation",
+            LogId.WarningInjectionMethodOverloadResolutionPriority => "Validation",
 
             // ReSharper disable once RedundantSwitchExpressionArms
             LogId.InfoGenerationInterrupted => "General",
@@ -218,6 +220,7 @@ static class LogMetadata
             LogId.WarningNullableRootInResolveMethod => Strings.Description_WarningNullableRootInResolveMethod,
             LogId.WarningStackOnlyConstructorInjectionIntoHeapType => Strings.Description_WarningStackOnlyConstructorInjectionIntoHeapType,
             LogId.WarningStackOnlyOverrideRequiresLock => Strings.Description_WarningStackOnlyOverrideRequiresLock,
+            LogId.WarningInjectionMethodOverloadResolutionPriority => Strings.Description_WarningInjectionMethodOverloadResolutionPriority,
             LogId.InfoGenerationInterrupted => Strings.Description_InfoGenerationInterrupted,
             LogId.InfoNotImplementedContract => Strings.Description_InfoNotImplementedContract,
             LogId.ErrorUnhandled => Strings.Description_ErrorUnhandled,

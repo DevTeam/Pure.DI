@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn はインスタンスメンバーを使用しています。</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>インジェクション メソッドが、より高い OverloadResolutionPriority を持つ別のオーバーロードに解決される可能性があります。対象のインジェクション メソッドに最高の優先度を指定するか、一意のメソッド名を使用してください。</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成が中断されました。</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

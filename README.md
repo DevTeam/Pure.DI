@@ -429,6 +429,7 @@ Attribute-based setup options for declaring bindings, tags, metadata, and inject
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
 - [Member ordinal attribute](readme/member-ordinal-attribute.md)
 - [Dependency attribute](readme/dependency-attribute.md)
+- [Overload resolution priority](readme/overload-resolution-priority.md)
 - [Tag attribute](readme/tag-attribute.md)
 - [Type attribute](readme/type-attribute.md)
 - [Inject attribute](readme/inject-attribute.md)
@@ -2569,8 +2570,8 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 51KB | 13K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 125KB | 32K |
-| [AGENTS.md](AGENTS.md) | 469KB | 120K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 127KB | 32K |
+| [AGENTS.md](AGENTS.md) | 471KB | 120K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

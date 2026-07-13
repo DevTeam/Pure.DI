@@ -12,7 +12,8 @@ sealed class ImplementationDependencyNodeBuilder(
     Func<IConstructorInjectionsCounterWalker> constructorInjectionsCounterWalkerFactory,
     ILocationProvider locationProvider,
     IFilter filter,
-    ITypeResolver typeResolver)
+    ITypeResolver typeResolver,
+    IOverloadResolutionPriority overloadResolutionPriority)
     : IBuilder<DependencyNodeBuildContext, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(DependencyNodeBuildContext ctx)
@@ -105,7 +106,7 @@ sealed class ImplementationDependencyNodeBuilder(
 
             if (implementationsWithOrdinal.Count > 0)
             {
-                foreach (var node in CreateNodes(ctx, injectionsCounter, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal)))
+                foreach (var node in CreateNodes(ctx, setup.SemanticModel.Compilation, injectionsCounter, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal), false))
                 {
                     yield return node;
                 }
@@ -113,16 +114,22 @@ sealed class ImplementationDependencyNodeBuilder(
                 continue;
             }
 
-            foreach (var node in CreateNodes(ctx, injectionsCounter, implementations))
+            foreach (var node in CreateNodes(ctx, setup.SemanticModel.Compilation, injectionsCounter, implementations, true))
             {
                 yield return node;
             }
         }
     }
 
-    private IEnumerable<DependencyNode> CreateNodes(DependencyNodeBuildContext ctx, IConstructorInjectionsCounterWalker walker, IEnumerable<DpImplementation> implementations) =>
+    private IEnumerable<DependencyNode> CreateNodes(
+        DependencyNodeBuildContext ctx,
+        Compilation compilation,
+        IConstructorInjectionsCounterWalker walker,
+        IEnumerable<DpImplementation> implementations,
+        bool useOverloadResolutionPriority) =>
         implementations
-            .OrderByDescending(i => GetInjectionsCount(walker, i.Constructor))
+            .OrderByDescending(i => useOverloadResolutionPriority ? overloadResolutionPriority.Get(compilation, i.Constructor.Method) : 0)
+            .ThenByDescending(i => GetInjectionsCount(walker, i.Constructor))
             .ThenByDescending(i => i.Constructor.Method.DeclaredAccessibility)
             .SelectMany(implementationVariantsBuilder.Build)
             .Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, ctx.TypeConstructor, Implementation: implementation));

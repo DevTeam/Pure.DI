@@ -380,6 +380,9 @@
     <data name="Description_WarningNullableRootInResolveMethod" xml:space="preserve">
         <value>Resolve(Type) не может различить nullable и не-nullable корни.</value>
     </data>
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>Метод инъекции может разрешиться в другую перегрузку с более высоким OverloadResolutionPriority. Назначьте целевому методу инъекции наивысший приоритет или используйте уникальное имя метода.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Генерация была прервана.</value>
     </data>

@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn verwendet einen Instanzmember.</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>Eine Injektionsmethode kann in eine andere Überladung mit höherer OverloadResolutionPriority aufgelöst werden. Geben Sie der beabsichtigten Injektionsmethode die höchste Priorität oder verwenden Sie einen eindeutigen Methodennamen.</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generierung wurde unterbrochen.</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

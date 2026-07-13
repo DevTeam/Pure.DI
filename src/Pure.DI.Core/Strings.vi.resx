@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn sử dụng thành viên instance.</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>Phương thức injection có thể được phân giải thành một overload khác có OverloadResolutionPriority cao hơn. Hãy đặt mức ưu tiên cao nhất cho phương thức injection mong muốn hoặc dùng tên phương thức duy nhất.</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Việc tạo đã bị gián đoạn.</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

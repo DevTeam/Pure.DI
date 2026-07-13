@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn يستخدم عضو مثيل.</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>قد يتم ربط أسلوب الحقن بتحميل زائد آخر ذي OverloadResolutionPriority أعلى. امنح أسلوب الحقن المقصود أعلى أولوية أو استخدم اسم أسلوب فريدًا.</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>تمت مقاطعة التوليد.</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

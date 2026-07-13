@@ -17,7 +17,8 @@ sealed class Types(
         { SpecialType.Tag, $"{Names.GeneratorName}.{nameof(Tag)}" },
         { SpecialType.IConfiguration, $"{Names.GeneratorName}.{nameof(IConfiguration)}" },
         { SpecialType.Func, "System.Func`1" },
-        { SpecialType.LightweightRoot, Names.LightweightRootBaseClassName }
+        { SpecialType.LightweightRoot, Names.LightweightRootBaseClassName },
+        { SpecialType.OverloadResolutionPriorityAttribute, "System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute" }
     };
 
     public string GetName(ITypeSymbol typeSymbol) =>

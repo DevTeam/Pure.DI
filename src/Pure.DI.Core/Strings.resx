@@ -380,6 +380,9 @@
     <data name="Description_WarningNullableRootInResolveMethod" xml:space="preserve">
         <value>Resolve(Type) cannot distinguish nullable and non-nullable roots.</value>
     </data>
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>An injection method may resolve to another overload with a higher OverloadResolutionPriority. Give the intended injection method the highest priority or use a unique method name.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generation was interrupted.</value>
     </data>

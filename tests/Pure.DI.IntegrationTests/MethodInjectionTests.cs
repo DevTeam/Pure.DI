@@ -882,5 +882,62 @@ public class MethodInjectionTests
         result.StdOut.ShouldBe(["Hello"], result);
         result.GeneratedCode.ShouldContain("public global::Sample.Parser Parse(scoped System.Span<char> text)");
     }
+
+    [Fact]
+    public async Task ShouldWarnWhenInjectionMethodMayResolveToHigherPriorityOverload()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Runtime.CompilerServices;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency;
+                               class SpecializedDependency : Dependency;
+
+                               class Service
+                               {
+                                   public string Called { get; private set; } = "none";
+
+                                   [Ordinal]
+                                   public void Initialize(SpecializedDependency dependency) =>
+                                       Called = "injection";
+
+                                   [OverloadResolutionPriority(1)]
+                                   public void Initialize(Dependency dependency) =>
+                                       Called = "higher-priority-overload";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<Service>("Service");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service.Called);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings[0].Id.ShouldBe(Core.LogId.WarningInjectionMethodOverloadResolutionPriority);
+        result.StdOut.ShouldBe(["higher-priority-overload"], result);
+    }
 #endif
 }

@@ -1005,6 +1005,15 @@ namespace Pure.DI {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to An injection method may resolve to another overload with a higher OverloadResolutionPriority.
+        /// </summary>
+        internal static string Description_WarningInjectionMethodOverloadResolutionPriority {
+            get {
+                return ResourceManager.GetString("Description_WarningInjectionMethodOverloadResolutionPriority", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;..
         /// </summary>
         internal static string Description_ErrorStackOnlyDependencyWithStoredLifetime {

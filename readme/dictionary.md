@@ -156,9 +156,9 @@ classDiagram
 	NotificationService *-- DictionaryᐸChannelˏINotificationChannelᐳ : IReadOnlyDictionaryᐸChannelˏINotificationChannelᐳ
 	DictionaryᐸChannelˏINotificationChannelᐳ *-- ArrayᐸKeyValuePairᐸChannelˏINotificationChannelᐳᐳ : ArrayᐸKeyValuePairᐸChannelˏINotificationChannelᐳᐳ
 	DictionaryᐸChannelˏINotificationChannelᐳ *-- EqualityComparerᐸChannelᐳ : IEqualityComparerᐸChannelᐳ
-	ArrayᐸKeyValuePairᐸChannelˏINotificationChannelᐳᐳ *-- KeyValuePairᐸChannelˏINotificationChannelᐳ : "Unique tag #89" KeyValuePairᐸChannelˏINotificationChannelᐳ
 	ArrayᐸKeyValuePairᐸChannelˏINotificationChannelᐳᐳ *-- KeyValuePairᐸChannelˏINotificationChannelᐳ : "Unique tag #90" KeyValuePairᐸChannelˏINotificationChannelᐳ
 	ArrayᐸKeyValuePairᐸChannelˏINotificationChannelᐳᐳ *-- KeyValuePairᐸChannelˏINotificationChannelᐳ : "Unique tag #91" KeyValuePairᐸChannelˏINotificationChannelᐳ
+	ArrayᐸKeyValuePairᐸChannelˏINotificationChannelᐳᐳ *-- KeyValuePairᐸChannelˏINotificationChannelᐳ : "Unique tag #92" KeyValuePairᐸChannelˏINotificationChannelᐳ
 	class ArrayᐸKeyValuePairᐸChannelˏINotificationChannelᐳᐳ {
 			<<array>>
 	}

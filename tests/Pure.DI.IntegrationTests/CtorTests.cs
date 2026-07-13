@@ -293,6 +293,228 @@ public class CtorTests
         result.StdOut.ShouldBe(["99"], result);
     }
 
+#if ROSLYN5_6_OR_GREATER
+    [Fact]
+    public async Task ShouldPreferConstructorWithHigherOverloadResolutionPriority()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Runtime.CompilerServices;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   public virtual string Name => "base";
+                               }
+
+                               class SpecializedDependency : Dependency
+                               {
+                                   public override string Name => "specialized";
+                               }
+
+                               class Service
+                               {
+                                   public Service(SpecializedDependency dependency) =>
+                                       Console.WriteLine($"default:{dependency.Name}");
+
+                                   [OverloadResolutionPriority(1)]
+                                   public Service(Dependency dependency) =>
+                                       Console.WriteLine($"preferred:{dependency.Name}");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["preferred:base"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreferConstructorWithDefaultPriorityOverNegativePriority()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Runtime.CompilerServices;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   public virtual string Name => "base";
+                               }
+
+                               class SpecializedDependency : Dependency
+                               {
+                                   public override string Name => "specialized";
+                               }
+
+                               class Service
+                               {
+                                   [OverloadResolutionPriority(-1)]
+                                   public Service(Dependency dependency) =>
+                                       Console.WriteLine($"legacy:{dependency.Name}");
+
+                                   public Service(SpecializedDependency dependency) =>
+                                       Console.WriteLine($"default:{dependency.Name}");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["default:specialized"], result);
+    }
+
+    [Fact]
+    public async Task ShouldFallBackWhenPreferredConstructorCannotBeResolved()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Runtime.CompilerServices;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               abstract class MissingDependency;
+                               class Dependency;
+
+                               class Service
+                               {
+                                   [OverloadResolutionPriority(10)]
+                                   public Service(MissingDependency dependency) =>
+                                       Console.WriteLine("preferred");
+
+                                   public Service(Dependency dependency) =>
+                                       Console.WriteLine("fallback");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["fallback"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreferOrdinalOverOverloadResolutionPriority()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Runtime.CompilerServices;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency;
+                               class OtherDependency;
+
+                               class Service
+                               {
+                                   [Ordinal(0)]
+                                   public Service(Dependency dependency) =>
+                                       Console.WriteLine("ordinal");
+
+                                   [Ordinal(1)]
+                                   [OverloadResolutionPriority(100)]
+                                   public Service(OtherDependency dependency) =>
+                                       Console.WriteLine("priority");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ordinal"], result);
+    }
+#endif
+
     [Fact]
     public async Task ShouldSelectDefaultCtorWhenItHasStaticConstructor()
     {

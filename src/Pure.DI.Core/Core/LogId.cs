@@ -131,6 +131,8 @@ static class LogId
     public const string WarningStackOnlyConstructorInjectionIntoHeapType = "DIW012";
     // Stack-only override in a delegate should be synchronized.
     public const string WarningStackOnlyOverrideRequiresLock = "DIW013";
+    // Injection method may resolve to an overload with a higher overload resolution priority.
+    public const string WarningInjectionMethodOverloadResolutionPriority = "DIW014";
 
     // Info
     // Generation was interrupted.

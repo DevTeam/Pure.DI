@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn ใช้สมาชิกอินสแตนซ์</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>เมธอดการฉีดอาจถูกเลือกเป็นโอเวอร์โหลดอื่นที่มี OverloadResolutionPriority สูงกว่า ให้กำหนดลำดับความสำคัญสูงสุดแก่เมธอดการฉีดที่ต้องการ หรือใช้ชื่อเมธอดที่ไม่ซ้ำกัน</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>การสร้างถูกขัดจังหวะ</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

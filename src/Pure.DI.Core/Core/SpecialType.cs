@@ -8,5 +8,6 @@ enum SpecialType
     Tag,
     IConfiguration,
     Func,
-    LightweightRoot
+    LightweightRoot,
+    OverloadResolutionPriorityAttribute
 }

@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn משתמש בחבר מופע.</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>מתודת הזרקה עשויה להיפתר לעומס־יתר אחר עם OverloadResolutionPriority גבוה יותר. תן למתודת ההזרקה הרצויה את העדיפות הגבוהה ביותר או השתמש בשם מתודה ייחודי.</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>היצירה הופסקה.</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

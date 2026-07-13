@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn menggunakan anggota instance.</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>Metode injeksi dapat di-resolve ke overload lain dengan OverloadResolutionPriority yang lebih tinggi. Berikan prioritas tertinggi pada metode injeksi yang dimaksud atau gunakan nama metode yang unik.</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generasi terganggu.</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

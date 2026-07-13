@@ -359,7 +359,10 @@
   <data name="Description_WarningInstanceMemberInDependsOnSetup" xml:space="preserve">
         <value>DependsOn 使用实例成员。</value>
     </data>
-  <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
+    <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
+        <value>注入方法可能会解析为具有更高 OverloadResolutionPriority 的其他重载。请为目标注入方法设置最高优先级，或使用唯一的方法名。</value>
+    </data>
+    <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成已中断。</value>
     </data>
   <data name="Description_InfoNotImplementedContract" xml:space="preserve">

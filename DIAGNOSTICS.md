@@ -446,6 +446,13 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - See: [thread-safe-overrides](readme/thread-safe-overrides.md), [span-and-readonlyspan](readme/span-and-readonlyspan.md), [default-func-with-readonlyspan](readme/default-func-with-readonlyspan.md).
 - Examples: `new ParserFactory<T>(text => { ctx.Override<T>(text); ctx.Inject<Parser<T>>(out var parser); return parser; })` where `T : allows ref struct`. The generated default `Func<ReadOnlySpan<char>, T>` binding is different: it uses local values in the generated delegate invocation and does not require a manual `lock`.
 
+### DIW014
+- Description: An injection method may resolve to another overload with a higher `OverloadResolutionPriority`.
+- Problem: Pure.DI emits a regular C# method call for method injection. When another applicable overload has a higher `OverloadResolutionPriority`, the compiler can call that overload instead of the method selected as the injection target.
+- Fix: Give the intended injection overload the highest priority, use a unique method name, or remove the conflicting `OverloadResolutionPriorityAttribute`.
+- See: [overload-resolution-priority](readme/overload-resolution-priority.md), [member-ordinal-attribute](readme/member-ordinal-attribute.md).
+- Examples: `[Ordinal] void Initialize(SpecialDependency dependency)` conflicts with `[OverloadResolutionPriority(1)] void Initialize(Dependency dependency)` when `SpecialDependency` derives from `Dependency`.
+
 ## Info
 
 ### DII000
