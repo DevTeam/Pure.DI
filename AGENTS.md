@@ -6714,7 +6714,7 @@ The `Dependency` attribute is part of the API, but you can define your own in an
 
 ## Overload resolution priority
 
-Library types sometimes keep an older constructor for compatibility while introducing a better overload for newly compiled applications. Starting with C# 13, `OverloadResolutionPriorityAttribute` tells the compiler which overload should be preferred. Pure.DI follows the same priority when it chooses a constructor and builds its dependency graph.
+Library types sometimes keep an older constructor for compatibility while introducing a better overload for newly compiled applications. Starting with C# 13, `OverloadResolutionPriorityAttribute` tells the compiler which overload should be preferred. Pure.DI follows the same priority when it chooses a constructor and builds its dependency graph. For a primary constructor, place the attribute on the type declaration with the `method:` target.
 
 ```c#
 using Shouldly;
@@ -6735,18 +6735,17 @@ class LegacyHttpOptions;
 
 class ResilientHttpOptions;
 
-class BillingApiClient
+[method: OverloadResolutionPriority(1)]
+class BillingApiClient(ResilientHttpOptions options)
 {
     // Kept so existing callers compiled against the old API continue to work.
-    public BillingApiClient(LegacyHttpOptions options) =>
-        Transport = "legacy-http";
+    public BillingApiClient(LegacyHttpOptions options)
+        : this(new ResilientHttpOptions()) => Transport = "legacy-http";
 
-    // New compilations, including generated Pure.DI code, prefer this overload.
-    [OverloadResolutionPriority(1)]
-    public BillingApiClient(ResilientHttpOptions options) =>
-        Transport = "resilient-http";
+    // New compilations, including generated Pure.DI code, prefer the primary constructor.
+    public ResilientHttpOptions Options { get; } = options;
 
-    public string Transport { get; }
+    public string Transport { get; private set; } = "resilient-http";
 }
 ```
 
@@ -6755,7 +6754,72 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Higher integer values are preferred; unannotated constructors have priority `0`, and negative values can de-prioritize legacy overloads. If the preferred constructor cannot be resolved, Pure.DI continues with the next applicable constructor.
-`OrdinalAttribute` remains the explicit Pure.DI override. When any accessible constructor is marked with `Ordinal`, only marked constructors participate and their ordinal order takes precedence over `OverloadResolutionPriorityAttribute`.
+A primary constructor participates with the same rules as an explicitly declared constructor. Use `[method: OverloadResolutionPriority(...)]` or `[method: Ordinal(...)]` to attach a constructor attribute to a class or positional record primary constructor.
+When neither `OrdinalAttribute` nor an explicit `OverloadResolutionPriorityAttribute` is present, Pure.DI uses the primary constructor only as the final tie-breaker after the number of injections and constructor accessibility. This makes an otherwise equal choice deterministic without displacing a constructor designed for richer dependency injection.
+`OrdinalAttribute` remains the explicit Pure.DI override. When any accessible constructor is marked with `Ordinal`, only marked constructors participate, and their ordinal order takes precedence over `OverloadResolutionPriorityAttribute`.
+
+## Partial constructor injection
+
+C# 14 partial constructors let a type declare its construction contract in one part and provide the body in another. Pure.DI sees the combined constructor symbol, resolves its parameters once, and invokes it like a regular constructor. This is useful when a source generator owns the defining declaration while application code supplies the implementation.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    .Bind<IAuditTransport>("durable").To<FileAuditTransport>()
+    .Bind().To(_ => new AuditSinkOptions(BatchSize: 128))
+
+    // Composition root
+    .Root<AuditSink>("AuditSink");
+
+var composition = new Composition();
+var sink = composition.AuditSink;
+
+sink.Transport.ShouldBeOfType<FileAuditTransport>();
+sink.BatchSize.ShouldBe(128);
+
+interface IAuditTransport;
+
+class FileAuditTransport : IAuditTransport;
+
+record AuditSinkOptions(int BatchSize);
+
+abstract class AuditSinkBase(IAuditTransport transport)
+{
+    public IAuditTransport Transport { get; } = transport;
+}
+
+partial class AuditSink : AuditSinkBase
+{
+    // This defining declaration participates in constructor lookup.
+    // Its parameter attributes are merged with the implementing part.
+    public partial AuditSink(
+        [Tag("durable")] IAuditTransport transport,
+        AuditSinkOptions options);
+
+    public int BatchSize { get; private set; }
+}
+
+partial class AuditSink
+{
+    // A base/this initializer is allowed only on the implementing declaration.
+    public partial AuditSink(
+        IAuditTransport transport,
+        AuditSinkOptions options)
+        : base(transport)
+    {
+        BatchSize = options.BatchSize;
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+A partial constructor must have exactly one defining declaration ending with `;` and one implementing declaration with a body. Only the defining declaration participates in lookup, while constructor and parameter attributes from both parts are combined.
+Place `this(...)` or `base(...)` constructor initializers on the implementing declaration. `OrdinalAttribute`, `TagAttribute`, and `OverloadResolutionPriorityAttribute` can be placed on either part and are observed through the combined Roslyn symbol.
 
 ## Tag attribute
 

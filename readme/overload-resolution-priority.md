@@ -1,6 +1,6 @@
 #### Overload resolution priority
 
-Library types sometimes keep an older constructor for compatibility while introducing a better overload for newly compiled applications. Starting with C# 13, `OverloadResolutionPriorityAttribute` tells the compiler which overload should be preferred. Pure.DI follows the same priority when it chooses a constructor and builds its dependency graph.
+Library types sometimes keep an older constructor for compatibility while introducing a better overload for newly compiled applications. Starting with C# 13, `OverloadResolutionPriorityAttribute` tells the compiler which overload should be preferred. Pure.DI follows the same priority when it chooses a constructor and builds its dependency graph. For a primary constructor, place the attribute on the type declaration with the `method:` target.
 
 
 ```c#
@@ -22,18 +22,17 @@ class LegacyHttpOptions;
 
 class ResilientHttpOptions;
 
-class BillingApiClient
+[method: OverloadResolutionPriority(1)]
+class BillingApiClient(ResilientHttpOptions options)
 {
     // Kept so existing callers compiled against the old API continue to work.
-    public BillingApiClient(LegacyHttpOptions options) =>
-        Transport = "legacy-http";
+    public BillingApiClient(LegacyHttpOptions options)
+        : this(new ResilientHttpOptions()) => Transport = "legacy-http";
 
-    // New compilations, including generated Pure.DI code, prefer this overload.
-    [OverloadResolutionPriority(1)]
-    public BillingApiClient(ResilientHttpOptions options) =>
-        Transport = "resilient-http";
+    // New compilations, including generated Pure.DI code, prefer the primary constructor.
+    public ResilientHttpOptions Options { get; } = options;
 
-    public string Transport { get; }
+    public string Transport { get; private set; } = "resilient-http";
 }
 ```
 
@@ -65,7 +64,9 @@ dotnet run
 </details>
 
 Higher integer values are preferred; unannotated constructors have priority `0`, and negative values can de-prioritize legacy overloads. If the preferred constructor cannot be resolved, Pure.DI continues with the next applicable constructor.
-`OrdinalAttribute` remains the explicit Pure.DI override. When any accessible constructor is marked with `Ordinal`, only marked constructors participate and their ordinal order takes precedence over `OverloadResolutionPriorityAttribute`.
+A primary constructor participates with the same rules as an explicitly declared constructor. Use `[method: OverloadResolutionPriority(...)]` or `[method: Ordinal(...)]` to attach a constructor attribute to a class or positional record primary constructor.
+When neither `OrdinalAttribute` nor an explicit `OverloadResolutionPriorityAttribute` is present, Pure.DI uses the primary constructor only as the final tie-breaker after the number of injections and constructor accessibility. This makes an otherwise equal choice deterministic without displacing a constructor designed for richer dependency injection.
+`OrdinalAttribute` remains the explicit Pure.DI override. When any accessible constructor is marked with `Ordinal`, only marked constructors participate, and their ordinal order takes precedence over `OverloadResolutionPriorityAttribute`.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -126,13 +126,30 @@ sealed class ImplementationDependencyNodeBuilder(
         Compilation compilation,
         IConstructorInjectionsCounterWalker walker,
         IEnumerable<DpImplementation> implementations,
-        bool useOverloadResolutionPriority) =>
-        implementations
-            .OrderByDescending(i => useOverloadResolutionPriority ? overloadResolutionPriority.Get(compilation, i.Constructor.Method) : 0)
-            .ThenByDescending(i => GetInjectionsCount(walker, i.Constructor))
-            .ThenByDescending(i => i.Constructor.Method.DeclaredAccessibility)
+        bool useOverloadResolutionPriority)
+    {
+        var candidates = implementations
+            .Select(implementation =>
+            {
+                var priority = 0;
+                var isPriorityExplicit = useOverloadResolutionPriority
+                                         && overloadResolutionPriority.TryGet(compilation, implementation.Constructor.Method, out priority);
+                return (Implementation: implementation, Priority: priority, IsPriorityExplicit: isPriorityExplicit);
+            })
+            .ToList();
+        var usePrimaryConstructorPriority = useOverloadResolutionPriority && candidates.All(i => !i.IsPriorityExplicit);
+        return candidates
+            .OrderByDescending(i => i.Priority)
+            .ThenByDescending(i => GetInjectionsCount(walker, i.Implementation.Constructor))
+            .ThenByDescending(i => i.Implementation.Constructor.Method.DeclaredAccessibility)
+            .ThenByDescending(i => usePrimaryConstructorPriority && IsPrimaryConstructor(i.Implementation.Constructor.Method))
+            .Select(i => i.Implementation)
             .SelectMany(implementationVariantsBuilder.Build)
             .Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, ctx.TypeConstructor, Implementation: implementation));
+    }
+
+    private static bool IsPrimaryConstructor(IMethodSymbol constructor) =>
+        constructor.DeclaringSyntaxReferences.Any(i => i.GetSyntax() is TypeDeclarationSyntax);
 
     private static int GetInjectionsCount(IConstructorInjectionsCounterWalker walker, in DpMethod constructor)
     {
