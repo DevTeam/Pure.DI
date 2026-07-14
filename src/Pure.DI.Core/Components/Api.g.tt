@@ -3061,7 +3061,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(1, i + 1).Select(suf
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory);
+        IConfiguration To<<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 <#
 }
 #>
@@ -3652,6 +3656,9 @@ var typeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"T{suff
 
             /// <inheritdoc />
             public IConfiguration To<<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }

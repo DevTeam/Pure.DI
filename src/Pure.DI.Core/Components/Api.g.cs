@@ -5291,7 +5291,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T>(global::System.Func<T1, T> factory);
+        IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5326,7 +5330,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory);
+        IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5362,7 +5370,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory);
+        IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5399,7 +5411,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory);
+        IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5437,7 +5453,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory);
+        IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5476,7 +5496,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory);
+        IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5516,7 +5540,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory);
+        IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5557,7 +5585,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory);
+        IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
     }
 
     /// <summary>
@@ -6174,48 +6206,72 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }

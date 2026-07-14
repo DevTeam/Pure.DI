@@ -597,6 +597,63 @@ public class ArgsTests
         result.GeneratedCode.ShouldContain("public global::Sample.Parser Parse(scoped System.ReadOnlySpan<char> text)");
     }
 
+    [Theory]
+    [InlineData("Span")]
+    [InlineData("ReadOnlySpan")]
+    public async Task ShouldConvertArrayRootArgToSpanForMethodInjection(string spanType)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   private string _text = "";
+
+                                   [Ordinal]
+                                   public void Initialize(###SPAN###<char> text) =>
+                                       _text = text.ToString();
+
+                                   public string Text => _text;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<char[]>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Parse("Hello".ToCharArray()).Text);
+                                   }
+                               }
+                           }
+                           """
+            .Replace("###SPAN###", spanType)
+            .RunAsync(new Options(
+                LanguageVersion.Preview,
+                PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Hello"], result);
+        result.GeneratedCode.ShouldContain("Parse(char[] text)");
+    }
+
     [Fact]
     public async Task ShouldSupportAllowsRefStructGenericWithImmediateMethodUse()
     {
