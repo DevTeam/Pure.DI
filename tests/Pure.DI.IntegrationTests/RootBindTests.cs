@@ -6,6 +6,40 @@
 public class RootBindTests
 {
     [Fact]
+    public async Task ShouldSupportRefLikeRootBind()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           partial class Composition
+                           {
+                               static void Setup() =>
+                                   DI.Setup()
+                                       .RootBind<ReadOnlySpan<char>>("Text")
+                                       .To(() => "Hello".AsSpan());
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition().Text.ToString());
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Hello"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportRootBind()
     {
         // Given

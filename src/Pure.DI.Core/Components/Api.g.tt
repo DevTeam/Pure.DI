@@ -8,6 +8,11 @@ const int baseCount = 8;
 const int lifetimeBindsCount = 64;
 IEnumerable<string> GetSuffixes(int start, int finish) =>
     Enumerable.Range(start, finish - start + 1).Select(i => i == 0 ? "" : i.ToString());
+string GetAllowsRefStructBlock(IEnumerable<string> typeParameters, string indentation)
+{
+    var constraints = string.Join(Environment.NewLine, typeParameters.Select(typeParameter => $"{indentation}where {typeParameter} : allows ref struct"));
+    return $"{Environment.NewLine}#if NET9_0_OR_GREATER{Environment.NewLine}{constraints}{Environment.NewLine}#endif";
+}
 string[] lifetimes = [ "Transient", "Singleton", "Scoped", "PerResolve", "PerBlock" ];
 #>
 
@@ -2091,6 +2096,7 @@ for (var i = 0; i < baseCount; i++)
 var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
 var exampleTypeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"IService{suffix}"));
 var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Dependency type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
+var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"            where T{suffix} : allows ref struct"));
 #>
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2110,7 +2116,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<<#=typeArgs#>>(params object[] tags);
+        IBinding Bind<<#=typeArgs#>>(params object[] tags)
+#if NET9_0_OR_GREATER
+<#=allowsRefStructConstraints#>
+#endif
+            ;
 
 <#
 }
@@ -2150,7 +2160,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <seealso cref="IBinding.To{T1,T2,T}()"/>
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
-        IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags);
+        IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Specifies base setups to inherit bindings from.
@@ -2377,7 +2391,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="Lifetime"/>
         /// <seealso cref="IBinding.As"/>
-        IConfiguration DefaultLifetime<T>(Pure.DI.Lifetime lifetime, params object[] tags);
+        IConfiguration DefaultLifetime<T>(Pure.DI.Lifetime lifetime, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Adds a composition argument that can be injected into the object graph.
@@ -2452,7 +2470,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <seealso cref="RootBind{T}"/>
         /// <seealso cref="Roots{T}"/>
         /// <seealso cref="RootArg{T}"/>
-        IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
+        IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Automatically creates roots for all discovered implementations of the base type.
@@ -2596,10 +2618,15 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
 <#
 foreach(var lifetime in lifetimes)
 {
+var allowsRefLikeResult = lifetime != "Singleton" && lifetime != "Scoped";
 for (var i = 0; i < lifetimeBindsCount; i++)
 {
 var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
 var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Implementation type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
+var allowsRefStructBlock = allowsRefLikeResult
+    ? GetAllowsRefStructBlock(GetSuffixes(0, i).Select(suffix => $"T{suffix}"), "            ")
+    : "";
+var declarationEnd = allowsRefLikeResult ? $"{allowsRefStructBlock}{Environment.NewLine}            ;" : ";";
 #>
 
 <#
@@ -2621,7 +2648,7 @@ if (i < 4)
 <#
 }
 #>
-        IConfiguration <#= lifetime #><<#= typeArgs #>>(params object[] tags);
+        IConfiguration <#= lifetime #><<#= typeArgs #>>(params object[] tags)<#=declarationEnd#>
 <#
 }
 #>
@@ -2679,7 +2706,7 @@ if (i < 4)
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration <#= lifetime #><T>(global::System.Func<IContext, T> factory, params object[] tags);
+        IConfiguration <#= lifetime #><T>(global::System.Func<IContext, T> factory, params object[] tags)<#=allowsRefLikeResult ? $"{GetAllowsRefStructBlock(new[] { "T" }, "            ")}{Environment.NewLine}            ;" : ";"#>
 
         /// <summary>
         /// Binds to a lifetime-specific context-free factory delegate that creates the implementation instance.
@@ -2717,12 +2744,18 @@ if (i < 4)
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags);
+        IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags)<#=allowsRefLikeResult ? $"{GetAllowsRefStructBlock(new[] { "T" }, "            ")}{Environment.NewLine}            ;" : ";"#>
 <#
 for (var i = 0; i < baseCount; i++)
 {
 var typeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"T{suffix}"));
 var comments = string.Join(Environment.NewLine, GetSuffixes(1, i + 1).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Type of dependency parameter{(suffix == "" ? "" : " " + suffix)}.</typeparam>"));
+var allowsRefStructTypeParameters = GetSuffixes(1, i + 1).Select(suffix => $"T{suffix}").ToList();
+if (allowsRefLikeResult)
+{
+    allowsRefStructTypeParameters.Add("T");
+}
+var allowsRefStructBlock = GetAllowsRefStructBlock(allowsRefStructTypeParameters, "            ");
 #>
 
         /// <summary>
@@ -2737,7 +2770,8 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(1, i + 1).Select(suf
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration <#=lifetime#><<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory, params object[] tags);
+        IConfiguration <#=lifetime#><<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory, params object[] tags)<#=allowsRefStructBlock#>
+            ;
 <#
 }
 }
@@ -2792,6 +2826,7 @@ for (var i = 0; i < baseCount; i++)
 var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
 var exampleTypeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"IService{suffix}"));
 var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Dependency type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
+var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"            where T{suffix} : allows ref struct"));
 #>
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2811,7 +2846,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<<#=typeArgs#>>(params object[] tags);
+        IBinding Bind<<#=typeArgs#>>(params object[] tags)
+#if NET9_0_OR_GREATER
+<#=allowsRefStructConstraints#>
+#endif
+            ;
 
 <#
 }
@@ -3489,9 +3528,13 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(1,
 for (var i = 0; i < baseCount; i++)
 {
 var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
+var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"                where T{suffix} : allows ref struct"));
 #>
             /// <inheritdoc />
             public IBinding Bind<<#=typeArgs#>>(params object[] tags)
+#if NET9_0_OR_GREATER
+<#=allowsRefStructConstraints#>
+#endif
             {
                 return this;
             }
@@ -3501,6 +3544,9 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 #>
             /// <inheritdoc />
             public IBinding RootBind<T>(string name, RootKinds kind, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -3566,6 +3612,9 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 
             /// <inheritdoc />
             public IConfiguration DefaultLifetime<T>(Lifetime lifetime, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -3590,6 +3639,9 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 
             /// <inheritdoc />
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -3700,13 +3752,17 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(1,
 <#
 foreach(var lifetime in lifetimes)
 {
+var allowsRefLikeResult = lifetime != "Singleton" && lifetime != "Scoped";
 for (var i = 0; i < lifetimeBindsCount; i++)
 {
 var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
+var allowsRefStructBlock = allowsRefLikeResult
+    ? GetAllowsRefStructBlock(GetSuffixes(0, i).Select(suffix => $"T{suffix}"), "                ")
+    : "";
 #>
 
             /// <inheritdoc />
-            public IConfiguration <#=lifetime#><<#=typeArgs#>>(params object[] tags)
+            public IConfiguration <#=lifetime#><<#=typeArgs#>>(params object[] tags)<#=allowsRefStructBlock#>
             {
                 return this;
             }
@@ -3715,13 +3771,13 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 #>
 
             /// <inheritdoc />
-            public IConfiguration <#=lifetime#><T>(global::System.Func<IContext, T> factory, params object[] tags)
+            public IConfiguration <#=lifetime#><T>(global::System.Func<IContext, T> factory, params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock(new[] { "T" }, "                ") : ""#>
             {
                 return this;
             }
 
             /// <inheritdoc />
-            public IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags)
+            public IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock(new[] { "T" }, "                ") : ""#>
             {
                 return this;
             }
@@ -3729,10 +3785,16 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 for (var i = 0; i < baseCount; i++)
 {
 var typeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"T{suffix}"));
+var allowsRefStructTypeParameters = GetSuffixes(1, i + 1).Select(suffix => $"T{suffix}").ToList();
+if (allowsRefLikeResult)
+{
+    allowsRefStructTypeParameters.Add("T");
+}
+var allowsRefStructBlock = GetAllowsRefStructBlock(allowsRefStructTypeParameters, "                ");
 #>
 
             /// <inheritdoc />
-            public IConfiguration <#=lifetime#><<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory, params object[] tags)
+            public IConfiguration <#=lifetime#><<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory, params object[] tags)<#=allowsRefStructBlock#>
             {
                 return this;
             }

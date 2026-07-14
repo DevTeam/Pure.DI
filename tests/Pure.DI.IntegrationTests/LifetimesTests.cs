@@ -1,10 +1,165 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 /// <summary>
 /// Tests related to the support for various lifetimes (Transient, Singleton, Scoped, etc.).
 /// </summary>
 public class LifetimesTests
 {
+    [Fact]
+    public async Task ShouldSupportRefLikeTypeInBindDefaultLifetimeAndRootApi()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           partial class Composition
+                           {
+                               static void Setup() =>
+                                   DI.Setup()
+                                       .DefaultLifetime<ReadOnlySpan<char>>(Lifetime.Transient)
+                                       .Bind<ReadOnlySpan<char>>().To(() => "Hello".AsSpan())
+                                       .Root<ReadOnlySpan<char>>("Text");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition().Text.ToString());
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Hello"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportMaybeRefLikeTypeInBindAndRootApi()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           partial class Composition<T>
+                               where T : allows ref struct
+                           {
+                               static void Setup() =>
+                                   DI.Setup()
+                                       .Bind<T>().To(() => default(T))
+                                       .Root<T>("Value");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition<ReadOnlySpan<char>>().Value.IsEmpty);
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Theory]
+    [InlineData("Transient")]
+    [InlineData("PerResolve")]
+    [InlineData("PerBlock")]
+    public async Task ShouldSupportRefLikeResultInLocalLifetimeApi(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           partial class Composition
+                           {
+                               static void Setup() =>
+                                   DI.Setup()
+                                       .#LIFETIME#<ReadOnlySpan<char>>(() => "Hello".AsSpan())
+                                       .Root<ReadOnlySpan<char>>("Text");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition().Text.ToString());
+                           }
+                           """
+            .Replace("#LIFETIME#", lifetime)
+            .RunAsync(new Options(
+                LanguageVersion.CSharp14,
+                PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Hello"], result);
+    }
+
+    [Theory]
+    [InlineData("Singleton")]
+    [InlineData("Scoped")]
+    public async Task ShouldAcceptRefLikeFactoryDependencyInStoredLifetimeApi(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           sealed class Parser(int length)
+                           {
+                               public int Length { get; } = length;
+                           }
+
+                           partial class Composition
+                           {
+                               static void Setup() =>
+                                   // Resolve = Off
+                                   DI.Setup()
+                                       .RootArg<ReadOnlySpan<char>>("text")
+                                       .#LIFETIME#<ReadOnlySpan<char>, Parser>(text => new Parser(text.Length))
+                                       .Root<Parser>("Parse");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() { }
+                           }
+                           """
+            .Replace("#LIFETIME#", lifetime)
+            .RunAsync(new Options(
+                LanguageVersion.CSharp14,
+                PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDependencyWithStoredLifetime).ShouldBe(1, result);
+        result.Errors.ShouldNotContain(i => i.Message.Contains("CS9244", StringComparison.Ordinal), result);
+    }
 
     [Theory]
     [InlineData("Singleton")]

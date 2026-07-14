@@ -2098,7 +2098,11 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T>(params object[] tags);
+        IBinding Bind<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2119,7 +2123,12 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1>(params object[] tags);
+        IBinding Bind<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2141,7 +2150,13 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2>(params object[] tags);
+        IBinding Bind<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2164,7 +2179,14 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2188,7 +2210,15 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2213,7 +2243,16 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4, T5>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2239,7 +2278,17 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4, T5, T6>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -2266,7 +2315,18 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
 
 
         /// <summary>
@@ -2303,7 +2363,11 @@ namespace Pure.DI
         /// <seealso cref="IBinding.To{T1,T2,T}()"/>
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
-        IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags);
+        IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Specifies base setups to inherit bindings from.
@@ -2530,7 +2594,11 @@ namespace Pure.DI
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="Lifetime"/>
         /// <seealso cref="IBinding.As"/>
-        IConfiguration DefaultLifetime<T>(Pure.DI.Lifetime lifetime, params object[] tags);
+        IConfiguration DefaultLifetime<T>(Pure.DI.Lifetime lifetime, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Adds a composition argument that can be injected into the object graph.
@@ -2605,7 +2673,11 @@ namespace Pure.DI
         /// <seealso cref="RootBind{T}"/>
         /// <seealso cref="Roots{T}"/>
         /// <seealso cref="RootArg{T}"/>
-        IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
+        IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Automatically creates roots for all discovered implementations of the base type.
@@ -2759,7 +2831,11 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T>(params object[] tags);
+        IConfiguration Transient<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -2774,7 +2850,12 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T, T1>(params object[] tags);
+        IConfiguration Transient<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -2790,7 +2871,13 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T, T1, T2>(params object[] tags);
+        IConfiguration Transient<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -2807,127 +2894,2384 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T, T1, T2, T3>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+#endif
+            ;
 
-        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags);
+        IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+            where T63 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate that creates the implementation instance.
@@ -2982,7 +5326,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration Transient<T>(global::System.Func<IContext, T> factory, params object[] tags);
+        IConfiguration Transient<T>(global::System.Func<IContext, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific context-free factory delegate that creates the implementation instance.
@@ -3020,7 +5368,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration Transient<T>(global::System.Func<T> factory, params object[] tags);
+        IConfiguration Transient<T>(global::System.Func<T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3034,7 +5386,12 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T>(global::System.Func<T1, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3049,7 +5406,13 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3065,7 +5428,14 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3082,7 +5452,15 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3100,7 +5478,16 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3119,7 +5506,17 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3139,7 +5536,18 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3160,7 +5568,19 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Transient<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags);
+        IConfiguration Transient<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -3449,7 +5869,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T>(global::System.Func<T1, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3464,7 +5888,12 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3480,7 +5909,13 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3497,7 +5932,14 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3515,7 +5957,15 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3534,7 +5984,16 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3554,7 +6013,17 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3575,7 +6044,18 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags);
+        IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -3864,7 +6344,11 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T>(global::System.Func<T1, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3879,7 +6363,12 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3895,7 +6384,13 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3912,7 +6407,14 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3930,7 +6432,15 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3949,7 +6459,16 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3969,7 +6488,17 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -3990,7 +6519,18 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags);
+        IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4004,7 +6544,11 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T>(params object[] tags);
+        IConfiguration PerResolve<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4019,7 +6563,12 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T, T1>(params object[] tags);
+        IConfiguration PerResolve<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4035,7 +6584,13 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T, T1, T2>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4052,127 +6607,2384 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T, T1, T2, T3>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags);
+        IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+            where T63 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate that creates the implementation instance.
@@ -4227,7 +9039,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration PerResolve<T>(global::System.Func<IContext, T> factory, params object[] tags);
+        IConfiguration PerResolve<T>(global::System.Func<IContext, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific context-free factory delegate that creates the implementation instance.
@@ -4265,7 +9081,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration PerResolve<T>(global::System.Func<T> factory, params object[] tags);
+        IConfiguration PerResolve<T>(global::System.Func<T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4279,7 +9099,12 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T>(global::System.Func<T1, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4294,7 +9119,13 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4310,7 +9141,14 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4327,7 +9165,15 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4345,7 +9191,16 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4364,7 +9219,17 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4384,7 +9249,18 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4405,7 +9281,19 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags);
+        IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4419,7 +9307,11 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T>(params object[] tags);
+        IConfiguration PerBlock<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4434,7 +9326,12 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T, T1>(params object[] tags);
+        IConfiguration PerBlock<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4450,7 +9347,13 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T, T1, T2>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Defines simplified lifetime-specific binding.
@@ -4467,127 +9370,2384 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T, T1, T2, T3>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+#endif
+            ;
 
-        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags);
+        IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+            where T63 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate that creates the implementation instance.
@@ -4642,7 +11802,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration PerBlock<T>(global::System.Func<IContext, T> factory, params object[] tags);
+        IConfiguration PerBlock<T>(global::System.Func<IContext, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific context-free factory delegate that creates the implementation instance.
@@ -4680,7 +11844,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration PerBlock<T>(global::System.Func<T> factory, params object[] tags);
+        IConfiguration PerBlock<T>(global::System.Func<T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4694,7 +11862,12 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T>(global::System.Func<T1, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4709,7 +11882,13 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4725,7 +11904,14 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4742,7 +11928,15 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4760,7 +11954,16 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4779,7 +11982,17 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4799,7 +12012,18 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate whose parameters are resolved as dependencies.
@@ -4820,7 +12044,19 @@ namespace Pure.DI
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags);
+        IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T : allows ref struct
+#endif
+            ;
     }
 
     /// <summary>
@@ -4883,7 +12119,11 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T>(params object[] tags);
+        IBinding Bind<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -4904,7 +12144,12 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1>(params object[] tags);
+        IBinding Bind<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -4926,7 +12171,13 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2>(params object[] tags);
+        IBinding Bind<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -4949,7 +12200,14 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -4973,7 +12231,15 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -4998,7 +12264,16 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4, T5>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -5024,7 +12299,17 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4, T5, T6>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Starts binding definition for explicit contract types.
@@ -5051,7 +12336,18 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IBinding Bind<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
+        IBinding Bind<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Sets the lifetime for this binding.
@@ -6040,56 +13336,119 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IBinding Bind<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IBinding Bind<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IBinding Bind<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IBinding Bind<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IBinding Bind<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IBinding Bind<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IBinding Bind<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+#endif
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IBinding Bind<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IBinding RootBind<T>(string name, RootKinds kind, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -6155,6 +13514,9 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration DefaultLifetime<T>(Lifetime lifetime, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -6179,6 +13541,9 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -6376,449 +13741,2796 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Transient<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+#endif
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Transient<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+                where T63 : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration Transient<T>(global::System.Func<IContext, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration Transient<T>(global::System.Func<T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Transient<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Transient<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T>(params object[] tags)
@@ -6826,11 +16538,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2>(params object[] tags)
@@ -6838,11 +16552,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4>(params object[] tags)
@@ -6850,11 +16566,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
@@ -6862,11 +16580,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
@@ -6874,11 +16594,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
@@ -6886,11 +16608,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
@@ -6898,11 +16622,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
@@ -6910,11 +16636,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
@@ -6922,11 +16650,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
@@ -6934,11 +16664,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
@@ -6946,11 +16678,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
@@ -6958,11 +16692,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
@@ -6970,11 +16706,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
@@ -6982,11 +16720,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
@@ -6994,11 +16734,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
@@ -7006,11 +16748,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
@@ -7018,11 +16762,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
@@ -7030,11 +16776,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
@@ -7042,11 +16790,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
@@ -7054,11 +16804,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
@@ -7066,11 +16818,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
@@ -7078,11 +16832,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
@@ -7090,11 +16846,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
@@ -7102,11 +16860,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
@@ -7114,11 +16874,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
@@ -7126,11 +16888,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
@@ -7138,11 +16902,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
@@ -7150,11 +16916,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
@@ -7162,11 +16930,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
@@ -7174,11 +16944,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
@@ -7186,17 +16958,20 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
@@ -7216,53 +16991,114 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+#endif
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Singleton<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T>(params object[] tags)
@@ -7270,11 +17106,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2>(params object[] tags)
@@ -7282,11 +17120,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4>(params object[] tags)
@@ -7294,11 +17134,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
@@ -7306,11 +17148,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
@@ -7318,11 +17162,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
@@ -7330,11 +17176,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
@@ -7342,11 +17190,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
@@ -7354,11 +17204,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
@@ -7366,11 +17218,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
@@ -7378,11 +17232,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
@@ -7390,11 +17246,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
@@ -7402,11 +17260,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
@@ -7414,11 +17274,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
@@ -7426,11 +17288,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
@@ -7438,11 +17302,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
@@ -7450,11 +17316,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
@@ -7462,11 +17330,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
@@ -7474,11 +17344,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
@@ -7486,11 +17358,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
@@ -7498,11 +17372,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
@@ -7510,11 +17386,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
@@ -7522,11 +17400,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
@@ -7534,11 +17414,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
@@ -7546,11 +17428,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
@@ -7558,11 +17442,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
@@ -7570,11 +17456,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
@@ -7582,11 +17470,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
@@ -7594,11 +17484,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
@@ -7606,11 +17498,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
@@ -7618,11 +17512,13 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
@@ -7630,17 +17526,20 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
@@ -7660,938 +17559,5690 @@ namespace Pure.DI
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration Scoped<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+#endif
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration PerResolve<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+                where T63 : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T>(global::System.Func<IContext, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T>(global::System.Func<T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerResolve<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+#endif
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration PerBlock<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>(params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+                where T63 : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T>(global::System.Func<IContext, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T>(global::System.Func<T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T>(global::System.Func<T1, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T2, T>(global::System.Func<T1, T2, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
+
 
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
+
             /// <inheritdoc />
             public IConfiguration PerBlock<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory, params object[] tags)
+#if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T : allows ref struct
+#endif
             {
                 return this;
             }

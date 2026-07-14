@@ -7,7 +7,8 @@ namespace Pure.DI.Core;
 sealed class RootValidator(
     ILogger logger,
     ILocationProvider locationProvider,
-    ITypeSymbolComparer typeSymbolComparer)
+    ITypeSymbolComparer typeSymbolComparer,
+    IRefSafety refSafety)
     : IValidator<CompositionCode>
 {
     public bool Validate(CompositionCode composition)
@@ -74,8 +75,9 @@ sealed class RootValidator(
         return true;
     }
 
-    private static bool IsRuntimeResolvableRoot(Root root) =>
-        root is { Source: { IsBuilder: false, LightweightKind: not LightweightKind.RootsProvider }, RootArgs.IsDefaultOrEmpty: true, Injection.Type.IsRefLikeType: false }
+    private bool IsRuntimeResolvableRoot(Root root) =>
+        root is { Source: { IsBuilder: false, LightweightKind: not LightweightKind.RootsProvider }, RootArgs.IsDefaultOrEmpty: true }
+        && !refSafety.IsMaybeRefLike(root.Injection.Type)
         && !ReferenceEquals(root.Injection.Tag, MdTag.ContextTag)
         && root.TypeDescription.TypeArgs.Count == 0;
 
