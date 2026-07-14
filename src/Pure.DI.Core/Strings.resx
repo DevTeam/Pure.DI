@@ -344,6 +344,12 @@
     <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
         <value>Cannot capture stack-only dependency in a generated delegate or factory. Use method injection or a scoped root argument and consume the value immediately.</value>
     </data>
+    <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+        <value>Multiple case bindings can be implicitly converted to the union contract {0} (tag: {1}). Applicable case bindings: {2}. Bind the union contract explicitly, use distinct tags, or remove one of the candidate bindings.</value>
+    </data>
+    <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+        <value>Several case bindings can be implicitly converted to the union contract. Bind the union contract explicitly, use distinct tags, or remove one of the candidate bindings.</value>
+    </data>
     <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding has been overridden.</value>
     </data>

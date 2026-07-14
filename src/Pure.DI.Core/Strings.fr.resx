@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>Impossible de capturer une dépendance limitée à la pile dans un délégué ou une fabrique généré. Utilisez l’injection par méthode ou un argument racine borné à la portée et consommez la valeur immédiatement.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Plusieurs case bindings peuvent être convertis implicitement vers le contrat union {0} (tag : {1}). Case bindings applicables : {2}. Liez explicitement le contrat union, utilisez des tags distincts ou supprimez l'un des bindings candidats.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Plusieurs case bindings peuvent être convertis implicitement vers le contrat union. Liez explicitement le contrat union, utilisez des tags distincts ou supprimez l'un des bindings candidats.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Le binding a été surchargé.</value>
     </data>

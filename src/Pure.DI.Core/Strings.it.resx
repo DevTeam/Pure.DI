@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>Non è possibile catturare una dipendenza limitata allo stack in un delegato o in una factory generati. Usare l’iniezione tramite metodo o un argomento root con ambito e consumare subito il valore.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Più case binding possono essere convertiti implicitamente nel contratto union {0} (tag: {1}). Case binding applicabili: {2}. Associa esplicitamente il contratto union, usa tag distinti o rimuovi uno dei binding candidati.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Più case binding possono essere convertiti implicitamente nel contratto union. Associa esplicitamente il contratto union, usa tag distinti o rimuovi uno dei binding candidati.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Il Binding è stato sovrascritto.</value>
     </data>

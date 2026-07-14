@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>Eine stackgebundene Abhängigkeit kann nicht in einem generierten Delegaten oder einer Factory erfasst werden. Verwenden Sie Methoden-Injektion oder ein bereichsgebundenes Root-Argument und verbrauchen Sie den Wert sofort.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Mehrere Case-Bindings können implizit in den Union-Vertrag {0} konvertiert werden (Tag: {1}). Passende Case-Bindings: {2}. Binden Sie den Union-Vertrag explizit, verwenden Sie unterschiedliche Tags oder entfernen Sie eines der Kandidaten-Bindings.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Mehrere Case-Bindings können implizit in den Union-Vertrag konvertiert werden. Binden Sie den Union-Vertrag explizit, verwenden Sie unterschiedliche Tags oder entfernen Sie eines der Kandidaten-Bindings.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding wurde überschrieben.</value>
     </data>

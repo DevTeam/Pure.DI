@@ -344,6 +344,12 @@
     <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>Нельзя захватывать stack-only зависимость в сгенерированном делегате или фабрике. Используйте внедрение через метод или scoped root argument и потребляйте значение сразу.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Несколько case-привязок могут быть неявно преобразованы к union-контракту {0} (тег: {1}). Подходящие case-привязки: {2}. Привяжите union-контракт явно, используйте разные теги или удалите одну из привязок-кандидатов.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Несколько case-привязок могут быть неявно преобразованы к union-контракту. Привяжите union-контракт явно, используйте разные теги или удалите одну из привязок-кандидатов.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Привязка была переопределена.</value>
     </data>

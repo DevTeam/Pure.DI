@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>不能在生成的委托或工厂中捕获仅限栈的依赖项。请使用方法注入或带作用域的根参数，并立即消费该值。</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>多个 case 绑定可以隐式转换为 union 契约 {0}（标记：{1}）。适用的 case 绑定：{2}。请显式绑定 union 契约、使用不同的标记，或移除其中一个候选绑定。</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>多个 case 绑定可以隐式转换为 union 契约。请显式绑定 union 契约、使用不同的标记，或移除其中一个候选绑定。</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>绑定已被重写。</value>
     </data>

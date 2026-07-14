@@ -9,5 +9,7 @@ enum SpecialType
     IConfiguration,
     Func,
     LightweightRoot,
-    OverloadResolutionPriorityAttribute
+    OverloadResolutionPriorityAttribute,
+    IUnion,
+    UnionAttribute
 }

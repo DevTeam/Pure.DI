@@ -1048,6 +1048,24 @@ namespace Pure.DI {
                 return ResourceManager.GetString("Description_ErrorStackOnlyDelegateCapture", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Multiple case bindings can be implicitly converted to the union contract {0} (tag: {1}). Applicable case bindings: {2}. Bind the union contract explicitly, use distinct tags, or remove one of the candidate bindings..
+        /// </summary>
+        internal static string Error_Template_AmbiguousUnionCaseBindings {
+            get {
+                return ResourceManager.GetString("Error_Template_AmbiguousUnionCaseBindings", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Several case bindings can be implicitly converted to the union contract. Bind the union contract explicitly, use distinct tags, or remove one of the candidate bindings..
+        /// </summary>
+        internal static string Description_ErrorAmbiguousUnionCaseBindings {
+            get {
+                return ResourceManager.GetString("Description_ErrorAmbiguousUnionCaseBindings", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Binding has been overridden..

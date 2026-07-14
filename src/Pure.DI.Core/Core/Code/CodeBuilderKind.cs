@@ -9,7 +9,7 @@ enum CodeBuilderKind
     AsyncEnumerable,
     Array,
     Span,
-    SpanConversion,
+    ImplicitConversion,
     Composition,
     CannotResolve,
     ExplicitDefaultValue

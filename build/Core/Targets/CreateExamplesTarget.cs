@@ -19,6 +19,7 @@ class CreateExamplesTarget(
     public const string BodyKey = "b";
     public const string ReferencesKey = "r";
     public const string SeeAlsoKey = "sa";
+    public const string DotNetFrameworkVersionKey = "n";
 
     private static readonly string[] Groups =
     [
@@ -110,7 +111,8 @@ class CreateExamplesTarget(
                 [FooterKey] = string.Empty,
                 [SourceKey] = relativePath,
                 [ReferencesKey] = string.Empty,
-                [SeeAlsoKey] = string.Empty
+                [SeeAlsoKey] = string.Empty,
+                [DotNetFrameworkVersionKey] = string.Empty
             };
             items.Add(vars);
             var body = new List<string>();

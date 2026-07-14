@@ -3,6 +3,8 @@
     <Import Project="Test.props"/>
 
     <PropertyGroup>
+        <!-- Union types scenarios require the preview language version -->
+        <LangVersion>preview</LangVersion>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>../../.logs</CompilerGeneratedFilesOutputPath>

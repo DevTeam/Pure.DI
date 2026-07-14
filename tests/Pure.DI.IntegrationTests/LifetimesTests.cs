@@ -7,6 +7,7 @@ using Core;
 /// </summary>
 public class LifetimesTests
 {
+#if ROSLYN5_6_OR_GREATER
     [Fact]
     public async Task ShouldSupportRefLikeTypeInBindDefaultLifetimeAndRootApi()
     {
@@ -160,6 +161,7 @@ public class LifetimesTests
         result.Errors.Count(i => i.Id == LogId.ErrorStackOnlyDependencyWithStoredLifetime).ShouldBe(1, result);
         result.Errors.ShouldNotContain(i => i.Message.Contains("CS9244", StringComparison.Ordinal), result);
     }
+#endif
 
     [Theory]
     [InlineData("Singleton")]

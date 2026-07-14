@@ -11,7 +11,8 @@ sealed class MetadataValidator(
     IBaseSymbolsProvider baseSymbolsProvider,
     IMarker marker,
     ILocationProvider locationProvider,
-    ITypeSymbolComparer typeSymbolComparer)
+    ITypeSymbolComparer typeSymbolComparer,
+    ITypes types)
     : IValidator<MdSetup>
 {
     public bool Validate(MdSetup setup)
@@ -217,8 +218,13 @@ sealed class MetadataValidator(
                 implementationType
             };
 
+            // A union contract is implemented when the implementation type has
+            // an implicit case-to-union conversion; other implicit conversions are not contracts
+            var compilation = semanticModel.Compilation;
             var notSupportedContracts = binding.Contracts
-                .Where(contract => contract.ContractType != null && !supportedContracts.Contains(contract.ContractType))
+                .Where(contract => contract.ContractType != null
+                                   && !supportedContracts.Contains(contract.ContractType)
+                                   && !types.IsImplicitUnionConversion(compilation, implementationType, contract.ContractType))
                 .Select(i => i.ContractType!)
                 .ToList();
 

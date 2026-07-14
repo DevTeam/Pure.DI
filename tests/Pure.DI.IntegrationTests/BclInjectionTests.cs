@@ -287,6 +287,7 @@ public class BclInjectionTests
         result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
 
+#if ROSLYN5_6_OR_GREATER
     [Fact]
     public async Task ShouldKeepStackallocForRegularSpanCollectionInjection()
     {
@@ -339,6 +340,7 @@ public class BclInjectionTests
         result.StdOut.ShouldBe(["3"], result);
         result.GeneratedCode.ShouldContain("stackalloc int[2]");
     }
+#endif
 
     [Theory]
     [InlineData("System.Collections.Generic.IList")]

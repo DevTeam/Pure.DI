@@ -231,7 +231,7 @@ class BindingsFactory(
         return newBinding;
     }
 
-    public MdBinding CreateSpanConversionBinding(
+    public MdBinding CreateImplicitConversionBinding(
         MdSetup setup,
         DependencyNode targetNode,
         Injection injection,
@@ -258,7 +258,7 @@ class BindingsFactory(
                 targetNode.Binding.Source,
                 injection.Type,
                 sourceType,
-                MdConstructKind.SpanConversion,
+                MdConstructKind.ImplicitConversion,
                 ImmutableArray.Create(new MdContract(semanticModel, targetNode.Binding.Source, sourceType, ContractKind.Implicit, tags)),
                 false,
                 null),

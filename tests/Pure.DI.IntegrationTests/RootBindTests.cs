@@ -5,6 +5,7 @@
 /// </summary>
 public class RootBindTests
 {
+#if ROSLYN5_6_OR_GREATER
     [Fact]
     public async Task ShouldSupportRefLikeRootBind()
     {
@@ -38,6 +39,7 @@ public class RootBindTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Hello"], result);
     }
+#endif
 
     [Fact]
     public async Task ShouldSupportRootBind()

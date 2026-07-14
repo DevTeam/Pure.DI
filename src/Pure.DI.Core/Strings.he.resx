@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>לא ניתן ללכוד תלות המוגבלת למחסנית בתוך delegate או factory שנוצרו. השתמש בהזרקת מתודה או בארגומנט שורש תחום וצרוך את הערך מיד.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>מספר קישורי case ניתנים להמרה מרומזת לחוזה ה-union {0} (תג: {1}). קישורי case רלוונטיים: {2}. קשרו את חוזה ה-union במפורש, השתמשו בתגים שונים או הסירו את אחד הקישורים המועמדים.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>מספר קישורי case ניתנים להמרה מרומזת לחוזה ה-union. קשרו את חוזה ה-union במפורש, השתמשו בתגים שונים או הסירו את אחד הקישורים המועמדים.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>ה-Binding נדרס.</value>
     </data>

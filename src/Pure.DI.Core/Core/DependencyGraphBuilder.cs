@@ -24,6 +24,7 @@ sealed class DependencyGraphBuilder(
     [Tag(Cleaner)] IGraphRewriter graphCleaner,
     ILocationProvider locationProvider,
     ITypeResolver typeResolver,
+    ITypes types,
     IDependencyNodePrioritizer dependencyNodePrioritizer,
     IGlobalProperties globalProperties,
     IInjectionComparer injectionComparer,
@@ -107,7 +108,8 @@ sealed class DependencyGraphBuilder(
                                                 && targetNode.Factory is not null;
 
                 if (bypassSelfFactoryOverride
-                    && injection.Type is { IsAbstract: false, TypeKind: not TypeKind.Delegate, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
+                    && injection.Type is { IsAbstract: false, TypeKind: not TypeKind.Delegate, SpecialType: Microsoft.CodeAnalysis.SpecialType.None }
+                    && !types.IsUnionType(targetNode.Binding.SemanticModel.Compilation, injection.Type))
                 {
                     var autoTypeConstructor = typeConstructorFactory();
                     var autoBinding = bindingsFactory.CreateAutoBinding(setup, targetNode, injection, autoTypeConstructor, ++maxBindingId);
@@ -167,14 +169,15 @@ sealed class DependencyGraphBuilder(
                     continue;
                 }
 
-                if (TryGetSpanConversionSource(setup, map, injection, targetNode, out var spanConversionSource, out var spanConversionSourceType))
+                if (TryGetSpanConversionSource(setup, map, injection, targetNode, out var conversionSource, out var conversionSourceType)
+                    || TryGetUnionConversionSource(setup, map, injection, targetNode, out conversionSource, out conversionSourceType))
                 {
-                    var conversionBinding = bindingsFactory.CreateSpanConversionBinding(
+                    var conversionBinding = bindingsFactory.CreateImplicitConversionBinding(
                         setup,
                         targetNode,
                         injection,
-                        spanConversionSource,
-                        spanConversionSourceType,
+                        conversionSource,
+                        conversionSourceType,
                         typeConstructor,
                         ++maxBindingId);
 
@@ -390,7 +393,10 @@ sealed class DependencyGraphBuilder(
                 }
 
                 // Auto-binding
-                if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None })
+                // Union types are never auto-constructed: an empty union instance has no case value,
+                // so an unresolved union contract must surface as a missing binding instead.
+                if (injection.Type is { IsAbstract: false, SpecialType: Microsoft.CodeAnalysis.SpecialType.None }
+                    && !types.IsUnionType(targetNode.Binding.SemanticModel.Compilation, injection.Type))
                 {
                     var disableAutoBinding = false;
                     if (setup.Hints.DisableAutoBinding)
@@ -607,6 +613,80 @@ sealed class DependencyGraphBuilder(
         }
 
         return false;
+    }
+
+    private bool TryGetUnionConversionSource(
+        MdSetup setup,
+        IReadOnlyDictionary<Injection, DependencyNode> map,
+        Injection injection,
+        DependencyNode targetNode,
+        [NotNullWhen(true)] out DependencyNode? sourceNode,
+        [NotNullWhen(true)] out ITypeSymbol? sourceType)
+    {
+        sourceNode = null;
+        sourceType = null;
+        var compilation = targetNode.Binding.SemanticModel.Compilation;
+        if (!types.IsUnionType(compilation, injection.Type))
+        {
+            return false;
+        }
+
+        var setupBindingIds = new HashSet<int>(setup.Bindings.Select(i => i.Id));
+        var candidateNodes = new List<DependencyNode>();
+        var candidateTypes = new List<ITypeSymbol>();
+        foreach (var candidate in map.OrderByDescending(i => i.Value.Binding.Id))
+        {
+            if (candidate.Value.Binding.Id == targetNode.Binding.Id
+                || !setupBindingIds.Contains(candidate.Value.Binding.Id)
+                || candidate.Value.Error is not null
+                || !Injection.EqualTags(injection.Tag, candidate.Key.Tag)
+                || !types.IsImplicitUnionConversion(compilation, candidate.Key.Type, injection.Type))
+            {
+                continue;
+            }
+
+            // Several bindings of the same source type follow the usual override rule,
+            // so only distinct source types can become ambiguous candidates
+            if (candidateTypes.Any(i => typeSymbolComparer.RuntimeEquals(i, candidate.Key.Type)))
+            {
+                continue;
+            }
+
+            candidateTypes.Add(candidate.Key.Type);
+            candidateNodes.Add(candidate.Value);
+        }
+
+        switch (candidateTypes.Count)
+        {
+            case 0:
+                return false;
+
+            case 1:
+                sourceNode = candidateNodes[0];
+                sourceType = candidateTypes[0];
+                return true;
+
+            default:
+                var locations = injection.Locations
+                    .Concat(candidateNodes.Select(i => locationProvider.GetLocation(i.Binding.Source)))
+                    .Distinct()
+                    .ToImmutableArray();
+
+                if (locations.IsEmpty)
+                {
+                    locations = ImmutableArray.Create(locationProvider.GetLocation(setup.Source));
+                }
+
+                throw new CompileErrorException(
+                    string.Format(
+                        Strings.Error_Template_AmbiguousUnionCaseBindings,
+                        injection.Type,
+                        injection.Tag.ValueToString(),
+                        string.Join(", ", candidateTypes.Select(i => i.ToString()))),
+                    locations,
+                    LogId.ErrorAmbiguousUnionCaseBindings,
+                    nameof(Strings.Error_Template_AmbiguousUnionCaseBindings));
+        }
     }
 
     private bool IsSpanConversionSource(ITypeSymbol type) =>

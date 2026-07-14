@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>Dependensi stack-only tidak dapat ditangkap dalam delegate atau factory yang dihasilkan. Gunakan injeksi metode atau argumen root berskop dan konsumsi nilainya segera.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Beberapa case binding dapat dikonversi secara implisit ke kontrak union {0} (tag: {1}). Case binding yang berlaku: {2}. Ikat kontrak union secara eksplisit, gunakan tag yang berbeda, atau hapus salah satu binding kandidat.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Beberapa case binding dapat dikonversi secara implisit ke kontrak union. Ikat kontrak union secara eksplisit, gunakan tag yang berbeda, atau hapus salah satu binding kandidat.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding telah diganti (overridden).</value>
     </data>

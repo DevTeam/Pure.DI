@@ -2,7 +2,7 @@ namespace Pure.DI.Core.Code;
 
 using System.Collections;
 
-sealed class SpanConversionCodeBuilder(
+sealed class ImplicitConversionCodeBuilder(
     Func<IBuilder<CodeContext, IEnumerator>> variablesCodeBuilderFactory,
     IBuildTools buildTools)
     : IBuilder<CodeBuilderContext, IEnumerator>

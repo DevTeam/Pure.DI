@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>Generated delegate বা factory-তে stack-only dependency capture করা যায় না। Method injection বা scoped root argument ব্যবহার করুন এবং value অবিলম্বে consume করুন।</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>একাধিক case বাইন্ডিং union চুক্তি {0} (ট্যাগ: {1})-এ অন্তর্নিহিতভাবে রূপান্তরিত হতে পারে। প্রযোজ্য case বাইন্ডিং: {2}। union চুক্তিটি স্পষ্টভাবে বাইন্ড করুন, আলাদা ট্যাগ ব্যবহার করুন, অথবা প্রার্থী বাইন্ডিংগুলির একটি সরিয়ে ফেলুন।</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>একাধিক case বাইন্ডিং union চুক্তিতে অন্তর্নিহিতভাবে রূপান্তরিত হতে পারে। union চুক্তিটি স্পষ্টভাবে বাইন্ড করুন, আলাদা ট্যাগ ব্যবহার করুন, অথবা প্রার্থী বাইন্ডিংগুলির একটি সরিয়ে ফেলুন।</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding ওভাররাইড করা হয়েছে।</value>
     </data>

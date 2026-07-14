@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>No se puede capturar una dependencia limitada a la pila en un delegado o fábrica generado. Use inyección por método o un argumento raíz con ámbito y consuma el valor inmediatamente.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Varios case bindings se pueden convertir implícitamente al contrato union {0} (etiqueta: {1}). Case bindings aplicables: {2}. Vincule el contrato union explícitamente, use etiquetas distintas o elimine uno de los bindings candidatos.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Varios case bindings se pueden convertir implícitamente al contrato union. Vincule el contrato union explícitamente, use etiquetas distintas o elimine uno de los bindings candidatos.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>El Binding se ha reemplazado.</value>
     </data>

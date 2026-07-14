@@ -223,11 +223,17 @@ class ReadmeTarget(
                 await examplesWriter.WriteLineAsync("<details>");
                 await examplesWriter.WriteLineAsync("<summary>Running this code sample locally</summary>");
                 await examplesWriter.WriteLineAsync();
-                await examplesWriter.WriteLineAsync($"- Make sure you have the [.NET SDK {settings.BaseDotNetFrameworkVersion}](https://dotnet.microsoft.com/en-us/download/dotnet/{settings.BaseDotNetFrameworkVersion}) or later installed");
+                var dotNetFrameworkVersion = example[CreateExamplesTarget.DotNetFrameworkVersionKey];
+                if (string.IsNullOrWhiteSpace(dotNetFrameworkVersion))
+                {
+                    dotNetFrameworkVersion = settings.BaseDotNetFrameworkVersion;
+                }
+
+                await examplesWriter.WriteLineAsync($"- Make sure you have the [.NET SDK {dotNetFrameworkVersion}](https://dotnet.microsoft.com/en-us/download/dotnet/{dotNetFrameworkVersion}) or later installed");
                 await examplesWriter.WriteLineAsync("```bash");
                 await examplesWriter.WriteLineAsync("dotnet --list-sdk");
                 await examplesWriter.WriteLineAsync("```");
-                await examplesWriter.WriteLineAsync($"- Create a net{settings.BaseDotNetFrameworkVersion} (or later) console application");
+                await examplesWriter.WriteLineAsync($"- Create a net{dotNetFrameworkVersion} (or later) console application");
                 await examplesWriter.WriteLineAsync("```bash");
                 await examplesWriter.WriteLineAsync("dotnet new console -n Sample");
                 await examplesWriter.WriteLineAsync("```");

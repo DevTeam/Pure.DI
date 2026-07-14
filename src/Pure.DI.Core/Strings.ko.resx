@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>생성된 대리자 또는 팩터리에서 스택 전용 종속성을 캡처할 수 없습니다. 메서드 주입 또는 범위가 지정된 루트 인수를 사용하고 값을 즉시 소비하세요.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>여러 case 바인딩이 union 계약 {0}(태그: {1})(으)로 암시적으로 변환될 수 있습니다. 적용 가능한 case 바인딩: {2}. union 계약을 명시적으로 바인딩하거나, 서로 다른 태그를 사용하거나, 후보 바인딩 중 하나를 제거하세요.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>여러 case 바인딩이 union 계약으로 암시적으로 변환될 수 있습니다. union 계약을 명시적으로 바인딩하거나, 서로 다른 태그를 사용하거나, 후보 바인딩 중 하나를 제거하세요.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding이 재정의되었습니다.</value>
     </data>

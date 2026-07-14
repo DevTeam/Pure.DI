@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>生成されたデリゲートまたはファクトリでスタック専用の依存関係をキャプチャできません。メソッド注入またはスコープ付きルート引数を使用し、値をすぐに消費してください。</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>複数の case バインディングが union コントラクト {0} (タグ: {1}) へ暗黙的に変換できます。適用可能な case バインディング: {2}。union コントラクトを明示的にバインドするか、異なるタグを使用するか、候補のバインディングの 1 つを削除してください。</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>複数の case バインディングが union コントラクトへ暗黙的に変換できます。union コントラクトを明示的にバインドするか、異なるタグを使用するか、候補のバインディングの 1 つを削除してください。</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>バインディングがオーバーライドされました。</value>
     </data>

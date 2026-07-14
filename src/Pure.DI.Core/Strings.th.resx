@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>ไม่สามารถ capture dependency แบบ stack-only ใน delegate หรือ factory ที่ถูกสร้างขึ้นได้ ใช้ method injection หรือ scoped root argument และ consume ค่าในทันที.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>case binding หลายรายการสามารถแปลงเป็นสัญญา union {0} (แท็ก: {1}) ได้โดยนัย case binding ที่ใช้ได้: {2} โปรดผูกสัญญา union อย่างชัดเจน ใช้แท็กที่แตกต่างกัน หรือลบ binding ตัวเลือกหนึ่งรายการออก</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>case binding หลายรายการสามารถแปลงเป็นสัญญา union ได้โดยนัย โปรดผูกสัญญา union อย่างชัดเจน ใช้แท็กที่แตกต่างกัน หรือลบ binding ตัวเลือกหนึ่งรายการออก</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding ถูกเขียนทับ</value>
     </data>

@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>لا يمكن التقاط تبعية مقيّدة بالمكدس في مفوض أو مصنع مولّد. استخدم الحقن عبر الأسلوب أو وسيطة جذر ذات نطاق واستهلك القيمة فورًا.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>يمكن تحويل عدة ارتباطات case ضمنيًا إلى عقد union {0} (الوسم: {1}). ارتباطات case المنطبقة: {2}. اربط عقد union صراحةً، أو استخدم وسومًا مختلفة، أو أزل أحد الارتباطات المرشحة.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>يمكن تحويل عدة ارتباطات case ضمنيًا إلى عقد union. اربط عقد union صراحةً، أو استخدم وسومًا مختلفة، أو أزل أحد الارتباطات المرشحة.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>تم تجاوز الارتباط.</value>
     </data>

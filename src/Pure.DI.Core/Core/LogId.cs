@@ -101,6 +101,8 @@ static class LogId
     public const string ErrorStackOnlyInterfaceConversion = "DIE048";
     // Stack-only dependency cannot be captured by a generated delegate or factory.
     public const string ErrorStackOnlyDelegateCapture = "DIE049";
+    // Several case bindings can be implicitly converted to the union contract.
+    public const string ErrorAmbiguousUnionCaseBindings = "DIE050";
 
     // Warnings
     // Binding has been overridden.

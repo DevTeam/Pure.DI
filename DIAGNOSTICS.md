@@ -346,6 +346,12 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - See: [span-and-readonlyspan](readme/span-and-readonlyspan.md).
 - Examples: `Bind<ParserAction<T>>().To(ctx => new ParserAction<T>(() => ctx.Inject<T>(out _)))` where `T : allows ref struct`, a delegate argument routed into field/property injection, or `text` captured by a nested `Action`.
 
+### DIE050
+- Description: Several case bindings can be implicitly converted to the union contract.
+- Problem: A union contract (for example `union PaymentGateway(StripeGateway, BankGateway);`) is requested without an exact union binding, and more than one registered binding can be implicitly converted to that union with the same tag. Pure.DI cannot arbitrarily pick one case before compilation.
+- Fix: Bind the union contract explicitly (`Bind<PaymentGateway>().To<StripeGateway>()`), use distinct tags for the case bindings and tagged injections/roots, or remove one of the candidate bindings.
+- Examples: `Bind<StripeGateway>().To<StripeGateway>()` and `Bind<BankGateway>().To<BankGateway>()` combined with `Root<PaymentGateway>("Gateway")`.
+
 ## Warnings
 
 ### DIW000

@@ -42,7 +42,7 @@ interface IBindingsFactory
         object? explicitDefaultValue = null,
         object? state = null);
 
-    MdBinding CreateSpanConversionBinding(
+    MdBinding CreateImplicitConversionBinding(
         MdSetup setup,
         DependencyNode targetNode,
         Injection injection,

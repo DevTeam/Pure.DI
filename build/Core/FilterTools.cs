@@ -14,7 +14,7 @@ class FilterTools
             case AIContextSize.Medium
                 when
                 groupName is "QuickStart"
-                || groupName is "Basics"
+                || priority < 100 && groupName is "Basics"
                 || priority < 3 && groupName is not "Advanced" and not "Unity" and not "Hints" and not "UseCases":
 
             case AIContextSize.Large:

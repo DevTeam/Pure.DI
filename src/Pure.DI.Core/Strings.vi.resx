@@ -335,6 +335,12 @@
   <data name="Description_ErrorStackOnlyDelegateCapture" xml:space="preserve">
     <value>Không thể capture dependency stack-only trong delegate hoặc factory được sinh ra. Hãy dùng method injection hoặc scoped root argument và consume giá trị ngay lập tức.</value>
   </data>
+  <data name="Error_Template_AmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Nhiều case binding có thể được chuyển đổi ngầm định sang hợp đồng union {0} (thẻ: {1}). Các case binding phù hợp: {2}. Hãy liên kết hợp đồng union một cách tường minh, sử dụng các thẻ khác nhau hoặc xóa một trong các binding ứng viên.</value>
+  </data>
+  <data name="Description_ErrorAmbiguousUnionCaseBindings" xml:space="preserve">
+    <value>Nhiều case binding có thể được chuyển đổi ngầm định sang hợp đồng union. Hãy liên kết hợp đồng union một cách tường minh, sử dụng các thẻ khác nhau hoặc xóa một trong các binding ứng viên.</value>
+  </data>
   <data name="Description_WarningOverriddenBinding" xml:space="preserve">
         <value>Binding đã bị ghi đè.</value>
     </data>
