@@ -5138,7 +5138,11 @@ namespace Pure.DI
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T>();
+        IConfiguration To<T>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate; dependencies can be resolved via <see cref="IContext"/>.
@@ -5196,7 +5200,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration To<T>(global::System.Func<IContext, T> factory);
+        IConfiguration To<T>(global::System.Func<IContext, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a context-free factory delegate that creates the implementation instance.
@@ -5235,7 +5243,11 @@ namespace Pure.DI
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration To<T>(global::System.Func<T> factory);
+        IConfiguration To<T>(global::System.Func<T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a C# expression inserted into the generated code.
@@ -5257,7 +5269,11 @@ namespace Pure.DI
         /// <typeparam name="T">Implementation type.</typeparam>
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
-        IConfiguration To<T>(string sourceCodeStatement);
+        IConfiguration To<T>(string sourceCodeStatement)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate whose parameters are resolved as dependencies.
@@ -5293,6 +5309,7 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -5332,6 +5349,8 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -5372,6 +5391,9 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -5413,6 +5435,10 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -5455,6 +5481,11 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -5498,6 +5529,12 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -5542,6 +5579,13 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -5587,6 +5631,14 @@ namespace Pure.DI
         /// <seealso cref="As"/>
         IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
 #if NET9_0_OR_GREATER
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
             where T : allows ref struct
 #endif
             ;
@@ -6182,24 +6234,36 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IConfiguration To<T>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(Func<T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(string sourceCodeStatement)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -6207,6 +6271,7 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T>(global::System.Func<T1, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
                 where T : allows ref struct
 #endif
             {
@@ -6216,6 +6281,8 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T>(global::System.Func<T1, T2, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
                 where T : allows ref struct
 #endif
             {
@@ -6225,6 +6292,9 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T>(global::System.Func<T1, T2, T3, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
                 where T : allows ref struct
 #endif
             {
@@ -6234,6 +6304,10 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T>(global::System.Func<T1, T2, T3, T4, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
                 where T : allows ref struct
 #endif
             {
@@ -6243,6 +6317,11 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T>(global::System.Func<T1, T2, T3, T4, T5, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
                 where T : allows ref struct
 #endif
             {
@@ -6252,6 +6331,12 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
                 where T : allows ref struct
 #endif
             {
@@ -6261,6 +6346,13 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
                 where T : allows ref struct
 #endif
             {
@@ -6270,6 +6362,14 @@ namespace Pure.DI
             /// <inheritdoc />
             public IConfiguration To<T1, T2, T3, T4, T5, T6, T7, T8, T>(global::System.Func<T1, T2, T3, T4, T5, T6, T7, T8, T> factory)
 #if NET9_0_OR_GREATER
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
                 where T : allows ref struct
 #endif
             {

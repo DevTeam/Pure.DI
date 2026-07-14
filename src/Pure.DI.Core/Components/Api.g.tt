@@ -2901,7 +2901,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-        IConfiguration To<T>();
+        IConfiguration To<T>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a factory delegate; dependencies can be resolved via <see cref="IContext"/>.
@@ -2959,7 +2963,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration To<T>(global::System.Func<IContext, T> factory);
+        IConfiguration To<T>(global::System.Func<IContext, T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a context-free factory delegate that creates the implementation instance.
@@ -2998,7 +3006,11 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration To<T>(global::System.Func<T> factory);
+        IConfiguration To<T>(global::System.Func<T> factory)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 
         /// <summary>
         /// Binds to a C# expression inserted into the generated code.
@@ -3020,13 +3032,18 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix 
         /// <typeparam name="T">Implementation type.</typeparam>
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
-        IConfiguration To<T>(string sourceCodeStatement);
+        IConfiguration To<T>(string sourceCodeStatement)
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+#endif
+            ;
 <#
 for (var i = 0; i < baseCount; i++)
 {
 var typeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"T{suffix}"));
 var exampleTypeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"IDependency{suffix}"));
 var comments = string.Join(Environment.NewLine, GetSuffixes(1, i + 1).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Type of dependency parameter{(suffix == "" ? "" : " " + suffix)}.</typeparam>"));
+var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(1, i + 1).Select(suffix => $"            where T{suffix} : allows ref struct"));
 #>
 
         /// <summary>
@@ -3063,6 +3080,7 @@ var comments = string.Join(Environment.NewLine, GetSuffixes(1, i + 1).Select(suf
         /// <seealso cref="As"/>
         IConfiguration To<<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory)
 #if NET9_0_OR_GREATER
+<#=allowsRefStructConstraints#>
             where T : allows ref struct
 #endif
             ;
@@ -3627,24 +3645,36 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 
             /// <inheritdoc />
             public IConfiguration To<T>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(Func<T> factory)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
 
             /// <inheritdoc />
             public IConfiguration To<T>(string sourceCodeStatement)
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+#endif
             {
                 return this;
             }
@@ -3652,11 +3682,13 @@ var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"
 for (var i = 0; i < baseCount; i++)
 {
 var typeArgs = string.Join(", ", GetSuffixes(1, i + 1).Select(suffix => $"T{suffix}"));
+var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(1, i + 1).Select(suffix => $"                where T{suffix} : allows ref struct"));
 #>
 
             /// <inheritdoc />
             public IConfiguration To<<#=typeArgs#>, T>(global::System.Func<<#=typeArgs#>, T> factory)
 #if NET9_0_OR_GREATER
+<#=allowsRefStructConstraints#>
                 where T : allows ref struct
 #endif
             {

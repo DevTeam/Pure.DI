@@ -62,6 +62,7 @@ sealed class VariableTools : IVariableTools
                 MdConstructKind.Enumerable => 22,
                 MdConstructKind.Array => 21,
                 MdConstructKind.Span => 21,
+                MdConstructKind.SpanConversion => 21,
                 MdConstructKind.AsyncEnumerable => 22,
                 MdConstructKind.Override => 28,
                 _ => 29

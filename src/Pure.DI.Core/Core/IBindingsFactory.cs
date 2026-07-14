@@ -41,4 +41,13 @@ interface IBindingsFactory
         bool hasExplicitDefaultValue = false,
         object? explicitDefaultValue = null,
         object? state = null);
+
+    MdBinding CreateSpanConversionBinding(
+        MdSetup setup,
+        DependencyNode targetNode,
+        Injection injection,
+        DependencyNode sourceNode,
+        ITypeSymbol sourceType,
+        ITypeConstructor typeConstructor,
+        int bindingId);
 }

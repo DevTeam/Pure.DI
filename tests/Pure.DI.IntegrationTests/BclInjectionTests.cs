@@ -287,6 +287,59 @@ public class BclInjectionTests
         result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
 
+    [Fact]
+    public async Task ShouldKeepStackallocForRegularSpanCollectionInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Handler
+                               {
+                                   private int _sum;
+
+                                   [Ordinal]
+                                   public void Initialize(Span<int> values)
+                                   {
+                                       foreach (var value in values)
+                                       {
+                                           _sum += value;
+                                       }
+                                   }
+
+                                   public int Sum => _sum;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       DI.Setup("Composition")
+                                           .Bind<int>(1).To(_ => 1)
+                                           .Bind<int>(2).To(_ => 2)
+                                           .Root<Handler>("Handler");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Handler.Sum);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["3"], result);
+        result.GeneratedCode.ShouldContain("stackalloc int[2]");
+    }
+
     [Theory]
     [InlineData("System.Collections.Generic.IList")]
     [InlineData("System.Collections.Immutable.ImmutableArray")]

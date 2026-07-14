@@ -107,6 +107,7 @@ public sealed partial class Generator
             .PerBlock<EnumerableCodeBuilder>(Enumerable, AsyncEnumerable)
             .PerBlock<ArrayCodeBuilder>(Array)
             .PerBlock<SpanCodeBuilder>(Span)
+            .PerBlock<SpanConversionCodeBuilder>(SpanConversion)
             .PerBlock<CompositionCodeBuilder>(Composition)
             .PerBlock<OnCannotResolveCodeBuilder>(CannotResolve)
             .PerBlock<ExplicitDefaultValueCodeBuilder>(ExplicitDefaultValue)

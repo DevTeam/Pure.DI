@@ -520,13 +520,6 @@ namespace Pure.DI
                     .To((global::System.Collections.Generic.IEnumerable<global::System.Collections.Generic.KeyValuePair<TT, TT1>> pairs) =>
                         global::System.Collections.Immutable.ImmutableDictionary.CreateRange(pairs))
 #endif
-#if NET9_0_OR_GREATER
-                // Spans
-                .Bind()
-                    .To<TT[], global::System.Span<TT>>((TT[] arr) => new global::System.Span<TT>(arr))
-                .Bind()
-                    .To<TT[], global::System.ReadOnlySpan<TT>>((TT[] arr) => new global::System.ReadOnlySpan<TT>(arr))
-#endif
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                 // Memory and pools
                 .Bind<global::System.Memory<TT>>()

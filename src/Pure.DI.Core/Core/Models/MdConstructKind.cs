@@ -8,6 +8,7 @@ enum MdConstructKind
     Enumerable,
     Array,
     Span,
+    SpanConversion,
     Composition,
     OnCannotResolve,
     ExplicitDefaultValue,

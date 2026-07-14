@@ -598,9 +598,11 @@ public class ArgsTests
     }
 
     [Theory]
-    [InlineData("Span")]
-    [InlineData("ReadOnlySpan")]
-    public async Task ShouldConvertArrayRootArgToSpanForMethodInjection(string spanType)
+    [InlineData("Span", LanguageVersion.CSharp13)]
+    [InlineData("ReadOnlySpan", LanguageVersion.CSharp13)]
+    [InlineData("Span", LanguageVersion.CSharp14)]
+    [InlineData("ReadOnlySpan", LanguageVersion.CSharp14)]
+    public async Task ShouldConvertArrayRootArgToSpanForMethodInjection(string spanType, LanguageVersion languageVersion)
     {
         // Given
 
@@ -627,6 +629,7 @@ public class ArgsTests
                                    private static void SetupComposition()
                                    {
                                        // Resolve = Off
+                                       // Resolve = Off
                                        DI.Setup("Composition")
                                            .RootArg<char[]>("text")
                                            .Root<Parser>("Parse");
@@ -645,13 +648,411 @@ public class ArgsTests
                            """
             .Replace("###SPAN###", spanType)
             .RunAsync(new Options(
-                LanguageVersion.Preview,
+                languageVersion,
                 PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Hello"], result);
         result.GeneratedCode.ShouldContain("Parse(char[] text)");
+    }
+
+    [Theory]
+    [InlineData("Message[]", "new Message[] { new() }")]
+    [InlineData("Span<Message>", "new Message[] { new() }.AsSpan()")]
+    [InlineData("ReadOnlySpan<Message>", "new Message[] { new() }.AsSpan()")]
+    public async Task ShouldSupportCovariantReadOnlySpanRootArgConversion(string sourceType, string sourceValue)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Event;
+
+                               class Message : Event;
+
+                               class Handler
+                               {
+                                   private int _count;
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<Event> events) =>
+                                       _count = events.Length;
+
+                                   public int Count => _count;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<###SOURCE_TYPE###>("events")
+                                           .Root<Handler>("Handle");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Handle(###SOURCE_VALUE###).Count);
+                                   }
+                               }
+                           }
+                           """
+            .Replace("###SOURCE_TYPE###", sourceType)
+            .Replace("###SOURCE_VALUE###", sourceValue)
+            .RunAsync(new Options(
+                LanguageVersion.CSharp14,
+                PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1"], result);
+        result.GeneratedCode.ShouldContain("public global::Sample.Handler Handle(");
+    }
+
+    [Fact]
+    public async Task ShouldConvertStringRootArgToReadOnlySpanForMethodInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   private int _length;
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<char> text) =>
+                                       _length = text.Length;
+
+                                   public int Length => _length;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<string>("text")
+                                           .Root<Parser>("Parse");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Parse("Hello").Length);
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp14));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["5"], result);
+        result.GeneratedCode.ShouldContain("Parse(string text)");
+    }
+
+    [Fact]
+    public async Task ShouldSupportRefLikeDependencyInSimpleFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   private int _length;
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<char> text) =>
+                                       _length = text.Length;
+
+                                   public int Length => _length;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<Span<char>>("text")
+                                           .Bind().To<Span<char>, ReadOnlySpan<char>>(text => text)
+                                           .Root<Parser>("Parse");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var text = "Hello".ToCharArray();
+                                       Console.WriteLine(new Composition().Parse(text.AsSpan()).Length);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["5"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreserveTagForArrayToReadOnlySpanRootArgConversion()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class PacketHandler
+                               {
+                                   private int _length;
+
+                                   [Ordinal]
+                                   public void Initialize([Tag("packet")] ReadOnlySpan<byte> packet) =>
+                                       _length = packet.Length;
+
+                                   public int Length => _length;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<byte[]>("packet", "packet")
+                                           .Root<PacketHandler>("Handle");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Handle([1, 2, 3]).Length);
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp14));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["3"], result);
+        result.GeneratedCode.ShouldContain("Handle(byte[] packet)");
+    }
+
+    [Fact]
+    public async Task ShouldPreferExplicitReadOnlySpanBindingOverImplicitConversion()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   private string _text = "";
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<char> text) =>
+                                       _text = text.ToString();
+
+                                   public string Text => _text;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<char[]>("text")
+                                           .Bind().To<char[], ReadOnlySpan<char>>(text => text.AsSpan(1))
+                                           .Root<Parser>("Parse");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Parse("Hello".ToCharArray()).Text);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ello"], result);
+    }
+
+    [Fact]
+    public async Task ShouldConvertExplicitSourceBindingContractToReadOnlySpan()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Event;
+
+                               class Message : Event;
+
+                               class Handler
+                               {
+                                   private int _count;
+
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<Event> events) =>
+                                       _count = events.Length;
+
+                                   public int Count => _count;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<Event[]>().To(() => (Event[])new Message[] { new() })
+                                           .Root<Handler>("Handle");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Handle.Count);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1"], result);
+    }
+
+    [Theory]
+    [InlineData("ReadOnlySpan<char>", "Span<char>")]
+    [InlineData("char[]", "ReadOnlySpan<byte>")]
+    public async Task ShouldNotApplyInvalidSpanRootArgConversion(string sourceType, string targetType)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   [Ordinal]
+                                   public void Initialize(###TARGET### text) { }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       DI.Setup("Composition")
+                                           .RootArg<###SOURCE###>("text")
+                                           .Root<Parser>("Parse");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Parse is not null);
+                               }
+                           }
+                           """
+            .Replace("###SOURCE###", sourceType)
+            .Replace("###TARGET###", targetType)
+            .RunAsync(new Options(
+                LanguageVersion.CSharp14,
+                PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningBindingNotUsed).ShouldBeGreaterThan(0, result);
+        result.GeneratedCode.ShouldNotContain("Parse(scoped");
+    }
+
+    [Fact]
+    public async Task ShouldSupportCovariantArrayToReadOnlySpanConversionWithCSharp13()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Event;
+                               class Message : Event;
+
+                               class Handler
+                               {
+                                   [Ordinal]
+                                   public void Initialize(ReadOnlySpan<Event> events) { }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<Message[]>("events")
+                                           .Root<Handler>("Handle");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Handle([new Message()]) is not null);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp13,
+                               PreprocessorSymbols: ["NET", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldContain("Handle(global::Sample.Message[] events)");
     }
 
     [Fact]

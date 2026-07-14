@@ -62,6 +62,54 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
+    public async Task ShouldShowWarningWhenArrayRootArgIsConvertedForHeapTypeConstructor()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Parser
+                               {
+                                   public Parser(ReadOnlySpan<char> text) =>
+                                       Length = text.Length;
+
+                                   public int Length { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<char[]>("text")
+                                           .Root<Parser>("Parse");
+                                   }
+                               }
+
+                               class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(new Composition().Parse("Hello".ToCharArray()).Length);
+                               }
+                           }
+                           """.RunAsync(new Options(
+                               LanguageVersion.CSharp14,
+                               PreprocessorSymbols: ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER", "NET8_0_OR_GREATER", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER"]));
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyConstructorInjectionIntoHeapType).ShouldBe(1, result);
+        result.StdOut.ShouldBe(["5"], result);
+        result.GeneratedCode.ShouldContain("Parse(char[] text)");
+    }
+
+    [Fact]
     public async Task ShouldShowErrorWhenStackOnlyDependencyInjectedIntoSetterOnlyProperty()
     {
         // Given

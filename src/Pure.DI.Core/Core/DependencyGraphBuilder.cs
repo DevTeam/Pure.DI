@@ -167,6 +167,28 @@ sealed class DependencyGraphBuilder(
                     continue;
                 }
 
+                if (TryGetSpanConversionSource(setup, map, injection, targetNode, out var spanConversionSource, out var spanConversionSourceType))
+                {
+                    var conversionBinding = bindingsFactory.CreateSpanConversionBinding(
+                        setup,
+                        targetNode,
+                        injection,
+                        spanConversionSource,
+                        spanConversionSourceType,
+                        typeConstructor,
+                        ++maxBindingId);
+
+                    foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, conversionBinding))
+                    {
+                        var contextTag = GetContextTag(injection, newNode);
+                        var newInjection = injection with { Tag = contextTag ?? injection.Tag };
+                        UpdateMap(newInjection, newNode);
+                        queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, newNode));
+                    }
+
+                    continue;
+                }
+
                 switch (injection.Type)
                 {
                     case INamedTypeSymbol namedTypeSymbol
@@ -548,6 +570,59 @@ sealed class DependencyGraphBuilder(
             Names.IAsyncEnumerableTypeName => MdConstructKind.AsyncEnumerable,
             _ => MdConstructKind.None
         });
+    }
+
+    private bool TryGetSpanConversionSource(
+        MdSetup setup,
+        IReadOnlyDictionary<Injection, DependencyNode> map,
+        Injection injection,
+        DependencyNode targetNode,
+        [NotNullWhen(true)] out DependencyNode? sourceNode,
+        [NotNullWhen(true)] out ITypeSymbol? sourceType)
+    {
+        sourceNode = null;
+        sourceType = null;
+        if (!IsSpanType(injection.Type))
+        {
+            return false;
+        }
+
+        var setupBindingIds = new HashSet<int>(setup.Bindings.Select(i => i.Id));
+        var compilation = targetNode.Binding.SemanticModel.Compilation;
+        foreach (var candidate in map.OrderByDescending(i => i.Value.Binding.Id))
+        {
+            if (candidate.Value.Binding.Id == targetNode.Binding.Id
+                || !setupBindingIds.Contains(candidate.Value.Binding.Id)
+                || candidate.Value.Error is not null
+                || !Injection.EqualTags(injection.Tag, candidate.Key.Tag)
+                || !IsSpanConversionSource(candidate.Key.Type)
+                || !compilation.ClassifyConversion(candidate.Key.Type, injection.Type).IsImplicit)
+            {
+                continue;
+            }
+
+            sourceNode = candidate.Value;
+            sourceType = candidate.Key.Type;
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsSpanConversionSource(ITypeSymbol type) =>
+        type is IArrayTypeSymbol { Rank: 1 }
+        || type.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_String
+        || IsSpanType(type);
+
+    private bool IsSpanType(ITypeSymbol type)
+    {
+        if (type is not INamedTypeSymbol { IsGenericType: true } namedType)
+        {
+            return false;
+        }
+
+        var typeName = symbolNames.GetGlobalName(namedType.ConstructUnboundGenericType());
+        return typeName == Names.ReadOnlySpanTypeName || typeName == Names.SpanTypeName;
     }
 
     private bool TryCreateOnCannotResolve(MdSetup setup,

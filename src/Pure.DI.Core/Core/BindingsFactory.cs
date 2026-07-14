@@ -231,6 +231,41 @@ class BindingsFactory(
         return newBinding;
     }
 
+    public MdBinding CreateSpanConversionBinding(
+        MdSetup setup,
+        DependencyNode targetNode,
+        Injection injection,
+        DependencyNode sourceNode,
+        ITypeSymbol sourceType,
+        ITypeConstructor typeConstructor,
+        int bindingId)
+    {
+        var semanticModel = targetNode.Binding.SemanticModel;
+        var tags = injection.Tag is not null
+            ? ImmutableArray.Create(new MdTag(0, injection.Tag))
+            : ImmutableArray<MdTag>.Empty;
+
+        return new MdBinding(
+            bindingId,
+            targetNode.Binding.Source,
+            setup,
+            semanticModel,
+            ImmutableArray.Create(new MdContract(semanticModel, targetNode.Binding.Source, injection.Type, ContractKind.Implicit, tags)),
+            ImmutableArray<MdTag>.Empty,
+            new MdLifetime(semanticModel, targetNode.Binding.Source, Lifetime.Transient),
+            Construct: new MdConstruct(
+                semanticModel,
+                targetNode.Binding.Source,
+                injection.Type,
+                sourceType,
+                MdConstructKind.SpanConversion,
+                ImmutableArray.Create(new MdContract(semanticModel, targetNode.Binding.Source, sourceType, ContractKind.Implicit, tags)),
+                false,
+                null),
+            TypeConstructor: typeConstructor,
+            OriginalIds: ImmutableArray.Create(sourceNode.Binding.Id));
+    }
+
     private IEnumerable<MdContract> GetMatchedMdContracts(MdSetup setup, ITypeSymbol elementType, MdBinding nestedBinding, ITypeConstructor typeConstructor)
     {
         foreach (var contract in nestedBinding.Contracts)

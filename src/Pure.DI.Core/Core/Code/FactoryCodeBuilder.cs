@@ -20,7 +20,8 @@ sealed class FactoryCodeBuilder(
     ILocks locks,
     INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
-    INodeTools nodeTools)
+    INodeTools nodeTools,
+    IRefSafety refSafety)
     : IBuilder<CodeBuilderContext, IEnumerator>
 {
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
@@ -37,6 +38,10 @@ sealed class FactoryCodeBuilder(
         var setup = ctx.RootContext.Graph.Source;
         var varsMap = ctx.VarsMap;
         var originalLambda = factory.Source.Factory;
+        var hasRefLikeDependencies = factory.Resolvers.Any(i => refSafety.IsMaybeRefLike(i.Injection.Type));
+
+        string GetFactoryResultDeclaration() =>
+            $"{(hasRefLikeDependencies && refSafety.IsMaybeRefLike(var.InstanceType) ? "scoped " : "")}{buildTools.GetDeclaration(ctx, var.Declaration)}";
 
         // Simple factory
         if (factory.Source.IsSimpleFactory)
@@ -186,7 +191,7 @@ sealed class FactoryCodeBuilder(
         {
             if (!var.Declaration.IsDeclared)
             {
-                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name};");
+                lines.AppendLine($"{GetFactoryResultDeclaration()}{var.Name};");
                 var.Declaration.IsDeclared = true;
             }
 
@@ -207,7 +212,7 @@ sealed class FactoryCodeBuilder(
         {
             if (!var.Declaration.IsDeclared)
             {
-                lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name};");
+                lines.AppendLine($"{GetFactoryResultDeclaration()}{var.Name};");
                 var.Declaration.IsDeclared = true;
             }
 
@@ -230,7 +235,7 @@ sealed class FactoryCodeBuilder(
 
             if (!var.Declaration.IsDeclared)
             {
-                lines.Append($"{buildTools.GetDeclaration(ctx, var.Declaration)}{var.Name} = ");
+                lines.Append($"{GetFactoryResultDeclaration()}{var.Name} = ");
                 var.Declaration.IsDeclared = true;
             }
             else
@@ -352,7 +357,8 @@ sealed class FactoryCodeBuilder(
                     }
                     else
                     {
-                        lines.AppendLine($"{(injection.DeclarationRequired ? $"{typeResolver.Resolve(setup, argument.Injection.Type)} " : "")}{injection.VariableName} = {buildTools.OnInjected(ctx, argument)};");
+                        var scoped = injection.DeclarationRequired && refSafety.IsMaybeRefLike(argument.Injection.Type) ? "scoped " : "";
+                        lines.AppendLine($"{(injection.DeclarationRequired ? $"{scoped}{typeResolver.Resolve(setup, argument.Injection.Type)} " : "")}{injection.VariableName} = {buildTools.OnInjected(ctx, argument)};");
                     }
 
                     continue;
