@@ -102,7 +102,7 @@ sealed class Types(
         return GetUnionCaseTypes(compilation, targetType).Any(caseType =>
         {
             var caseConversion = compilation.ClassifyConversion(sourceType, caseType);
-            return caseConversion.IsImplicit && !caseConversion.IsUserDefined && !IsUnionConversion(caseConversion);
+            return caseConversion is { IsImplicit: true, IsUserDefined: false } && !IsUnionConversion(caseConversion);
         });
     }
 
@@ -196,11 +196,11 @@ sealed class Types(
 
     internal readonly struct UnionCasesKey(Compilation compilation, ITypeSymbol type) : IEquatable<UnionCasesKey>
     {
-        public readonly Compilation Compilation = compilation;
+        private readonly Compilation _compilation = compilation;
         public readonly ITypeSymbol Type = type;
 
         public bool Equals(UnionCasesKey other) =>
-            ReferenceEquals(Compilation, other.Compilation)
+            ReferenceEquals(_compilation, other._compilation)
             && SymbolEqualityComparer.IncludeNullability.Equals(Type, other.Type);
 
         public override bool Equals(object? obj) => obj is UnionCasesKey other && Equals(other);
@@ -209,7 +209,7 @@ sealed class Types(
         {
             unchecked
             {
-                return Compilation.GetHashCode() * 397 ^ SymbolEqualityComparer.IncludeNullability.GetHashCode(Type);
+                return _compilation.GetHashCode() * 397 ^ SymbolEqualityComparer.IncludeNullability.GetHashCode(Type);
             }
         }
     }

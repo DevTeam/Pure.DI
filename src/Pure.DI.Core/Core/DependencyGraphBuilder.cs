@@ -829,7 +829,7 @@ sealed class DependencyGraphBuilder(
         }
 
         var typeName = symbolNames.GetGlobalName(namedType.ConstructUnboundGenericType());
-        return typeName == Names.ReadOnlySpanTypeName || typeName == Names.SpanTypeName;
+        return typeName is Names.ReadOnlySpanTypeName or Names.SpanTypeName;
     }
 
     private bool TryCreateOnCannotResolve(MdSetup setup,

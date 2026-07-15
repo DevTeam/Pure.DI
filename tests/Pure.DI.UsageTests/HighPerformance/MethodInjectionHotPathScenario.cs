@@ -15,8 +15,9 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedParameter.Local
-
 // ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.HighPerformance.MethodInjectionHotPathScenario;
 
 using Shouldly;

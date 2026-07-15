@@ -13,6 +13,8 @@ $r=Shouldly
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable MemberCanBeMadeStatic.Global
+// ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable CA1822
 namespace Pure.DI.UsageTests.HighPerformance.FactoryWithoutClosureCaptureScenario;
 

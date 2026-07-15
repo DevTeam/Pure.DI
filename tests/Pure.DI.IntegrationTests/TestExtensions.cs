@@ -320,12 +320,14 @@ public static class TestExtensions
             output.AddRange(diagnosticsBySourceTree.Select(diagnostic => diagnostic.ToString()));
             output.Add(Environment.NewLine);
 
-            if (diagnosticsBySourceTree.Key is {} sourceTree)
+            if (diagnosticsBySourceTree.Key is not {} sourceTree)
             {
-                var sourceCode = sourceTree.ToString();
-                output.AddRange(AddLineNumbers(sourceCode));
-                output.Add(Environment.NewLine);
+                continue;
             }
+
+            var sourceCode = sourceTree.ToString();
+            output.AddRange(AddLineNumbers(sourceCode));
+            output.Add(Environment.NewLine);
         }
 
         if (!(options?.CheckCompilationErrors ?? true))

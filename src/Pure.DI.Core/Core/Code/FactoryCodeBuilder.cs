@@ -40,9 +40,6 @@ sealed class FactoryCodeBuilder(
         var originalLambda = factory.Source.Factory;
         var hasRefLikeDependencies = factory.Resolvers.Any(i => refSafety.IsMaybeRefLike(i.Injection.Type));
 
-        string GetFactoryResultDeclaration() =>
-            $"{(hasRefLikeDependencies && refSafety.IsMaybeRefLike(var.InstanceType) ? "scoped " : "")}{buildTools.GetDeclaration(ctx, var.Declaration)}";
-
         // Simple factory
         if (factory.Source.IsSimpleFactory)
         {
@@ -407,6 +404,11 @@ sealed class FactoryCodeBuilder(
             lines.DecIndent();
             lines.AppendLine(BlockFinish);
         }
+
+        yield break;
+
+        string GetFactoryResultDeclaration() =>
+            $"{(hasRefLikeDependencies && refSafety.IsMaybeRefLike(var.InstanceType) ? "scoped " : "")}{buildTools.GetDeclaration(ctx, var.Declaration)}";
     }
 
     private void BuildOverrides(CodeContext ctx, DpFactory factory, ILocalVariableRenamingRewriter localVariableRenamingRewriter, ImmutableArray<DpOverride> overrides, Lines lines)

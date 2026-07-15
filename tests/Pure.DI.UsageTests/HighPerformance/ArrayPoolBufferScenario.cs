@@ -15,6 +15,8 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable InvertIf
+// ReSharper disable UnusedMember.Global
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.HighPerformance.ArrayPoolBufferScenario;
 
 using System.Buffers;

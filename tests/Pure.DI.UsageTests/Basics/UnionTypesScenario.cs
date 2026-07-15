@@ -31,7 +31,8 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
-
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
 namespace Pure.DI.UsageTests.Basics.UnionTypesScenario;
 
 using Shouldly;
