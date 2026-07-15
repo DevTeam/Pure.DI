@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <SolutionDir Condition="'$(SolutionDir)'==''">../..</SolutionDir>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">5.6.0</AnalyzerRoslynPackageVersion>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -9,6 +11,7 @@
         <ProjectReference Include="$(SolutionDir)/src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="$(SolutionDir)/src\Pure.DI.Abstractions\Pure.DI.Abstractions.csproj" OutputItemType="Analyzer"/>
         <ProjectReference Include="$(SolutionDir)/tests\Pure.DI.Example\Pure.DI.Example.csproj"/>
+        <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all"/>
         <Compile Include="$(SolutionDir)/src\Pure.DI.Abstractions\any\Pure.DI\Abstractions\*.g.cs"/>
         <Compile Include="$(SolutionDir)/src\Pure.DI.MS\any\Pure.DI\MS\*.cs" Link=""/>
         <PackageReference Include="Castle.Core" Version="5.1.1"/>
