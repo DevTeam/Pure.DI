@@ -3,6 +3,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable IdentifierTypo
+#pragma warning disable RS1024 // Pure.DI intentionally uses ITypeSymbolComparer to control nullable-reference contract equality.
 
 namespace Pure.DI.Core;
 
@@ -168,6 +169,12 @@ sealed class DependencyGraphBuilder(
                     }
 
                     continue;
+                }
+
+                if (types.IsUnionType(targetNode.Binding.SemanticModel.Compilation, injection.Type))
+                {
+                    AddGenericUnionSources(injection, targetNode);
+                    AddFactoryOverrideUnionSources(injection, targetNode);
                 }
 
                 if (TryGetSpanConversionSource(setupBindingIds, map, injection, targetNode, out var conversionSource, out var conversionSourceType)
@@ -547,6 +554,125 @@ sealed class DependencyGraphBuilder(
             sourceNode = null;
             return false;
         }
+
+        void AddGenericUnionSources(Injection unionInjection, DependencyNode targetNode)
+        {
+            var compilation = targetNode.Binding.SemanticModel.Compilation;
+            var caseTypes = types.GetUnionCaseTypes(compilation, unionInjection.Type);
+            if (caseTypes.IsDefaultOrEmpty)
+            {
+                return;
+            }
+
+            foreach (var candidate in map.ToList())
+            {
+                if (!setupBindingIds.Contains(candidate.Value.Binding.Id)
+                    || candidate.Value.Error is not null
+                    || !Injection.EqualTags(unionInjection.Tag, candidate.Key.Tag)
+                    || !marker.IsMarkerBased(setup, candidate.Key.Type))
+                {
+                    continue;
+                }
+
+                foreach (var caseType in caseTypes)
+                {
+                    var candidateTypeConstructor = typeConstructorFactory();
+                    if (!candidateTypeConstructor.TryBind(setup, candidate.Key.Type, caseType))
+                    {
+                        continue;
+                    }
+
+                    var sourceType = candidateTypeConstructor.Construct(setup, candidate.Key.Type);
+                    if (!types.IsImplicitUnionConversion(compilation, sourceType, unionInjection.Type))
+                    {
+                        continue;
+                    }
+
+                    var sourceInjection = unionInjection with { Type = sourceType };
+                    if (TryGetSourceNode(map, sourceInjection, out _))
+                    {
+                        break;
+                    }
+
+                    var genericBinding = bindingsFactory.CreateGenericBinding(
+                        setup,
+                        sourceInjection,
+                        candidate.Value,
+                        candidateTypeConstructor,
+                        ++maxBindingId);
+
+                    var genericNodes = nodesFactory.CreateNodes(setup, candidateTypeConstructor, genericBinding).ToList();
+                    var genericNode = genericNodes.Find(i => i.Variation == candidate.Value.Variation)
+                                      ?? genericNodes.FirstOrDefault();
+                    if (genericNode is null)
+                    {
+                        continue;
+                    }
+
+                    setupBindingIds.Add(genericBinding.Id);
+                    UpdateMap(sourceInjection, genericNode);
+                    queue.Enqueue(CreateNewProcessingNode(sourceInjection.Tag, genericNode));
+                    break;
+                }
+            }
+        }
+
+        void AddFactoryOverrideUnionSources(Injection unionInjection, DependencyNode targetNode)
+        {
+            if (targetNode.Factory is not {} factory)
+            {
+                return;
+            }
+
+            var compilation = targetNode.Binding.SemanticModel.Compilation;
+            foreach (var resolver in factory.Resolvers)
+            {
+                var resolverType = targetNode.TypeConstructor.Construct(setup, resolver.Injection.Type);
+                if (!types.TypeEquals(resolverType, unionInjection.Type))
+                {
+                    continue;
+                }
+
+                foreach (var @override in resolver.Overrides)
+                {
+                    foreach (var overrideInjection in @override.Injections)
+                    {
+                        var sourceInjection = overrideInjection with
+                        {
+                            Type = targetNode.TypeConstructor.Construct(setup, overrideInjection.Type)
+                        };
+
+                        if (!Injection.EqualTags(unionInjection.Tag, sourceInjection.Tag)
+                            || !types.IsImplicitUnionConversion(compilation, sourceInjection.Type, unionInjection.Type)
+                            || TryGetSourceNode(map, sourceInjection, out _))
+                        {
+                            continue;
+                        }
+
+                        var overrideBinding = bindingsFactory.CreateConstructBinding(
+                            setup,
+                            targetNode,
+                            sourceInjection,
+                            sourceInjection.Type,
+                            Lifetime.Transient,
+                            targetNode.TypeConstructor,
+                            ++maxBindingId,
+                            MdConstructKind.Override,
+                            state: @override);
+
+                        var overrideNode = nodesFactory.CreateNodes(setup, targetNode.TypeConstructor, overrideBinding).FirstOrDefault();
+                        if (overrideNode is null)
+                        {
+                            continue;
+                        }
+
+                        setupBindingIds.Add(overrideBinding.Id);
+                        UpdateMap(sourceInjection, overrideNode);
+                        queue.Enqueue(CreateNewProcessingNode(sourceInjection.Tag, overrideNode));
+                    }
+                }
+            }
+        }
     }
 
     private sealed class InjectionPositionComparer(IInjectionComparer injectionComparer) : IEqualityComparer<(Injection Injection, int? Position)>
@@ -639,6 +765,8 @@ sealed class DependencyGraphBuilder(
                 || !setupBindingIds.Contains(candidate.Value.Binding.Id)
                 || candidate.Value.Error is not null
                 || !Injection.EqualTags(injection.Tag, candidate.Key.Tag)
+                || marker.IsMarkerBased(setup, candidate.Key.Type)
+                && !marker.IsMarkerBased(setup, injection.Type)
                 || !types.IsImplicitUnionConversion(compilation, candidate.Key.Type, injection.Type))
             {
                 continue;
@@ -681,7 +809,7 @@ sealed class DependencyGraphBuilder(
                         Strings.Error_Template_AmbiguousUnionCaseBindings,
                         injection.Type,
                         injection.Tag.ValueToString(),
-                        string.Join(", ", candidates.Select(i => $"{i.Key} [{i.Value.Lifetime.ValueToString()}]"))),
+                        string.Join(", ", candidates.Select(i => $"{i.Key} [{i.Value.Lifetime.ValueToString()}; {i.Value.Binding.Source}]"))),
                     locations,
                     LogId.ErrorAmbiguousUnionCaseBindings,
                     nameof(Strings.Error_Template_AmbiguousUnionCaseBindings));

@@ -8,5 +8,7 @@ interface ITypes
 
     bool IsUnionType(Compilation compilation, ITypeSymbol type);
 
+    ImmutableArray<ITypeSymbol> GetUnionCaseTypes(Compilation compilation, ITypeSymbol type);
+
     bool IsImplicitUnionConversion(Compilation compilation, ITypeSymbol sourceType, ITypeSymbol targetType);
 }

@@ -4,7 +4,9 @@ using System.Collections;
 
 sealed class ImplicitConversionCodeBuilder(
     Func<IBuilder<CodeContext, IEnumerator>> variablesCodeBuilderFactory,
-    IBuildTools buildTools)
+    IBuildTools buildTools,
+    ITypeResolver typeResolver,
+    ITypes types)
     : IBuilder<CodeBuilderContext, IEnumerator>
 {
     public IEnumerator Build(CodeBuilderContext data)
@@ -20,6 +22,13 @@ sealed class ImplicitConversionCodeBuilder(
         var dependencyVar = ctx.VarsMap.GetInjection(ctx.RootContext.Graph, dependency.Injection, dependency.Source);
         yield return variablesCodeBuilderFactory().Build(ctx.CreateChild(dependencyVar));
         varInjections.Add(dependencyVar);
-        ctx.VarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, dependencyVar);
+        var source = buildTools.OnInjected(ctx, dependencyVar);
+        if (!types.TypeEquals(dependencyVar.Var.InstanceType, dependency.Injection.Type))
+        {
+            var sourceType = typeResolver.Resolve(ctx.RootContext.Graph.Source, dependency.Injection.Type);
+            source = $"({sourceType})({source})";
+        }
+
+        ctx.VarInjection.Var.CodeExpression = source;
     }
 }

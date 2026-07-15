@@ -41,7 +41,7 @@ sealed class SpanCodeBuilder(
         var createArray = $"{typeResolver.Resolve(setup, construct.Source.ElementType)}[{varInjections.Count.ToString()}] {{ {string.Join(", ", varInjections.Select(item => buildTools.OnInjected(ctx, item)))} }}";
 
         var isStackalloc =
-            construct.Source.ElementType.IsValueType
+            construct.Source.ElementType.IsUnmanagedType
             && count <= Const.MaxStackalloc
             && compilations.GetLanguageVersion(construct.Binding.SemanticModel.Compilation) >= LanguageVersion.CSharp7_3;
 

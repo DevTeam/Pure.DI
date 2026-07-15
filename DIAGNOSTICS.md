@@ -348,7 +348,7 @@ example scenarios. IDs and anchors are stable; message text is localized.
 
 ### DIE050
 - Description: Several case bindings can be implicitly converted to the union contract.
-- Problem: A union contract (for example `union PaymentGateway(StripeGateway, BankGateway);`) is requested without an exact union binding, and more than one registered binding can be implicitly converted to that union with the same tag. Pure.DI cannot arbitrarily pick one case before compilation.
+- Problem: A union contract (for example `union PaymentGateway(StripeGateway, BankGateway);`) is requested without an exact union binding, and more than one registered binding can be implicitly converted to that union with the same tag. Pure.DI cannot arbitrarily pick one case before compilation. The diagnostic lists each candidate's case type, lifetime, and binding expression, and adds the candidate binding locations as related locations.
 - Fix: Bind the union contract explicitly (`Bind<PaymentGateway>().To<StripeGateway>()`), use distinct tags for the case bindings and tagged injections/roots, or remove one of the candidate bindings.
 - Examples: `Bind<StripeGateway>().To<StripeGateway>()` and `Bind<BankGateway>().To<BankGateway>()` combined with `Root<PaymentGateway>("Gateway")`.
 

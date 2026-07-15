@@ -6,6 +6,8 @@ sealed class Types(
     ICache<Types.SpecialTypeKey, INamedTypeSymbol?> specialTypes,
     ICache<Types.TypeSymbolKey, string> names,
     ICache<Types.GlobalTypeSymbolKey, string> globalNames,
+    ICache<Types.UnionCasesKey, ImmutableArray<ITypeSymbol>> unionCases,
+    ICache<Types.UnionConversionKey, bool> unionConversions,
     ITypeSymbolComparer typeSymbolComparer)
     : ITypes, ISymbolNames
 {
@@ -68,6 +70,14 @@ sealed class Types(
     }
 
     public bool IsImplicitUnionConversion(Compilation compilation, ITypeSymbol sourceType, ITypeSymbol targetType)
+        => unionConversions.Get(
+            new UnionConversionKey(compilation, sourceType, targetType),
+            key => ClassifyUnionConversion(key.Compilation, key.SourceType, key.TargetType));
+
+    public ImmutableArray<ITypeSymbol> GetUnionCaseTypes(Compilation compilation, ITypeSymbol type) =>
+        unionCases.Get(new UnionCasesKey(compilation, type), key => CreateUnionCaseTypes(key.Type));
+
+    private bool ClassifyUnionConversion(Compilation compilation, ITypeSymbol sourceType, ITypeSymbol targetType)
     {
 #if ROSLYN5_6_OR_GREATER
 #pragma warning disable RSEXPERIMENTAL006
@@ -89,9 +99,18 @@ sealed class Types(
 
     private bool IsUnionCaseSource(Compilation compilation, ITypeSymbol sourceType, ITypeSymbol targetType)
     {
+        return GetUnionCaseTypes(compilation, targetType).Any(caseType =>
+        {
+            var caseConversion = compilation.ClassifyConversion(sourceType, caseType);
+            return caseConversion.IsImplicit && !caseConversion.IsUserDefined && !IsUnionConversion(caseConversion);
+        });
+    }
+
+    private ImmutableArray<ITypeSymbol> CreateUnionCaseTypes(ITypeSymbol targetType)
+    {
         if (targetType is not INamedTypeSymbol unionType)
         {
-            return false;
+            return ImmutableArray<ITypeSymbol>.Empty;
         }
 
         if (unionType.OriginalDefinition.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Nullable_T
@@ -101,23 +120,27 @@ sealed class Types(
         }
 
         var memberProvider = unionType.GetTypeMembers("IUnionMembers")
-            .FirstOrDefault(i => i.TypeKind == TypeKind.Interface);
+            .FirstOrDefault(i =>
+                i is { TypeKind: TypeKind.Interface, DeclaredAccessibility: Accessibility.Public }
+                && unionType.AllInterfaces.Any(j => typeSymbolComparer.RuntimeEquals(i, j)));
 
-        IEnumerable<ITypeSymbol> caseTypes = memberProvider is null
-            ? unionType.InstanceConstructors
-                .Where(i => i.DeclaredAccessibility == Accessibility.Public && i.Parameters.Length == 1)
-                .Select(i => i.Parameters[0].Type)
-            : memberProvider.GetMembers("Create")
-                .OfType<IMethodSymbol>()
-                .Where(i => i is { IsStatic: true, DeclaredAccessibility: Accessibility.Public, Parameters.Length: 1 }
-                            && typeSymbolComparer.RuntimeEquals(i.ReturnType, unionType))
-                .Select(i => i.Parameters[0].Type);
-
-        return caseTypes.Any(caseType =>
-        {
-            var caseConversion = compilation.ClassifyConversion(sourceType, caseType);
-            return caseConversion.IsImplicit && !caseConversion.IsUserDefined && !IsUnionConversion(caseConversion);
-        });
+        return (memberProvider is null
+                ? unionType.InstanceConstructors
+                    .Where(i =>
+                        i.DeclaredAccessibility == Accessibility.Public
+                        && i.Parameters is [{ RefKind: RefKind.None or RefKind.In }])
+                    .Select(i => i.Parameters[0].Type)
+                : memberProvider.GetMembers("Create")
+                    .OfType<IMethodSymbol>()
+                    .Where(i => i is
+                                {
+                                    IsStatic: true,
+                                    DeclaredAccessibility: Accessibility.Public,
+                                    Parameters: [{ RefKind: RefKind.None or RefKind.In }]
+                                }
+                                && typeSymbolComparer.RuntimeEquals(i.ReturnType, unionType))
+                    .Select(i => i.Parameters[0].Type))
+            .ToImmutableArray();
     }
 
     private static bool IsUnionConversion(Conversion conversion)
@@ -169,5 +192,50 @@ sealed class Types(
         public override bool Equals(object? obj) => obj is GlobalTypeSymbolKey other && Equals(other);
 
         public override int GetHashCode() => SymbolEqualityComparer.IncludeNullability.GetHashCode(TypeSymbol);
+    }
+
+    internal readonly struct UnionCasesKey(Compilation compilation, ITypeSymbol type) : IEquatable<UnionCasesKey>
+    {
+        public readonly Compilation Compilation = compilation;
+        public readonly ITypeSymbol Type = type;
+
+        public bool Equals(UnionCasesKey other) =>
+            ReferenceEquals(Compilation, other.Compilation)
+            && SymbolEqualityComparer.IncludeNullability.Equals(Type, other.Type);
+
+        public override bool Equals(object? obj) => obj is UnionCasesKey other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return Compilation.GetHashCode() * 397 ^ SymbolEqualityComparer.IncludeNullability.GetHashCode(Type);
+            }
+        }
+    }
+
+    internal readonly struct UnionConversionKey(Compilation compilation, ITypeSymbol sourceType, ITypeSymbol targetType) : IEquatable<UnionConversionKey>
+    {
+        public readonly Compilation Compilation = compilation;
+        public readonly ITypeSymbol SourceType = sourceType;
+        public readonly ITypeSymbol TargetType = targetType;
+
+        public bool Equals(UnionConversionKey other) =>
+            ReferenceEquals(Compilation, other.Compilation)
+            && SymbolEqualityComparer.IncludeNullability.Equals(SourceType, other.SourceType)
+            && SymbolEqualityComparer.IncludeNullability.Equals(TargetType, other.TargetType);
+
+        public override bool Equals(object? obj) => obj is UnionConversionKey other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Compilation.GetHashCode();
+                hashCode = hashCode * 397 ^ SymbolEqualityComparer.IncludeNullability.GetHashCode(SourceType);
+                hashCode = hashCode * 397 ^ SymbolEqualityComparer.IncludeNullability.GetHashCode(TargetType);
+                return hashCode;
+            }
+        }
     }
 }
