@@ -115,6 +115,9 @@ DI.Setup(nameof(Composition))
     .Root<PaymentGateway>("Gateway");
 ```
 When several case bindings are applicable to the same union contract and tag, Pure.DI reports error `DIE050` instead of picking a case arbitrarily. Bind the union contract explicitly, use distinct tags, or remove one of the candidate bindings.
+Composition arguments and root arguments can also provide a case value. For example, `.Arg<StripeGateway>("gateway")` can satisfy a `PaymentGateway` dependency, while `.RootArg<StripeGateway>("gateway")` produces a root method that converts the supplied gateway on each call.
+Generic unions are supported in both closed and generic roots. A setup such as `.Bind<Success<TT>>().To<Success<TT>>().Root<Result<TT>>("GetResult")` produces a generic composition root and applies the case-to-union conversion after substituting the root type argument.
+Collections deliberately keep the normal Pure.DI multi-binding rules. Register case bindings with `Tag.Unique` and request `IEnumerable<PaymentGateway>` to receive every registered case converted to the union. A single `PaymentGateway` request with several matching cases remains ambiguous and reports `DIE050`.
 The generated code stays statically typed: the case instance is converted to the union by the C# compiler at the injection site, so lifetimes of case bindings remain visible to lifetime validation.
 This scenario requires the preview language version and .NET 11 Preview 5 or later, where the union runtime types are available.
 

@@ -2620,6 +2620,9 @@ DI.Setup(nameof(Composition))
     .Root<PaymentGateway>("Gateway");
 ```
 When several case bindings are applicable to the same union contract and tag, Pure.DI reports error `DIE050` instead of picking a case arbitrarily. Bind the union contract explicitly, use distinct tags, or remove one of the candidate bindings.
+Composition arguments and root arguments can also provide a case value. For example, `.Arg<StripeGateway>("gateway")` can satisfy a `PaymentGateway` dependency, while `.RootArg<StripeGateway>("gateway")` produces a root method that converts the supplied gateway on each call.
+Generic unions are supported in both closed and generic roots. A setup such as `.Bind<Success<TT>>().To<Success<TT>>().Root<Result<TT>>("GetResult")` produces a generic composition root and applies the case-to-union conversion after substituting the root type argument.
+Collections deliberately keep the normal Pure.DI multi-binding rules. Register case bindings with `Tag.Unique` and request `IEnumerable<PaymentGateway>` to receive every registered case converted to the union. A single `PaymentGateway` request with several matching cases remains ambiguous and reports `DIE050`.
 The generated code stays statically typed: the case instance is converted to the union by the C# compiler at the injection site, so lifetimes of case bindings remain visible to lifetime validation.
 This scenario requires the preview language version and .NET 11 Preview 5 or later, where the union runtime types are available.
 
@@ -5789,6 +5792,80 @@ To run the above code, the following NuGet packages must be added:
 The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
 >[!IMPORTANT]
 >Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
+
+## Non-boxing union result
+
+The compact `union` declaration stores its value as `object`, which is convenient but boxes value-type cases. On a hot path, a custom union can keep each value-type case in a dedicated field and expose the optional `HasValue`/`TryGetValue` pattern. Pure.DI still treats the selected case as the union DI contract through the compiler's implicit union conversion; no reflection, runtime lookup, or wrapper allocation is introduced by the composition.
+This cache lookup example binds the value-type `CacheHit` case to the `CacheLookupResult` contract. The generated root constructs `CacheHit` directly and the C# compiler invokes the union creation constructor. The consumer reads it with `TryGetValue(out CacheHit)`, so the normal success path does not access the object-typed `Value` fallback and does not box the case.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    // CacheHit is a value-type case of CacheLookupResult
+    .Bind<CacheLookupResult>().To<CacheHit>()
+    .Bind<int>("product id").To(() => 42)
+    .Bind<decimal>("price").To(() => 19.95m)
+    .Root<CacheLookupResult>("CachedProduct");
+
+var result = new Composition().CachedProduct;
+
+result.TryGetValue(out CacheHit hit).ShouldBeTrue();
+hit.ProductId.ShouldBe(42);
+hit.Price.ShouldBe(19.95m);
+
+readonly record struct CacheHit(
+    [Tag("product id")] int ProductId,
+    [Tag("price")] decimal Price);
+
+readonly record struct CacheMiss(int ProductId);
+
+// A custom union stores value-type cases directly. Value is the required
+// general fallback; TryGetValue is the allocation-free access path.
+[System.Runtime.CompilerServices.Union]
+readonly struct CacheLookupResult : System.Runtime.CompilerServices.IUnion
+{
+    private readonly byte _kind;
+    private readonly CacheHit _hit;
+    private readonly CacheMiss _miss;
+
+    public CacheLookupResult(CacheHit hit) =>
+        (_kind, _hit, _miss) = (1, hit, default);
+
+    public CacheLookupResult(CacheMiss miss) =>
+        (_kind, _hit, _miss) = (2, default, miss);
+
+    public object? Value => _kind switch
+    {
+        1 => _hit,
+        2 => _miss,
+        _ => null
+    };
+
+    public bool HasValue => _kind != 0;
+
+    public bool TryGetValue(out CacheHit value)
+    {
+        value = _hit;
+        return _kind == 1;
+    }
+
+    public bool TryGetValue(out CacheMiss value)
+    {
+        value = _miss;
+        return _kind == 2;
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!NOTE]
+>The `Value` property is mandatory for a custom union and necessarily boxes value-type cases when it is read. Use the strongly typed `TryGetValue` members on performance-sensitive paths; reserve `Value` for diagnostics and general-purpose inspection.
+This scenario requires the preview language version and .NET 11 Preview 5 or later, where the union runtime types are available.
 
 ## Generics
 

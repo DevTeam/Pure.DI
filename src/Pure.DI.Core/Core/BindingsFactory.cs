@@ -279,7 +279,9 @@ class BindingsFactory(
                 }
             }
 
-            if (types.TypeEquals(contractType, elementType))
+            if (types.TypeEquals(contractType, elementType)
+                || contractType is not null
+                && types.IsImplicitUnionConversion(contract.SemanticModel.Compilation, contractType, elementType))
             {
                 yield return contract;
             }

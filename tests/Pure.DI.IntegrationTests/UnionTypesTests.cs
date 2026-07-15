@@ -607,6 +607,7 @@ public class UnionTypesTests
         error.Message.ShouldContain("Sample.StripeGateway");
         error.Message.ShouldContain("Sample.BankGateway");
         error.Message.ShouldContain("Sample.PaymentGateway");
+        error.Locations.Length.ShouldBeGreaterThanOrEqualTo(3);
     }
 
     [Fact]
@@ -1063,5 +1064,389 @@ public class UnionTypesTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count(i => i.Id == LogId.ErrorNotImplementedContract).ShouldBe(1, result);
     }
+
+    [Fact]
+    public async Task ShouldResolveUnionFromCompositionArgument()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               class StripeGateway
+                               {
+                                   public override string ToString() => "Stripe";
+                               }
+
+                               class BankGateway;
+
+                               union PaymentGateway(StripeGateway, BankGateway);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Arg<StripeGateway>("gateway", "primary")
+                                           .Root<PaymentGateway>("Gateway", "primary");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(((System.Runtime.CompilerServices.IUnion)new Composition(new StripeGateway()).Gateway).Value);
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Stripe"], result);
+    }
+
+    [Fact]
+    public async Task ShouldResolveUnionFromRootArgument()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               class StripeGateway
+                               {
+                                   public override string ToString() => "Stripe";
+                               }
+
+                               class BankGateway;
+
+                               union PaymentGateway(StripeGateway, BankGateway);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .RootArg<StripeGateway>("gateway", "primary")
+                                           .Root<PaymentGateway>("Gateway", "primary");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(((System.Runtime.CompilerServices.IUnion)new Composition().Gateway(new StripeGateway())).Value);
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Stripe"], result);
+    }
+
+    [Fact]
+    public async Task ShouldResolveClosedGenericUnionFromSingleCaseBinding()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               record Success<T>(T Value);
+
+                               record Failure(string Error);
+
+                               union Result<T>(Success<T>, Failure);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<int>().To(() => 42)
+                                           .Bind<Success<int>>().To<Success<int>>()
+                                           .Root<Result<int>>("Result");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(((Success<int>)((System.Runtime.CompilerServices.IUnion)new Composition().Result).Value!).Value);
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["42"], result);
+    }
+
+    [Fact]
+    public async Task ShouldResolveUnionThroughStandardConversionToInterfaceCase()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               interface IPaymentGateway;
+
+                               class StripeGateway : IPaymentGateway
+                               {
+                                   public override string ToString() => "Stripe";
+                               }
+
+                               class FallbackGateway;
+
+                               union PaymentGateway(IPaymentGateway, FallbackGateway);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<StripeGateway>().To<StripeGateway>()
+                                           .Root<PaymentGateway>("Gateway");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(((System.Runtime.CompilerServices.IUnion)new Composition().Gateway).Value);
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Stripe"], result);
+    }
+
+    [Fact]
+    public async Task ShouldResolveNullableUnionFromSingleCaseBinding()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               class StripeGateway
+                               {
+                                   public override string ToString() => "Stripe";
+                               }
+
+                               class BankGateway;
+
+                               union PaymentGateway(StripeGateway, BankGateway);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<StripeGateway>().To<StripeGateway>()
+                                           .Root<PaymentGateway?>("Gateway");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(((System.Runtime.CompilerServices.IUnion)new Composition().Gateway!.Value).Value);
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Stripe"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotChainUnionConversions()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               class Visa;
+
+                               class MasterCard;
+
+                               class Cash;
+
+                               union CardPayment(Visa, MasterCard);
+
+                               union Payment(CardPayment, Cash);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<Visa>().To<Visa>()
+                                           .Root<Payment>("Payment");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                   }
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve).ShouldBeGreaterThan(0, result);
+    }
+
+    [Fact]
+    public async Task ShouldCreateUnionOnDemand()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               class StripeGateway
+                               {
+                                   public override string ToString() => "Stripe";
+                               }
+
+                               class BankGateway;
+
+                               union PaymentGateway(StripeGateway, BankGateway);
+
+                               class Checkout(Func<PaymentGateway> gatewayFactory)
+                               {
+                                   public PaymentGateway Gateway => gatewayFactory();
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<StripeGateway>().To<StripeGateway>()
+                                           .Root<Checkout>("Checkout");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(((System.Runtime.CompilerServices.IUnion)new Composition().Checkout.Gateway).Value);
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Stripe"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportGenericUnionRoot()
+    {
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               class Success<T>
+                               {
+                                   public override string ToString() => typeof(T).Name;
+                               }
+
+                               class Failure;
+
+                               union Result<T>(Success<T>, Failure);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<Success<TT>>().To<Success<TT>>()
+                                           .Root<Result<TT>>("GetResult");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(((System.Runtime.CompilerServices.IUnion)new Composition().GetResult<int>()).Value);
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Int32"], result);
+    }
+
+    [Fact]
+    public async Task ShouldCollectTaggedUnionCases()
+    {
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+                           using static Pure.DI.Tag;
+
+                           //UNION_POLYFILL//
+
+                           namespace Sample
+                           {
+                               class StripeGateway
+                               {
+                                   public override string ToString() => "Stripe";
+                               }
+
+                               class BankGateway
+                               {
+                                   public override string ToString() => "Bank";
+                               }
+
+                               union PaymentGateway(StripeGateway, BankGateway);
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition() =>
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .Bind<StripeGateway>(Unique).To<StripeGateway>()
+                                           .Bind<BankGateway>(Unique).To<BankGateway>()
+                                           .Root<IEnumerable<PaymentGateway>>("Gateways");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main() =>
+                                       Console.WriteLine(string.Join(",", new Composition().Gateways.Select(i => ((System.Runtime.CompilerServices.IUnion)i).Value)));
+                               }
+                           }
+                           """.Replace("//UNION_POLYFILL//", UnionRuntimePolyfill).RunAsync(PreviewOptions);
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.Single().ShouldBeOneOf("Stripe,Bank", "Bank,Stripe");
+    }
+
 }
 #endif

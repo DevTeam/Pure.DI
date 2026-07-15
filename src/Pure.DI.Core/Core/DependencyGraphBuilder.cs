@@ -35,6 +35,7 @@ sealed class DependencyGraphBuilder(
     public IEnumerable<DependencyNode> Build(GraphBuildContext ctx)
     {
         var setup = ctx.Setup;
+        var setupBindingIds = new HashSet<int>(setup.Bindings.Select(i => i.Id));
         var nodes = ctx.Nodes;
         var accumulators = ctx.Accumulators;
         var nodesLength = nodes.Length;
@@ -169,8 +170,8 @@ sealed class DependencyGraphBuilder(
                     continue;
                 }
 
-                if (TryGetSpanConversionSource(setup, map, injection, targetNode, out var conversionSource, out var conversionSourceType)
-                    || TryGetUnionConversionSource(setup, map, injection, targetNode, out conversionSource, out conversionSourceType))
+                if (TryGetSpanConversionSource(setupBindingIds, map, injection, targetNode, out var conversionSource, out var conversionSourceType)
+                    || TryGetUnionConversionSource(setup, setupBindingIds, map, injection, targetNode, out conversionSource, out conversionSourceType))
                 {
                     var conversionBinding = bindingsFactory.CreateImplicitConversionBinding(
                         setup,
@@ -579,7 +580,7 @@ sealed class DependencyGraphBuilder(
     }
 
     private bool TryGetSpanConversionSource(
-        MdSetup setup,
+        HashSet<int> setupBindingIds,
         IReadOnlyDictionary<Injection, DependencyNode> map,
         Injection injection,
         DependencyNode targetNode,
@@ -593,7 +594,6 @@ sealed class DependencyGraphBuilder(
             return false;
         }
 
-        var setupBindingIds = new HashSet<int>(setup.Bindings.Select(i => i.Id));
         var compilation = targetNode.Binding.SemanticModel.Compilation;
         foreach (var candidate in map.OrderByDescending(i => i.Value.Binding.Id))
         {
@@ -617,6 +617,7 @@ sealed class DependencyGraphBuilder(
 
     private bool TryGetUnionConversionSource(
         MdSetup setup,
+        HashSet<int> setupBindingIds,
         IReadOnlyDictionary<Injection, DependencyNode> map,
         Injection injection,
         DependencyNode targetNode,
@@ -631,10 +632,8 @@ sealed class DependencyGraphBuilder(
             return false;
         }
 
-        var setupBindingIds = new HashSet<int>(setup.Bindings.Select(i => i.Id));
-        var candidateNodes = new List<DependencyNode>();
-        var candidateTypes = new List<ITypeSymbol>();
-        foreach (var candidate in map.OrderByDescending(i => i.Value.Binding.Id))
+        var candidates = new Dictionary<ITypeSymbol, DependencyNode>(typeSymbolComparer.Runtime);
+        foreach (var candidate in map)
         {
             if (candidate.Value.Binding.Id == targetNode.Binding.Id
                 || !setupBindingIds.Contains(candidate.Value.Binding.Id)
@@ -645,30 +644,30 @@ sealed class DependencyGraphBuilder(
                 continue;
             }
 
-            // Several bindings of the same source type follow the usual override rule,
-            // so only distinct source types can become ambiguous candidates
-            if (candidateTypes.Any(i => typeSymbolComparer.RuntimeEquals(i, candidate.Key.Type)))
+            // Several bindings of the same source type follow the usual override rule.
+            if (candidates.TryGetValue(candidate.Key.Type, out var currentCandidate)
+                && currentCandidate.Binding.Id >= candidate.Value.Binding.Id)
             {
                 continue;
             }
 
-            candidateTypes.Add(candidate.Key.Type);
-            candidateNodes.Add(candidate.Value);
+            candidates[candidate.Key.Type] = candidate.Value;
         }
 
-        switch (candidateTypes.Count)
+        switch (candidates.Count)
         {
             case 0:
                 return false;
 
             case 1:
-                sourceNode = candidateNodes[0];
-                sourceType = candidateTypes[0];
+                var candidate = candidates.First();
+                sourceType = candidate.Key;
+                sourceNode = candidate.Value;
                 return true;
 
             default:
                 var locations = injection.Locations
-                    .Concat(candidateNodes.Select(i => locationProvider.GetLocation(i.Binding.Source)))
+                    .Concat(candidates.Values.Select(i => locationProvider.GetLocation(i.Binding.Source)))
                     .Distinct()
                     .ToImmutableArray();
 
@@ -682,7 +681,7 @@ sealed class DependencyGraphBuilder(
                         Strings.Error_Template_AmbiguousUnionCaseBindings,
                         injection.Type,
                         injection.Tag.ValueToString(),
-                        string.Join(", ", candidateTypes.Select(i => i.ToString()))),
+                        string.Join(", ", candidates.Select(i => $"{i.Key} [{i.Value.Lifetime.ValueToString()}]"))),
                     locations,
                     LogId.ErrorAmbiguousUnionCaseBindings,
                     nameof(Strings.Error_Template_AmbiguousUnionCaseBindings));
