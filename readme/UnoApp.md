@@ -2,10 +2,28 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/UnoApp)
 
-This example shows how to build a cross-platform [Uno Platform](https://platform.uno/) application with Pure.DI. One C# and XAML project targets Windows, macOS, and Linux through the Skia Desktop runtime, while Pure.DI generates the view-model and infrastructure object graphs at compile time.
+This example shows how to use Pure.DI as a compile-time dependency injection solution in an [Uno Platform](https://platform.uno/) application. The sample is a single C# and XAML project configured for the Uno Skia Desktop target, while Pure.DI generates the view-model and infrastructure object graphs at compile time.
 
 > [!TIP]
 > The sample uses the minimal Uno Platform Blank preset and explicit Pure.DI roots. It does not add a runtime DI container, and `Hint.Resolve` is disabled.
+
+##### When to use Pure.DI with Uno Platform
+
+Pure.DI is a good fit when you want the object graph to be validated and generated at compile time, prefer explicit composition roots, and do not need to register application services in a runtime `IServiceCollection`. Generated roots are ordinary properties, so they can be exposed to Uno XAML through an application resource without a service locator.
+
+Uno Platform also offers `Uno.Extensions.DependencyInjection`, which follows the `Microsoft.Extensions.Hosting` and `IServiceProvider` model. Prefer that standard Uno hosting path when the application relies on Uno Extensions, navigation, or other components that expect services to be registered and resolved at runtime. The approach shown here is an alternative for a Blank application; it is not a replacement for every Uno hosting scenario.
+
+##### Verified scope
+
+The sample deliberately keeps its target surface small. Repository verification covers compilation of Pure.DI source generation, Uno XAML resources, design-time roots, and lifecycle wiring in a `net10.0-desktop` project. Runtime behavior must still be validated on every operating system the application ships on.
+
+| Target                                         | Sample status                                                                                   |
+|------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| Skia Desktop, `net10.0-desktop`                | Included and build-verified                                                                     |
+| Windows, macOS, and Linux desktop execution    | Supported by the configured Uno Skia Desktop target; validate on each operating system you ship |
+| Windows App SDK, WebAssembly, Android, and iOS | Not demonstrated by this sample                                                                 |
+
+This table describes the coverage of this sample, not a limitation imposed by the Pure.DI generator. Add the required Uno target frameworks and perform platform-specific build and runtime checks before claiming support for additional targets in an application.
 
 The composition is defined in [Composition.cs](/samples/UnoApp/Composition.cs). Its virtual roots are available to XAML and can be replaced by the design-time composition:
 
@@ -75,6 +93,8 @@ A shared `Composition` is declared in [App.xaml](/samples/UnoApp/App.xaml), just
     </Application.Resources>
 </Application>
 ```
+
+##### Lifecycle and disposal
 
 The application retrieves that resource when it creates the main window and disposes it when the window closes. This releases disposable singleton and scoped dependencies owned by Pure.DI:
 
@@ -166,7 +186,21 @@ The [project file](/samples/UnoApp/UnoApp.csproj) uses the current single-projec
 </Project>
 ```
 
-|              |                                                                                          |                                      |
-|--------------|------------------------------------------------------------------------------------------|:-------------------------------------|
-| Pure.DI      | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI) | DI source code generator             |
-| Uno Platform | [Documentation](https://platform.uno/docs/)                                               | Cross-platform WinUI-compatible UI   |
+The repository sample references the local Pure.DI projects so changes to the generator can be tested directly. Applications consuming a released version should use the `PackageReference` shown above.
+
+##### Build and run the sample
+
+From the repository root, restore, build, and run the verified Skia Desktop target:
+
+```shell
+dotnet restore samples/UnoApp/UnoApp.csproj
+dotnet build samples/UnoApp/UnoApp.csproj -f net10.0-desktop
+dotnet run --project samples/UnoApp/UnoApp.csproj -f net10.0-desktop
+```
+
+Run the application on every desktop operating system you intend to support. A successful build verifies source generation and compilation; launching it also verifies XAML resource creation, bindings, dispatcher access, and disposal for that runtime.
+
+|              |                                                                                            |                                    |
+|--------------|--------------------------------------------------------------------------------------------|:-----------------------------------|
+| Pure.DI      | [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI) | DI source code generator           |
+| Uno Platform | [Documentation](https://platform.uno/docs/)                                                | Cross-platform WinUI-compatible UI |
