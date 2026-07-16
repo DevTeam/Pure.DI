@@ -9,6 +9,7 @@
   - [MAUI](readme/Maui.md)
   - [WPF](readme/Wpf.md)
   - [Avalonia](readme/Avalonia.md)
+  - [Uno Platform](readme/UnoApp.md)
   - [Win Forms Net Core](readme/WinFormsAppNetCore.md)
   - [Win Forms](readme/WinFormsApp.md)
 - Web

@@ -1,0 +1,24 @@
+<Project Sdk="Uno.Sdk/6.5.36">
+
+    <PropertyGroup>
+        <TargetFrameworks>net10.0-desktop</TargetFrameworks>
+        <!-- Uno SDK derives this value from TargetFrameworks; clear the conflicting sample-wide property. -->
+        <TargetFrameworkVersion />
+        <OutputType>Exe</OutputType>
+        <UnoSingleProject>true</UnoSingleProject>
+        <ApplicationTitle>Pure.DI Uno App</ApplicationTitle>
+        <ApplicationId>com.devteam.puredi.unoapp</ApplicationId>
+        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationPublisher>DevTeam</ApplicationPublisher>
+        <Description>A cross-platform Uno Platform application powered by Pure.DI.</Description>
+        <UnoFeatures>SkiaRenderer;</UnoFeatures>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\Clock\Clock.csproj" />
+    </ItemGroup>
+
+</Project>
