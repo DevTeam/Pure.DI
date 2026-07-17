@@ -182,44 +182,6 @@ This code does not depend on other libraries, does not use type reflection, and 
 
 The `public Program Root { get; }` property is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/), the only place in the application where the composition of the object graph takes place. Each instance is created using basic language constructs, which compile with all optimizations and minimal impact on performance and memory consumption. In general, applications may have multiple composition roots and thus such properties. Each composition root must have its own unique name, which is defined when the `Root<T>(string name)` method is called, as shown in the code above.
 
-<details>
-<summary>Injection selection and execution priorities</summary>
-
-Pure.DI treats constructor injection and member injection differently. Exactly one constructor is selected for an instance, while every eligible injection method, property, and field is applied. If the dependency graph for a preferred constructor cannot be resolved, Pure.DI continues with the next constructor candidate.
-
-#### Constructor selection
-
-Constructor candidates are considered in the following priority order:
-
-| Priority | Rule                                                                                                                                                                                                                                          |
-|:--------:|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|    1     | If at least one accessible constructor has [`OrdinalAttribute`](readme/constructor-ordinal-attribute.md), only constructors marked with `Ordinal` participate. Lower ordinal values are tried first.                                          |
-|    2     | Otherwise, constructors with a higher [`OverloadResolutionPriorityAttribute`](readme/overload-resolution-priority.md) value are preferred. A constructor without the attribute has priority `0`; negative values de-prioritize a constructor. |
-|    3     | A constructor with more injection parameters is preferred.                                                                                                                                                                                    |
-|    4     | A more accessible constructor is preferred: `public` before `internal`.                                                                                                                                                                       |
-|    5     | When neither `Ordinal` mode nor an explicit `OverloadResolutionPriorityAttribute` is active, a primary constructor is preferred as the final tie-breaker.                                                                                     |
-
-`OrdinalAttribute` is the explicit Pure.DI override and takes precedence over `OverloadResolutionPriorityAttribute`. Constructors with the same ordinal use the number of injection parameters and accessibility as secondary criteria; `OverloadResolutionPriorityAttribute` and the implicit primary-constructor preference remain disabled in this mode. For a primary constructor, constructor attributes use the `method:` target, for example `[method: Ordinal(0)]` or `[method: OverloadResolutionPriority(1)]`. If candidates are still equal, do not rely on their declaration or Roslyn symbol order; use distinct ordinal values when the choice affects behavior.
-
-#### Method, property, and field injection
-
-A member participates in injection when it is accessible and is marked by a recognized injection attribute such as `Ordinal`, `Tag`, or `Type`. An injection method can be selected by an attribute on the method or on one of its parameters. A method-level ordinal takes precedence; otherwise, the lowest ordinal specified on its parameters becomes the method ordinal. Mutable `required` properties and fields participate automatically. A selected `init` property is assigned in the object initializer.
-
-Injection is generated in this execution order:
-
-| Priority | Injection stage                                                                                                |
-|:--------:|----------------------------------------------------------------------------------------------------------------|
-|    1     | Constructor arguments are resolved and the selected constructor is invoked.                                    |
-|    2     | Required fields are assigned in the object initializer, ordered by ascending `Ordinal`.                        |
-|    3     | Required or selected `init` properties are assigned in the object initializer, ordered by ascending `Ordinal`. |
-|    4     | Remaining fields, properties, and methods are processed together in ascending `Ordinal` order.                 |
-
-Lower ordinal values therefore run earlier, and negative values are valid. A member selected only by `Tag` or `Type`, and a `required` member without an explicit ordinal, receives the default ordinal `int.MaxValue` and is processed after explicitly ordered members in the same stage. For equal ordinals, regular members are processed deterministically: fields first, then properties, then methods; declaration order is preserved within each kind. Members of the same kind declared on a derived type are processed before members inherited from its base types. Equal ordinals are valid and do not produce a diagnostic.
-
-These rules control when the generated assignment or method call is performed. Pure.DI may construct the member dependencies earlier while building the object graph, so do not use `Ordinal` to order dependency-constructor side effects. Put order-sensitive work in the member setter or injection method itself.
-
-</details>
-
 ### Time to open boxes!
 
 ```c#
@@ -238,27 +200,6 @@ Pure.DI creates efficient code in a pure DI paradigm, using only basic language 
 
 The full equivalent of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
 
-<details>
-<summary>Just try creating a project from scratch!</summary>
-
-Install the [project template](https://www.nuget.org/packages/Pure.DI.Templates)
-
-```shell
-dotnet new install Pure.DI.Templates
-```
-
-In a directory, create a console application
-
-```shell
-dotnet new di
-```
-
-Run it
-
-```shell
-dotnet run
-```
-
-</details>
+Want to try it right away? Create a project from the [project template](#project-template).
 
 [An introductory article that will help you understand the basic idea and get started with Pure.DI](readme/en_art_basics/en_basics.md)
