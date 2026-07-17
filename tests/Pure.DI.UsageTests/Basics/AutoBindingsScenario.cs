@@ -8,6 +8,7 @@ $d=Auto-bindings
 $sa=Injections of abstractions
 $sa=Simplified binding
 $h=Pure.DI can create non-abstract types without explicit bindings, which makes quick prototypes and small demos concise.
+$h=![](auto-binding.gif)
 $h=The generator still validates the graph at compile time and produces regular C# object creation code.
 $f=Auto-bindings are convenient for utilities and sample code where dependency choices are obvious.
 $f=In larger applications they can hide architectural intent, because consumers start depending on concrete classes.

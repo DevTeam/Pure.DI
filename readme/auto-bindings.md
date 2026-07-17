@@ -1,6 +1,7 @@
 #### Auto-bindings
 
 Pure.DI can create non-abstract types without explicit bindings, which makes quick prototypes and small demos concise.
+![](auto-binding.gif)
 The generator still validates the graph at compile time and produces regular C# object creation code.
 
 
