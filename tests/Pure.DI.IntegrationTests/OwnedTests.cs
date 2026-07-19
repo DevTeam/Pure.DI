@@ -3088,4 +3088,109 @@ public class OwnedTests
         result.StdOut.ShouldBe(["True", "True"], result);
     }
 
+    [Fact]
+    public async Task ShouldIsolateUserDefinedAccumulatorsForDifferentOwnedTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var factories = composition.Factories;
+                                       var first = factories.first();
+                                       var second = factories.second();
+
+                                       first.Dispose();
+                                       Console.WriteLine(first.Value.IsDisposed);
+                                       Console.WriteLine(!second.Value.IsDisposed);
+
+                                       second.Dispose();
+                                       Console.WriteLine(second.Value.IsDisposed);
+                                   }
+                               }
+
+                               interface ICustomOwned : IDisposable;
+
+                               sealed class CustomAccumulator : List<object>, ICustomOwned
+                               {
+                                   public void Dispose()
+                                   {
+                                       for (var i = Count - 1; i >= 0; i--)
+                                       {
+                                           if (this[i] is IDisposable disposable and not ICustomOwned)
+                                           {
+                                               disposable.Dispose();
+                                           }
+                                       }
+                                   }
+                               }
+
+                               readonly struct CustomOwned<T>(T value, ICustomOwned owned) : ICustomOwned
+                               {
+                                   public T Value { get; } = value;
+
+                                   public void Dispose() => owned.Dispose();
+                               }
+
+                               interface IFirst
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class First : IFirst, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface ISecond
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Second : ISecond, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<IDisposable, CustomAccumulator>(Transient, PerResolve, PerBlock)
+                                           .Bind<ICustomOwned>().To((CustomAccumulator accumulator) => accumulator)
+                                           .Bind<CustomOwned<TT>>().As(PerBlock).To(ctx =>
+                                           {
+                                               ctx.Inject<ICustomOwned>(out var owned);
+                                               ctx.Inject<TT>(ctx.Tag, out var value);
+                                               return new CustomOwned<TT>(value, owned);
+                                           })
+                                           .Bind().To<First>()
+                                           .Bind().To<Second>()
+                                           .Root<(
+                                               Func<CustomOwned<IFirst>> first,
+                                               Func<CustomOwned<ISecond>> second)>("Factories");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
 }

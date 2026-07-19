@@ -61,12 +61,21 @@ sealed class RootCodeBuilder(
         var isBlock = nodeTools.IsBlock(var.AbstractNode);
         var isLazy = nodeTools.IsLazy(var.AbstractNode.Node, parentCtx.RootContext.Graph);
         var acc = isLazy ? accumulators.GetAccumulators(varCtx.RootContext.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
+        var isolatedAccumulatorTypes = acc
+            .Select(i => i.Item1.AccumulatorType)
+            .Where(i => !ContainsType(var.InstanceType, i))
+            .ToImmutableArray();
+        var accumulatorBindingIds = parentCtx.Accumulators
+            .Where(i => isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
+            .Select(i => i.VarInjection.Var.AbstractNode.BindingId)
+            .Distinct()
+            .ToImmutableArray();
         var isLocalFunction = localFunctions.UseFor(varCtx);
         var mapToken =
             isLocalFunction
                 ? varsMap.LocalFunction(var, lines)
                 : isLazy
-                    ? varsMap.Lazy(var, lines)
+                    ? varsMap.Lazy(var, lines, accumulatorBindingIds)
                     : isBlock
                         ? varsMap.Block(var, lines)
                         : Disposables.Empty;
@@ -85,9 +94,21 @@ sealed class RootCodeBuilder(
         var ctx = varCtx;
         if (isLazy)
         {
-            ctx = ctx with { Accumulators = ctx.Accumulators.AddRange(accumulators.CreateAccumulators(varCtx.RootContext.Graph, acc, varsMap)), IsFactory = false };
+            var inheritedAccumulators = ctx.Accumulators
+                .Where(i => !accumulatorBindingIds.Contains(i.VarInjection.Var.AbstractNode.BindingId))
+                .ToImmutableArray();
+            ctx = ctx with
+            {
+                Accumulators = inheritedAccumulators.AddRange(accumulators.CreateAccumulators(varCtx.RootContext.Graph, acc, varsMap)),
+                IsFactory = false
+            };
             ctx.Overrides.Clear();
-            accumulators.BuildAccumulators(ctx);
+            accumulators.BuildAccumulators(ctx with
+            {
+                Accumulators = ctx.Accumulators
+                    .Where(i => !isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
+                    .ToImmutableArray()
+            });
         }
 
         var varInjections = new List<VarInjection>();
@@ -137,6 +158,22 @@ sealed class RootCodeBuilder(
 
         parentCtx.Lines.AppendLines(lines);
         var.Declaration.IsDeclared = true;
+    }
+
+    private static bool ContainsType(ITypeSymbol type, ITypeSymbol expectedType)
+    {
+        if (SymbolEqualityComparer.Default.Equals(type, expectedType))
+        {
+            return true;
+        }
+
+        return type switch
+        {
+            IArrayTypeSymbol arrayType => ContainsType(arrayType.ElementType, expectedType),
+            IPointerTypeSymbol pointerType => ContainsType(pointerType.PointedAtType, expectedType),
+            INamedTypeSymbol namedType => namedType.TypeArguments.Any(i => ContainsType(i, expectedType)),
+            _ => false
+        };
     }
 
     private void StartSingleInstanceCheck(CodeContext ctx)

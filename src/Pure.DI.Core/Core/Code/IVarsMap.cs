@@ -49,8 +49,11 @@ interface IVarsMap
     /// </summary>
     /// <param name="var">The variable being lazily initialized.</param>
     /// <param name="lines">The code lines for debugging.</param>
+    /// <param name="accumulatorBindingIds">
+    /// Parent accumulator bindings reintroduced by the lazy graph and isolated from the parent scope.
+    /// </param>
     /// <returns>A disposable that restores the state when the scope is closed.</returns>
-    IDisposable Lazy(Var var, Lines lines);
+    IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds);
 
     /// <summary>
     /// Creates a scope for a code block.

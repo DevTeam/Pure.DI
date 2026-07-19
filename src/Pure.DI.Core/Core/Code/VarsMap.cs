@@ -167,15 +167,47 @@ class VarsMap(
     }
 
     /// <inheritdoc />
-    public IDisposable Lazy(Var var, Lines lines)
+    public IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds)
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
+
+        // If the lazy graph injects an accumulator already used by its parent,
+        // it defines a nested accumulation boundary. This is intentionally
+        // based on accumulator metadata, not on a specific ownership wrapper.
+        List<KeyValuePair<int, Var>>? removed = null;
+        foreach (var bindingId in accumulatorBindingIds)
+        {
+            if (!_map.TryGetValue(bindingId, out var accumulatorVar))
+            {
+                continue;
+            }
+
+#if DEBUG
+            lines.AppendLine($"// {accumulatorVar.Declaration.Name}: remove ({nameof(Lazy)})");
+#endif
+            (removed ??= new List<KeyValuePair<int, Var>>(accumulatorBindingIds.Length))
+                .Add(new KeyValuePair<int, Var>(bindingId, accumulatorVar));
+            _map.Remove(bindingId);
+        }
+
         return Disposables.Create(() => {
             _suppressedTrackingCount++;
             try
             {
                 RemoveNewNonPersistentVars(var, scope, lines, nameof(Lazy));
                 RestoreState(scope, lines, nameof(Lazy), true);
+                if (removed is null)
+                {
+                    return;
+                }
+
+                foreach (var item in removed)
+                {
+#if DEBUG
+                    lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({nameof(Lazy)})");
+#endif
+                    _map[item.Key] = item.Value;
+                }
             }
             finally
             {

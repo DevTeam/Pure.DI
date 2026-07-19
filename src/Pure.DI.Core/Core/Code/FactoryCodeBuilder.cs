@@ -18,6 +18,7 @@ sealed class FactoryCodeBuilder(
     Func<FactoryRewriterContext, IFactoryRewriter> factoryRewriterFactory,
     ILocationProvider locationProvider,
     ILocks locks,
+    IAccumulators accumulators,
     INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
     INodeTools nodeTools,
@@ -297,6 +298,7 @@ sealed class FactoryCodeBuilder(
         var initsCount = inits.Count;
         var resolversIdx = 0;
         var initsIdx = 0;
+        var accumulatorsBuilt = false;
         var initializationArgsIdx = new StrongBox<int>(0);
         if (fixFirstLinePrefix && linePrefixes.Count > 1)
         {
@@ -330,6 +332,12 @@ sealed class FactoryCodeBuilder(
                 // Replaces injection markers by injection code
                 if (marker.SequenceEqual(InjectionStatement.AsSpan()) && resolversIdx < resolversCount)
                 {
+                    if (isLazy && !accumulatorsBuilt)
+                    {
+                        accumulators.BuildAccumulators(ctx);
+                        accumulatorsBuilt = true;
+                    }
+
                     // When an injection marker
                     var (injection, argument) = (injections[resolversIdx], injectionArgs[resolversIdx]);
                     var resolver = factory.Resolvers[resolversIdx];
@@ -364,6 +372,12 @@ sealed class FactoryCodeBuilder(
                 // Replaces initialization markers by initialization code
                 if (marker.SequenceEqual(InitializationStatement.AsSpan()) && initsIdx < initsCount)
                 {
+                    if (isLazy && !accumulatorsBuilt)
+                    {
+                        accumulators.BuildAccumulators(ctx);
+                        accumulatorsBuilt = true;
+                    }
+
                     var (initialization, initializer) = (inits[initsIdx], factory.Initializers[initsIdx]);
                     initsIdx++;
                         
