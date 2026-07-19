@@ -24,7 +24,7 @@ namespace Pure.DI
                     Lifetime.Transient,
                     Lifetime.PerResolve,
                     Lifetime.PerBlock)
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
                 .Accumulate<global::System.IAsyncDisposable, Owned>(
                     Lifetime.Transient,
                     Lifetime.PerResolve,

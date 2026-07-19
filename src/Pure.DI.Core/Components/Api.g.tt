@@ -1812,7 +1812,7 @@ namespace Pure.DI
     /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
     internal interface IOwned
         : global::System.IDisposable
-    #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+    #if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
             , global::System.IAsyncDisposable
     #endif
     {
@@ -1862,7 +1862,7 @@ namespace Pure.DI
                             }
                             break;
 
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
                         case global::System.IAsyncDisposable asyncDisposableInstance:
                             try
                             {
@@ -1891,7 +1891,7 @@ namespace Pure.DI
             }
         }
 
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <inheritdoc />
         public async global::System.Threading.Tasks.ValueTask DisposeAsync()
         {
@@ -1955,7 +1955,7 @@ namespace Pure.DI
         partial void OnDisposeException<T>(T disposableInstance, global::System.Exception exception)
             where T: global::System.IDisposable;
 
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <summary>
         /// Override this partial method to implement custom exception handling
         /// during asynchronous disposal of an <see cref="IAsyncDisposable"/> instance.
@@ -2004,7 +2004,7 @@ namespace Pure.DI
             _owned.Dispose();
         }
 
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <inheritdoc />
         public global::System.Threading.Tasks.ValueTask DisposeAsync()
         {
