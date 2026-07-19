@@ -94,9 +94,9 @@ class CheckoutService(PaymentGateway gateway, IReceiptService receipts)
 
 Смена провайдера — однострочное изменение: `.Bind<PaymentGateway>().To<BankGateway>()`. Что важно знать:
 
-- если явной union‑привязки нет, но ровно одна зарегистрированная привязка конвертируется в union — Pure.DI разрешит union через этот единственный case автоматически
-- если применимых case‑привязок несколько — вы получите ошибку `DIE050` со списком кандидатов и указанием мест привязок
-- union‑типы **не участвуют** в автопривязках — случайно создать «пустой» union не получится
+- если явной union‑привязки нет, но ровно одна зарегистрированная привязка конвертируется в union, Pure.DI разрешит union через этот единственный case автоматически
+- если применимых case‑привязок несколько, вы получите ошибку `DIE050` со списком кандидатов и указанием мест привязок
+- union‑типы **не участвуют** в автопривязках и случайно создать «пустой» union не получится
 - case‑привязка остаётся владельцем своего lifetime и disposal: `Singleton`, `Scoped`, `PerResolve` работают как обычно
 - коллекции case‑ов собираются через `Tag.Unique`: можно запросить `IEnumerable<PaymentGateway>`, массив, `ReadOnlySpan<>` и т. д.
 
@@ -169,7 +169,7 @@ class PaymentAuditAdapter(IEventStore eventStore) :
     IPaymentAuditSink;
 ```
 
-Кроме `[Bind]`, работают и «точечные» атрибуты `[Type]`, `[Tag]` и новый `[Lifetime]` — их можно комбинировать. Для generic‑реализаций поддерживаются маркерные контракты вида `typeof(IBox<TT>)`.
+Кроме `[Bind]` работают и «точечные» атрибуты: `[Type]`, `[Tag]` и новый `[Lifetime]`, и их можно комбинировать. Для generic‑реализаций поддерживаются маркерные контракты вида `typeof(IBox<TT>)`.
 
 [BindAttribute на реализации](https://github.com/DevTeam/Pure.DI/blob/master/readme/bind-attribute.md)
 
@@ -179,7 +179,7 @@ class PaymentAuditAdapter(IEventStore eventStore) :
 
 ### `[Export]`: члены классов как источники зависимостей
 
-Раньше источник зависимости задавал member-level атрибут `[Bind]`. Теперь эта роль у нового атрибута `[Export]` — семантика стала однозначной: `[Bind]` — про привязки, `[Export]` — про источники зависимостей:
+Раньше источник зависимости задавал member-level атрибут `[Bind]`. Теперь эта роль у нового атрибута `[Export]`, семантика стала однозначной: `[Bind]` — про привязки, `[Export]` — про источники зависимостей:
 
 ```csharp
 DI.Setup(nameof(Composition))
@@ -220,7 +220,7 @@ class RayTracer([Tag("HighPerformance")] IGpu gpu) : IRenderer;
 
 ### Кастомные binding-атрибуты
 
-Если не хочется размечать реализации встроенными атрибутами Pure.DI — объявите **собственный** атрибут и зарегистрируйте его в setup. Методы `TypeAttribute<T>()`, `TagAttribute<T>()` и новый `LifetimeAttribute<T>()` объясняют генератору, из каких аргументов конструктора атрибута читать контракт, тег и время жизни. В приведённом варианте атрибут использует тип `Pure.DI.Lifetime`, поэтому сборке с реализациями всё ещё нужна ссылка на API Pure.DI:
+Если не хочется размечать реализации встроенными атрибутами Pure.DI, объявите **собственный** атрибут и зарегистрируйте его в setup. Методы `TypeAttribute<T>()`, `TagAttribute<T>()` и новый `LifetimeAttribute<T>()` объясняют генератору, из каких аргументов конструктора атрибута читать контракт, тег и время жизни. В приведённом варианте атрибут использует тип `Pure.DI.Lifetime`, поэтому сборке с реализациями всё ещё нужна ссылка на API Pure.DI:
 
 ```csharp
 DI.Setup(nameof(Composition))
@@ -279,7 +279,7 @@ partial class Composition
 }
 ```
 
-Имя метода подбирается под домен: `CreateScope`, `BeginRequest`, `OpenSession` — что улучшает читаемость кода. Скоупы могут создаваться и фабричными методами, а родительский и дочерний скоупы валидируются на различие — случайное «вложение в себя» исключено.
+Имя метода подбирается под домен: `CreateScope`, `BeginRequest`, `OpenSession`, что улучшает читаемость кода. Скоупы могут создаваться и фабричными методами. Родительский и дочерний скоупы валидируются на различие, случайное «вложение в себя» исключено.
 
 [Scope setup method: скоуп на запрос без класса-обёртки](https://github.com/DevTeam/Pure.DI/blob/master/readme/scope-setup-method.md)
 
@@ -314,7 +314,7 @@ public partial class Scope : MonoBehaviour
 
 ### Nullable reference types на всём пути
 
-Версия 2.4.0 принесла полную поддержку nullable reference types — аннотации сохраняются при чтении контрактов, построении графа и генерации кода. Это breaking change: код, полагавшийся на автоматические null‑проверки для nullable‑аргументов, может потребовать корректировки.
+Версия 2.4.0 принесла полную поддержку nullable reference types: аннотации сохраняются при чтении контрактов, построении графа и генерации кода. Это breaking change: код, полагающийся на автоматические null‑проверки для nullable‑аргументов, может потребовать корректировки.
 
 ```csharp
 DI.Setup(nameof(Composition))
@@ -338,7 +338,7 @@ class ReportService(
 На что это влияет:
 
 - non-null привязка может удовлетворить nullable‑зависимость — удобно для опциональных параметров конструктора, nullable‑результатов фабрик и элементов коллекций
-- `T?` означает «потребитель умеет обрабатывать null», но не отменяет ошибку графа при отсутствующей привязке — вся строгость проверок сохраняется
+- `T?` означает «потребитель умеет обрабатывать null», но не отменяет ошибку графа при отсутствующей привязке, вся строгость проверок сохраняется
 - для generic‑контрактов с nullable‑аргументами предпочитайте `where T : class?` вместо `where T : class`, чтобы не получать предупреждений от компилятора
 - новые предупреждения подсвечивают неоднозначные nullable‑корни в методах `Resolve`
 
@@ -378,7 +378,7 @@ if (!composition.TryBuildUp(externalRobot))
 
 ### Новые возможности C# 13/14: partial-конструкторы и `OverloadResolutionPriority`
 
-C# 14 позволяет разделить конструктор на объявление (контракт) и тело — например, чтобы контракт с DI‑атрибутами жил в одной части partial‑класса, а логика в другой (в том числе сгенерированной). Pure.DI видит объединённый конструктор и работает с ним как с обычным:
+C# 14 позволяет разделить конструктор на объявление (контракт) и тело. Например, чтобы контракт с DI‑атрибутами жил в одной части partial‑класса, а логика в другой (в том числе сгенерированной). Pure.DI видит объединённый конструктор и работает с ним как с обычным:
 
 ```csharp
 partial class AuditSink : AuditSinkBase
@@ -418,7 +418,7 @@ class BillingApiClient(ResilientHttpOptions options)
 }
 ```
 
-Приоритеты работают как в C#: больше — предпочтительнее, неаннотированные конструкторы имеют приоритет 0, отрицательные значения понижают приоритет. `[Ordinal]` остаётся явным и более сильным механизмом Pure.DI. Предупреждение `DIW014` относится к другому случаю — method injection: оно сообщает, что обычный сгенерированный вызов метода может попасть в другую перегрузку с более высоким `OverloadResolutionPriority`.
+Приоритеты работают как в C#: больше — предпочтительнее, неаннотированные конструкторы имеют приоритет 0, отрицательные значения понижают приоритет. `[Ordinal]` остаётся явным и более сильным механизмом Pure.DI. Предупреждение `DIW014` относится к другому случаю, method injection: оно сообщает, что обычный сгенерированный вызов метода может попасть в другую перегрузку с более высоким `OverloadResolutionPriority`.
 
 [OverloadResolutionPriority при выборе конструктора](https://github.com/DevTeam/Pure.DI/blob/master/readme/overload-resolution-priority.md)
 
@@ -430,7 +430,7 @@ class BillingApiClient(ResilientHttpOptions options)
 
 ### `Span<T>` и `ReadOnlySpan<T>` как зависимости
 
-`Span` внедряется так же, как массивы `T[]` — для немедленного использования в конструкторе или методе. Для value‑типов Pure.DI генерирует `stackalloc`: коллекция зависимостей собирается вообще без heap‑аллокации.
+`Span` внедряется также, как массивы `T[]` — для немедленного использования в конструкторе или методе. Для value‑типов Pure.DI генерирует `stackalloc`: коллекция зависимостей собирается вообще без heap‑аллокации.
 
 ```csharp
 DI.Setup(nameof(Composition))
@@ -531,7 +531,7 @@ sealed class PacketHandler(IMessageRegistry registry) : IPacketHandler
 
 [Zero-copy парсинг сетевых пакетов](https://github.com/DevTeam/Pure.DI/blob/master/readme/zero-copy-network-packet-parsing.md)
 
-Если аргумент сам stack-only (`.RootArg<ReadOnlySpan<char>>("path")`), сгенерированный корень (у нас метод) получает сигнатуру с модификатором `scoped` — компилятор гарантирует, что значение не переживёт текущий stack frame. Типичные сценарии: парсеры, роутеры, декодеры протоколов, конвейеры валидации.
+Если аргумент сам stack-only (`.RootArg<ReadOnlySpan<char>>("path")`), сгенерированный корень (у нас метод) получает сигнатуру с модификатором `scoped`, компилятор гарантирует, что значение не переживёт текущий stack frame. Типичные сценарии: парсеры, роутеры, декодеры протоколов, конвейеры валидации.
 
 [Method injection для hot path](https://github.com/DevTeam/Pure.DI/blob/master/readme/method-injection-for-a-hot-path.md)
 
@@ -539,7 +539,7 @@ sealed class PacketHandler(IMessageRegistry registry) : IPacketHandler
 
 ### Диагностики для stack-only
 
-Работа со стеком — место, где легко получить хитрую ошибку. Pure.DI переносит эти ошибки на этап компиляции — добавлен целый пакет диагностик:
+Работа со стеком — место, где легко получить хитрую ошибку. Pure.DI переносит эти ошибки на этап компиляции. Добавлен целый пакет диагностик:
 
 - `DIE046` — stack-only зависимость нельзя использовать с «хранимыми» lifetime (Singleton, Scoped и т. п.)
 - `DIE047` — stack-only зависимость нельзя внедрить в поле или свойство
@@ -548,7 +548,7 @@ sealed class PacketHandler(IMessageRegistry registry) : IPacketHandler
 - `DIW012` — предупреждение о внедрении stack-only зависимости в конструктор heap‑типа
 - `DIW013` — предупреждение о несинхронизированном override stack-only значения в потокобезопасном контексте
 
-Заметьте: там, где раньше вы получили бы малопонятную ошибку компилятора C# (вроде `CS9244`), Pure.DI выдаёт свою диагностику с объяснением и ссылкой на справку.
+Заметьте, там, где раньше вы получили бы малопонятную ошибку компилятора C# (вроде `CS9244`), Pure.DI выдаёт свою диагностику с объяснением и ссылкой на справку.
 
 [Справочник диагностик Pure.DI](https://github.com/DevTeam/Pure.DI/blob/master/DIAGNOSTICS.md)
 
@@ -556,7 +556,7 @@ sealed class PacketHandler(IMessageRegistry registry) : IPacketHandler
 
 ### Non-boxing union results
 
-Возвращаемся к union types — теперь со стороны производительности. Компактный `union` хранит значение как `object`, то есть боксит value‑типы. Для горячих путей поддерживаются **кастомные** union‑результаты, которые хранят value-type case в отдельном поле — без боксинга, рефлексии и обёрток:
+Возвращаемся к union types, теперь со стороны производительности. Компактный `union` хранит значение как `object`, то есть боксит value‑типы. Для горячих путей поддерживаются **кастомные** union‑результаты, которые хранят value-type case в отдельном поле: без боксинга, рефлексии и обёрток.
 
 ```csharp
 DI.Setup(nameof(Composition))
@@ -613,7 +613,7 @@ readonly struct CacheLookupResult : System.Runtime.CompilerServices.IUnion
 
 - **[ArrayPool-буферы](https://github.com/DevTeam/Pure.DI/blob/master/readme/arraypool-buffer.md)** — `ArrayPool<T>` поддерживается из коробки: запрашивайте `ArrayPool<byte>` как обычную зависимость, а возврат буфера в пул привязывайте к dispose владельца через `Owned<T>`
 - **[Пул объектов](https://github.com/DevTeam/Pure.DI/blob/master/readme/object-pool.md)** — Singleton‑пул «тёплых» объектов плюс короткоживущий lease на каждый вызов корня: переиспользование явное, утечек за пределы скоупа нет
-- **[Фабрики без захвата замыканий](https://github.com/DevTeam/Pure.DI/blob/master/readme/factory-without-closure-capture.md)** — зависимости объявляются параметрами лямбды (`.To((CurrencyFormatter currency, TaxPolicy tax) => ...)`), а не захватываются из окружения — код фабрики детерминирован и allocation-friendly
+- **[Фабрики без захвата замыканий](https://github.com/DevTeam/Pure.DI/blob/master/readme/factory-without-closure-capture.md)** — зависимости объявляются параметрами лямбды (`.To((CurrencyFormatter currency, TaxPolicy tax) => ...)`), а не захватываются из окружения, а код фабрики детерминирован и allocation-friendly
 - **[Struct-зависимости](https://github.com/DevTeam/Pure.DI/blob/master/readme/struct-dependency.md)** — небольшая value-type зависимость создаётся напрямую и не требует отдельной heap‑аллокации
 - **[ValueTask-корни](https://github.com/DevTeam/Pure.DI/blob/master/readme/valuetask-root.md)** — корень вида `Root<ValueTask<IFeatureSnapshot>>` без аллокации `Task<T>` для синхронного случая
 - **[ThreadSafe = Off](https://github.com/DevTeam/Pure.DI/blob/master/readme/threadsafe-off-for-single-thread-composition.md)** — если композиция создаётся и используется на одном потоке (CLI‑утилита, фаза инициализации game loop), хинт `.Hint(Hint.ThreadSafe, "Off")` убирает сгенерированную синхронизацию полностью
@@ -622,7 +622,7 @@ readonly struct CacheLookupResult : System.Runtime.CompilerServices.IUnion
 
 ### Оптимизация генерации кода
 
-- поле `_lock` теперь создаётся только тогда, когда на него действительно ссылается хотя бы один `lock (...)` — раньше оно создавалось «на всякий случай» для любой композиции, расходуя память в каждом экземпляре
+- поле `_lock` теперь создаётся только тогда, когда на него действительно ссылается хотя бы один `lock (...)`, раньше оно создавалось «на всякий случай» для любой композиции, расходуя память в каждом экземпляре
 - весь сгенерированный код помечается `[GeneratedCode]` — анализаторы, coverage и code-style инструменты могут распознавать его и, в зависимости от настроек, исключать из анализа или покрытия; в сгенерированный класс встраивается фактическая версия пакета Pure.DI
 - при построении графа и генерации добавлены кэширование, предпочтение более дешёвого синтаксического анализа там, где он достаточен, и устранение части повторных попыток построения графа — это снижает накладные расходы генератора во время компиляции
 
@@ -660,7 +660,7 @@ class NotificationService(IReadOnlyDictionary<Channel, INotificationChannel> cha
 
 [Dictionary: выбор зависимости по ключу](https://github.com/DevTeam/Pure.DI/blob/master/readme/dictionary.md)
 
-**Больше BCL-типов из коробки.** `TimeProvider`, `TaskCompletionSource<T>`, `CultureInfo`, `IFormatProvider`, `StringComparer`, `IReadOnlySet<T>`, `RandomNumberGenerator` и другие внедряются без дополнительных усилий — а при необходимости [default‑привязку можно переопределить](https://github.com/DevTeam/Pure.DI/blob/master/readme/default-bcl-bindings.md).
+**Больше BCL-типов из коробки.** `TimeProvider`, `TaskCompletionSource<T>`, `CultureInfo`, `IFormatProvider`, `StringComparer`, `IReadOnlySet<T>`, `RandomNumberGenerator` и другие внедряются без дополнительных усилий, а при необходимости [default‑привязку можно переопределить](https://github.com/DevTeam/Pure.DI/blob/master/readme/default-bcl-bindings.md).
 
 **Фабрики до 16 параметров**, обновление Roslyn до 5.6.
 
@@ -670,6 +670,6 @@ class NotificationService(IReadOnlyDictionary<Channel, INotificationChannel> cha
 
 ## Вместо заключения
 
-Если есть желание попробовать новые возможности, можно начать [с любого примера](https://github.com/DevTeam/Pure.DI?tab=readme-ov-file#examples) — они независимы и запускаются легко через `dotnet run`. А если чего-то не хватает — не стесняйтесь создать тикет в [репозитории Pure.DI на GitHub](https://github.com/DevTeam/Pure.DI).
+Если есть желание попробовать новые возможности, можно начать [с любого примера](https://github.com/DevTeam/Pure.DI?tab=readme-ov-file#examples), они независимы и запускаются легко через `dotnet run`. А если чего-то не хватает — не стесняйтесь создать тикет в [репозитории Pure.DI на GitHub](https://github.com/DevTeam/Pure.DI).
 
 Спасибо за интерес и что дочитали до конца!
