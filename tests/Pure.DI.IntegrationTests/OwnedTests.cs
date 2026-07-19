@@ -466,7 +466,7 @@ public class OwnedTests
     }
 
     [Fact]
-    public async Task ShouldSurfaceOwnedDisposalExceptionAndContinueDisposing()
+    public async Task ShouldSuppressOwnedDisposalExceptionAndContinueDisposing()
     {
         // Given
 
@@ -488,15 +488,23 @@ public class OwnedTests
                                        Owned<IRoot> owned = composition.Root;
                                        IRoot root = owned.Value;
                            
+                                       // This behavior is intentionally not changed. The .NET dispose pattern
+                                       // recommends that Dispose does not throw, so an exception from a user's
+                                       // dependency violates the expected disposal contract. Owned suppresses
+                                       // that exception to ensure every other owned resource is still disposed.
                                        Exception? thrown = Test.RecordException(() => owned.Dispose());
                            
                                        Console.WriteLine(Test.AreEqual(DescribeState(thrown, root), ExpectedState));
                                    }
                            
-                                   private const string ExpectedState = "thrown=True; attempted=True";
+                                   private const string ExpectedState =
+                                       "thrown=False; before=True; attempted=True; after=True";
                            
                                    private static string DescribeState(Exception? thrown, IRoot root) =>
-                                       $"thrown={thrown is not null}; attempted={root.Thrower.DisposeAttempted}";
+                                       $"thrown={thrown is not null}; " +
+                                       $"before={root.Before.IsDisposed}; " +
+                                       $"attempted={root.Thrower.DisposeAttempted}; " +
+                                       $"after={root.After.IsDisposed}";
                            
                                }
                            
@@ -2691,7 +2699,7 @@ public class OwnedTests
     }
 
     [Fact]
-    public async Task ShouldDisposeForgottenResourceWithComposition()
+    public async Task ShouldNotDisposeTransferredOwnedResourceWithComposition()
     {
         // Given
 
@@ -2717,10 +2725,15 @@ public class OwnedTests
                                        Console.WriteLine(!(resource.IsDisposed));
                            
                                        (composition as IDisposable)?.Dispose();
-                                       Console.WriteLine(Test.AreEqual(resource.IsDisposed, ForgottenResourceDisposedByContainer));
+                                       Console.WriteLine(Test.AreEqual(resource.IsDisposed, ResourceDisposedByComposition));
                                    }
-                                   // container and is disposed when the container is disposed.
-                                   private const bool ForgottenResourceDisposedByContainer = true;
+
+                                   // This behavior is intentionally not changed. Creating Owned<T> transfers
+                                   // ownership and disposal responsibility to the caller. Tracking the returned
+                                   // graph in the composition as well would introduce two competing owners and
+                                   // retain already transferred resources until the composition is disposed.
+                                   // The caller must therefore dispose every Owned<T> handle it receives.
+                                   private const bool ResourceDisposedByComposition = false;
                            
                                }
                            
@@ -3191,6 +3204,1199 @@ public class OwnedTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeCopiedOwnedHandleOnlyOnce()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var first = composition.Root;
+                                       var second = first;
+                                       var resource = first.Value;
+
+                                       first.Dispose();
+                                       second.Dispose();
+
+                                       Console.WriteLine(resource.DisposeCount == 1);
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   int DisposeCount { get; }
+                               }
+
+                               sealed class Resource : IResource, IDisposable
+                               {
+                                   public int DisposeCount { get; private set; }
+
+                                   public void Dispose() => DisposeCount++;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<IResource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeCreatedResourcesWhenOwnedGraphConstructionFails()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+
+                                       try
+                                       {
+                                           _ = composition.Root;
+                                       }
+                                       catch (InvalidOperationException)
+                                       {
+                                       }
+
+                                       Console.WriteLine(Resource.LastCreated?.IsDisposed == true);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public Resource() => LastCreated = this;
+
+                                   public static Resource? LastCreated { get; private set; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class FailingDependency
+                               {
+                                   public FailingDependency(Resource resource)
+                                   {
+                                       _ = resource;
+                                       throw new InvalidOperationException("Construction failed.");
+                                   }
+                               }
+
+                               sealed class Root(FailingDependency dependency)
+                               {
+                                   public FailingDependency Dependency { get; } = dependency;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().To<FailingDependency>()
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldAllowTransferredOwnedToBeDisposedAfterComposition()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resource = owned.Value;
+
+                                       (composition as IDisposable)?.Dispose();
+                                       Console.WriteLine(!resource.IsDisposed);
+
+                                       owned.Dispose();
+                                       Console.WriteLine(resource.IsDisposed);
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Resource : IResource, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<IResource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldCreateIndependentOwnedGraphsConcurrently()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Concurrent;
+                           using System.Linq;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static async Task Main()
+                                   {
+                                       var composition = new Composition();
+                                       var factory = composition.Factory;
+                                       var handles = new ConcurrentBag<Owned<IResource>>();
+
+                                       var createTasks = Enumerable.Range(0, 32)
+                                           .Select(_ => Task.Run(() => handles.Add(factory())))
+                                           .ToArray();
+                                       await Task.WhenAll(createTasks);
+
+                                       var resources = handles.Select(i => i.Value).ToArray();
+                                       var disposeTasks = handles
+                                           .Select(owned => Task.Run(owned.Dispose))
+                                           .ToArray();
+                                       await Task.WhenAll(disposeTasks);
+
+                                       Console.WriteLine(resources.Distinct().Count() == resources.Length);
+                                       Console.WriteLine(resources.All(i => i.DisposeCount == 1));
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   int DisposeCount { get; }
+                               }
+
+                               sealed class Resource : IResource, IDisposable
+                               {
+                                   public int DisposeCount { get; private set; }
+
+                                   public void Dispose() => DisposeCount++;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Func<Owned<IResource>>>("Factory");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeOwnedOnlyOnceWhenDisposeCallsRace()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Linq;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static async Task Main()
+                                   {
+                                       var composition = new Composition();
+                                       var factory = composition.Factory;
+                                       var failures = 0;
+
+                                       var iterations = Enumerable.Range(0, 200)
+                                           .Select(async _ =>
+                                           {
+                                               var owned = factory();
+                                               var resource = owned.Value;
+                                               using var start = new ManualResetEventSlim(false);
+                                               var first = Task.Run(() =>
+                                               {
+                                                   start.Wait();
+                                                   owned.Dispose();
+                                               });
+                                               var second = Task.Run(() =>
+                                               {
+                                                   start.Wait();
+                                                   owned.Dispose();
+                                               });
+
+                                               start.Set();
+                                               await Task.WhenAll(first, second);
+                                               if (resource.DisposeCount != 1)
+                                               {
+                                                   Interlocked.Increment(ref failures);
+                                               }
+                                           })
+                                           .ToArray();
+                                       await Task.WhenAll(iterations);
+
+                                       Console.WriteLine(failures == 0);
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   int DisposeCount { get; }
+                               }
+
+                               sealed class Resource : IResource, IDisposable
+                               {
+                                   private int disposeCount;
+
+                                   public int DisposeCount => disposeCount;
+
+                                   public void Dispose() => Interlocked.Increment(ref disposeCount);
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Func<Owned<IResource>>>("Factory");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSuppressAsyncDisposalExceptionAndContinueDisposing()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main() => Run().GetAwaiter().GetResult();
+
+                                   private static async Task Run()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var root = owned.Value;
+
+                                       Exception? exception = null;
+                                       try
+                                       {
+                                           await owned.DisposeAsync();
+                                       }
+                                       catch (Exception caught)
+                                       {
+                                           exception = caught;
+                                       }
+
+                                       Console.WriteLine(exception is null);
+                                       Console.WriteLine(root.Before.IsDisposed);
+                                       Console.WriteLine(root.Thrower.DisposeAttempted);
+                                       Console.WriteLine(root.After.IsDisposed);
+                                   }
+                               }
+
+                               sealed class AsyncResource : IAsyncDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       IsDisposed = true;
+                                       return default;
+                                   }
+                               }
+
+                               sealed class AsyncThrower : IAsyncDisposable
+                               {
+                                   public bool DisposeAttempted { get; private set; }
+
+                                   public async ValueTask DisposeAsync()
+                                   {
+                                       DisposeAttempted = true;
+                                       await Task.Yield();
+                                       throw new InvalidOperationException("Disposal failed.");
+                                   }
+                               }
+
+                               sealed class Root(
+                                   [Tag("before")] AsyncResource before,
+                                   AsyncThrower thrower,
+                                   [Tag("after")] AsyncResource after)
+                               {
+                                   public AsyncResource Before { get; } = before;
+
+                                   public AsyncThrower Thrower { get; } = thrower;
+
+                                   public AsyncResource After { get; } = after;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind("before", "after").To<AsyncResource>()
+                                           .Bind().To<AsyncThrower>()
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldReportCompletedAsyncDisposalFailureDuringSynchronousDisposal()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Pure.DI
+                           {
+                               internal sealed partial class Owned
+                               {
+                                   public static int AsyncDisposalFailureCount { get; private set; }
+
+                                   partial void OnDisposeAsyncException<T>(T instance, Exception exception)
+                                       where T : IAsyncDisposable =>
+                                       AsyncDisposalFailureCount++;
+                               }
+                           }
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+
+                                       owned.Dispose();
+
+                                       Console.WriteLine(owned.Value.DisposeAttempted);
+                                       Console.WriteLine(Pure.DI.Owned.AsyncDisposalFailureCount == 1);
+                                   }
+                               }
+
+                               sealed class AsyncThrower : IAsyncDisposable
+                               {
+                                   public bool DisposeAttempted { get; private set; }
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       DisposeAttempted = true;
+                                       return new ValueTask(Task.FromException(
+                                           new InvalidOperationException("Disposal failed.")));
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<AsyncThrower>()
+                                           .Root<Owned<AsyncThrower>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeScopedResourceOnlyWithComposition()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var first = composition.Root;
+                                       var second = composition.Root;
+                                       var resource = first.Value;
+
+                                       Console.WriteLine(ReferenceEquals(resource, second.Value));
+
+                                       first.Dispose();
+                                       second.Dispose();
+                                       Console.WriteLine(!resource.IsDisposed);
+
+                                       composition.Dispose();
+                                       Console.WriteLine(resource.IsDisposed);
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Resource : IResource, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().As(Lifetime.Scoped).To<Resource>()
+                                           .Root<Owned<IResource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldIsolateOwnedFactoriesWithArguments()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var factory = composition.Factory;
+                                       var first = factory("first");
+                                       var second = factory("second");
+
+                                       Console.WriteLine(first.Value.Name == "first");
+                                       Console.WriteLine(second.Value.Name == "second");
+
+                                       first.Dispose();
+                                       Console.WriteLine(first.Value.IsDisposed);
+                                       Console.WriteLine(!second.Value.IsDisposed);
+
+                                       second.Dispose();
+                                       Console.WriteLine(second.Value.IsDisposed);
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   string Name { get; }
+
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Resource(string name) : IResource, IDisposable
+                               {
+                                   public string Name { get; } = name;
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Func<string, Owned<IResource>>>("Factory");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldIsolateTaggedOwnedFactoriesOfSameType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var first = composition.FirstFactory();
+                                       var second = composition.SecondFactory();
+
+                                       Console.WriteLine(first.Value.Name == "first");
+                                       Console.WriteLine(second.Value.Name == "second");
+
+                                       first.Dispose();
+                                       Console.WriteLine(first.Value.IsDisposed);
+                                       Console.WriteLine(!second.Value.IsDisposed);
+
+                                       second.Dispose();
+                                       Console.WriteLine(second.Value.IsDisposed);
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   string Name { get; }
+
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class FirstResource : IResource, IDisposable
+                               {
+                                   public string Name => "first";
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class SecondResource : IResource, IDisposable
+                               {
+                                   public string Name => "second";
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IResource>("first").To<FirstResource>()
+                                           .Bind<IResource>("second").To<SecondResource>()
+                                           .Root<Func<Owned<IResource>>>("FirstFactory", "first")
+                                           .Root<Func<Owned<IResource>>>("SecondFactory", "second");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeAsyncOwnedGraphInReverseConstructionOrder()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main() => Run().GetAwaiter().GetResult();
+
+                                   private static async Task Run()
+                                   {
+                                       var recorder = new DisposalRecorder();
+                                       var composition = new Composition(recorder);
+                                       var owned = composition.Root;
+
+                                       await owned.DisposeAsync();
+
+                                       Console.WriteLine(string.Join(",", recorder.Events) == "root,middle,leaf");
+                                   }
+                               }
+
+                               sealed class DisposalRecorder
+                               {
+                                   public List<string> Events { get; } = [];
+                               }
+
+                               sealed class Leaf(DisposalRecorder recorder) : IAsyncDisposable
+                               {
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       recorder.Events.Add("leaf");
+                                       return default;
+                                   }
+                               }
+
+                               sealed class Middle(Leaf leaf, DisposalRecorder recorder) : IAsyncDisposable
+                               {
+                                   public Leaf Leaf { get; } = leaf;
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       recorder.Events.Add("middle");
+                                       return default;
+                                   }
+                               }
+
+                               sealed class Root(Middle middle, DisposalRecorder recorder) : IAsyncDisposable
+                               {
+                                   public Middle Middle { get; } = middle;
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       recorder.Events.Add("root");
+                                       return default;
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Arg<DisposalRecorder>("recorder")
+                                           .Bind<Leaf>().To<Leaf>()
+                                           .Bind<Middle>().To<Middle>()
+                                           .Bind<Root>().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeOwnedOnlyOnceWhenDisposedAsynchronouslyThenSynchronously()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main() => Run().GetAwaiter().GetResult();
+
+                                   private static async Task Run()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resource = owned.Value;
+
+                                       await owned.DisposeAsync();
+                                       owned.Dispose();
+
+                                       Console.WriteLine(resource.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable, IAsyncDisposable
+                               {
+                                   public int DisposeCount { get; private set; }
+
+                                   public void Dispose() => DisposeCount++;
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       DisposeCount++;
+                                       return default;
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Resource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldTrackConcurrentlyCreatedDependenciesInSameOwnedGraph()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Concurrent;
+                           using System.Linq;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var widgets = new ConcurrentBag<IWidget>();
+
+                                       var tasks = Enumerable.Range(0, 64)
+                                           .Select(_ => Task.Run(() => widgets.Add(owned.Value.CreateWidget())))
+                                           .ToArray();
+                                       Task.WaitAll(tasks);
+
+                                       owned.Dispose();
+
+                                       Console.WriteLine(widgets.Count == 64);
+                                       Console.WriteLine(widgets.Distinct().Count() == 64);
+                                       Console.WriteLine(widgets.All(i => i.DisposeCount == 1));
+                                   }
+                               }
+
+                               interface IWidget
+                               {
+                                   int DisposeCount { get; }
+                               }
+
+                               sealed class Widget : IWidget, IDisposable
+                               {
+                                   public int DisposeCount { get; private set; }
+
+                                   public void Dispose() => DisposeCount++;
+                               }
+
+                               sealed class Root(Func<IWidget> widgetFactory)
+                               {
+                                   public IWidget CreateWidget() => widgetFactory();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Widget>()
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeEveryResourceInOwnedCollection()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resources = owned.Value;
+
+                                       Console.WriteLine(resources.Count == 3);
+                                       Console.WriteLine(resources.All(i => !i.IsDisposed));
+
+                                       owned.Dispose();
+                                       Console.WriteLine(resources.All(i => i.IsDisposed));
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               abstract class ResourceBase : IResource, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class FirstResource : ResourceBase;
+
+                               sealed class SecondResource : ResourceBase;
+
+                               sealed class ThirdResource : ResourceBase;
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IResource>(1).To<FirstResource>()
+                                           .Bind<IResource>(2).To<SecondResource>()
+                                           .Bind<IResource>(3).To<ThirdResource>()
+                                           .Root<Owned<IReadOnlyList<IResource>>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeOwnedElementsInCollectionIndependently()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var resources = composition.Root.Create();
+                                       var first = resources[0];
+                                       var second = resources[1];
+
+                                       first.Dispose();
+                                       Console.WriteLine(first.Value.IsDisposed);
+                                       Console.WriteLine(!second.Value.IsDisposed);
+
+                                       second.Dispose();
+                                       Console.WriteLine(second.Value.IsDisposed);
+                                   }
+                               }
+
+                               interface IResource
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               abstract class ResourceBase : IResource, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class FirstResource : ResourceBase;
+
+                               sealed class SecondResource : ResourceBase;
+
+                               sealed class ResourceSet(
+                                   [Tag(1)] Func<Owned<IResource>> firstFactory,
+                                   [Tag(2)] Func<Owned<IResource>> secondFactory)
+                               {
+                                   public IReadOnlyList<Owned<IResource>> Create() =>
+                                       [firstFactory(), secondFactory()];
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IResource>(1).To<FirstResource>()
+                                           .Bind<IResource>(2).To<SecondResource>()
+                                           .Bind().To<ResourceSet>()
+                                           .Root<ResourceSet>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotGenerateSynchronizationForOwnedWhenThreadSafetyIsDisabled()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resource = owned.Value;
+
+                                       owned.Dispose();
+                                       owned.Dispose();
+
+                                       Console.WriteLine(resource.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public int DisposeCount { get; private set; }
+
+                                   public void Dispose() => DisposeCount++;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Hint(Hint.ThreadSafe, "Off")
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Resource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.GeneratedCode.ShouldNotContain("lock (_lock");
+    }
+
+    [Fact]
+    public async Task ShouldRollBackUserDefinedAccumulatorWhenGraphConstructionFails()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+
+                                       try
+                                       {
+                                           _ = composition.Root;
+                                       }
+                                       catch (InvalidOperationException)
+                                       {
+                                       }
+
+                                       Console.WriteLine(Resource.LastCreated?.IsDisposed == true);
+                                   }
+                               }
+
+                               interface ICustomOwner : IDisposable;
+
+                               sealed class CustomAccumulator : List<object>, ICustomOwner
+                               {
+                                   public void Dispose()
+                                   {
+                                       for (var index = Count - 1; index >= 0; index--)
+                                       {
+                                           if (!ReferenceEquals(this, this[index])
+                                               && this[index] is IDisposable disposable)
+                                           {
+                                               disposable.Dispose();
+                                           }
+                                       }
+
+                                       Clear();
+                                   }
+                               }
+
+                               readonly struct CustomOwned<T>(T value, ICustomOwner owner) : IDisposable
+                               {
+                                   public T Value { get; } = value;
+
+                                   public void Dispose() => owner.Dispose();
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public Resource() => LastCreated = this;
+
+                                   public static Resource? LastCreated { get; private set; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class FailingDependency
+                               {
+                                   public FailingDependency(Resource resource)
+                                   {
+                                       _ = resource;
+                                       throw new InvalidOperationException("Construction failed.");
+                                   }
+                               }
+
+                               sealed class Root(FailingDependency dependency)
+                               {
+                                   public FailingDependency Dependency { get; } = dependency;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<IDisposable, CustomAccumulator>(Transient, PerResolve, PerBlock)
+                                           .Bind<ICustomOwner>().To((CustomAccumulator accumulator) => accumulator)
+                                           .Bind<CustomOwned<TT>>().As(PerBlock).To(ctx =>
+                                           {
+                                               ctx.Inject<ICustomOwner>(out var owner);
+                                               ctx.Inject<TT>(ctx.Tag, out var value);
+                                               return new CustomOwned<TT>(value, owner);
+                                           })
+                                           .Bind().To<Resource>()
+                                           .Bind().To<FailingDependency>()
+                                           .Bind().To<Root>()
+                                           .Root<CustomOwned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
     }
 
 }
