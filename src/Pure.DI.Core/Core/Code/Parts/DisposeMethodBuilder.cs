@@ -142,12 +142,7 @@ sealed class DisposeMethodBuilder(
                 }
                 else
                 {
-                    code.AppendLine("var valueTask = asyncDisposableInstance.DisposeAsync();");
-                    code.AppendLine("if (!valueTask.IsCompleted)");
-                    using (code.CreateBlock())
-                    {
-                        code.AppendLine("valueTask.AsTask().Wait();");
-                    }
+                    code.AppendLine("asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();");
                 }
             }
 

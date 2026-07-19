@@ -53,6 +53,7 @@ static class Names
     public const string IAsyncDisposableTypeName = $"{SystemNamespace}IAsyncDisposable";
     public const string IResolverTypeName = $"{ApiNamespace}{nameof(IResolver<,>)}";
     public const string IContextTypeName = $"{ApiNamespace}{nameof(IContext)}";
+    public const string IAccumulatorTypeName = $"{ApiNamespace}IAccumulator";
     public const string IConfigurationTypeName = $"{ApiNamespace}{nameof(IConfiguration)}";
     public const string ObjectTypeName = $"{SystemNamespace}Object";
     public const string ExceptionTypeName = $"{SystemNamespace}{nameof(Exception)}";

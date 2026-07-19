@@ -1819,6 +1819,19 @@ namespace Pure.DI
     }
 
     /// <summary>
+    /// Receives the generated composition lock. Custom accumulators can implement
+    /// this interface to coordinate disposal with generated resource registration.
+    /// </summary>
+    internal interface IAccumulator
+    {
+#if NET9_0_OR_GREATER
+        void Initialize(global::System.Threading.Lock synchronization);
+#else
+        void Initialize(global::System.Object synchronization);
+#endif
+    }
+
+    /// <summary>
     /// Manages lifetime of disposable objects by accumulating them and providing deterministic disposal.
     /// Implements both synchronous and asynchronous disposal patterns for comprehensive resource cleanup.
     /// </summary>
@@ -1828,65 +1841,59 @@ namespace Pure.DI
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal sealed partial class Owned: global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned
+    internal sealed partial class Owned: global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned, global::Pure.DI.IAccumulator
     {
-        private volatile bool _isDisposed;
+        private int _isDisposed;
+#if NET9_0_OR_GREATER
+        private global::System.Threading.Lock _synchronization;
+#else
+        private global::System.Object _synchronization;
+#endif
+
+        /// <inheritdoc />
+#if NET9_0_OR_GREATER
+        void global::Pure.DI.IAccumulator.Initialize(global::System.Threading.Lock synchronization)
+#else
+        void global::Pure.DI.IAccumulator.Initialize(global::System.Object synchronization)
+#endif
+        {
+            _synchronization = synchronization;
+        }
+
+        /// <summary>
+        /// Registers an owned resource or rejects and disposes it when this
+        /// accumulator has already been disposed.
+        /// </summary>
+        public new void Add(global::System.Object item)
+        {
+            if (_isDisposed == 0)
+            {
+                base.Add(item);
+                return;
+            }
+
+            DisposeSynchronously(item);
+            throw new global::System.ObjectDisposedException(nameof(Owned));
+        }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            // Skip if already disposed
-            if (_isDisposed) return;
-
-            _isDisposed = true;
+            if (!TryBeginDispose()) return;
             try
             {
                 // Process disposables in reverse order (most recent first)
                 for (var i = Count - 1; i >= 0; i--)
                 {
-                    switch (this[i])
+                    var item = this[i];
+                    if (!(item is global::Pure.DI.IOwned))
                     {
-                        case global::Pure.DI.IOwned _:  // Skip nested owned collections
-                            break;
-
-                        case global::System.IDisposable disposableInstance:
-                            try
-                            {
-                                // Perform synchronous disposal
-                                disposableInstance.Dispose();
-                            }
-                            catch (global::System.Exception exception)
-                            {
-                                // Handle synchronous disposal exceptions
-                                OnDisposeException(disposableInstance, exception);
-                            }
-                            break;
-
-#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-                        case global::System.IAsyncDisposable asyncDisposableInstance:
-                            try
-                            {
-                                // Handle async disposables in synchronous context
-                                var valueTask = asyncDisposableInstance.DisposeAsync();
-                                if (!valueTask.IsCompleted)
-                                {
-                                    // Block until async disposal completes
-                                    valueTask.AsTask().Wait();
-                                }
-                            }
-                            catch (global::System.Exception exception)
-                            {
-                                // Handle asynchronous disposal exceptions
-                                OnDisposeAsyncException(asyncDisposableInstance, exception);
-                            }
-                            break;
-#endif
+                        DisposeSynchronously(item);
                     }
                 }
             }
             finally
             {
-                // Clear all references to allow garbage collection
                 Clear();
             }
         }
@@ -1895,10 +1902,7 @@ namespace Pure.DI
         /// <inheritdoc />
         public async global::System.Threading.Tasks.ValueTask DisposeAsync()
         {
-            // Skip if already disposed
-            if (_isDisposed) return;
-
-            _isDisposed = true;
+            if (!TryBeginDispose()) return;
             try
             {
                 // Process disposables in reverse order (most recent first)
@@ -1939,11 +1943,69 @@ namespace Pure.DI
             }
             finally
             {
-                // Clear all references to allow garbage collection
                 Clear();
             }
         }
 #endif
+
+        private bool TryBeginDispose()
+        {
+            var synchronization = _synchronization;
+            if (synchronization is null)
+            {
+                return TryBeginDisposeCore();
+            }
+
+            lock (synchronization)
+            {
+                return TryBeginDisposeCore();
+            }
+        }
+
+        private bool TryBeginDisposeCore()
+        {
+            // The first caller owns resource disposal. Concurrent and reentrant
+            // callers return immediately instead of waiting for that disposal
+            // to finish, which also prevents self-deadlocks during disposal.
+            if (_isDisposed != 0)
+            {
+                return false;
+            }
+
+            _isDisposed = 1;
+            return true;
+        }
+
+        private void DisposeSynchronously(global::System.Object item)
+        {
+            if (global::System.Object.ReferenceEquals(item, this)) return;
+            switch (item)
+            {
+                case global::System.IDisposable disposableInstance:
+                    try
+                    {
+                        disposableInstance.Dispose();
+                    }
+                    catch (global::System.Exception exception)
+                    {
+                        OnDisposeException(disposableInstance, exception);
+                    }
+                    break;
+
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+                case global::System.IAsyncDisposable asyncDisposableInstance:
+                    try
+                    {
+                        asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();
+                    }
+                    catch (global::System.Exception exception)
+                    {
+                        OnDisposeAsyncException(asyncDisposableInstance, exception);
+                    }
+                    break;
+#endif
+            }
+        }
 
         /// <summary>
         /// Override this partial method to implement custom exception handling

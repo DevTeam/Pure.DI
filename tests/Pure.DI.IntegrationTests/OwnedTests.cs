@@ -112,7 +112,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -227,7 +227,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -342,7 +342,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -458,7 +458,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -557,13 +557,20 @@ public class OwnedTests
                                    IAfter After { get; }
                                }
                            
-                               sealed class Root(IBefore before, IThrower thrower, IAfter after) : IRoot
+                               sealed class Root : IRoot
                                {
-                                   public IBefore Before { get; } = before;
-                           
-                                   public IThrower Thrower { get; } = thrower;
-                           
-                                   public IAfter After { get; } = after;
+                                   public Root(IBefore before, IThrower thrower, IAfter after)
+                                   {
+                                       Before = before;
+                                       Thrower = thrower;
+                                       After = after;
+                                   }
+
+                                   public IBefore Before { get; }
+
+                                   public IThrower Thrower { get; }
+
+                                   public IAfter After { get; }
                                }
                            
                                partial class Composition
@@ -599,7 +606,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -631,24 +638,30 @@ public class OwnedTests
                                        _ = owned.Value.B.C;
                            
                                        owned.Dispose();
-                                       Console.WriteLine(Test.AreEqual(recorder.Names, ["A", "B", "C"]));
+                                       Console.WriteLine(Test.AreEqual(recorder.Names, new[] { "A", "B", "C" }));
                                    }
                            
                                }
                            
                                sealed class DisposalRecorder
                                {
-                                   private readonly List<string> names = [];
+                                   private readonly List<string> names = new();
                            
                                    public IReadOnlyList<string> Names => names;
                            
                                    public void Record(string name) => names.Add(name);
                                }
                            
-                               interface IC;
-                           
-                               sealed class C(DisposalRecorder recorder) : IC, IDisposable
+                               interface IC
                                {
+                               }
+
+                               sealed class C : IC, IDisposable
+                               {
+                                   private readonly DisposalRecorder recorder;
+
+                                   public C(DisposalRecorder recorder) => this.recorder = recorder;
+
                                    public void Dispose() => recorder.Record("C");
                                }
                            
@@ -657,9 +670,17 @@ public class OwnedTests
                                    IC C { get; }
                                }
                            
-                               sealed class B(IC c, DisposalRecorder recorder) : IB, IDisposable
+                               sealed class B : IB, IDisposable
                                {
-                                   public IC C { get; } = c;
+                                   private readonly DisposalRecorder recorder;
+
+                                   public B(IC c, DisposalRecorder recorder)
+                                   {
+                                       C = c;
+                                       this.recorder = recorder;
+                                   }
+
+                                   public IC C { get; }
                            
                                    public void Dispose() => recorder.Record("B");
                                }
@@ -669,9 +690,17 @@ public class OwnedTests
                                    IB B { get; }
                                }
                            
-                               sealed class A(IB b, DisposalRecorder recorder) : IA, IDisposable
+                               sealed class A : IA, IDisposable
                                {
-                                   public IB B { get; } = b;
+                                   private readonly DisposalRecorder recorder;
+
+                                   public A(IB b, DisposalRecorder recorder)
+                                   {
+                                       B = b;
+                                       this.recorder = recorder;
+                                   }
+
+                                   public IB B { get; }
                            
                                    public void Dispose() => recorder.Record("A");
                                }
@@ -709,7 +738,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -795,7 +824,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -883,7 +912,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -971,7 +1000,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1030,7 +1059,7 @@ public class OwnedTests
                                sealed class Root : IRoot
                                {
                                    public Root(Func<IWidget> widgetFactory) =>
-                                       Widgets = [widgetFactory(), widgetFactory(), widgetFactory()];
+                                       Widgets = new[] { widgetFactory(), widgetFactory(), widgetFactory() };
                            
                                    public IReadOnlyList<IWidget> Widgets { get; }
                                }
@@ -1066,7 +1095,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1122,7 +1151,7 @@ public class OwnedTests
                                sealed class Root : IRoot
                                {
                                    public Root(Func<IWidget> widgetFactory) =>
-                                       Widgets = [widgetFactory(), widgetFactory(), widgetFactory()];
+                                       Widgets = new[] { widgetFactory(), widgetFactory(), widgetFactory() };
                            
                                    public IReadOnlyList<IWidget> Widgets { get; }
                                }
@@ -1158,7 +1187,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1215,9 +1244,11 @@ public class OwnedTests
                                    void Handle();
                                }
                            
-                               sealed class Handler(IConnection connection) : IHandler
+                               sealed class Handler : IHandler
                                {
-                                   public IConnection Connection { get; } = connection;
+                                   public Handler(IConnection connection) => Connection = connection;
+
+                                   public IConnection Connection { get; }
                            
                                    public void Handle()
                                    {
@@ -1231,9 +1262,13 @@ public class OwnedTests
                                    void Process(int count);
                                }
                            
-                               sealed class MessagePump(Func<Owned<IHandler>> handlerFactory) : IMessagePump
+                               sealed class MessagePump : IMessagePump
                                {
-                                   private readonly List<IHandler> handled = [];
+                                   private readonly Func<Owned<IHandler>> handlerFactory;
+                                   private readonly List<IHandler> handled = new();
+
+                                   public MessagePump(Func<Owned<IHandler>> handlerFactory) =>
+                                       this.handlerFactory = handlerFactory;
                            
                                    public IReadOnlyList<IHandler> Handled => handled;
                            
@@ -1280,7 +1315,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1357,11 +1392,17 @@ public class OwnedTests
                                    IInnerLocal Local { get; }
                                }
                            
-                               sealed class Inner(IShared shared, IInnerLocal local) : IInner
+                               sealed class Inner : IInner
                                {
-                                   public IShared Shared { get; } = shared;
-                           
-                                   public IInnerLocal Local { get; } = local;
+                                   public Inner(IShared shared, IInnerLocal local)
+                                   {
+                                       Shared = shared;
+                                       Local = local;
+                                   }
+
+                                   public IShared Shared { get; }
+
+                                   public IInnerLocal Local { get; }
                                }
                            
                                interface IOuter
@@ -1375,13 +1416,20 @@ public class OwnedTests
                                    void DisposeInner();
                                }
                            
-                               sealed class Outer(Func<Owned<IInner>> innerFactory, IShared shared, IOuterLocal local) : IOuter
+                               sealed class Outer : IOuter
                                {
-                                   private readonly Owned<IInner> innerOwned = innerFactory();
-                           
-                                   public IShared Shared { get; } = shared;
-                           
-                                   public IOuterLocal Local { get; } = local;
+                                   private readonly Owned<IInner> innerOwned;
+
+                                   public Outer(Func<Owned<IInner>> innerFactory, IShared shared, IOuterLocal local)
+                                   {
+                                       innerOwned = innerFactory();
+                                       Shared = shared;
+                                       Local = local;
+                                   }
+
+                                   public IShared Shared { get; }
+
+                                   public IOuterLocal Local { get; }
                            
                                    public IInner Inner => innerOwned.Value;
                            
@@ -1422,7 +1470,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1508,11 +1556,17 @@ public class OwnedTests
                                    IInnerLocal Local { get; }
                                }
                            
-                               sealed class Inner(IShared shared, IInnerLocal local) : IInner
+                               sealed class Inner : IInner
                                {
-                                   public IShared Shared { get; } = shared;
-                           
-                                   public IInnerLocal Local { get; } = local;
+                                   public Inner(IShared shared, IInnerLocal local)
+                                   {
+                                       Shared = shared;
+                                       Local = local;
+                                   }
+
+                                   public IShared Shared { get; }
+
+                                   public IInnerLocal Local { get; }
                                }
                            
                                interface IOuter
@@ -1526,13 +1580,20 @@ public class OwnedTests
                                    void DisposeInner();
                                }
                            
-                               sealed class Outer(Func<Owned<IInner>> innerFactory, IShared shared, IOuterLocal local) : IOuter
+                               sealed class Outer : IOuter
                                {
-                                   private readonly Owned<IInner> innerOwned = innerFactory();
-                           
-                                   public IShared Shared { get; } = shared;
-                           
-                                   public IOuterLocal Local { get; } = local;
+                                   private readonly Owned<IInner> innerOwned;
+
+                                   public Outer(Func<Owned<IInner>> innerFactory, IShared shared, IOuterLocal local)
+                                   {
+                                       innerOwned = innerFactory();
+                                       Shared = shared;
+                                       Local = local;
+                                   }
+
+                                   public IShared Shared { get; }
+
+                                   public IOuterLocal Local { get; }
                            
                                    public IInner Inner => innerOwned.Value;
                            
@@ -1573,7 +1634,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1653,11 +1714,17 @@ public class OwnedTests
                                    IInnerLocal Local { get; }
                                }
                            
-                               sealed class Inner(IShared shared, IInnerLocal local) : IInner
+                               sealed class Inner : IInner
                                {
-                                   public IShared Shared { get; } = shared;
-                           
-                                   public IInnerLocal Local { get; } = local;
+                                   public Inner(IShared shared, IInnerLocal local)
+                                   {
+                                       Shared = shared;
+                                       Local = local;
+                                   }
+
+                                   public IShared Shared { get; }
+
+                                   public IInnerLocal Local { get; }
                                }
                            
                                interface IOuter
@@ -1671,13 +1738,20 @@ public class OwnedTests
                                    void DisposeInner();
                                }
                            
-                               sealed class Outer(Func<Owned<IInner>> innerFactory, IShared shared, IOuterLocal local) : IOuter
+                               sealed class Outer : IOuter
                                {
-                                   private readonly Owned<IInner> innerOwned = innerFactory();
-                           
-                                   public IShared Shared { get; } = shared;
-                           
-                                   public IOuterLocal Local { get; } = local;
+                                   private readonly Owned<IInner> innerOwned;
+
+                                   public Outer(Func<Owned<IInner>> innerFactory, IShared shared, IOuterLocal local)
+                                   {
+                                       innerOwned = innerFactory();
+                                       Shared = shared;
+                                       Local = local;
+                                   }
+
+                                   public IShared Shared { get; }
+
+                                   public IOuterLocal Local { get; }
                            
                                    public IInner Inner => innerOwned.Value;
                            
@@ -1718,7 +1792,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1790,13 +1864,19 @@ public class OwnedTests
                                }
                            
                                // Pure.DI outer: nests Pure.DI.Owned<IInner> obtained through Func<Owned<IInner>>.
-                               sealed class Outer(Func<Owned<IInner>> innerFactory, ISibling sibling) : IOuter
+                               sealed class Outer : IOuter
                                {
-                                   private readonly Owned<IInner> innerOwned = innerFactory();
-                           
+                                   private readonly Owned<IInner> innerOwned;
+
+                                   public Outer(Func<Owned<IInner>> innerFactory, ISibling sibling)
+                                   {
+                                       innerOwned = innerFactory();
+                                       Sibling = sibling;
+                                   }
+
                                    public IInner Inner => innerOwned.Value;
-                           
-                                   public ISibling Sibling { get; } = sibling;
+
+                                   public ISibling Sibling { get; }
                            
                                    public void DisposeInner() => innerOwned.Dispose();
                                }
@@ -1833,7 +1913,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1906,13 +1986,19 @@ public class OwnedTests
                                }
                            
                                // Pure.DI outer: nests Pure.DI.Owned<IInner> obtained through Func<Owned<IInner>>.
-                               sealed class Outer(Func<Owned<IInner>> innerFactory, ISibling sibling) : IOuter
+                               sealed class Outer : IOuter
                                {
-                                   private readonly Owned<IInner> innerOwned = innerFactory();
-                           
+                                   private readonly Owned<IInner> innerOwned;
+
+                                   public Outer(Func<Owned<IInner>> innerFactory, ISibling sibling)
+                                   {
+                                       innerOwned = innerFactory();
+                                       Sibling = sibling;
+                                   }
+
                                    public IInner Inner => innerOwned.Value;
-                           
-                                   public ISibling Sibling { get; } = sibling;
+
+                                   public ISibling Sibling { get; }
                            
                                    public void DisposeInner() => innerOwned.Dispose();
                                }
@@ -1949,7 +2035,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2021,13 +2107,19 @@ public class OwnedTests
                                }
                            
                                // Pure.DI outer: nests Pure.DI.Owned<IInner> obtained through Func<Owned<IInner>>.
-                               sealed class Outer(Func<Owned<IInner>> innerFactory, ISibling sibling) : IOuter
+                               sealed class Outer : IOuter
                                {
-                                   private readonly Owned<IInner> innerOwned = innerFactory();
-                           
+                                   private readonly Owned<IInner> innerOwned;
+
+                                   public Outer(Func<Owned<IInner>> innerFactory, ISibling sibling)
+                                   {
+                                       innerOwned = innerFactory();
+                                       Sibling = sibling;
+                                   }
+
                                    public IInner Inner => innerOwned.Value;
-                           
-                                   public ISibling Sibling { get; } = sibling;
+
+                                   public ISibling Sibling { get; }
                            
                                    public void DisposeInner() => innerOwned.Dispose();
                                }
@@ -2064,7 +2156,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2125,9 +2217,11 @@ public class OwnedTests
                                    IDependency Dependency { get; }
                                }
                            
-                               sealed class Service(IDependency dependency) : IService
+                               sealed class Service : IService
                                {
-                                   public IDependency Dependency { get; } = dependency;
+                                   public Service(IDependency dependency) => Dependency = dependency;
+
+                                   public IDependency Dependency { get; }
                                }
                            
                                partial class Composition
@@ -2161,7 +2255,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2249,7 +2343,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2327,7 +2421,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2384,9 +2478,11 @@ public class OwnedTests
                                    IShared Shared { get; }
                                }
                            
-                               sealed class Left(IShared shared) : ILeft
+                               sealed class Left : ILeft
                                {
-                                   public IShared Shared { get; } = shared;
+                                   public Left(IShared shared) => Shared = shared;
+
+                                   public IShared Shared { get; }
                                }
                            
                                interface IRight
@@ -2394,9 +2490,11 @@ public class OwnedTests
                                    IShared Shared { get; }
                                }
                            
-                               sealed class Right(IShared shared) : IRight
+                               sealed class Right : IRight
                                {
-                                   public IShared Shared { get; } = shared;
+                                   public Right(IShared shared) => Shared = shared;
+
+                                   public IShared Shared { get; }
                                }
                            
                                interface IRoot
@@ -2406,11 +2504,17 @@ public class OwnedTests
                                    IRight Right { get; }
                                }
                            
-                               sealed class Root(ILeft left, IRight right) : IRoot
+                               sealed class Root : IRoot
                                {
-                                   public ILeft Left { get; } = left;
-                           
-                                   public IRight Right { get; } = right;
+                                   public Root(ILeft left, IRight right)
+                                   {
+                                       Left = left;
+                                       Right = right;
+                                   }
+
+                                   public ILeft Left { get; }
+
+                                   public IRight Right { get; }
                                }
                            
                                partial class TransientSharedComposition
@@ -2457,7 +2561,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2514,9 +2618,11 @@ public class OwnedTests
                                    IShared Shared { get; }
                                }
                            
-                               sealed class Left(IShared shared) : ILeft
+                               sealed class Left : ILeft
                                {
-                                   public IShared Shared { get; } = shared;
+                                   public Left(IShared shared) => Shared = shared;
+
+                                   public IShared Shared { get; }
                                }
                            
                                interface IRight
@@ -2524,9 +2630,11 @@ public class OwnedTests
                                    IShared Shared { get; }
                                }
                            
-                               sealed class Right(IShared shared) : IRight
+                               sealed class Right : IRight
                                {
-                                   public IShared Shared { get; } = shared;
+                                   public Right(IShared shared) => Shared = shared;
+
+                                   public IShared Shared { get; }
                                }
                            
                                interface IRoot
@@ -2536,11 +2644,17 @@ public class OwnedTests
                                    IRight Right { get; }
                                }
                            
-                               sealed class Root(ILeft left, IRight right) : IRoot
+                               sealed class Root : IRoot
                                {
-                                   public ILeft Left { get; } = left;
-                           
-                                   public IRight Right { get; } = right;
+                                   public Root(ILeft left, IRight right)
+                                   {
+                                       Left = left;
+                                       Right = right;
+                                   }
+
+                                   public ILeft Left { get; }
+
+                                   public IRight Right { get; }
                                }
                            
                                partial class TransientSharedComposition
@@ -2587,7 +2701,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2644,8 +2758,13 @@ public class OwnedTests
                                    IResource AcquireAndForget();
                                }
                            
-                               sealed class Pool(Func<Owned<IResource>> resourceFactory) : IPool
+                               sealed class Pool : IPool
                                {
+                                   private readonly Func<Owned<IResource>> resourceFactory;
+
+                                   public Pool(Func<Owned<IResource>> resourceFactory) =>
+                                       this.resourceFactory = resourceFactory;
+
                                    public IResource AcquireAndRelease()
                                    {
                                        using Owned<IResource> owned = resourceFactory();
@@ -2691,7 +2810,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2756,8 +2875,13 @@ public class OwnedTests
                                    IResource AcquireAndForget();
                                }
                            
-                               sealed class Pool(Func<Owned<IResource>> resourceFactory) : IPool
+                               sealed class Pool : IPool
                                {
+                                   private readonly Func<Owned<IResource>> resourceFactory;
+
+                                   public Pool(Func<Owned<IResource>> resourceFactory) =>
+                                       this.resourceFactory = resourceFactory;
+
                                    public IResource AcquireAndRelease()
                                    {
                                        using Owned<IResource> owned = resourceFactory();
@@ -2803,7 +2927,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2863,9 +2987,11 @@ public class OwnedTests
                                    IConnection Connection { get; }
                                }
                            
-                               sealed class Consumer(IConnection connection) : IConsumer
+                               sealed class Consumer : IConsumer
                                {
-                                   public IConnection Connection { get; } = connection;
+                                   public Consumer(IConnection connection) => Connection = connection;
+
+                                   public IConnection Connection { get; }
                                }
                            
                                partial class Composition
@@ -2899,7 +3025,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -2957,9 +3083,11 @@ public class OwnedTests
                                    bool IsDisposed { get; }
                                }
                            
-                               sealed class Service(IDependency dependency) : IService, IDisposable
+                               sealed class Service : IService, IDisposable
                                {
-                                   public IDependency Dependency { get; } = dependency;
+                                   public Service(IDependency dependency) => Dependency = dependency;
+
+                                   public IDependency Dependency { get; }
                            
                                    public bool IsDisposed { get; private set; }
                            
@@ -2997,7 +3125,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3054,9 +3182,11 @@ public class OwnedTests
                                    bool IsDisposed { get; }
                                }
                            
-                               sealed class Service(IDependency dependency) : IService, IDisposable
+                               sealed class Service : IService, IDisposable
                                {
-                                   public IDependency Dependency { get; } = dependency;
+                                   public Service(IDependency dependency) => Dependency = dependency;
+
+                                   public IDependency Dependency { get; }
                            
                                    public bool IsDisposed { get; private set; }
                            
@@ -3094,7 +3224,7 @@ public class OwnedTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3133,7 +3263,9 @@ public class OwnedTests
                                    }
                                }
 
-                               interface ICustomOwned : IDisposable;
+                               interface ICustomOwned : IDisposable
+                               {
+                               }
 
                                sealed class CustomAccumulator : List<object>, ICustomOwned
                                {
@@ -3149,9 +3281,17 @@ public class OwnedTests
                                    }
                                }
 
-                               readonly struct CustomOwned<T>(T value, ICustomOwned owned) : ICustomOwned
+                               readonly struct CustomOwned<T> : ICustomOwned
                                {
-                                   public T Value { get; } = value;
+                                   private readonly ICustomOwned owned;
+
+                                   public CustomOwned(T value, ICustomOwned owned)
+                                   {
+                                       Value = value;
+                                       this.owned = owned;
+                                   }
+
+                                   public T Value { get; }
 
                                    public void Dispose() => owned.Dispose();
                                }
@@ -3199,7 +3339,7 @@ public class OwnedTests
                                                Func<CustomOwned<ISecond>> second)>("Factories");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3254,7 +3394,7 @@ public class OwnedTests
                                            .Root<Owned<IResource>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3311,9 +3451,11 @@ public class OwnedTests
                                    }
                                }
 
-                               sealed class Root(FailingDependency dependency)
+                               sealed class Root
                                {
-                                   public FailingDependency Dependency { get; } = dependency;
+                                   public Root(FailingDependency dependency) => Dependency = dependency;
+
+                                   public FailingDependency Dependency { get; }
                                }
 
                                partial class Composition
@@ -3326,7 +3468,7 @@ public class OwnedTests
                                            .Root<Owned<Root>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3381,7 +3523,7 @@ public class OwnedTests
                                            .Root<Owned<IResource>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3447,7 +3589,7 @@ public class OwnedTests
                                            .Root<Func<Owned<IResource>>>("Factory");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3530,7 +3672,7 @@ public class OwnedTests
                                            .Root<Func<Owned<IResource>>>("Factory");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3600,16 +3742,23 @@ public class OwnedTests
                                    }
                                }
 
-                               sealed class Root(
-                                   [Tag("before")] AsyncResource before,
-                                   AsyncThrower thrower,
-                                   [Tag("after")] AsyncResource after)
+                               sealed class Root
                                {
-                                   public AsyncResource Before { get; } = before;
+                                   public Root(
+                                       [Tag("before")] AsyncResource before,
+                                       AsyncThrower thrower,
+                                       [Tag("after")] AsyncResource after)
+                                   {
+                                       Before = before;
+                                       Thrower = thrower;
+                                       After = after;
+                                   }
 
-                                   public AsyncThrower Thrower { get; } = thrower;
+                                   public AsyncResource Before { get; }
 
-                                   public AsyncResource After { get; } = after;
+                                   public AsyncThrower Thrower { get; }
+
+                                   public AsyncResource After { get; }
                                }
 
                                partial class Composition
@@ -3622,7 +3771,7 @@ public class OwnedTests
                                            .Root<Owned<Root>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3688,7 +3837,7 @@ public class OwnedTests
                                            .Root<Owned<AsyncThrower>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3747,7 +3896,7 @@ public class OwnedTests
                                            .Root<Owned<IResource>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3794,9 +3943,11 @@ public class OwnedTests
                                    bool IsDisposed { get; }
                                }
 
-                               sealed class Resource(string name) : IResource, IDisposable
+                               sealed class Resource : IResource, IDisposable
                                {
-                                   public string Name { get; } = name;
+                                   public Resource(string name) => Name = name;
+
+                                   public string Name { get; }
 
                                    public bool IsDisposed { get; private set; }
 
@@ -3811,7 +3962,7 @@ public class OwnedTests
                                            .Root<Func<string, Owned<IResource>>>("Factory");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3885,7 +4036,7 @@ public class OwnedTests
                                            .Root<Func<Owned<IResource>>>("SecondFactory", "second");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -3924,11 +4075,15 @@ public class OwnedTests
 
                                sealed class DisposalRecorder
                                {
-                                   public List<string> Events { get; } = [];
+                                   public List<string> Events { get; } = new();
                                }
 
-                               sealed class Leaf(DisposalRecorder recorder) : IAsyncDisposable
+                               sealed class Leaf : IAsyncDisposable
                                {
+                                   private readonly DisposalRecorder recorder;
+
+                                   public Leaf(DisposalRecorder recorder) => this.recorder = recorder;
+
                                    public ValueTask DisposeAsync()
                                    {
                                        recorder.Events.Add("leaf");
@@ -3936,9 +4091,17 @@ public class OwnedTests
                                    }
                                }
 
-                               sealed class Middle(Leaf leaf, DisposalRecorder recorder) : IAsyncDisposable
+                               sealed class Middle : IAsyncDisposable
                                {
-                                   public Leaf Leaf { get; } = leaf;
+                                   private readonly DisposalRecorder recorder;
+
+                                   public Middle(Leaf leaf, DisposalRecorder recorder)
+                                   {
+                                       Leaf = leaf;
+                                       this.recorder = recorder;
+                                   }
+
+                                   public Leaf Leaf { get; }
 
                                    public ValueTask DisposeAsync()
                                    {
@@ -3947,9 +4110,17 @@ public class OwnedTests
                                    }
                                }
 
-                               sealed class Root(Middle middle, DisposalRecorder recorder) : IAsyncDisposable
+                               sealed class Root : IAsyncDisposable
                                {
-                                   public Middle Middle { get; } = middle;
+                                   private readonly DisposalRecorder recorder;
+
+                                   public Root(Middle middle, DisposalRecorder recorder)
+                                   {
+                                       Middle = middle;
+                                       this.recorder = recorder;
+                                   }
+
+                                   public Middle Middle { get; }
 
                                    public ValueTask DisposeAsync()
                                    {
@@ -3969,7 +4140,7 @@ public class OwnedTests
                                            .Root<Owned<Root>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -4027,7 +4198,7 @@ public class OwnedTests
                                            .Root<Owned<Resource>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -4082,8 +4253,12 @@ public class OwnedTests
                                    public void Dispose() => DisposeCount++;
                                }
 
-                               sealed class Root(Func<IWidget> widgetFactory)
+                               sealed class Root
                                {
+                                   private readonly Func<IWidget> widgetFactory;
+
+                                   public Root(Func<IWidget> widgetFactory) => this.widgetFactory = widgetFactory;
+
                                    public IWidget CreateWidget() => widgetFactory();
                                }
 
@@ -4096,7 +4271,7 @@ public class OwnedTests
                                            .Root<Owned<Root>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -4145,11 +4320,17 @@ public class OwnedTests
                                    public void Dispose() => IsDisposed = true;
                                }
 
-                               sealed class FirstResource : ResourceBase;
+                               sealed class FirstResource : ResourceBase
+                               {
+                               }
 
-                               sealed class SecondResource : ResourceBase;
+                               sealed class SecondResource : ResourceBase
+                               {
+                               }
 
-                               sealed class ThirdResource : ResourceBase;
+                               sealed class ThirdResource : ResourceBase
+                               {
+                               }
 
                                partial class Composition
                                {
@@ -4161,7 +4342,7 @@ public class OwnedTests
                                            .Root<Owned<IReadOnlyList<IResource>>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -4211,16 +4392,29 @@ public class OwnedTests
                                    public void Dispose() => IsDisposed = true;
                                }
 
-                               sealed class FirstResource : ResourceBase;
-
-                               sealed class SecondResource : ResourceBase;
-
-                               sealed class ResourceSet(
-                                   [Tag(1)] Func<Owned<IResource>> firstFactory,
-                                   [Tag(2)] Func<Owned<IResource>> secondFactory)
+                               sealed class FirstResource : ResourceBase
                                {
+                               }
+
+                               sealed class SecondResource : ResourceBase
+                               {
+                               }
+
+                               sealed class ResourceSet
+                               {
+                                   private readonly Func<Owned<IResource>> firstFactory;
+                                   private readonly Func<Owned<IResource>> secondFactory;
+
+                                   public ResourceSet(
+                                       [Tag(1)] Func<Owned<IResource>> firstFactory,
+                                       [Tag(2)] Func<Owned<IResource>> secondFactory)
+                                   {
+                                       this.firstFactory = firstFactory;
+                                       this.secondFactory = secondFactory;
+                                   }
+
                                    public IReadOnlyList<Owned<IResource>> Create() =>
-                                       [firstFactory(), secondFactory()];
+                                       new[] { firstFactory(), secondFactory() };
                                }
 
                                partial class Composition
@@ -4233,7 +4427,7 @@ public class OwnedTests
                                            .Root<ResourceSet>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -4283,12 +4477,16 @@ public class OwnedTests
                                            .Root<Owned<Resource>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
         result.GeneratedCode.ShouldNotContain("lock (_lock");
+        result.GeneratedCode.ShouldNotContain("global::System.Threading.Interlocked.Exchange");
+        result.GeneratedCode.ShouldNotContain("var items = ToArray()");
+        result.GeneratedCode.ShouldNotContain("global::System.Action _enter");
+        result.GeneratedCode.ShouldNotContain("global::System.Action _exit");
     }
 
     [Fact]
@@ -4323,7 +4521,9 @@ public class OwnedTests
                                    }
                                }
 
-                               interface ICustomOwner : IDisposable;
+                               interface ICustomOwner : IDisposable
+                               {
+                               }
 
                                sealed class CustomAccumulator : List<object>, ICustomOwner
                                {
@@ -4342,9 +4542,17 @@ public class OwnedTests
                                    }
                                }
 
-                               readonly struct CustomOwned<T>(T value, ICustomOwner owner) : IDisposable
+                               readonly struct CustomOwned<T> : IDisposable
                                {
-                                   public T Value { get; } = value;
+                                   private readonly ICustomOwner owner;
+
+                                   public CustomOwned(T value, ICustomOwner owner)
+                                   {
+                                       Value = value;
+                                       this.owner = owner;
+                                   }
+
+                                   public T Value { get; }
 
                                    public void Dispose() => owner.Dispose();
                                }
@@ -4369,9 +4577,11 @@ public class OwnedTests
                                    }
                                }
 
-                               sealed class Root(FailingDependency dependency)
+                               sealed class Root
                                {
-                                   public FailingDependency Dependency { get; } = dependency;
+                                   public Root(FailingDependency dependency) => Dependency = dependency;
+
+                                   public FailingDependency Dependency { get; }
                                }
 
                                partial class Composition
@@ -4392,11 +4602,1020 @@ public class OwnedTests
                                            .Root<CustomOwned<Root>>("Root");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.Preview));
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldRollBackAsyncOnlyUserDefinedAccumulatorWhenGraphConstructionFails()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+
+                                       try
+                                       {
+                                           _ = composition.Root;
+                                       }
+                                       catch (InvalidOperationException)
+                                       {
+                                       }
+
+                                       Console.WriteLine(AsyncResource.LastCreated?.IsDisposed == true);
+                                   }
+                               }
+
+                               interface IAsyncOwner : IAsyncDisposable
+                               {
+                               }
+
+                               sealed class AsyncAccumulator : List<object>, IAsyncOwner
+                               {
+                                   public async ValueTask DisposeAsync()
+                                   {
+                                       for (var index = Count - 1; index >= 0; index--)
+                                       {
+                                           if (!ReferenceEquals(this, this[index])
+                                               && this[index] is IAsyncDisposable asyncDisposable)
+                                           {
+                                               await asyncDisposable.DisposeAsync();
+                                           }
+                                       }
+
+                                       Clear();
+                                   }
+                               }
+
+                               readonly struct AsyncOwned<T> : IAsyncDisposable
+                               {
+                                   private readonly IAsyncOwner owner;
+
+                                   public AsyncOwned(T value, IAsyncOwner owner)
+                                   {
+                                       Value = value;
+                                       this.owner = owner;
+                                   }
+
+                                   public T Value { get; }
+
+                                   public ValueTask DisposeAsync() => owner.DisposeAsync();
+                               }
+
+                               sealed class AsyncResource : IAsyncDisposable
+                               {
+                                   public AsyncResource() => LastCreated = this;
+
+                                   public static AsyncResource? LastCreated { get; private set; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       IsDisposed = true;
+                                       return default;
+                                   }
+                               }
+
+                               sealed class FailingDependency
+                               {
+                                   public FailingDependency(AsyncResource resource)
+                                   {
+                                       _ = resource;
+                                       throw new InvalidOperationException("Construction failed.");
+                                   }
+                               }
+
+                               sealed class Root
+                               {
+                                   public Root(FailingDependency dependency) => Dependency = dependency;
+
+                                   public FailingDependency Dependency { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<IAsyncDisposable, AsyncAccumulator>(Transient, PerResolve, PerBlock)
+                                           .Bind<IAsyncOwner>().To((AsyncAccumulator accumulator) => accumulator)
+                                           .Bind<AsyncOwned<TT>>().As(PerBlock).To(ctx =>
+                                           {
+                                               ctx.Inject<IAsyncOwner>(out var owner);
+                                               ctx.Inject<TT>(ctx.Tag, out var value);
+                                               return new AsyncOwned<TT>(value, owner);
+                                           })
+                                           .Bind().To<AsyncResource>()
+                                           .Bind().To<FailingDependency>()
+                                           .Bind().To<Root>()
+                                           .Root<AsyncOwned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldRejectResourceCreationAfterOwnedIsDisposed()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var root = owned.Value;
+
+                                       owned.Dispose();
+
+                                       var rejected = false;
+                                       try
+                                       {
+                                           _ = root.CreateResource();
+                                       }
+                                       catch (ObjectDisposedException)
+                                       {
+                                           rejected = true;
+                                       }
+
+                                       Console.WriteLine(rejected);
+                                       Console.WriteLine(Resource.LastCreated?.IsDisposed == true);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public Resource() => LastCreated = this;
+
+                                   public static Resource? LastCreated { get; private set; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Root
+                               {
+                                   private readonly Func<Resource> resourceFactory;
+
+                                   public Root(Func<Resource> resourceFactory) => this.resourceFactory = resourceFactory;
+
+                                   public Resource CreateResource() => resourceFactory();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreserveObjectDisposedExceptionWhenRejectedResourceDisposalThrows()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var root = owned.Value;
+                                       owned.Dispose();
+
+                                       Exception? exception = null;
+                                       try
+                                       {
+                                           _ = root.CreateResource();
+                                       }
+                                       catch (Exception caught)
+                                       {
+                                           exception = caught;
+                                       }
+
+                                       Console.WriteLine(exception is ObjectDisposedException);
+                                       Console.WriteLine(Resource.LastCreated?.DisposalAttempted == true);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public Resource() => LastCreated = this;
+
+                                   public static Resource? LastCreated { get; private set; }
+
+                                   public bool DisposalAttempted { get; private set; }
+
+                                   public void Dispose()
+                                   {
+                                       DisposalAttempted = true;
+                                       throw new InvalidOperationException("Disposal failed.");
+                                   }
+                               }
+
+                               sealed class Root
+                               {
+                                   private readonly Func<Resource> resourceFactory;
+
+                                   public Root(Func<Resource> resourceFactory) => this.resourceFactory = resourceFactory;
+
+                                   public Resource CreateResource() => resourceFactory();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldPreserveObjectDisposedExceptionWhenRejectedAsyncResourceDisposalThrows()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var root = owned.Value;
+                                       owned.Dispose();
+
+                                       Exception? exception = null;
+                                       try
+                                       {
+                                           _ = root.CreateResource();
+                                       }
+                                       catch (Exception caught)
+                                       {
+                                           exception = caught;
+                                       }
+
+                                       Console.WriteLine(exception is ObjectDisposedException);
+                                       Console.WriteLine(Resource.LastCreated?.DisposalAttempted == true);
+                                   }
+                               }
+
+                               sealed class Resource : IAsyncDisposable
+                               {
+                                   public Resource() => LastCreated = this;
+
+                                   public static Resource? LastCreated { get; private set; }
+
+                                   public bool DisposalAttempted { get; private set; }
+
+                                   public async ValueTask DisposeAsync()
+                                   {
+                                       DisposalAttempted = true;
+                                       await Task.Yield();
+                                       throw new InvalidOperationException("Async disposal failed.");
+                                   }
+                               }
+
+                               sealed class Root
+                               {
+                                   private readonly Func<Resource> resourceFactory;
+
+                                   public Root(Func<Resource> resourceFactory) => this.resourceFactory = resourceFactory;
+
+                                   public Resource CreateResource() => resourceFactory();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSynchronizeResourceCreationWithOwnedDisposal()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var root = owned.Value;
+
+                                       var createTask = Task.Run(() =>
+                                       {
+                                           try
+                                           {
+                                               _ = root.CreateResource();
+                                               return false;
+                                           }
+                                           catch (ObjectDisposedException)
+                                           {
+                                               return true;
+                                           }
+                                       });
+
+                                       Resource.Created.Wait();
+                                       owned.Dispose();
+                                       Resource.Continue.Set();
+
+                                       Console.WriteLine(createTask.GetAwaiter().GetResult());
+                                       Console.WriteLine(Resource.LastCreated?.IsDisposed == true);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public static readonly ManualResetEventSlim Created = new(false);
+                                   public static readonly ManualResetEventSlim Continue = new(false);
+
+                                   public Resource()
+                                   {
+                                       LastCreated = this;
+                                       Created.Set();
+                                       Continue.Wait();
+                                   }
+
+                                   public static Resource? LastCreated { get; private set; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Root
+                               {
+                                   private readonly Func<Resource> resourceFactory;
+
+                                   public Root(Func<Resource> resourceFactory) => this.resourceFactory = resourceFactory;
+
+                                   public Resource CreateResource() => resourceFactory();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Theory]
+    [InlineData("", "True", false)]
+#if ROSLYN5_6_OR_GREATER
+    [InlineData("", "True", true)]
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", "False", true)]
+#else
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", "False", false)]
+#endif
+    public async Task ShouldInitializeUserDefinedAccumulatorOnlyWhenThreadSafe(
+        string threadSafeHint,
+        string expectedInitialization,
+        bool useSystemThreadingLock)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Threading;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       root.Dispose();
+
+                                       Console.WriteLine(CustomAccumulator.WasInitialized);
+                                       Console.WriteLine(CustomAccumulator.WasDisposeSynchronized);
+                                   }
+                               }
+
+                               interface ICustomOwner : IDisposable
+                               {
+                               }
+
+                               sealed class CustomAccumulator : List<object>, ICustomOwner, IAccumulator
+                               {
+                           #if NET9_0_OR_GREATER
+                                   private Lock? synchronization;
+                           #else
+                                   private object? synchronization;
+                           #endif
+
+                                   public static bool WasInitialized { get; private set; }
+
+                                   public static bool WasDisposeSynchronized { get; private set; }
+
+                           #if NET9_0_OR_GREATER
+                                   void IAccumulator.Initialize(Lock value)
+                           #else
+                                   void IAccumulator.Initialize(object value)
+                           #endif
+                                   {
+                                       synchronization = value;
+                                       WasInitialized = true;
+                                   }
+
+                                   public void Dispose()
+                                   {
+                                       var value = synchronization;
+                                       if (value is null)
+                                       {
+                                           Clear();
+                                           return;
+                                       }
+
+                                       lock (value)
+                                       {
+                                           WasDisposeSynchronized = true;
+                                           Clear();
+                                       }
+                                   }
+                               }
+
+                               readonly struct CustomOwned<T> : IDisposable
+                               {
+                                   private readonly ICustomOwner owner;
+
+                                   public CustomOwned(T value, ICustomOwner owner)
+                                   {
+                                       Value = value;
+                                       this.owner = owner;
+                                   }
+
+                                   public T Value { get; }
+
+                                   public void Dispose() => owner.Dispose();
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public void Dispose()
+                                   {
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           #threadSafeHint#
+                                           .Accumulate<IDisposable, CustomAccumulator>(Transient, PerResolve, PerBlock)
+                                           .Bind<ICustomOwner>().To((CustomAccumulator accumulator) => accumulator)
+                                           .Bind<CustomOwned<TT>>().As(PerBlock).To(ctx =>
+                                           {
+                                               ctx.Inject<ICustomOwner>(out var owner);
+                                               ctx.Inject<TT>(ctx.Tag, out var value);
+                                               return new CustomOwned<TT>(value, owner);
+                                           })
+                                           .Bind().To<Resource>()
+                                           .Root<CustomOwned<Resource>>("Root");
+                               }
+                           }
+                           """
+            .Replace("#threadSafeHint#", threadSafeHint)
+            .RunAsync(new Options(
+                LanguageVersion.Preview,
+                PreprocessorSymbols: useSystemThreadingLock
+                    ? ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER"]
+                    : ["NET20"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([expectedInitialization, expectedInitialization], result);
+        if (string.IsNullOrEmpty(threadSafeHint))
+        {
+            global::System.Text.RegularExpressions.Regex.Matches(
+                    result.GeneratedCode,
+                    @"\(\(global::Pure\.DI\.IAccumulator\)\w+\)\.Initialize\(_lock\w*\);")
+                .Count.ShouldBe(1, result);
+            result.GeneratedCode.ShouldNotContain(" is global::Pure.DI.IAccumulator");
+        }
+        else
+        {
+            result.GeneratedCode.ShouldNotContain("((global::Pure.DI.IAccumulator)");
+        }
+    }
+
+    [Theory]
+    [InlineData("", "True", false)]
+#if ROSLYN5_6_OR_GREATER
+    [InlineData("", "True", true)]
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", "False", true)]
+#else
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", "False", false)]
+#endif
+    public async Task ShouldShareCompositionSynchronizationBetweenUserDefinedAccumulators(
+        string threadSafeHint,
+        string expectedSynchronization,
+        bool useSystemThreadingLock)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Threading;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+
+                                       Console.WriteLine(root.firstAccumulator.IsInitialized);
+                                       Console.WriteLine(root.secondAccumulator.IsInitialized);
+                           #if NET9_0_OR_GREATER
+                                       Console.WriteLine(
+                                           root.firstAccumulator.Synchronization is not null
+                                           && root.firstAccumulator.Synchronization
+                                               == root.secondAccumulator.Synchronization);
+                           #else
+                                       Console.WriteLine(
+                                           root.firstAccumulator.Synchronization is not null
+                                           && ReferenceEquals(
+                                               root.firstAccumulator.Synchronization,
+                                               root.secondAccumulator.Synchronization));
+                           #endif
+                                   }
+                               }
+
+                               interface IFirstResource
+                               {
+                               }
+
+                               sealed class FirstResource : IFirstResource
+                               {
+                               }
+
+                               interface ISecondResource
+                               {
+                               }
+
+                               sealed class SecondResource : ISecondResource
+                               {
+                               }
+
+                               sealed class FirstAccumulator : List<IFirstResource>, IAccumulator
+                               {
+                           #if NET9_0_OR_GREATER
+                                   private Lock? synchronization;
+                           #else
+                                   private object? synchronization;
+                           #endif
+
+                                   public bool IsInitialized => synchronization is not null;
+
+                           #if NET9_0_OR_GREATER
+                                   public Lock? Synchronization => synchronization;
+                           #else
+                                   public object? Synchronization => synchronization;
+                           #endif
+
+                           #if NET9_0_OR_GREATER
+                                   void IAccumulator.Initialize(Lock value) => synchronization = value;
+                           #else
+                                   void IAccumulator.Initialize(object value) => synchronization = value;
+                           #endif
+                               }
+
+                               sealed class SecondAccumulator : List<ISecondResource>, IAccumulator
+                               {
+                           #if NET9_0_OR_GREATER
+                                   private Lock? synchronization;
+                           #else
+                                   private object? synchronization;
+                           #endif
+
+                                   public bool IsInitialized => synchronization is not null;
+
+                           #if NET9_0_OR_GREATER
+                                   public Lock? Synchronization => synchronization;
+                           #else
+                                   public object? Synchronization => synchronization;
+                           #endif
+
+                           #if NET9_0_OR_GREATER
+                                   void IAccumulator.Initialize(Lock value) => synchronization = value;
+                           #else
+                                   void IAccumulator.Initialize(object value) => synchronization = value;
+                           #endif
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           #threadSafeHint#
+                                           .Accumulate<IFirstResource, FirstAccumulator>(Transient)
+                                           .Accumulate<ISecondResource, SecondAccumulator>(Transient)
+                                           .Bind().To<FirstResource>()
+                                           .Bind().To<SecondResource>()
+                                           .Root<(
+                                               IFirstResource first,
+                                               ISecondResource second,
+                                               FirstAccumulator firstAccumulator,
+                                               SecondAccumulator secondAccumulator)>("Root");
+                               }
+                           }
+                           """
+            .Replace("#threadSafeHint#", threadSafeHint)
+            .RunAsync(new Options(
+                LanguageVersion.Preview,
+                PreprocessorSymbols: useSystemThreadingLock
+                    ? ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER"]
+                    : ["NET20"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(
+            [expectedSynchronization, expectedSynchronization, expectedSynchronization],
+            result);
+        if (string.IsNullOrEmpty(threadSafeHint))
+        {
+            const string synchronizationPattern =
+                @"\(\(global::Pure\.DI\.IAccumulator\)\w+\)\.Initialize\((?<lock>_lock\w*)\);";
+            var synchronizationMatches = global::System.Text.RegularExpressions.Regex.Matches(
+                result.GeneratedCode,
+                synchronizationPattern);
+            synchronizationMatches.Count.ShouldBe(2, result);
+            synchronizationMatches[0].Groups["lock"].Value.ShouldBe(
+                synchronizationMatches[1].Groups["lock"].Value,
+                result);
+            result.GeneratedCode.ShouldNotContain(" is global::Pure.DI.IAccumulator");
+        }
+        else
+        {
+            result.GeneratedCode.ShouldNotContain("((global::Pure.DI.IAccumulator)");
+        }
+    }
+
+    [Fact]
+    public async Task ShouldReturnFromConcurrentDisposeWhileFirstDisposalIsInProgress()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resource = owned.Value;
+
+                                       var first = Task.Run(owned.Dispose);
+                                       resource.DisposalStarted.Wait();
+                                       var second = Task.Run(owned.Dispose);
+
+                                       Console.WriteLine(second.Wait(TimeSpan.FromSeconds(5)));
+                                       Console.WriteLine(!first.IsCompleted);
+
+                                       resource.ContinueDisposal.Set();
+                                       first.GetAwaiter().GetResult();
+                                       Console.WriteLine(resource.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   private int disposeCount;
+
+                                   public ManualResetEventSlim DisposalStarted { get; } = new(false);
+
+                                   public ManualResetEventSlim ContinueDisposal { get; } = new(false);
+
+                                   public int DisposeCount => disposeCount;
+
+                                   public void Dispose()
+                                   {
+                                       Interlocked.Increment(ref disposeCount);
+                                       DisposalStarted.Set();
+                                       ContinueDisposal.Wait();
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Resource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldReturnFromConcurrentDisposeAndDisposeAsyncWhileAsyncDisposalIsInProgress()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main() => Run().GetAwaiter().GetResult();
+
+                                   private static async Task Run()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resource = owned.Value;
+
+                                       var first = owned.DisposeAsync().AsTask();
+                                       await resource.DisposalStarted.Task;
+                                       var secondAsync = owned.DisposeAsync().AsTask();
+                                       var secondSync = Task.Run(owned.Dispose);
+
+                                       Console.WriteLine(secondAsync.IsCompletedSuccessfully);
+                                       Console.WriteLine(await Task.WhenAny(secondSync, Task.Delay(5000)) == secondSync);
+                                       Console.WriteLine(!first.IsCompleted);
+
+                                       resource.ContinueDisposal.TrySetResult(true);
+                                       await first;
+                                       Console.WriteLine(resource.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class Resource : IAsyncDisposable
+                               {
+                                   private int disposeCount;
+
+                                   public TaskCompletionSource<bool> DisposalStarted { get; } =
+                                       new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                                   public TaskCompletionSource<bool> ContinueDisposal { get; } =
+                                       new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+                                   public int DisposeCount => disposeCount;
+
+                                   public async ValueTask DisposeAsync()
+                                   {
+                                       Interlocked.Increment(ref disposeCount);
+                                       DisposalStarted.TrySetResult(true);
+                                       await ContinueDisposal.Task;
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Resource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldReturnFromReentrantDisposeWithoutDeadlock()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resource = owned.Value;
+                                       resource.Reenter = owned.Dispose;
+
+                                       var disposeTask = Task.Run(owned.Dispose);
+
+                                       Console.WriteLine(disposeTask.Wait(TimeSpan.FromSeconds(5)));
+                                       Console.WriteLine(resource.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   private int disposeCount;
+
+                                   public Action? Reenter { get; set; }
+
+                                   public int DisposeCount => disposeCount;
+
+                                   public void Dispose()
+                                   {
+                                       Interlocked.Increment(ref disposeCount);
+                                       Reenter!();
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Resource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldReturnFromReentrantDisposeAsyncWithoutDeadlock()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main() => Run().GetAwaiter().GetResult();
+
+                                   private static async Task Run()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+                                       var resource = owned.Value;
+                                       resource.Reenter = owned.DisposeAsync;
+
+                                       var disposeTask = owned.DisposeAsync().AsTask();
+
+                                       Console.WriteLine(
+                                           await Task.WhenAny(disposeTask, Task.Delay(5000)) == disposeTask);
+                                       Console.WriteLine(resource.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class Resource : IAsyncDisposable
+                               {
+                                   private int disposeCount;
+
+                                   public Func<ValueTask>? Reenter { get; set; }
+
+                                   public int DisposeCount => disposeCount;
+
+                                   public async ValueTask DisposeAsync()
+                                   {
+                                       Interlocked.Increment(ref disposeCount);
+                                       await Reenter!();
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Resource>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
 
 }

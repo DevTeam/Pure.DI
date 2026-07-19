@@ -2,7 +2,8 @@
 
 class Accumulators(
     INodeTools nodeTools,
-    IBuildTools buildTools)
+    IBuildTools buildTools,
+    ISymbolNames symbolNames)
     : IAccumulators
 {
     public IEnumerable<(MdAccumulator, Dependency)> GetAccumulators(
@@ -59,6 +60,19 @@ class Accumulators(
         foreach (var accVar in accVars)
         {
             ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration, useVar: true)}{accVar.Name} = new {accVar.InstanceType}();");
+            if (ctx.RootContext.IsThreadSafeEnabled
+                && accVar.InstanceType.AllInterfaces.Any(i =>
+                    symbolNames.GetGlobalName(i) == Names.IAccumulatorTypeName))
+            {
+                if (!ctx.RootContext.Root.IsStatic)
+                {
+                    ctx.RootContext.LockIsInUse = true;
+                }
+
+                var lockName = ctx.RootContext.Root.IsStatic ? Names.PerResolveLockFieldName : Names.LockFieldName;
+                ctx.Lines.AppendLine($"(({Names.IAccumulatorTypeName}){accVar.Name}).Initialize({lockName});");
+            }
+
             accVar.Declaration.IsDeclared = true;
             accVar.IsCreated = true;
         }

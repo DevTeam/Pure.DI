@@ -89,7 +89,10 @@ class CompositionBuilder(
                     isInstanceLockUsed |= ctx.LockIsInUse;
                 }
 
-                lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
+                if (!ctx.ReturnWasAdded)
+                {
+                    lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
+                }
                 foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Count > 0))
                 {
                     lines.AppendLine();

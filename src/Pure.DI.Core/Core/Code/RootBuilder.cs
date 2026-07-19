@@ -23,6 +23,9 @@ class RootBuilder(
         var rootVarsMap = rootContext.VarsMap;
         var rootVarInjection = rootVarsMap.GetInjection(rootContext.Graph, rootContext.Root.Injection, rootContext.Root.Node);
         var lines = new Lines();
+        var rootAccumulators = accumulators
+            .CreateAccumulators(rootContext.Graph, accumulators.GetAccumulators(rootContext.Graph, rootContext.Root.Node), rootVarsMap)
+            .ToImmutableArray();
         var ctx = new CodeContext(
             rootContext,
             ImmutableArray<VarInjection>.Empty,
@@ -30,17 +33,79 @@ class RootBuilder(
             rootContext.VarsMap,
             rootContext.IsThreadSafeEnabled,
             lines,
-            accumulators.CreateAccumulators(rootContext.Graph, accumulators.GetAccumulators(rootContext.Graph, rootContext.Root.Node), rootVarsMap).ToImmutableArray(),
+            rootAccumulators,
             []);
 
         accumulators.BuildAccumulators(ctx);
-        BuildCode(ctx);
+        if (rootAccumulators.Length == 0)
+        {
+            BuildCode(ctx);
+        }
+        else
+        {
+            lines.AppendLine("try");
+            using (lines.CreateBlock())
+            {
+                BuildCode(ctx);
+                rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
+                lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
+            }
+
+            lines.AppendLine("catch");
+            using (lines.CreateBlock())
+            {
+                var accumulatorIndex = 0;
+                foreach (var accumulator in rootAccumulators
+                             .GroupBy(i => i.VarInjection.Var.Name)
+                             .Select(i => i.First())
+                             .Reverse())
+                {
+                    var accumulatorName = accumulator.VarInjection.Var.Name;
+                    var disposableName = $"disposableAccumulator{accumulatorIndex}";
+                    lines.AppendLine($"if (({Names.ObjectTypeName}){accumulatorName} is {Names.IDisposableTypeName} {disposableName})");
+                    using (lines.CreateBlock())
+                    {
+                        AddDispose(lines, $"{disposableName}.Dispose();");
+                    }
+
+                    lines.AppendLine(new Line(int.MinValue, "#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER"));
+                    var asyncDisposableName = $"asyncDisposableAccumulator{accumulatorIndex++}";
+                    lines.AppendLine($"else if (({Names.ObjectTypeName}){accumulatorName} is {Names.IAsyncDisposableTypeName} {asyncDisposableName})");
+                    using (lines.CreateBlock())
+                    {
+                        AddDispose(lines, $"{asyncDisposableName}.DisposeAsync().GetAwaiter().GetResult();");
+                    }
+
+                    lines.AppendLine(new Line(int.MinValue, "#endif"));
+                }
+
+                lines.AppendLine("throw;");
+            }
+
+            rootContext.ReturnWasAdded = true;
+        }
+
         rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
 
         var setup = rootContext.Graph.Source;
         AddPerResolveVars(rootContext.Lines, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve), setup);
         rootContext.Lines.AppendLines(lines);
         return rootVarInjection;
+
+        static void AddDispose(Lines code, string disposeStatement)
+        {
+            code.AppendLine("try");
+            using (code.CreateBlock())
+            {
+                code.AppendLine(disposeStatement);
+            }
+
+            code.AppendLine("catch");
+            using (code.CreateBlock())
+            {
+                code.AppendLine("// Preserve the original graph construction exception.");
+            }
+        }
     }
 
     private void AddPerResolveVars(Lines lines, IEnumerable<VarDeclaration> perResolveVars, MdSetup setup)

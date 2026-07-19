@@ -10,4 +10,6 @@ record RootContext(
     public bool IsThreadSafeEnabled => Graph.Source.Hints.IsThreadSafeEnabled;
 
     public bool LockIsInUse { get; set; }
+
+    public bool ReturnWasAdded { get; set; }
 }

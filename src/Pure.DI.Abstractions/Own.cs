@@ -13,17 +13,15 @@ using System.Diagnostics.CodeAnalysis;
 #endif
 public sealed class Own : List<object>, IOwn
 {
-    private volatile bool _isDisposed;
+    private int _isDisposed;
 
     /// <inheritdoc />
     public void Dispose()
     {
-        if (_isDisposed)
+        if (System.Threading.Interlocked.Exchange(ref _isDisposed, 1) != 0)
         {
             return;
         }
-
-        _isDisposed = true;
         try
         {
             for (var i = Count - 1; i >= 0; i--)
@@ -49,11 +47,7 @@ public sealed class Own : List<object>, IOwn
                     case IAsyncDisposable asyncDisposableInstance:
                         try
                         {
-                            var valueTask = asyncDisposableInstance.DisposeAsync();
-                            if (!valueTask.IsCompleted)
-                            {
-                                valueTask.AsTask().Wait();
-                            }
+                            asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();
                         }
                         catch (Exception)
                         {
@@ -74,12 +68,10 @@ public sealed class Own : List<object>, IOwn
         /// <inheritdoc />
         public async System.Threading.Tasks.ValueTask DisposeAsync()
         {
-            if (_isDisposed)
+            if (System.Threading.Interlocked.Exchange(ref _isDisposed, 1) != 0)
             {
                 return;
             }
-
-            _isDisposed = true;
             try
             {
                 for (var i = Count - 1; i >= 0; i--)
