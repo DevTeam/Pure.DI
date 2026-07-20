@@ -2030,14 +2030,14 @@ namespace Pure.DI
     /// <seealso cref="IConfiguration.Accumulate{T,TAccumulator}"/>
     [global::System.Diagnostics.DebuggerDisplay("{Value}")]
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned<>.DebugView))]
-    internal readonly struct Owned<T>: global::Pure.DI.IOwned
+    internal readonly partial struct Owned<T>: global::Pure.DI.IOwned
     {
         /// <summary>
         /// The owned value.
         /// </summary>
         public readonly T Value;
 
-        private readonly global::Pure.DI.IOwned _owned;
+        private readonly global::Pure.DI.IOwned owned;
 
         /// <summary>
         /// Initializes a new owned value with its associated disposal mechanism.
@@ -2047,20 +2047,20 @@ namespace Pure.DI
         public Owned(T value, global::Pure.DI.IOwned owned)
         {
             Value = value;
-            _owned = owned;
+            this.owned = owned;
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            _owned.Dispose();
+            owned.Dispose();
         }
 
 #if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <inheritdoc />
         public global::System.Threading.Tasks.ValueTask DisposeAsync()
         {
-            return _owned.DisposeAsync();
+            return owned.DisposeAsync();
         }
 #endif
 
@@ -2091,7 +2091,7 @@ namespace Pure.DI
             /// </summary>
             public global::Pure.DI.IOwned Owned
             {
-                get { return _owned._owned; }
+                get { return _owned.owned; }
             }
         }
     }
