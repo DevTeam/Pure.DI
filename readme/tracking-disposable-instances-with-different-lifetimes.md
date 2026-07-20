@@ -156,12 +156,13 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwned = new Owned();
       Func<Owned<IConnection>> perBlockFuncOwnedIConnection = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         // Creates a deferred value
+        var perBlockOwned = new Owned();
+        ((IAccumulator)perBlockOwned).Initialize(_lock);
         Owned<IConnection> perBlockOwnedIConnection;
         // Tracks owned disposables
         Owned transientOwned;
@@ -189,12 +190,13 @@ partial class Composition: IDisposable
 
         return perBlockOwnedIConnection;
       });
-      var perBlockOwned1 = new Owned();
       Func<Owned<IConnection>> perBlockFuncOwnedIConnection1 = new Func<Owned<IConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         // Creates a deferred value
+        var perBlockOwned1 = new Owned();
+        ((IAccumulator)perBlockOwned1).Initialize(_lock);
         Owned<IConnection> perBlockOwnedIConnection1;
         // Tracks owned disposables
         Owned transientOwned1;

@@ -501,6 +501,8 @@ Less common but practical composition techniques for overrides, builders, depend
 - [Tracking disposable instances using pre-built classes](readme/tracking-disposable-instances-using-pre-built-classes.md)
 - [Tracking async disposable instances per a composition root](readme/tracking-async-disposable-instances-per-a-composition-root.md)
 - [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
+- [Tracing exceptions during composition disposal](readme/tracing-exceptions-during-composition-disposal.md)
+- [Tracing exceptions during Owned disposal](readme/tracing-exceptions-during-owned-disposal.md)
 - [Exported roots](readme/exported-roots.md)
 - [Exported roots with tags](readme/exported-roots-with-tags.md)
 - [Exported roots via arg](readme/exported-roots-via-arg.md)
@@ -2607,8 +2609,8 @@ Articles
 <summary>Additional resources in Russian</summary>
 
 Articles
-- [What's new in Pure.DI: union types, interface generation, and DI without unnecessary allocations](/readme/ru_art_2026.2/art_rus_2026.2.md)
 - [An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/ru_art_basics/ru_basics.md)
+- [What's new in Pure.DI: union types, interface generation, and DI without unnecessary allocations](/readme/ru_art_2026.2/art_rus_2026.2.md)
 - [Pure.DI: new features](https://habr.com/ru/articles/1010646/)
 - [New in Pure.DI by the end of 2024](https://habr.com/ru/articles/868744/)
 - [New in Pure.DI](https://habr.com/ru/articles/808297/)
@@ -2631,7 +2633,7 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 51KB | 13K |
 | [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 128KB | 32K |
-| [AGENTS.md](AGENTS.md) | 496KB | 127K |
+| [AGENTS.md](AGENTS.md) | 502KB | 128K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI

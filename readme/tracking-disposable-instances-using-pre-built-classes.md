@@ -164,12 +164,12 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwn = new Abstractions.Own();
       Func<Abstractions.Own<IDbConnection>> perBlockFuncOwnIDbConnection = new Func<Abstractions.Own<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         // Creates a deferred value
+        var perBlockOwn = new Abstractions.Own();
         Abstractions.Own<IDbConnection> perBlockOwnIDbConnection;
         // Creates the owner of an instance
         Abstractions.Own localOwn = perBlockOwn;
@@ -188,12 +188,12 @@ partial class Composition: IDisposable
 
         return perBlockOwnIDbConnection;
       });
-      var perBlockOwn1 = new Abstractions.Own();
       Func<Abstractions.Own<IDbConnection>> perBlockFuncOwnIDbConnection1 = new Func<Abstractions.Own<IDbConnection>>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         // Creates a deferred value
+        var perBlockOwn1 = new Abstractions.Own();
         Abstractions.Own<IDbConnection> perBlockOwnIDbConnection1;
         // Creates the owner of an instance
         Abstractions.Own localOwn1 = perBlockOwn1;

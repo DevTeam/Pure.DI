@@ -110,31 +110,63 @@ partial class Composition
     get
     {
       var perBlockTelemetryRegistry = new TelemetryRegistry();
-      var perBlockSqlDataSource = new SqlDataSource();
-      if (_singletonNetworkDataSource is null)
+      try
+      {
+        var perBlockSqlDataSource = new SqlDataSource();
+        if (_singletonNetworkDataSource is null)
+          lock (_lock)
+            if (_singletonNetworkDataSource is null)
+            {
+              NetworkDataSource _singletonNetworkDataSourceTemp;
+              _singletonNetworkDataSourceTemp = new NetworkDataSource();
+              perBlockTelemetryRegistry.Add(_singletonNetworkDataSourceTemp);
+              Thread.MemoryBarrier();
+              _singletonNetworkDataSource = _singletonNetworkDataSourceTemp;
+            }
+
+        var transientSqlDataSource = new SqlDataSource();
         lock (_lock)
-          if (_singletonNetworkDataSource is null)
+        {
+          perBlockTelemetryRegistry.Add(transientSqlDataSource);
+        }
+
+        var transientDashboard = new Dashboard(transientSqlDataSource, _singletonNetworkDataSource, perBlockSqlDataSource);
+        lock (_lock)
+        {
+          perBlockTelemetryRegistry.Add(transientDashboard);
+        }
+
+        return (transientDashboard, perBlockTelemetryRegistry);
+      }
+      catch
+      {
+        if ((Object)perBlockTelemetryRegistry is IDisposable disposableAccumulator0)
+        {
+          try
           {
-            NetworkDataSource _singletonNetworkDataSourceTemp;
-            _singletonNetworkDataSourceTemp = new NetworkDataSource();
-            perBlockTelemetryRegistry.Add(_singletonNetworkDataSourceTemp);
-            Thread.MemoryBarrier();
-            _singletonNetworkDataSource = _singletonNetworkDataSourceTemp;
+            disposableAccumulator0.Dispose();
           }
+          catch
+          {
+          // Preserve the original graph construction exception.
+          }
+        }
 
-      var transientSqlDataSource = new SqlDataSource();
-      lock (_lock)
-      {
-        perBlockTelemetryRegistry.Add(transientSqlDataSource);
+      #if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        else if ((Object)perBlockTelemetryRegistry is IAsyncDisposable asyncDisposableAccumulator0)
+        {
+          try
+          {
+            asyncDisposableAccumulator0.DisposeAsync().GetAwaiter().GetResult();
+          }
+          catch
+          {
+            // Preserve the original graph construction exception.
+          }
+        }
+      #endif
+        throw;
       }
-
-      var transientDashboard = new Dashboard(transientSqlDataSource, _singletonNetworkDataSource, perBlockSqlDataSource);
-      lock (_lock)
-      {
-        perBlockTelemetryRegistry.Add(transientDashboard);
-      }
-
-      return (transientDashboard, perBlockTelemetryRegistry);
     }
   }
 }

@@ -158,11 +158,7 @@ partial class Composition: IDisposable, IAsyncDisposable
         case IAsyncDisposable asyncDisposableInstance:
           try
           {
-            var valueTask = asyncDisposableInstance.DisposeAsync();
-            if (!valueTask.IsCompleted)
-            {
-              valueTask.AsTask().Wait();
-            }
+            asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();
           }
           catch (Exception exception)
           {

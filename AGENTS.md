@@ -11484,6 +11484,188 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >Async disposable tracking in delegates ensures proper async cleanup even when instances are created dynamically through factory delegates.
 
+## Tracing exceptions during composition disposal
+
+A generated composition catches exceptions thrown while disposing tracked singleton and scoped dependencies, invokes the `OnDisposeException` partial method, and continues disposing the remaining resources. Implement this method in the composition partial class to send failures to logging, tracing, or monitoring without wrapping every resource manually.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+var composition = new Composition();
+var orderProcessor = composition.OrderProcessor;
+
+// Simulates application shutdown. The payment gateway throws while
+// closing, but the database connection must still be released.
+composition.Dispose();
+
+composition.Events.ShouldBe([
+    "PaymentGatewayConnection: The remote payment session did not close cleanly."]);
+orderProcessor.Database.IsDisposed.ShouldBeTrue();
+
+interface IOrderDatabase
+{
+    bool IsDisposed { get; }
+}
+
+// Represents a long-lived database connection owned by the application.
+class OrderDatabase : IOrderDatabase, IDisposable
+{
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface IPaymentGatewayConnection;
+
+// Represents an external client that can fail during application shutdown.
+class PaymentGatewayConnection : IPaymentGatewayConnection, IDisposable
+{
+    public void Dispose() =>
+        throw new IOException("The remote payment session did not close cleanly.");
+}
+
+interface IOrderProcessor
+{
+    IOrderDatabase Database { get; }
+}
+
+class OrderProcessor(
+    IOrderDatabase database,
+    IPaymentGatewayConnection paymentGatewayConnection)
+    : IOrderProcessor
+{
+    public IOrderDatabase Database { get; } = database;
+
+    public IPaymentGatewayConnection PaymentGatewayConnection { get; } = paymentGatewayConnection;
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            .Bind<IOrderDatabase>().As(Lifetime.Singleton).To<OrderDatabase>()
+            .Bind<IPaymentGatewayConnection>().As(Lifetime.Singleton).To<PaymentGatewayConnection>()
+            .Bind<IOrderProcessor>().To<OrderProcessor>()
+            .Root<IOrderProcessor>("OrderProcessor");
+
+    private readonly List<string> _events = [];
+
+    // Called whenever a tracked IDisposable throws during composition disposal.
+    partial void OnDisposeException<T>(T disposableInstance, Exception exception)
+        where T : IDisposable =>
+        _events.Add($"{disposableInstance.GetType().Name}: {exception.Message}");
+
+    public IReadOnlyList<string> Events => _events;
+
+    public void Clear() => _events.Clear();
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!IMPORTANT]
+>The exception is suppressed after `OnDisposeException` returns so that cleanup can continue. If the application must fail shutdown, the partial method can record the failure and then throw according to the application's shutdown policy.
+
+## Tracing exceptions during Owned disposal
+
+`Owned<T>` catches exceptions thrown while disposing resources in its graph, invokes the `OnDisposeException` partial method on the generated `Pure.DI.Owned` accumulator, and continues disposing the remaining resources. Implement this hook to associate per-operation cleanup failures with application diagnostics.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+var composition = new Composition();
+var messageHandler = composition.MessageHandler;
+
+// Ends processing of one message. The broker consumer fails to
+// close, but the checkpoint writer must still be released.
+messageHandler.Dispose();
+
+messageHandler.Events.ShouldBe([
+    "BrokerConsumer: The broker did not acknowledge consumer shutdown."]);
+messageHandler.Value.CheckpointWriter.IsDisposed.ShouldBeTrue();
+
+interface ICheckpointWriter
+{
+    bool IsDisposed { get; }
+}
+
+// Represents a per-message checkpoint buffer that must always be released.
+class CheckpointWriter : ICheckpointWriter, IDisposable
+{
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose() => IsDisposed = true;
+}
+
+interface IBrokerConsumer;
+
+// Represents a per-message broker consumer that can fail while closing.
+class BrokerConsumer : IBrokerConsumer, IDisposable
+{
+    public void Dispose() =>
+        throw new IOException("The broker did not acknowledge consumer shutdown.");
+}
+
+interface IMessageHandler
+{
+    ICheckpointWriter CheckpointWriter { get; }
+}
+
+class MessageHandler(
+    ICheckpointWriter checkpointWriter,
+    IBrokerConsumer brokerConsumer)
+    : IMessageHandler
+{
+    public ICheckpointWriter CheckpointWriter { get; } = checkpointWriter;
+
+    public IBrokerConsumer BrokerConsumer { get; } = brokerConsumer;
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            .Bind<ICheckpointWriter>().To<CheckpointWriter>()
+            .Bind<IBrokerConsumer>().To<BrokerConsumer>()
+            .Bind<IMessageHandler>().To<MessageHandler>()
+            .Root<Owned<IMessageHandler>>("MessageHandler");
+}
+
+namespace Pure.DI
+{
+    internal sealed partial class Owned
+    {
+        private readonly List<string> _events = [];
+//#
+        // Called whenever a resource in any Owned<T> graph fails to dispose.
+        partial void OnDisposeException<T>(T disposableInstance, Exception exception)
+            where T : IDisposable =>
+            _events.Add($"{disposableInstance.GetType().Name}: {exception.Message}");
+//#
+        public IReadOnlyList<string> Events => _events;
+    }
+//#
+    internal readonly partial struct Owned<T>
+    {
+        // Exposes diagnostics collected for this Owned<T> graph only.
+        public IReadOnlyList<string> Events => ((Owned)owned).Events;
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!IMPORTANT]
+>The hook belongs to the non-generic `Pure.DI.Owned` accumulator used internally by every `Owned<T>`, so its partial implementation must be declared in the `Pure.DI` namespace. The partial `Owned<T>` extension exposes only the events collected by its own accumulator.
+
 ## Exported roots
 
 Composition roots from other assemblies or projects can be used as a source of bindings. When you add a binding to a composition from another assembly or project, the roots of the composition with the `RootKind.Exported` type will be used in the bindings automatically. For example, in some assembly a composition is defined as:

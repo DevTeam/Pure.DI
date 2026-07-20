@@ -111,32 +111,65 @@ partial class Composition
     get
     {
       var perBlockOwned = new Owned();
-      Owned<IOrderProcessingService> perBlockOwnedIOrderProcessingService;
-      // Tracks owned disposables
-      Owned transientOwned;
-      Owned localOwned1 = perBlockOwned;
-      transientOwned = localOwned1;
-      lock (_lock)
+      ((IAccumulator)perBlockOwned).Initialize(_lock);
+      try
       {
-        perBlockOwned.Add(transientOwned);
-      }
+        Owned<IOrderProcessingService> perBlockOwnedIOrderProcessingService;
+        // Tracks owned disposables
+        Owned transientOwned;
+        Owned localOwned1 = perBlockOwned;
+        transientOwned = localOwned1;
+        lock (_lock)
+        {
+          perBlockOwned.Add(transientOwned);
+        }
 
-      IOwned localOwned = transientOwned;
-      // Creates the owned value
-      var transientDbConnection = new DbConnection();
-      lock (_lock)
+        IOwned localOwned = transientOwned;
+        // Creates the owned value
+        var transientDbConnection = new DbConnection();
+        lock (_lock)
+        {
+          perBlockOwned.Add(transientDbConnection);
+        }
+
+        IOrderProcessingService localValue = new OrderProcessingService(transientDbConnection);
+        perBlockOwnedIOrderProcessingService = new Owned<IOrderProcessingService>(localValue, localOwned);
+        lock (_lock)
+        {
+          perBlockOwned.Add(perBlockOwnedIOrderProcessingService);
+        }
+
+        return perBlockOwnedIOrderProcessingService;
+      }
+      catch
       {
-        perBlockOwned.Add(transientDbConnection);
-      }
+        if ((Object)perBlockOwned is IDisposable disposableAccumulator0)
+        {
+          try
+          {
+            disposableAccumulator0.Dispose();
+          }
+          catch
+          {
+          // Preserve the original graph construction exception.
+          }
+        }
 
-      IOrderProcessingService localValue = new OrderProcessingService(transientDbConnection);
-      perBlockOwnedIOrderProcessingService = new Owned<IOrderProcessingService>(localValue, localOwned);
-      lock (_lock)
-      {
-        perBlockOwned.Add(perBlockOwnedIOrderProcessingService);
+      #if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        else if ((Object)perBlockOwned is IAsyncDisposable asyncDisposableAccumulator0)
+        {
+          try
+          {
+            asyncDisposableAccumulator0.DisposeAsync().GetAwaiter().GetResult();
+          }
+          catch
+          {
+            // Preserve the original graph construction exception.
+          }
+        }
+      #endif
+        throw;
       }
-
-      return perBlockOwnedIOrderProcessingService;
     }
   }
 }

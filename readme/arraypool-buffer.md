@@ -128,34 +128,67 @@ partial class Composition
     get
     {
       var perBlockOwned = new Owned();
-      Owned<IReportExporter> perBlockOwnedIReportExporter;
-      // Tracks owned disposables
-      Owned transientOwned;
-      Owned localOwned1 = perBlockOwned;
-      transientOwned = localOwned1;
-      lock (_lock)
+      ((IAccumulator)perBlockOwned).Initialize(_lock);
+      try
       {
-        perBlockOwned.Add(transientOwned);
-      }
+        Owned<IReportExporter> perBlockOwnedIReportExporter;
+        // Tracks owned disposables
+        Owned transientOwned;
+        Owned localOwned1 = perBlockOwned;
+        transientOwned = localOwned1;
+        lock (_lock)
+        {
+          perBlockOwned.Add(transientOwned);
+        }
 
-      IOwned localOwned = transientOwned;
-      // Creates the owned value
-      Buffers.ArrayPool<byte> transientArrayPoolByte = Buffers.ArrayPool<byte>.Shared;
-      ExportBufferOptions transientExportBufferOptions = new ExportBufferOptions(Size: 256);
-      var transientExportBuffer = new ExportBuffer(transientArrayPoolByte, transientExportBufferOptions);
-      lock (_lock)
+        IOwned localOwned = transientOwned;
+        // Creates the owned value
+        Buffers.ArrayPool<byte> transientArrayPoolByte = Buffers.ArrayPool<byte>.Shared;
+        ExportBufferOptions transientExportBufferOptions = new ExportBufferOptions(Size: 256);
+        var transientExportBuffer = new ExportBuffer(transientArrayPoolByte, transientExportBufferOptions);
+        lock (_lock)
+        {
+          perBlockOwned.Add(transientExportBuffer);
+        }
+
+        IReportExporter localValue = new CsvReportExporter(transientExportBuffer);
+        perBlockOwnedIReportExporter = new Owned<IReportExporter>(localValue, localOwned);
+        lock (_lock)
+        {
+          perBlockOwned.Add(perBlockOwnedIReportExporter);
+        }
+
+        return perBlockOwnedIReportExporter;
+      }
+      catch
       {
-        perBlockOwned.Add(transientExportBuffer);
-      }
+        if ((Object)perBlockOwned is IDisposable disposableAccumulator0)
+        {
+          try
+          {
+            disposableAccumulator0.Dispose();
+          }
+          catch
+          {
+          // Preserve the original graph construction exception.
+          }
+        }
 
-      IReportExporter localValue = new CsvReportExporter(transientExportBuffer);
-      perBlockOwnedIReportExporter = new Owned<IReportExporter>(localValue, localOwned);
-      lock (_lock)
-      {
-        perBlockOwned.Add(perBlockOwnedIReportExporter);
+      #if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        else if ((Object)perBlockOwned is IAsyncDisposable asyncDisposableAccumulator0)
+        {
+          try
+          {
+            asyncDisposableAccumulator0.DisposeAsync().GetAwaiter().GetResult();
+          }
+          catch
+          {
+            // Preserve the original graph construction exception.
+          }
+        }
+      #endif
+        throw;
       }
-
-      return perBlockOwnedIReportExporter;
     }
   }
 }
