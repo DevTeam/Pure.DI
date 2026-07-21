@@ -1862,8 +1862,27 @@ namespace Pure.DI
                 return;
             }
 
-            DisposeSynchronously(item);
-            throw new global::System.ObjectDisposedException(nameof(Owned));
+            Reject(item);
+        }
+
+        /// <summary>
+        /// Verifies that an ownership handle is created while this accumulator
+        /// is active without retaining the independent owner in this collection.
+        /// </summary>
+        public void Add(global::Pure.DI.IOwned item)
+        {
+            if (_isDisposed == 0) return;
+            Reject(item);
+        }
+
+        /// <summary>
+        /// Verifies that an <see cref="Owned{T}"/> handle is created while this
+        /// accumulator is active without retaining or boxing the handle.
+        /// </summary>
+        public void Add<T>(global::Pure.DI.Owned<T> item)
+        {
+            if (_isDisposed == 0) return;
+            Reject(item);
         }
 
         /// <inheritdoc />
@@ -1995,6 +2014,12 @@ namespace Pure.DI
                     break;
 #endif
             }
+        }
+
+        private void Reject(global::System.Object item)
+        {
+            DisposeSynchronously(item);
+            throw new global::System.ObjectDisposedException(nameof(Owned));
         }
 
         /// <summary>

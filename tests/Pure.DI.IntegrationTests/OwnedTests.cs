@@ -5525,6 +5525,128 @@ public class OwnedTests
         result.StdOut.ShouldBe(["True"], result);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")")]
+    public async Task ShouldRetainOnlyResourcesInBuiltInOwnedAccumulator(string threadSafeHint)
+    {
+        // Given
+
+        // When
+        var sources = new[]
+        {
+            """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+
+                                       Console.WriteLine(owned.TrackedCount);
+
+                                       owned.Dispose();
+                                       Console.WriteLine(owned.Value.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           #threadSafeHint#
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Resource>>("Root");
+                               }
+                           }
+                           """.Replace("#threadSafeHint#", threadSafeHint),
+            """
+                           namespace Pure.DI
+                           {
+                               internal readonly partial struct Owned<T>
+                               {
+                                   public int TrackedCount => ((Owned)owned).Count;
+                               }
+                           }
+                           """
+        };
+        var result = await sources.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1", "True"], result);
+        var accumulatorMatch = global::System.Text.RegularExpressions.Regex.Match(
+            result.GeneratedCode,
+            @"var (?<name>\w+) = new Pure\.DI\.Owned\(\);");
+        accumulatorMatch.Success.ShouldBeTrue(result);
+        var accumulatorName = global::System.Text.RegularExpressions.Regex.Escape(
+            accumulatorMatch.Groups["name"].Value);
+        global::System.Text.RegularExpressions.Regex.Matches(
+                result.GeneratedCode,
+                $@"\b{accumulatorName}\.Add\(")
+            .Count.ShouldBe(2, result);
+    }
+
+    [Fact]
+    public async Task ShouldRejectOwnershipHandleCreatedAfterAccumulatorIsDisposed()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       try
+                                       {
+                                           _ = composition.Root;
+                                       }
+                                       catch (ObjectDisposedException)
+                                       {
+                                           Console.WriteLine(true);
+                                       }
+                                   }
+                               }
+
+                               sealed class Root
+                               {
+                                   public Root(IOwned owner) => owner.Dispose();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Root>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
     [Fact]
     public async Task ShouldRejectResourceCreationAfterOwnedIsDisposed()
     {

@@ -55,6 +55,7 @@ sealed class BuildTools(
                 .ToImmutableHashSet(typeSymbolComparer.Runtime));
 
         var accLines = ctx.Accumulators
+            .Where(acc => !IsBuiltInOwnershipInfrastructure(acc, varInjection))
             .Where(acc => acc.Lifetime == varInjection.Var.AbstractNode.Lifetime)
             .Where(acc => baseTypes.Value.Contains(acc.Type))
             .GroupBy(acc => acc.VarInjection.Var.Name)
@@ -107,6 +108,10 @@ sealed class BuildTools(
         lines.AppendLines(code);
         return lines;
     }
+
+    private bool IsBuiltInOwnershipInfrastructure(Accumulator accumulator, VarInjection varInjection) =>
+        symbolNames.GetGlobalName(accumulator.VarInjection.Var.InstanceType) == Names.OwnedTypeName
+        && symbolNames.GetGlobalName(varInjection.Var.InstanceType) == Names.OwnedTypeName;
 
     public string OnInjected(CodeContext ctx, VarInjection varInjection)
     {
