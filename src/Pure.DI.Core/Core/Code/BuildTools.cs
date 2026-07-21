@@ -55,6 +55,7 @@ sealed class BuildTools(
                 .ToImmutableHashSet(typeSymbolComparer.Runtime));
 
         var accLines = ctx.Accumulators
+            .Where(acc => !acc.IsEmpty)
             .Where(acc => !IsBuiltInOwnershipInfrastructure(acc, varInjection))
             .Where(acc => acc.Lifetime == varInjection.Var.AbstractNode.Lifetime)
             .Where(acc => baseTypes.Value.Contains(acc.Type))

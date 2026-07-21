@@ -117,7 +117,7 @@ sealed class RootCodeBuilder(
             var inheritedAccumulators = ctx.Accumulators
                 .Where(i => !accumulatorBindingIds.Contains(i.VarInjection.Var.AbstractNode.BindingId))
                 .ToImmutableArray();
-            var createdAccumulators = accumulators.CreateAccumulators(varCtx.RootContext.Graph, acc, varsMap).ToImmutableArray();
+            var createdAccumulators = accumulators.CreateAccumulators(varCtx.RootContext.Graph, var.AbstractNode, acc, varsMap).ToImmutableArray();
             ctx = ctx with
             {
                 Accumulators = inheritedAccumulators.AddRange(createdAccumulators),
@@ -138,7 +138,7 @@ sealed class RootCodeBuilder(
             {
                 if (!ctx.IsDeferred)
                 {
-                    foreach (var accumulator in createdAccumulators)
+                    foreach (var accumulator in createdAccumulators.Where(i => !i.IsEmpty))
                     {
                         var accumulatorVar = accumulator.VarInjection.Var;
                         if (parentCtx.RootContext.ConstructionFailureAccumulators.Any(i => ReferenceEquals(i, accumulatorVar)))

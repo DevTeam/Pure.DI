@@ -24,7 +24,7 @@ class RootBuilder(
         var rootVarInjection = rootVarsMap.GetInjection(rootContext.Graph, rootContext.Root.Injection, rootContext.Root.Node);
         var lines = new Lines();
         var rootAccumulators = accumulators
-            .CreateAccumulators(rootContext.Graph, accumulators.GetAccumulators(rootContext.Graph, rootContext.Root.Node), rootVarsMap)
+            .CreateAccumulators(rootContext.Graph, rootContext.Root.Node, accumulators.GetAccumulators(rootContext.Graph, rootContext.Root.Node), rootVarsMap)
             .ToImmutableArray();
         var ctx = new CodeContext(
             rootContext,
@@ -37,7 +37,8 @@ class RootBuilder(
             []);
 
         accumulators.BuildAccumulators(ctx);
-        if (rootAccumulators.Length == 0)
+        if (rootAccumulators.All(i => i.IsEmpty)
+            && !accumulators.HasNonEmptyNestedAccumulators(rootContext.Graph, rootContext.Root.Node))
         {
             BuildCode(ctx);
         }
@@ -56,6 +57,7 @@ class RootBuilder(
             {
                 var accumulatorIndex = 0;
                 var rollbackAccumulators = rootAccumulators
+                    .Where(i => !i.IsEmpty)
                     .Select(i => i.VarInjection.Var)
                     .Reverse()
                     .Concat(rootContext.ConstructionFailureAccumulators.AsEnumerable().Reverse())

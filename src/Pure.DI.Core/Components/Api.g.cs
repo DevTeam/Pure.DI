@@ -1833,12 +1833,25 @@ namespace Pure.DI
 #endif
     internal sealed partial class Owned: global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned, global::Pure.DI.IAccumulator
     {
+        // A shared no-op owner avoids allocating an accumulator for an object
+        // graph which is known at generation time to contain no resources.
+        internal static readonly Owned Empty = new Owned(isDisposed: true);
+
         private int _isDisposed;
 #if NET9_0_OR_GREATER
         private global::System.Threading.Lock _synchronization;
 #else
         private global::System.Object _synchronization;
 #endif
+
+        public Owned()
+        {
+        }
+
+        private Owned(bool isDisposed)
+        {
+            _isDisposed = isDisposed ? 1 : 0;
+        }
 
         /// <inheritdoc />
 #if NET9_0_OR_GREATER

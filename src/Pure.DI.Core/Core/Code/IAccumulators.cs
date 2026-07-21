@@ -14,8 +14,13 @@ interface IAccumulators
         DependencyGraph graph,
         IDependencyNode targetNode);
 
+    bool HasNonEmptyNestedAccumulators(
+        DependencyGraph graph,
+        IDependencyNode targetNode);
+
     IEnumerable<Accumulator> CreateAccumulators(
         DependencyGraph graph,
+        IDependencyNode targetNode,
         IEnumerable<(MdAccumulator accumulator, Dependency dependency)> accumulators,
         IVarsMap varsMap);
 

@@ -110,27 +110,90 @@ class Accumulators(
         }
     }
 
+    public bool HasNonEmptyNestedAccumulators(
+        DependencyGraph graph,
+        IDependencyNode targetNode)
+    {
+        var processed = new HashSet<IDependencyNode>();
+        var nodes = new Stack<IDependencyNode>();
+        nodes.Push(targetNode);
+        while (nodes.TryPop(out var node))
+        {
+            if (!processed.Add(node))
+            {
+                continue;
+            }
+
+            if (!ReferenceEquals(node, targetNode))
+            {
+                var boundaryAccumulators = GetBoundaryAccumulators(graph, node).ToImmutableArray();
+                foreach (var item in boundaryAccumulators)
+                {
+                    if (!IsBuiltInOwned(item.Item1.AccumulatorType)
+                        || boundaryAccumulators
+                            .Where(i => typeSymbolComparer.RuntimeEquals(
+                                i.Item1.AccumulatorType,
+                                item.Item1.AccumulatorType))
+                            .Any(i => HasAccumulatedResources(graph, node, i.Item1)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            if (!graph.Graph.TryGetInEdges(node.Node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                nodes.Push(dependency.Source);
+            }
+        }
+
+        return false;
+    }
+
     public IEnumerable<Accumulator> CreateAccumulators(
         DependencyGraph graph,
+        IDependencyNode targetNode,
         IEnumerable<(MdAccumulator accumulator, Dependency dependency)> accumulators,
-        IVarsMap varsMap) =>
-        accumulators.Select(i => new Accumulator(varsMap.GetInjection(graph, i.dependency.Injection, i.dependency.Source), i.accumulator.Type, i.accumulator.Lifetime));
+        IVarsMap varsMap)
+    {
+        var items = accumulators.ToImmutableArray();
+        foreach (var item in items)
+        {
+            var isEmpty = IsBuiltInOwned(item.accumulator.AccumulatorType)
+                          && !items
+                              .Where(i => typeSymbolComparer.RuntimeEquals(
+                                  i.accumulator.AccumulatorType,
+                                  item.accumulator.AccumulatorType))
+                              .Any(i => HasAccumulatedResources(graph, targetNode, i.accumulator));
+            yield return new Accumulator(
+                varsMap.GetInjection(graph, item.dependency.Injection, item.dependency.Source),
+                item.accumulator.Type,
+                item.accumulator.Lifetime,
+                isEmpty);
+        }
+    }
 
     public void BuildAccumulators(CodeContext ctx, bool includeDeclared = false)
     {
-        var accVars = ctx.Accumulators.Select(accumulator => accumulator.VarInjection.Var).Where(accVar => !accVar.Declaration.IsDeclared);
-        if (includeDeclared)
+        var accumulatorGroups = ctx.Accumulators
+            .GroupBy(accumulator => accumulator.VarInjection.Var.Name)
+            .Where(group => includeDeclared || !group.First().VarInjection.Var.Declaration.IsDeclared);
+        foreach (var accumulatorGroup in accumulatorGroups)
         {
-            accVars = ctx.Accumulators
-                .Select(accumulator => accumulator.VarInjection.Var)
-                .GroupBy(accVar => accVar.Name)
-                .Select(group => group.First());
-        }
-
-        foreach (var accVar in accVars)
-        {
-            ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration, useVar: true)}{accVar.Name} = new {accVar.InstanceType}();");
-            if (ctx.RootContext.IsThreadSafeEnabled
+            var accumulator = accumulatorGroup.First();
+            var accVar = accumulator.VarInjection.Var;
+            var useEmpty = accumulatorGroup.All(i => i.IsEmpty);
+            var value = useEmpty
+                ? $"{Names.OwnedTypeName}.Empty"
+                : $"new {accVar.InstanceType}()";
+            ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration, useVar: true)}{accVar.Name} = {value};");
+            if (!useEmpty
+                && ctx.RootContext.IsThreadSafeEnabled
                 && accVar.InstanceType.AllInterfaces.Any(i =>
                     symbolNames.GetGlobalName(i) == Names.IAccumulatorTypeName))
             {
@@ -147,6 +210,65 @@ class Accumulators(
             accVar.IsCreated = true;
         }
     }
+
+    private bool HasAccumulatedResources(
+        DependencyGraph graph,
+        IDependencyNode targetNode,
+        MdAccumulator accumulator)
+    {
+        var processed = new HashSet<IDependencyNode>();
+        var nodes = new Stack<IDependencyNode>();
+        nodes.Push(targetNode);
+        while (nodes.TryPop(out var node))
+        {
+            if (!processed.Add(node))
+            {
+                continue;
+            }
+
+            if (!ReferenceEquals(node, targetNode)
+                && GetBoundaryAccumulators(graph, node).Any())
+            {
+                continue;
+            }
+
+            if (node.Arg is null
+                && node.ActualLifetime == accumulator.Lifetime
+                && IsAssignableTo(node.Node.Type, accumulator.Type)
+                && (!IsOwnershipInfrastructure(node.Node.Type)
+                    || IsAccumulatorExposedToUserGraph(graph, node)))
+            {
+                return true;
+            }
+
+            if (!graph.Graph.TryGetInEdges(node.Node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                nodes.Push(dependency.Source);
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsAccumulatorExposedToUserGraph(
+        DependencyGraph graph,
+        IDependencyNode node) =>
+        IsBuiltInOwned(node.Node.Type)
+        && graph.Graph.TryGetOutEdges(node.Node, out var consumers)
+        && consumers.Any(i => !IsOwnershipInfrastructure(i.Target.Type));
+
+    private bool IsOwnershipInfrastructure(ITypeSymbol type) =>
+        IsBuiltInOwned(type)
+        || type is INamedTypeSymbol namedType
+        && namedType.AllInterfaces.Any(i => symbolNames.GetGlobalName(i) == Names.IOwnedTypeName);
+
+    private bool IsBuiltInOwned(ITypeSymbol type) =>
+        symbolNames.GetGlobalName(type) == Names.OwnedTypeName;
 
     private IEnumerable<(MdAccumulator, Dependency)> GetBranchAccumulators(
         DependencyGraph graph,

@@ -6,6 +6,7 @@ record Accumulator(
     // bool IsDeclared,
     VarInjection VarInjection,
     ITypeSymbol Type,
-    Lifetime Lifetime
+    Lifetime Lifetime,
+    bool IsEmpty
     // ITypeSymbol AccumulatorType
     );

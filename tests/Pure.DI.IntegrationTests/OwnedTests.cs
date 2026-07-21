@@ -5528,6 +5528,301 @@ public class OwnedTests
     [Theory]
     [InlineData("")]
     [InlineData(".Hint(Hint.ThreadSafe, \"Off\")")]
+    public async Task ShouldShareEmptyOwnerForGraphWithoutDisposableResources(string threadSafeHint)
+    {
+        // Given
+
+        // When
+        var sources = new[]
+        {
+            """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var first = composition.Root;
+                                       var second = composition.Root;
+
+                                       Console.WriteLine(first.UsesEmptyOwner);
+                                       Console.WriteLine(second.UsesEmptyOwner);
+                                       Console.WriteLine(!ReferenceEquals(first.Value, second.Value));
+
+                                       first.Dispose();
+                                       second.Dispose();
+                                   }
+                               }
+
+                               sealed class Service
+                               {
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           #threadSafeHint#
+                                           .Bind().To<Service>()
+                                           .Root<Owned<Service>>("Root");
+                               }
+                           }
+                           """.Replace("#threadSafeHint#", threadSafeHint),
+            """
+                           namespace Pure.DI
+                           {
+                               internal readonly partial struct Owned<T>
+                               {
+                                   public bool UsesEmptyOwner =>
+                                       global::System.Object.ReferenceEquals(owned, Owned.Empty);
+                               }
+                           }
+                           """
+        };
+        var result = await sources.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+        result.GeneratedCode.ShouldContain("Pure.DI.Owned.Empty");
+        result.GeneratedCode.ShouldNotContain("((global::Pure.DI.IAccumulator)");
+        result.GeneratedCode.ShouldNotContain("disposableAccumulator");
+        var accumulatorMatch = global::System.Text.RegularExpressions.Regex.Match(
+            result.GeneratedCode,
+            @"var (?<name>\w+) = (?:global::)?Pure\.DI\.Owned\.Empty;");
+        accumulatorMatch.Success.ShouldBeTrue(result);
+        var accumulatorName = global::System.Text.RegularExpressions.Regex.Escape(
+            accumulatorMatch.Groups["name"].Value);
+        global::System.Text.RegularExpressions.Regex.Matches(
+                result.GeneratedCode,
+                $@"\b{accumulatorName}\.Add\(")
+            .Count.ShouldBe(0, result);
+    }
+
+    [Fact]
+    public async Task ShouldDisposeResourceRejectedByEmptyOwner()
+    {
+        // Given
+
+        // When
+        var sources = new[]
+        {
+            """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var resource = new Resource();
+                                       try
+                                       {
+                                           EmptyOwnerProbe.Add(resource);
+                                       }
+                                       catch (ObjectDisposedException)
+                                       {
+                                           Console.WriteLine(true);
+                                       }
+
+                                       Console.WriteLine(resource.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+                           }
+                           """,
+            """
+                           namespace Pure.DI
+                           {
+                               internal static class EmptyOwnerProbe
+                               {
+                                   public static void Add(object item) => Owned.Empty.Add(item);
+                               }
+                           }
+                           """
+        };
+        var result = await sources.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepOwnerForDeferredDisposableResource()
+    {
+        // Given
+
+        // When
+        var sources = new[]
+        {
+            """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+
+                                       Console.WriteLine(owned.UsesEmptyOwner);
+                                       owned.Dispose();
+
+                                       try
+                                       {
+                                           _ = owned.Value.CreateResource();
+                                       }
+                                       catch (ObjectDisposedException)
+                                       {
+                                           Console.WriteLine(true);
+                                       }
+
+                                       Console.WriteLine(Resource.LastCreated?.IsDisposed == true);
+                                   }
+                               }
+
+                               sealed class Root
+                               {
+                                   private readonly Func<Resource> factory;
+
+                                   public Root(Func<Resource> factory) => this.factory = factory;
+
+                                   public Resource CreateResource() => factory();
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public Resource() => LastCreated = this;
+
+                                   public static Resource? LastCreated { get; private set; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Root>()
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Root>>("Root");
+                               }
+                           }
+                           """,
+            """
+                           namespace Pure.DI
+                           {
+                               internal readonly partial struct Owned<T>
+                               {
+                                   public bool UsesEmptyOwner =>
+                                       global::System.Object.ReferenceEquals(owned, Owned.Empty);
+                               }
+                           }
+                           """
+        };
+        var result = await sources.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["False", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldUseEmptyOuterOwnerAndKeepNestedOwnerIndependent()
+    {
+        // Given
+
+        // When
+        var sources = new[]
+        {
+            """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var outer = composition.Root;
+                                       var inner = outer.Value.Inner;
+
+                                       Console.WriteLine(outer.UsesEmptyOwner);
+                                       Console.WriteLine(inner.UsesEmptyOwner);
+
+                                       outer.Dispose();
+                                       Console.WriteLine(inner.Value.IsDisposed);
+
+                                       inner.Dispose();
+                                       Console.WriteLine(inner.Value.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Outer
+                               {
+                                   public Outer(Owned<Resource> inner) => Inner = inner;
+
+                                   public Owned<Resource> Inner { get; }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Outer>()
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Outer>>("Root");
+                               }
+                           }
+                           """,
+            """
+                           namespace Pure.DI
+                           {
+                               internal readonly partial struct Owned<T>
+                               {
+                                   public bool UsesEmptyOwner =>
+                                       global::System.Object.ReferenceEquals(owned, Owned.Empty);
+                               }
+                           }
+                           """
+        };
+        var result = await sources.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "False", "False", "True"], result);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")")]
     public async Task ShouldRetainOnlyResourcesInBuiltInOwnedAccumulator(string threadSafeHint)
     {
         // Given
