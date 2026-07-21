@@ -56,6 +56,11 @@ interface IVarsMap
     IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds);
 
     /// <summary>
+    /// Creates an isolated scope for an ownership accumulator boundary.
+    /// </summary>
+    IDisposable AccumulatorBoundary(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds);
+
+    /// <summary>
     /// Creates a scope for a code block.
     /// </summary>
     /// <param name="var">The variable associated with the block.</param>

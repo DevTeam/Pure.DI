@@ -11,7 +11,8 @@ record CodeContext(
     HashSet<string> Overrides,
     bool HasOverrides = false,
     object? ContextTag = null,
-    bool IsFactory = false)
+    bool IsFactory = false,
+    bool IsDeferred = false)
 {
     public CodeContext CreateChild(VarInjection injection) =>
         this with { Parents = Parents.Add(VarInjection), VarInjection = injection };

@@ -7,6 +7,7 @@ $h=AutoMapper creates target objects itself, so mapped instances normally bypass
 $f=>[!NOTE]
 $f=>Since the `IMapper` binding is a singleton, the mapping configuration is created and compiled only once and then reused for all mappings.
 $r=Shouldly;AutoMapper;Microsoft.Extensions.DependencyInjection;Pure.DI.Abstractions
+$i=false
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

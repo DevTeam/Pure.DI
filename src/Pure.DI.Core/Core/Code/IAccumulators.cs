@@ -6,10 +6,18 @@ interface IAccumulators
         DependencyGraph graph,
         IDependencyNode targetNode);
 
+    IEnumerable<(MdAccumulator, Dependency)> GetBoundaryAccumulators(
+        DependencyGraph graph,
+        IDependencyNode targetNode);
+
+    IEnumerable<ITypeSymbol> GetNestedBoundaryAccumulatorTypes(
+        DependencyGraph graph,
+        IDependencyNode targetNode);
+
     IEnumerable<Accumulator> CreateAccumulators(
         DependencyGraph graph,
         IEnumerable<(MdAccumulator accumulator, Dependency dependency)> accumulators,
         IVarsMap varsMap);
 
-    void BuildAccumulators(CodeContext ctx);
+    void BuildAccumulators(CodeContext ctx, bool includeDeclared = false);
 }

@@ -15,6 +15,7 @@ sealed class RootCodeBuilder(
     ICompilations compilations,
     IUniqueNameProvider uniqueNameProvider,
     INameFormatter nameFormatter,
+    ITypeResolver typeResolver,
     ILocalFunctions localFunctions,
     INodeTools nodeTools,
     IConstructors constructors)
@@ -60,7 +61,23 @@ sealed class RootCodeBuilder(
         var varsMap = varCtx.VarsMap;
         var isBlock = nodeTools.IsBlock(var.AbstractNode);
         var isLazy = nodeTools.IsLazy(var.AbstractNode.Node, parentCtx.RootContext.Graph);
-        var acc = isLazy ? accumulators.GetAccumulators(varCtx.RootContext.Graph, var.AbstractNode).ToImmutableArray() : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
+        var isRootNode = var.AbstractNode.Node.Equals(parentCtx.RootContext.Root.Node);
+        var boundaryAccumulators = !isRootNode
+            ? accumulators.GetBoundaryAccumulators(varCtx.RootContext.Graph, var.AbstractNode).ToImmutableArray()
+            : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
+        var isAccumulatorBoundary = boundaryAccumulators.Length > 0;
+        var nestedBoundaryAccumulatorTypes = isLazy
+            ? accumulators.GetNestedBoundaryAccumulatorTypes(varCtx.RootContext.Graph, var.AbstractNode)
+                .Distinct<ITypeSymbol>(SymbolEqualityComparer.Default)
+                .ToImmutableArray()
+            : ImmutableArray<ITypeSymbol>.Empty;
+        var acc = isAccumulatorBoundary
+            ? boundaryAccumulators
+            : isLazy
+                ? accumulators.GetAccumulators(varCtx.RootContext.Graph, var.AbstractNode)
+                    .Where(i => !nestedBoundaryAccumulatorTypes.Contains(i.Item1.AccumulatorType, SymbolEqualityComparer.Default))
+                    .ToImmutableArray()
+                : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
         var isolatedAccumulatorTypes = acc
             .Select(i => i.Item1.AccumulatorType)
             .Where(i => !ContainsType(var.InstanceType, i))
@@ -79,8 +96,11 @@ sealed class RootCodeBuilder(
                     : isBlock
                         ? varsMap.Block(var, lines)
                         : Disposables.Empty;
+        var accumulatorBoundaryToken = isAccumulatorBoundary
+            ? varsMap.AccumulatorBoundary(var, lines, accumulatorBindingIds)
+            : Disposables.Empty;
 
-        if (isLocalFunction || isLazy)
+        if (isLocalFunction || isLazy || isAccumulatorBoundary)
         {
             varCtx = varCtx with { IsLockRequired = varCtx.RootContext.IsThreadSafeEnabled };
         }
@@ -92,23 +112,54 @@ sealed class RootCodeBuilder(
         }
 
         var ctx = varCtx;
-        if (isLazy)
+        if (isLazy || isAccumulatorBoundary)
         {
             var inheritedAccumulators = ctx.Accumulators
                 .Where(i => !accumulatorBindingIds.Contains(i.VarInjection.Var.AbstractNode.BindingId))
                 .ToImmutableArray();
+            var createdAccumulators = accumulators.CreateAccumulators(varCtx.RootContext.Graph, acc, varsMap).ToImmutableArray();
             ctx = ctx with
             {
-                Accumulators = inheritedAccumulators.AddRange(accumulators.CreateAccumulators(varCtx.RootContext.Graph, acc, varsMap)),
-                IsFactory = false
+                Accumulators = inheritedAccumulators.AddRange(createdAccumulators),
+                IsFactory = isLazy ? false : ctx.IsFactory,
+                IsDeferred = isLazy || ctx.IsDeferred
             };
-            ctx.Overrides.Clear();
-            accumulators.BuildAccumulators(ctx with
+            if (isLazy)
             {
-                Accumulators = ctx.Accumulators
-                    .Where(i => !isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
-                    .ToImmutableArray()
-            });
+                ctx.Overrides.Clear();
+                accumulators.BuildAccumulators(ctx with
+                {
+                    Accumulators = ctx.Accumulators
+                        .Where(i => !isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
+                        .ToImmutableArray()
+                });
+            }
+            else
+            {
+                if (!ctx.IsDeferred)
+                {
+                    foreach (var accumulator in createdAccumulators)
+                    {
+                        var accumulatorVar = accumulator.VarInjection.Var;
+                        if (parentCtx.RootContext.ConstructionFailureAccumulators.Any(i => ReferenceEquals(i, accumulatorVar)))
+                        {
+                            continue;
+                        }
+
+                        var accumulatorType = typeResolver.Resolve(
+                            parentCtx.RootContext.Graph.Source,
+                            accumulatorVar.InstanceType);
+                        parentCtx.RootContext.Lines.AppendLine(
+                            $"{accumulatorType} {accumulatorVar.Name} = default({accumulatorType});");
+                        accumulatorVar.Declaration.IsDeclared = true;
+                        parentCtx.RootContext.ConstructionFailureAccumulators.Add(accumulatorVar);
+                    }
+                }
+
+                accumulators.BuildAccumulators(
+                    ctx with { Accumulators = createdAccumulators },
+                    !ctx.IsDeferred);
+            }
         }
 
         var varInjections = new List<VarInjection>();
@@ -134,6 +185,7 @@ sealed class RootCodeBuilder(
             FinishSingleInstanceCheck(varCtx with { IsLockRequired = parentCtx.IsLockRequired });
         }
 
+        accumulatorBoundaryToken.Dispose();
         mapToken.Dispose();
 
         if (isLocalFunction)

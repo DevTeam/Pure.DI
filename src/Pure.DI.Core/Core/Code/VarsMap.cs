@@ -168,6 +168,18 @@ class VarsMap(
 
     /// <inheritdoc />
     public IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds)
+        => IsolateAccumulators(var, lines, accumulatorBindingIds, nameof(Lazy), true);
+
+    /// <inheritdoc />
+    public IDisposable AccumulatorBoundary(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds)
+        => IsolateAccumulators(var, lines, accumulatorBindingIds, nameof(AccumulatorBoundary), false);
+
+    private IDisposable IsolateAccumulators(
+        Var var,
+        Lines lines,
+        in ImmutableArray<int> accumulatorBindingIds,
+        string reason,
+        bool restoreLocalFunctionCalled)
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
 
@@ -183,7 +195,7 @@ class VarsMap(
             }
 
 #if DEBUG
-            lines.AppendLine($"// {accumulatorVar.Declaration.Name}: remove ({nameof(Lazy)})");
+            lines.AppendLine($"// {accumulatorVar.Declaration.Name}: remove ({reason})");
 #endif
             (removed ??= new List<KeyValuePair<int, Var>>(accumulatorBindingIds.Length))
                 .Add(new KeyValuePair<int, Var>(bindingId, accumulatorVar));
@@ -194,8 +206,8 @@ class VarsMap(
             _suppressedTrackingCount++;
             try
             {
-                RemoveNewNonPersistentVars(var, scope, lines, nameof(Lazy));
-                RestoreState(scope, lines, nameof(Lazy), true);
+                RemoveNewNonPersistentVars(var, scope, lines, reason);
+                RestoreState(scope, lines, reason, restoreLocalFunctionCalled);
                 if (removed is null)
                 {
                     return;
@@ -204,7 +216,7 @@ class VarsMap(
                 foreach (var item in removed)
                 {
 #if DEBUG
-                    lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({nameof(Lazy)})");
+                    lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({reason})");
 #endif
                     _map[item.Key] = item.Value;
                 }

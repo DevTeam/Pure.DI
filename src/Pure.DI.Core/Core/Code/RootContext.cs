@@ -12,4 +12,6 @@ record RootContext(
     public bool LockIsInUse { get; set; }
 
     public bool ReturnWasAdded { get; set; }
+
+    public List<Var> ConstructionFailureAccumulators { get; } = [];
 }

@@ -55,12 +55,15 @@ class RootBuilder(
             using (lines.CreateBlock())
             {
                 var accumulatorIndex = 0;
-                foreach (var accumulator in rootAccumulators
-                             .GroupBy(i => i.VarInjection.Var.Name)
-                             .Select(i => i.First())
-                             .Reverse())
+                var rollbackAccumulators = rootAccumulators
+                    .Select(i => i.VarInjection.Var)
+                    .Reverse()
+                    .Concat(rootContext.ConstructionFailureAccumulators.AsEnumerable().Reverse())
+                    .GroupBy(i => i.Name)
+                    .Select(i => i.First());
+                foreach (var accumulator in rollbackAccumulators)
                 {
-                    var accumulatorName = accumulator.VarInjection.Var.Name;
+                    var accumulatorName = accumulator.Name;
                     var disposableName = $"disposableAccumulator{accumulatorIndex}";
                     lines.AppendLine($"if (({Names.ObjectTypeName}){accumulatorName} is {Names.IDisposableTypeName} {disposableName})");
                     using (lines.CreateBlock())

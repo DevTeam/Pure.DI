@@ -1799,6 +1799,797 @@ public class OwnedTests
         result.StdOut.ShouldBe(["True"], result);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("// ThreadSafe = Off")]
+    public async Task ShouldKeepOuterAliveAfterDirectlyInjectedNestedOwnedDisposal(string threadSafeHint)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<IOuter> outer = composition.Root;
+                                       IOuter outerValue = outer.Value;
+                                       Owned<IInner> inner = outerValue.Inner;
+
+                                       inner.Dispose();
+
+                                       Console.WriteLine(inner.Value.IsDisposed);
+                                       Console.WriteLine(!outerValue.IsDisposed);
+
+                                       Owned<IOuter> secondOuter = composition.Root;
+                                       Owned<IInner> secondInner = secondOuter.Value.Inner;
+
+                                       secondOuter.Dispose();
+
+                                       Console.WriteLine(secondOuter.Value.IsDisposed);
+                                       Console.WriteLine(!secondInner.Value.IsDisposed);
+                                       secondInner.Dispose();
+                                       Console.WriteLine(secondInner.Value.IsDisposed);
+                                   }
+                               }
+
+                               interface IInner
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               sealed class Inner : IInner, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               interface IOuter
+                               {
+                                   bool IsDisposed { get; }
+
+                                   Owned<IInner> Inner { get; }
+                               }
+
+                               sealed class Outer : IOuter, IDisposable
+                               {
+                                   public Outer(Owned<IInner> inner) => Inner = inner;
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public Owned<IInner> Inner { get; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       #threadSafeHint#
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Inner>()
+                                           .Bind().To<Outer>()
+                                           .Root<Owned<IOuter>>("Root");
+                               }
+                           }
+                           """
+            .Replace("#threadSafeHint#", threadSafeHint)
+            .RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepEveryDirectlyNestedOwnedLevelIndependent()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Owned<Owned<Resource>>> outer = composition.Root;
+                                       Owned<Owned<Resource>> middle = outer.Value;
+                                       Owned<Resource> inner = middle.Value;
+
+                                       outer.Dispose();
+                                       Console.WriteLine(!inner.Value.IsDisposed);
+
+                                       middle.Dispose();
+                                       Console.WriteLine(!inner.Value.IsDisposed);
+
+                                       inner.Dispose();
+                                       Console.WriteLine(inner.Value.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Root<Owned<Owned<Owned<Resource>>>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldIsolateDirectlyNestedUserDefinedOwnershipGraphs()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       CustomOwned<Outer> outer = composition.Root;
+                                       CustomOwned<Inner> inner = outer.Value.Inner;
+
+                                       inner.Dispose();
+
+                                       Console.WriteLine(inner.Value.IsDisposed);
+                                       Console.WriteLine(!outer.Value.IsDisposed);
+                                   }
+                               }
+
+                               interface ICustomOwned : IDisposable
+                               {
+                               }
+
+                               sealed class CustomAccumulator : List<object>, ICustomOwned
+                               {
+                                   public void Dispose()
+                                   {
+                                       for (var i = Count - 1; i >= 0; i--)
+                                       {
+                                           if (this[i] is IDisposable disposable and not ICustomOwned)
+                                           {
+                                               disposable.Dispose();
+                                           }
+                                       }
+                                   }
+                               }
+
+                               readonly struct CustomOwned<T> : ICustomOwned
+                               {
+                                   private readonly ICustomOwned owner;
+
+                                   public CustomOwned(T value, ICustomOwned owner)
+                                   {
+                                       Value = value;
+                                       this.owner = owner;
+                                   }
+
+                                   public T Value { get; }
+
+                                   public void Dispose() => owner.Dispose();
+                               }
+
+                               sealed class Inner : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Outer : IDisposable
+                               {
+                                   public Outer(CustomOwned<Inner> inner) => Inner = inner;
+
+                                   public CustomOwned<Inner> Inner { get; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<IDisposable, CustomAccumulator>(Transient, PerResolve, PerBlock)
+                                           .Bind<ICustomOwned>().To((CustomAccumulator accumulator) => accumulator)
+                                           .Bind<CustomOwned<TT>>().As(PerBlock).To(ctx =>
+                                           {
+                                               ctx.Inject<ICustomOwned>(out var owner);
+                                               ctx.Inject<TT>(ctx.Tag, out var value);
+                                               return new CustomOwned<TT>(value, owner);
+                                           })
+                                           .Bind().To<Inner>()
+                                           .Bind().To<Outer>()
+                                           .Root<CustomOwned<Outer>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepFactoryOwnedUnitsAndTheirDirectlyNestedOwnedGraphsIndependent()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static async Task Main()
+                                   {
+                                       var composition = new Composition();
+                                       Func<Owned<Outer>> factory = composition.Factory;
+                                       Task<Owned<Outer>> firstTask = Task.Run(factory);
+                                       Task<Owned<Outer>> secondTask = Task.Run(factory);
+                                       await Task.WhenAll(firstTask, secondTask);
+                                       Owned<Outer> first = firstTask.Result;
+                                       Owned<Outer> second = secondTask.Result;
+
+                                       first.Value.Inner.Dispose();
+
+                                       Console.WriteLine(first.Value.Inner.Value.IsDisposed);
+                                       Console.WriteLine(!first.Value.IsDisposed);
+                                       Console.WriteLine(!second.Value.Inner.Value.IsDisposed);
+                                       Console.WriteLine(!second.Value.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Inner : IDisposable
+                               {
+                                   private static readonly object Sync = new object();
+                                   private static int creatingCount;
+
+                                   public Inner()
+                                   {
+                                       lock (Sync)
+                                       {
+                                           if (++creatingCount < 2)
+                                           {
+                                               Monitor.Wait(Sync);
+                                           }
+                                           else
+                                           {
+                                               Monitor.PulseAll(Sync);
+                                           }
+                                       }
+                                   }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Outer : IDisposable
+                               {
+                                   public Outer(Owned<Inner> inner) => Inner = inner;
+
+                                   public Owned<Inner> Inner { get; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Inner>()
+                                           .Bind().To<Outer>()
+                                           .Root<Func<Owned<Outer>>>("Factory");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepMixedLifetimeNestedOwnedGraphIndependent()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<App> app = composition.Root;
+                                       Owned<Job> job = app.Value.Job;
+
+                                       app.Dispose();
+
+                                       Console.WriteLine(app.Value.IsDisposed);
+                                       Console.WriteLine(app.Value.Worker.IsDisposed);
+                                       Console.WriteLine(!app.Value.Shared.IsDisposed);
+                                       Console.WriteLine(!job.Value.IsDisposed);
+
+                                       job.Dispose();
+                                       Console.WriteLine(job.Value.IsDisposed);
+                                       composition.Dispose();
+                                       Console.WriteLine(app.Value.Shared.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Shared : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Worker : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Job : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class App : IDisposable
+                               {
+                                   public App(Shared shared, Worker worker, Owned<Job> job)
+                                   {
+                                       Shared = shared;
+                                       Worker = worker;
+                                       Job = job;
+                                   }
+
+                                   public Shared Shared { get; }
+
+                                   public Worker Worker { get; }
+
+                                   public Owned<Job> Job { get; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().As(Singleton).To<Shared>()
+                                           .Bind().To<Worker>()
+                                           .Bind().To<Job>()
+                                           .Bind().To<App>()
+                                           .Root<Owned<App>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldRollBackDirectlyNestedOwnedWhenOuterConstructionFails()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       try
+                                       {
+                                           _ = composition.Root;
+                                       }
+                                       catch (InvalidOperationException)
+                                       {
+                                       }
+
+                                       Console.WriteLine(Inner.Last?.IsDisposed == true);
+                                   }
+                               }
+
+                               sealed class Inner : IDisposable
+                               {
+                                   public Inner() => Last = this;
+
+                                   public static Inner? Last { get; private set; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Outer
+                               {
+                                   public Outer(Owned<Inner> inner) =>
+                                       throw new InvalidOperationException("Cannot create outer.");
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Inner>()
+                                           .Bind().To<Outer>()
+                                           .Root<Owned<Outer>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepSiblingDirectlyInjectedOwnedGraphsIndependent()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Outer> outer = composition.Root;
+                                       Owned<Resource> first = outer.Value.First;
+                                       Owned<Resource> second = outer.Value.Second;
+
+                                       Console.WriteLine(!ReferenceEquals(first.Value, second.Value));
+
+                                       first.Dispose();
+                                       Console.WriteLine(first.Value.DisposeCount == 1);
+                                       Console.WriteLine(second.Value.DisposeCount == 0);
+                                       Console.WriteLine(outer.Value.DisposeCount == 0);
+
+                                       outer.Dispose();
+                                       Console.WriteLine(outer.Value.DisposeCount == 1);
+                                       Console.WriteLine(second.Value.DisposeCount == 0);
+
+                                       second.Dispose();
+                                       Console.WriteLine(second.Value.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public int DisposeCount { get; private set; }
+
+                                   public void Dispose() => DisposeCount++;
+                               }
+
+                               sealed class Outer : IDisposable
+                               {
+                                   public Outer(
+                                       [Tag("first")] Owned<Resource> first,
+                                       [Tag("second")] Owned<Resource> second)
+                                   {
+                                       First = first;
+                                       Second = second;
+                                   }
+
+                                   public Owned<Resource> First { get; }
+
+                                   public Owned<Resource> Second { get; }
+
+                                   public int DisposeCount { get; private set; }
+
+                                   public void Dispose() => DisposeCount++;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<Resource>("first", "second").To<Resource>()
+                                           .Bind().To<Outer>()
+                                           .Root<Owned<Outer>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldIsolateDirectlyNestedOwnedBehindIntermediateDependency()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Outer> outer = composition.Root;
+                                       Middle middle = outer.Value.Middle;
+                                       Owned<Resource> inner = middle.Inner;
+
+                                       inner.Dispose();
+
+                                       Console.WriteLine(inner.Value.IsDisposed);
+                                       Console.WriteLine(!middle.IsDisposed);
+                                       Console.WriteLine(!outer.Value.IsDisposed);
+
+                                       outer.Dispose();
+
+                                       Console.WriteLine(middle.IsDisposed);
+                                       Console.WriteLine(outer.Value.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Middle : IDisposable
+                               {
+                                   public Middle(Owned<Resource> inner) => Inner = inner;
+
+                                   public Owned<Resource> Inner { get; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Outer : IDisposable
+                               {
+                                   public Outer(Middle middle) => Middle = middle;
+
+                                   public Middle Middle { get; }
+
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().To<Middle>()
+                                           .Bind().To<Outer>()
+                                           .Root<Owned<Outer>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepAsyncDirectlyNestedOwnedGraphIndependent()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Threading.Tasks;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static async Task Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Outer> outer = composition.Root;
+                                       Owned<AsyncResource> inner = outer.Value.Inner;
+
+                                       await inner.DisposeAsync();
+
+                                       Console.WriteLine(inner.Value.DisposeCount == 1);
+                                       Console.WriteLine(outer.Value.DisposeCount == 0);
+
+                                       await outer.DisposeAsync();
+
+                                       Console.WriteLine(outer.Value.DisposeCount == 1);
+                                       Console.WriteLine(inner.Value.DisposeCount == 1);
+                                   }
+                               }
+
+                               sealed class AsyncResource : IAsyncDisposable
+                               {
+                                   public int DisposeCount { get; private set; }
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       DisposeCount++;
+                                       return default;
+                                   }
+                               }
+
+                               sealed class Outer : IAsyncDisposable
+                               {
+                                   public Outer(Owned<AsyncResource> inner) => Inner = inner;
+
+                                   public Owned<AsyncResource> Inner { get; }
+
+                                   public int DisposeCount { get; private set; }
+
+                                   public ValueTask DisposeAsync()
+                                   {
+                                       DisposeCount++;
+                                       return default;
+                                   }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<AsyncResource>().To<AsyncResource>()
+                                           .Bind<Outer>().To<Outer>()
+                                           .Root<Owned<Outer>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldRollBackEverySiblingNestedOwnedInReverseConstructionOrder()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       try
+                                       {
+                                           _ = composition.Root;
+                                       }
+                                       catch (InvalidOperationException)
+                                       {
+                                       }
+
+                                       Console.WriteLine(string.Join(",", Resource.DisposedIds));
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   private static int nextId;
+
+                                   public Resource() => Id = ++nextId;
+
+                                   public static List<int> DisposedIds { get; } = new List<int>();
+
+                                   private int Id { get; }
+
+                                   public void Dispose() => DisposedIds.Add(Id);
+                               }
+
+                               sealed class Outer
+                               {
+                                   public Outer(
+                                       [Tag("first")] Owned<Resource> first,
+                                       [Tag("second")] Owned<Resource> second) =>
+                                       throw new InvalidOperationException("Cannot create outer.");
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<Resource>("first", "second").To<Resource>()
+                                           .Bind().To<Outer>()
+                                           .Root<Owned<Outer>>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2,1"], result);
+    }
+
     [Fact]
     public async Task ShouldKeepNestedOwnedInnerAliveAfterOuterDisposal()
     {
