@@ -1831,7 +1831,7 @@ namespace Pure.DI
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 #endif
-    internal sealed partial class Owned: global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned, global::Pure.DI.IAccumulator
+    internal sealed partial class Owned: global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned
     {
         // A shared no-op owner avoids allocating an accumulator for an object
         // graph which is known at generation time to contain no resources.
@@ -1839,28 +1839,33 @@ namespace Pure.DI
 
         private int _isDisposed;
 #if NET9_0_OR_GREATER
-        private global::System.Threading.Lock _synchronization;
+        private readonly global::System.Threading.Lock _synchronization;
 #else
-        private global::System.Object _synchronization;
+        private readonly global::System.Object _synchronization;
 #endif
 
         public Owned()
         {
         }
 
+        public Owned(int capacity)
+            : base(capacity)
+        {
+        }
+
+#if NET9_0_OR_GREATER
+        public Owned(int capacity, global::System.Threading.Lock synchronization)
+#else
+        public Owned(int capacity, global::System.Object synchronization)
+#endif
+            : base(capacity)
+        {
+            _synchronization = synchronization;
+        }
+
         private Owned(bool isDisposed)
         {
             _isDisposed = isDisposed ? 1 : 0;
-        }
-
-        /// <inheritdoc />
-#if NET9_0_OR_GREATER
-        void global::Pure.DI.IAccumulator.Initialize(global::System.Threading.Lock synchronization)
-#else
-        void global::Pure.DI.IAccumulator.Initialize(global::System.Object synchronization)
-#endif
-        {
-            _synchronization = synchronization;
         }
 
         /// <summary>

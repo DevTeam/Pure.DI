@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core.Code;
 
+#pragma warning disable RS1024 // Pure.DI intentionally uses ITypeSymbolComparer to control nullable-reference contract equality.
 class Accumulators(
     INodeTools nodeTools,
     IBuildTools buildTools,
@@ -162,19 +163,32 @@ class Accumulators(
         IVarsMap varsMap)
     {
         var items = accumulators.ToImmutableArray();
+        var builtInStats = new Dictionary<ITypeSymbol, (bool IsEmpty, int Capacity)>(typeSymbolComparer.Runtime);
+        foreach (var accumulatorGroup in items
+                     .Where(i => IsBuiltInOwned(i.accumulator.AccumulatorType))
+                     .GroupBy(i => i.accumulator.AccumulatorType, typeSymbolComparer.Runtime))
+        {
+            var accumulatorMetadata = accumulatorGroup
+                .Select(i => i.accumulator)
+                .ToImmutableArray();
+            builtInStats.Add(
+                accumulatorGroup.Key,
+                (
+                    !accumulatorMetadata.Any(i => HasAccumulatedResources(graph, targetNode, i)),
+                    GetEagerAccumulatedResourceCount(graph, targetNode, accumulatorMetadata)));
+        }
+
         foreach (var item in items)
         {
-            var isEmpty = IsBuiltInOwned(item.accumulator.AccumulatorType)
-                          && !items
-                              .Where(i => typeSymbolComparer.RuntimeEquals(
-                                  i.accumulator.AccumulatorType,
-                                  item.accumulator.AccumulatorType))
-                              .Any(i => HasAccumulatedResources(graph, targetNode, i.accumulator));
+            var stats = builtInStats.TryGetValue(item.accumulator.AccumulatorType, out var builtInStat)
+                ? builtInStat
+                : (IsEmpty: false, Capacity: 0);
             yield return new Accumulator(
                 varsMap.GetInjection(graph, item.dependency.Injection, item.dependency.Source),
                 item.accumulator.Type,
                 item.accumulator.Lifetime,
-                isEmpty);
+                stats.IsEmpty,
+                stats.Capacity);
         }
     }
 
@@ -188,11 +202,34 @@ class Accumulators(
             var accumulator = accumulatorGroup.First();
             var accVar = accumulator.VarInjection.Var;
             var useEmpty = accumulatorGroup.All(i => i.IsEmpty);
-            var value = useEmpty
-                ? $"{Names.OwnedTypeName}.Empty"
-                : $"new {accVar.InstanceType}()";
+            var isBuiltInOwned = IsBuiltInOwned(accVar.InstanceType);
+            var value = $"new {accVar.InstanceType}()";
+            if (useEmpty)
+            {
+                value = $"{Names.OwnedTypeName}.Empty";
+            }
+            else if (isBuiltInOwned)
+            {
+                var capacity = accumulatorGroup.Max(i => i.Capacity);
+                if (ctx.RootContext.IsThreadSafeEnabled)
+                {
+                    if (!ctx.RootContext.Root.IsStatic)
+                    {
+                        ctx.RootContext.LockIsInUse = true;
+                    }
+
+                    var lockName = ctx.RootContext.Root.IsStatic ? Names.PerResolveLockFieldName : Names.LockFieldName;
+                    value = $"new {accVar.InstanceType}({capacity}, {lockName})";
+                }
+                else
+                {
+                    value = $"new {accVar.InstanceType}({capacity})";
+                }
+            }
+
             ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration, useVar: true)}{accVar.Name} = {value};");
             if (!useEmpty
+                && !isBuiltInOwned
                 && ctx.RootContext.IsThreadSafeEnabled
                 && accVar.InstanceType.AllInterfaces.Any(i =>
                     symbolNames.GetGlobalName(i) == Names.IAccumulatorTypeName))
@@ -209,6 +246,70 @@ class Accumulators(
             accVar.Declaration.IsDeclared = true;
             accVar.IsCreated = true;
         }
+    }
+
+    private int GetEagerAccumulatedResourceCount(
+        DependencyGraph graph,
+        IDependencyNode targetNode,
+        ImmutableArray<MdAccumulator> accumulatorMetadata)
+    {
+        var count = 0;
+        var path = new HashSet<IDependencyNode>();
+        var sharedNodes = new HashSet<IDependencyNode>();
+        var nodes = new Stack<(IDependencyNode Node, bool Exit)>();
+        nodes.Push((targetNode, false));
+        while (nodes.TryPop(out var item))
+        {
+            var node = item.Node;
+            if (item.Exit)
+            {
+                path.Remove(node);
+                continue;
+            }
+
+            if (path.Contains(node))
+            {
+                continue;
+            }
+
+            if (!ReferenceEquals(node, targetNode))
+            {
+                if (GetBoundaryAccumulators(graph, node).Any()
+                    || nodeTools.IsLazy(node.Node, graph))
+                {
+                    continue;
+                }
+
+                if (node.ActualLifetime != Lifetime.Transient
+                    && !sharedNodes.Add(node))
+                {
+                    continue;
+                }
+            }
+
+            path.Add(node);
+            nodes.Push((node, true));
+            if (node.Arg is null
+                && !IsOwnershipInfrastructure(node.Node.Type)
+                && accumulatorMetadata.Any(i =>
+                    node.ActualLifetime == i.Lifetime
+                    && IsAssignableTo(node.Node.Type, i.Type)))
+            {
+                count++;
+            }
+
+            if (!graph.Graph.TryGetInEdges(node.Node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                nodes.Push((dependency.Source, false));
+            }
+        }
+
+        return count;
     }
 
     private bool HasAccumulatedResources(

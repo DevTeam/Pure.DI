@@ -2287,6 +2287,11 @@ public class OwnedTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
+        global::System.Text.RegularExpressions.Regex.IsMatch(
+                result.GeneratedCode,
+                @"\(\(global::System\.IDisposable\)\w+\)\.Dispose\(\);")
+            .ShouldBeTrue(result);
+        result.GeneratedCode.ShouldNotContain("disposableAccumulator");
     }
 
     [Fact]
@@ -5523,6 +5528,11 @@ public class OwnedTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
+        global::System.Text.RegularExpressions.Regex.IsMatch(
+                result.GeneratedCode,
+                @"\(\(global::System\.IAsyncDisposable\)\w+\)\.DisposeAsync\(\)\.GetAwaiter\(\)\.GetResult\(\);")
+            .ShouldBeTrue(result);
+        result.GeneratedCode.ShouldNotContain("asyncDisposableAccumulator");
     }
 
     [Theory]
@@ -5682,6 +5692,7 @@ public class OwnedTests
                                        var owned = composition.Root;
 
                                        Console.WriteLine(owned.UsesEmptyOwner);
+                                       Console.WriteLine(owned.OwnerCapacity);
                                        owned.Dispose();
 
                                        try
@@ -5734,6 +5745,8 @@ public class OwnedTests
                                {
                                    public bool UsesEmptyOwner =>
                                        global::System.Object.ReferenceEquals(owned, Owned.Empty);
+
+                                   public int OwnerCapacity => ((Owned)owned).Capacity;
                                }
                            }
                            """
@@ -5742,7 +5755,7 @@ public class OwnedTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["False", "True", "True"], result);
+        result.StdOut.ShouldBe(["False", "0", "True", "True"], result);
     }
 
     [Fact]
@@ -5821,9 +5834,14 @@ public class OwnedTests
     }
 
     [Theory]
-    [InlineData("")]
-    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")")]
-    public async Task ShouldRetainOnlyResourcesInBuiltInOwnedAccumulator(string threadSafeHint)
+    [InlineData("", false)]
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", false)]
+#if ROSLYN5_6_OR_GREATER
+    [InlineData("", true)]
+#endif
+    public async Task ShouldRetainOnlyResourcesInBuiltInOwnedAccumulator(
+        string threadSafeHint,
+        bool useSystemThreadingLock)
     {
         // Given
 
@@ -5844,6 +5862,7 @@ public class OwnedTests
                                        var owned = composition.Root;
 
                                        Console.WriteLine(owned.TrackedCount);
+                                       Console.WriteLine(owned.TrackedCapacity);
 
                                        owned.Dispose();
                                        Console.WriteLine(owned.Value.IsDisposed);
@@ -5873,6 +5892,128 @@ public class OwnedTests
                                internal readonly partial struct Owned<T>
                                {
                                    public int TrackedCount => ((Owned)owned).Count;
+
+                                   public int TrackedCapacity => ((Owned)owned).Capacity;
+                               }
+                           }
+                           """
+        };
+        var result = await sources.RunAsync(new Options(
+            useSystemThreadingLock ? LanguageVersion.Preview : LanguageVersion.CSharp10,
+            PreprocessorSymbols: useSystemThreadingLock
+                ? ["NET", "NET10_0_OR_GREATER", "NET9_0_OR_GREATER"]
+                : ["NET20"]));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1", "1", "True"], result);
+        var accumulatorMatch = global::System.Text.RegularExpressions.Regex.Match(
+            result.GeneratedCode,
+            @"var (?<name>\w+) = new Pure\.DI\.Owned\(1(?:, _lock\w*)?\);");
+        accumulatorMatch.Success.ShouldBeTrue(result);
+        var accumulatorName = global::System.Text.RegularExpressions.Regex.Escape(
+            accumulatorMatch.Groups["name"].Value);
+        global::System.Text.RegularExpressions.Regex.Matches(
+                result.GeneratedCode,
+                $@"\b{accumulatorName}\.Add\(")
+            .Count.ShouldBe(2, result);
+        result.GeneratedCode.ShouldNotContain("((global::Pure.DI.IAccumulator)");
+        result.GeneratedCode.ShouldNotContain("disposableAccumulator");
+    }
+
+    [Fact]
+    public async Task ShouldPreallocateOwnedForEagerResources()
+    {
+        // Given
+
+        // When
+        var sources = new[]
+        {
+            """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var owned = composition.Root;
+
+                                       Console.WriteLine(owned.TrackedCount);
+                                       Console.WriteLine(owned.TrackedCapacity);
+                                       Console.WriteLine(!ReferenceEquals(
+                                           owned.Value.First,
+                                           owned.Value.Second));
+                                       Console.WriteLine(ReferenceEquals(
+                                           owned.Value.FirstShared,
+                                           owned.Value.SecondShared));
+
+                                       owned.Dispose();
+                                       Console.WriteLine(owned.Value.First.IsDisposed);
+                                       Console.WriteLine(owned.Value.Second.IsDisposed);
+                                       Console.WriteLine(owned.Value.FirstShared.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class SharedResource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Batch
+                               {
+                                   public Batch(
+                                       Resource first,
+                                       Resource second,
+                                       SharedResource firstShared,
+                                       SharedResource secondShared)
+                                   {
+                                       First = first;
+                                       Second = second;
+                                       FirstShared = firstShared;
+                                       SecondShared = secondShared;
+                                   }
+
+                                   public Resource First { get; }
+
+                                   public Resource Second { get; }
+
+                                   public SharedResource FirstShared { get; }
+
+                                   public SharedResource SecondShared { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().As(Lifetime.PerBlock).To<SharedResource>()
+                                           .Bind().To<Batch>()
+                                           .Root<Owned<Batch>>("Root");
+                               }
+                           }
+                           """,
+            """
+                           namespace Pure.DI
+                           {
+                               internal readonly partial struct Owned<T>
+                               {
+                                   public int TrackedCount => ((Owned)owned).Count;
+
+                                   public int TrackedCapacity => ((Owned)owned).Capacity;
                                }
                            }
                            """
@@ -5881,17 +6022,13 @@ public class OwnedTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["1", "True"], result);
-        var accumulatorMatch = global::System.Text.RegularExpressions.Regex.Match(
-            result.GeneratedCode,
-            @"var (?<name>\w+) = new Pure\.DI\.Owned\(\);");
-        accumulatorMatch.Success.ShouldBeTrue(result);
-        var accumulatorName = global::System.Text.RegularExpressions.Regex.Escape(
-            accumulatorMatch.Groups["name"].Value);
-        global::System.Text.RegularExpressions.Regex.Matches(
+        result.StdOut.ShouldBe(
+            ["3", "3", "True", "True", "True", "True", "True"],
+            result);
+        global::System.Text.RegularExpressions.Regex.IsMatch(
                 result.GeneratedCode,
-                $@"\b{accumulatorName}\.Add\(")
-            .Count.ShouldBe(2, result);
+                @"new (?:global::)?Pure\.DI\.Owned\(3(?:, _lock\w*)?\)")
+            .ShouldBeTrue(result);
     }
 
     [Fact]
@@ -6656,14 +6793,40 @@ public class OwnedTests
                                        var first = owned.DisposeAsync().AsTask();
                                        await resource.DisposalStarted.Task;
                                        var secondAsync = owned.DisposeAsync().AsTask();
-                                       var secondSync = Task.Run(owned.Dispose);
+                                       var secondSyncStarted = new ManualResetEventSlim();
+                                       var secondSyncCompleted = new ManualResetEventSlim();
+                                       Exception? secondSyncError = null;
+                                       var secondSync = new Thread(() =>
+                                       {
+                                           secondSyncStarted.Set();
+                                           try
+                                           {
+                                               owned.Dispose();
+                                           }
+                                           catch (Exception exception)
+                                           {
+                                               secondSyncError = exception;
+                                           }
+                                           finally
+                                           {
+                                               secondSyncCompleted.Set();
+                                           }
+                                       })
+                                       {
+                                           IsBackground = true
+                                       };
+                                       secondSync.Start();
+                                       secondSyncStarted.Wait();
 
                                        Console.WriteLine(secondAsync.IsCompletedSuccessfully);
-                                       Console.WriteLine(await Task.WhenAny(secondSync, Task.Delay(5000)) == secondSync);
+                                       Console.WriteLine(
+                                           secondSyncCompleted.Wait(TimeSpan.FromSeconds(5))
+                                           && secondSyncError is null);
                                        Console.WriteLine(!first.IsCompleted);
 
                                        resource.ContinueDisposal.TrySetResult(true);
                                        await first;
+                                       secondSync.Join(TimeSpan.FromSeconds(5));
                                        Console.WriteLine(resource.DisposeCount == 1);
                                    }
                                }

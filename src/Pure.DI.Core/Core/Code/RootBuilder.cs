@@ -13,6 +13,7 @@ class RootBuilder(
     IAccumulators accumulators,
     IBuildTools buildTools,
     ITypeResolver typeResolver,
+    ISymbolNames symbolNames,
     Func<IBuilder<CodeContext, IEnumerator>> variablesCodeBuilderFactory)
     : IFastBuilder<RootContext, VarInjection>
 {
@@ -55,7 +56,6 @@ class RootBuilder(
             lines.AppendLine("catch");
             using (lines.CreateBlock())
             {
-                var accumulatorIndex = 0;
                 var rollbackAccumulators = rootAccumulators
                     .Where(i => !i.IsEmpty)
                     .Select(i => i.VarInjection.Var)
@@ -65,23 +65,7 @@ class RootBuilder(
                     .Select(i => i.First());
                 foreach (var accumulator in rollbackAccumulators)
                 {
-                    var accumulatorName = accumulator.Name;
-                    var disposableName = $"disposableAccumulator{accumulatorIndex}";
-                    lines.AppendLine($"if (({Names.ObjectTypeName}){accumulatorName} is {Names.IDisposableTypeName} {disposableName})");
-                    using (lines.CreateBlock())
-                    {
-                        AddDispose(lines, $"{disposableName}.Dispose();");
-                    }
-
-                    lines.AppendLine(new Line(int.MinValue, "#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER"));
-                    var asyncDisposableName = $"asyncDisposableAccumulator{accumulatorIndex++}";
-                    lines.AppendLine($"else if (({Names.ObjectTypeName}){accumulatorName} is {Names.IAsyncDisposableTypeName} {asyncDisposableName})");
-                    using (lines.CreateBlock())
-                    {
-                        AddDispose(lines, $"{asyncDisposableName}.DisposeAsync().GetAwaiter().GetResult();");
-                    }
-
-                    lines.AppendLine(new Line(int.MinValue, "#endif"));
+                    AddRollback(lines, accumulator);
                 }
 
                 lines.AppendLine("throw;");
@@ -96,22 +80,67 @@ class RootBuilder(
         AddPerResolveVars(rootContext.Lines, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve), setup);
         rootContext.Lines.AppendLines(lines);
         return rootVarInjection;
+    }
 
-        static void AddDispose(Lines code, string disposeStatement)
+    private void AddRollback(Lines lines, Var accumulator)
+    {
+        if (Implements(accumulator.InstanceType, Names.IDisposableTypeName))
         {
-            code.AppendLine("try");
-            using (code.CreateBlock())
+            AddDispose(
+                lines,
+                accumulator,
+                $"(({Names.IDisposableTypeName}){accumulator.Name}).Dispose();");
+            return;
+        }
+
+        if (!Implements(accumulator.InstanceType, Names.IAsyncDisposableTypeName))
+        {
+            return;
+        }
+
+        lines.AppendLine(new Line(int.MinValue, "#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER"));
+        AddDispose(
+            lines,
+            accumulator,
+            $"(({Names.IAsyncDisposableTypeName}){accumulator.Name}).DisposeAsync().GetAwaiter().GetResult();");
+        lines.AppendLine(new Line(int.MinValue, "#endif"));
+    }
+
+    private static void AddDispose(Lines lines, Var accumulator, string disposeStatement)
+    {
+        if (accumulator.InstanceType.IsReferenceType)
+        {
+            lines.AppendLine($"if (!{Names.ObjectTypeName}.ReferenceEquals({accumulator.Name}, null))");
+            using (lines.CreateBlock())
             {
-                code.AppendLine(disposeStatement);
+                AddDisposeCore(lines, disposeStatement);
             }
 
-            code.AppendLine("catch");
-            using (code.CreateBlock())
-            {
-                code.AppendLine("// Preserve the original graph construction exception.");
-            }
+            return;
+        }
+
+        AddDisposeCore(lines, disposeStatement);
+    }
+
+    private static void AddDisposeCore(Lines lines, string disposeStatement)
+    {
+        lines.AppendLine("try");
+        using (lines.CreateBlock())
+        {
+            lines.AppendLine(disposeStatement);
+        }
+
+        lines.AppendLine("catch");
+        using (lines.CreateBlock())
+        {
+            lines.AppendLine("// Preserve the original graph construction exception.");
         }
     }
+
+    private bool Implements(ITypeSymbol type, string interfaceTypeName) =>
+        symbolNames.GetGlobalName(type) == interfaceTypeName
+        || type is INamedTypeSymbol namedType
+        && namedType.AllInterfaces.Any(i => symbolNames.GetGlobalName(i) == interfaceTypeName);
 
     private void AddPerResolveVars(Lines lines, IEnumerable<VarDeclaration> perResolveVars, MdSetup setup)
     {
