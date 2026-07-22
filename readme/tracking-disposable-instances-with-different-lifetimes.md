@@ -161,18 +161,12 @@ partial class Composition: IDisposable
       () =>
       {
         // Creates a deferred value
-        var perBlockOwned = new Owned();
-        ((IAccumulator)perBlockOwned).Initialize(_lock);
+        var perBlockOwned = new Owned(1, _lock);
         Owned<IConnection> perBlockOwnedIConnection;
         // Tracks owned disposables
         Owned transientOwned;
         Owned localOwned1 = perBlockOwned;
         transientOwned = localOwned1;
-        lock (_lock)
-        {
-          perBlockOwned.Add(transientOwned);
-        }
-
         IOwned localOwned = transientOwned;
         // Creates the owned value
         var transientConnection = new Connection();
@@ -195,18 +189,12 @@ partial class Composition: IDisposable
       () =>
       {
         // Creates a deferred value
-        var perBlockOwned1 = new Owned();
-        ((IAccumulator)perBlockOwned1).Initialize(_lock);
+        var perBlockOwned1 = Owned.Empty;
         Owned<IConnection> perBlockOwnedIConnection1;
         // Tracks owned disposables
         Owned transientOwned1;
         Owned localOwned3 = perBlockOwned1;
         transientOwned1 = localOwned3;
-        lock (_lock)
-        {
-          perBlockOwned1.Add(transientOwned1);
-        }
-
         IOwned localOwned2 = transientOwned1;
         // Creates the owned value
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
@@ -219,11 +207,6 @@ partial class Composition: IDisposable
 
         IConnection localValue3 = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
         perBlockOwnedIConnection1 = new Owned<IConnection>(localValue3, localOwned2);
-        lock (_lock)
-        {
-          perBlockOwned1.Add(perBlockOwnedIConnection1);
-        }
-
         return perBlockOwnedIConnection1;
       });
       return new QueryHandler(perBlockFuncOwnedIConnection, perBlockFuncOwnedIConnection1);

@@ -110,8 +110,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var perBlockOwned = new Owned();
-      ((IAccumulator)perBlockOwned).Initialize(_lock);
+      var perBlockOwned = new Owned(1, _lock);
       try
       {
         Owned<IOrderProcessingService> perBlockOwnedIOrderProcessingService;
@@ -119,11 +118,6 @@ partial class Composition
         Owned transientOwned;
         Owned localOwned1 = perBlockOwned;
         transientOwned = localOwned1;
-        lock (_lock)
-        {
-          perBlockOwned.Add(transientOwned);
-        }
-
         IOwned localOwned = transientOwned;
         // Creates the owned value
         var transientDbConnection = new DbConnection();
@@ -143,11 +137,11 @@ partial class Composition
       }
       catch
       {
-        if ((Object)perBlockOwned is IDisposable disposableAccumulator0)
+        if (!Object.ReferenceEquals(perBlockOwned, null))
         {
           try
           {
-            disposableAccumulator0.Dispose();
+            ((IDisposable)perBlockOwned).Dispose();
           }
           catch
           {
@@ -155,19 +149,6 @@ partial class Composition
           }
         }
 
-      #if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
-        else if ((Object)perBlockOwned is IAsyncDisposable asyncDisposableAccumulator0)
-        {
-          try
-          {
-            asyncDisposableAccumulator0.DisposeAsync().GetAwaiter().GetResult();
-          }
-          catch
-          {
-            // Preserve the original graph construction exception.
-          }
-        }
-      #endif
         throw;
       }
     }

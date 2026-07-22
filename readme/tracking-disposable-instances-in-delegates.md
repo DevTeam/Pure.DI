@@ -119,18 +119,12 @@ partial class Composition
       () =>
       {
         // Creates a deferred value
-        var perBlockOwned = new Owned();
-        ((IAccumulator)perBlockOwned).Initialize(_lock);
+        var perBlockOwned = new Owned(1, _lock);
         Owned<IDbConnection> perBlockOwnedIDbConnection;
         // Tracks owned disposables
         Owned transientOwned;
         Owned localOwned1 = perBlockOwned;
         transientOwned = localOwned1;
-        lock (_lock)
-        {
-          perBlockOwned.Add(transientOwned);
-        }
-
         IOwned localOwned = transientOwned;
         // Creates the owned value
         var transientDbConnection = new DbConnection();
