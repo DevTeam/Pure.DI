@@ -130,13 +130,21 @@ var netCoreTypes = new Dictionary<string, string> {
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
 <#
     foreach(var type in net45Types)
-    {#>
+    {
+        typeName = type.Value.Replace("#", i == 0 ? "" : i.ToString());
+        var commentTypeName = typeName.Replace("in ", "").Replace("out ", "").Replace("<T>", "&lt;TT&gt;");#>
 
     /// <summary>
     /// Marker that mirrors <see cref="<#=type.Key.Replace('<', '{').Replace('>', '}')#>"/> for setup-time generic arguments.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// DI.Setup("Composition")
+    ///     .Bind&lt;IDependency&lt;<#=commentTypeName#>&gt;&gt;().To&lt;Dependency&lt;<#=commentTypeName#>&gt;&gt;();
+    /// </code>
+    /// </example>
     [GenericTypeArgument]
-    internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
+    internal interface <#=typeName#>: <#=type.Key#> { }
     <#}#>
 
 #endif
@@ -144,13 +152,21 @@ var netCoreTypes = new Dictionary<string, string> {
 #if NET || NETCOREAPP
 <#
     foreach(var type in netCoreTypes)
-    {#>
+    {
+        typeName = type.Value.Replace("#", i == 0 ? "" : i.ToString());
+        var commentTypeName = typeName.Replace("in ", "").Replace("out ", "").Replace("<T>", "&lt;TT&gt;");#>
 
     /// <summary>
     /// Marker that mirrors <see cref="<#=type.Key.Replace('<', '{').Replace('>', '}')#>"/> for setup-time generic arguments.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// DI.Setup("Composition")
+    ///     .Bind&lt;IDependency&lt;<#=commentTypeName#>&gt;&gt;().To&lt;Dependency&lt;<#=commentTypeName#>&gt;&gt;();
+    /// </code>
+    /// </example>
     [GenericTypeArgument]
-    internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
+    internal interface <#=typeName#>: <#=type.Key#> { }
     <#}#>
 
 #endif

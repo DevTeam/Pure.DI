@@ -1417,7 +1417,19 @@ namespace Pure.DI
     /// <summary>
     /// Represents a lifetime attribute that overrides an implementation binding lifetime.
     /// This attribute is part of the API, but you can use your own attribute and define it in any assembly or namespace.
+    /// <example>
+    /// Applying the attribute to the implementation makes every binding to it use the specified lifetime:
+    /// <code>
+    /// [Lifetime(Lifetime.Singleton)]
+    /// class Dependency: IDependency { }
+    ///
+    /// DI.Setup("Composition")
+    ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;()
+    ///     .Root&lt;IDependency&gt;("Root");
+    /// </code>
+    /// </example>
     /// </summary>
+    /// <seealso cref="Pure.DI.Lifetime"/>
     /// <seealso cref="IConfiguration.LifetimeAttribute{T}"/>
     /// <seealso cref="TypeAttribute"/>
     /// <seealso cref="TagAttribute"/>
@@ -1436,7 +1448,15 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Indicates that an implementation type can be automatically added as a binding.
+    /// Indicates that an implementation type can be automatically added as a binding, optionally specifying the contract type, lifetime, and tags.
+    /// This lets an implementation declare its own binding instead of listing it explicitly in the setup.
+    /// <example>
+    /// Bind an implementation to a specific contract as a singleton with a tag:
+    /// <code>
+    /// [Bind(typeof(IDependency), Lifetime.Singleton, "my tag")]
+    /// class Dependency: IDependency { }
+    /// </code>
+    /// </example>
     /// </summary>
     /// <seealso cref="IConfiguration.TypeAttribute{T}"/>
     /// <seealso cref="IConfiguration.LifetimeAttribute{T}"/>
@@ -1449,10 +1469,7 @@ namespace Pure.DI
     internal class BindAttribute: global::System.Attribute
     {
         /// <summary>
-        /// Creates an attribute instance.
-        /// </summary>
-        /// <summary>
-        /// Creates an attribute instance.
+        /// Creates an attribute instance that binds the implementation to all of its directly implemented types.
         /// </summary>
         public BindAttribute() { }
 
@@ -2128,10 +2145,10 @@ namespace Pure.DI
                 get { return _owned.Value; }
             }
 
-            [global::System.Diagnostics.DebuggerBrowsable(global::System.Diagnostics.DebuggerBrowsableState.Collapsed)]
             /// <summary>
             /// The disposal mechanism for the owned value (collapsed in the debugger by default).
             /// </summary>
+            [global::System.Diagnostics.DebuggerBrowsable(global::System.Diagnostics.DebuggerBrowsableState.Collapsed)]
             public global::Pure.DI.IOwned Owned
             {
                 get { return _owned.owned; }
@@ -13375,10 +13392,25 @@ namespace Pure.DI
 
         /// <summary>
         /// Overrides the binding with the specified value for the current factory invocation, but only for the immediate injection level.
+        /// Unlike <see cref="Override{T}"/>, which applies to the whole subgraph resolved from this factory, <c>Let</c> affects only the dependencies injected directly by this factory and does not propagate deeper.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind().To&lt;Func&lt;int, IDependency&gt;&gt;(ctx =&gt;
+        ///         dependencyId =&gt;
+        ///         {
+        ///             // Applies only to the directly injected dependency
+        ///             ctx.Let(dependencyId);
+        ///             ctx.Inject&lt;Dependency&gt;(out var dependency);
+        ///             return dependency;
+        ///         })
+        /// </code>
+        /// </example>
         /// </summary>
         /// <param name="value">The value used to override a binding.</param>
         /// <typeparam name="T">Object type that will be used to override a binding.</typeparam>
         /// <param name="tags">Injection tags that will be used to override a binding. See also <see cref="IBinding.Tags"/></param>
+        /// <seealso cref="Override{T}"/>
         void Let<T>(T value, params object[] tags)
 #if NET9_0_OR_GREATER
             where T : allows ref struct
