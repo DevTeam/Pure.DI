@@ -148,6 +148,14 @@ namespace Pure.DI.MS
         /// <param name="composition">The parent Pure.DI composition instance.</param>
         /// <returns>An <see cref="IServiceCollection"/> with service descriptors for the registered roots.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="composition"/> is <see langword="null"/>.</exception>
+        /// <example>
+        ///     Merge the roots of a composition into an existing <see cref="IServiceCollection"/>:
+        ///     <code>
+        /// var factory = new ServiceCollectionFactory&lt;Composition&gt;();
+        /// IServiceCollection roots = factory.CreateServiceCollection(new Composition());
+        /// services.Add(roots);
+        /// </code>
+        /// </example>
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
         [global::System.Diagnostics.Contracts.Pure]
 #endif

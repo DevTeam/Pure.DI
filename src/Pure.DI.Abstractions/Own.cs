@@ -8,15 +8,27 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-///     Performs accumulation and deterministic disposal of owned objects.
+///     Accumulates disposable resources created while resolving a composition root and disposes them
+///     deterministically. This is the default ownership handle used by Pure.DI.
 /// </summary>
+/// <remarks>
+///     Resources are registered through <see cref="Add(object)" /> in creation order and released in reverse
+///     order when <see cref="Dispose" /> (or <see cref="DisposeAsync" /> on supporting frameworks) is called.
+///     Disposal is idempotent and swallows exceptions thrown by individual resources so that a single failing
+///     resource cannot prevent the rest of the graph from being released. Once the owner has been disposed,
+///     any further <see cref="Add(object)" /> immediately disposes the supplied resource and throws an
+///     <see cref="ObjectDisposedException" />, preventing resources from leaking into a dead owner. An optional
+///     synchronization object can be supplied to make the begin-dispose transition thread-safe.
+/// </remarks>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
 [ExcludeFromCodeCoverage]
 #endif
 public sealed class Own : List<object>, IOwn
 {
     /// <summary>
-    ///     A shared no-op owner for a graph known at generation time to contain no resources.
+    ///     A shared, already-disposed no-op owner used for object graphs known at generation time to contain
+    ///     no disposable resources. Adding a resource to it rejects the resource, so it must only be used when
+    ///     the graph is guaranteed to be resource-free.
     /// </summary>
     public static readonly Own Empty = new Own(isDisposed: true);
 

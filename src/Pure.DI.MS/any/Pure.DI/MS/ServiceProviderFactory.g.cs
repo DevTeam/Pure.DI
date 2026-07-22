@@ -20,7 +20,9 @@ namespace Pure.DI.MS
     /// tagged unresolved dependencies require a provider that implements keyed services.
     /// </remarks>
     /// <example>
-    /// <code>
+    ///     Define a composition that derives from this factory and registers the roots to expose to Microsoft
+    ///     dependency injection:
+    ///     <code>
     /// partial class Composition: ServiceProviderFactory&lt;Composition&gt;
     /// {
     ///     void Setup() =&gt; DI.Setup()
@@ -29,7 +31,17 @@ namespace Pure.DI.MS
     ///         .Roots&lt;ControllerBase&gt;();
     /// }
     /// </code>
-    /// </example> 
+    ///     Plug the composition into the generic host so that its roots become available through the built-in
+    ///     <see cref="IServiceProvider"/>:
+    ///     <code>
+    /// var builder = WebApplication.CreateBuilder(args);
+    /// // Uses the composition as the service provider factory.
+    /// builder.Host.UseServiceProviderFactory(new Composition());
+    /// builder.Services.AddControllers();
+    /// var app = builder.Build();
+    /// app.Run();
+    /// </code>
+    /// </example>
     /// <typeparam name="TComposition">The Pure.DI composition type.</typeparam>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
     [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
