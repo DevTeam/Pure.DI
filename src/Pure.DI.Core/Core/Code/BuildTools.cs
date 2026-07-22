@@ -110,9 +110,17 @@ sealed class BuildTools(
         return lines;
     }
 
-    private bool IsBuiltInOwnershipInfrastructure(Accumulator accumulator, VarInjection varInjection) =>
-        symbolNames.GetGlobalName(accumulator.VarInjection.Var.InstanceType) == Names.OwnedTypeName
-        && symbolNames.GetGlobalName(varInjection.Var.InstanceType) == Names.OwnedTypeName;
+    private bool IsBuiltInOwnershipInfrastructure(Accumulator accumulator, VarInjection varInjection)
+    {
+        var accumulatorTypeName = symbolNames.GetGlobalName(accumulator.VarInjection.Var.InstanceType);
+        if (accumulatorTypeName != symbolNames.GetGlobalName(varInjection.Var.InstanceType))
+        {
+            return false;
+        }
+
+        return accumulatorTypeName == Names.OwnedTypeName
+               || accumulatorTypeName == Names.AbstractionsOwnTypeName;
+    }
 
     public string OnInjected(CodeContext ctx, VarInjection varInjection)
     {

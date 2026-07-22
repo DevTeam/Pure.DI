@@ -25,7 +25,7 @@ public readonly struct Own<T>(T value, IOwn own) : IOwn
     /// <inheritdoc />
     public void Dispose() => _own.Dispose();
 
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
     /// <inheritdoc />
     public System.Threading.Tasks.ValueTask DisposeAsync()
     {

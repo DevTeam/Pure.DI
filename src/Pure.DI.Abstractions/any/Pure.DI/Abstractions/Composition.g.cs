@@ -28,7 +28,7 @@ namespace Pure.DI.Abstractions
                     global::Pure.DI.Lifetime.Transient,
                     global::Pure.DI.Lifetime.PerResolve,
                     global::Pure.DI.Lifetime.PerBlock)
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+#if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
                 .Accumulate<global::System.IAsyncDisposable, global::Pure.DI.Abstractions.Own>(
                     global::Pure.DI.Lifetime.Transient,
                     global::Pure.DI.Lifetime.PerResolve,
@@ -39,7 +39,7 @@ namespace Pure.DI.Abstractions
                     .As(global::Pure.DI.Lifetime.PerBlock)
                     .To(ctx => {
                         // Creates the owner of an instance
-                        ctx.Inject<global::Pure.DI.Abstractions.Own>(out var own);
+                        ctx.Inject<global::Pure.DI.Abstractions.IOwn>(out var own);
                         ctx.Inject<TT>(ctx.Tag, out var value);
                         return new global::Pure.DI.Abstractions.Own<TT>(value, own);
                     });

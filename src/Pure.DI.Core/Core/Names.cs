@@ -56,6 +56,8 @@ static class Names
     public const string IAccumulatorTypeName = $"{ApiNamespace}IAccumulator";
     public const string IOwnedTypeName = $"{ApiNamespace}IOwned";
     public const string OwnedTypeName = $"{ApiNamespace}Owned";
+    public const string AbstractionsIOwnTypeName = $"{GlobalNamespacePrefix}Pure.DI.Abstractions.IOwn";
+    public const string AbstractionsOwnTypeName = $"{GlobalNamespacePrefix}Pure.DI.Abstractions.Own";
     public const string IConfigurationTypeName = $"{ApiNamespace}{nameof(IConfiguration)}";
     public const string ObjectTypeName = $"{SystemNamespace}Object";
     public const string ExceptionTypeName = $"{SystemNamespace}{nameof(Exception)}";

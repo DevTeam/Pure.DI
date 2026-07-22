@@ -120,7 +120,7 @@ class Accumulators(
         var items = accumulators.ToImmutableArray();
         var builtInStats = new Dictionary<ITypeSymbol, (bool IsEmpty, int Capacity)>(typeSymbolComparer.Runtime);
         foreach (var accumulatorGroup in items
-                     .Where(i => IsBuiltInOwned(i.accumulator.AccumulatorType))
+                     .Where(i => IsBuiltInOwnershipAccumulator(i.accumulator.AccumulatorType))
                      .GroupBy(i => i.accumulator.AccumulatorType, typeSymbolComparer.Runtime))
         {
             var accumulatorMetadata = accumulatorGroup
@@ -157,13 +157,13 @@ class Accumulators(
             var accumulator = accumulatorGroup.First();
             var accVar = accumulator.VarInjection.Var;
             var useEmpty = accumulatorGroup.All(i => i.IsEmpty);
-            var isBuiltInOwned = IsBuiltInOwned(accVar.InstanceType);
+            var isOptimizedOwnershipAccumulator = IsBuiltInOwnershipAccumulator(accVar.InstanceType);
             var value = $"new {accVar.InstanceType}()";
             if (useEmpty)
             {
-                value = $"{Names.OwnedTypeName}.Empty";
+                value = $"{accVar.InstanceType}.Empty";
             }
-            else if (isBuiltInOwned)
+            else if (isOptimizedOwnershipAccumulator)
             {
                 var capacity = accumulatorGroup.Max(i => i.Capacity);
                 if (ctx.RootContext.IsThreadSafeEnabled)
@@ -184,7 +184,7 @@ class Accumulators(
 
             ctx.Lines.AppendLine($"{buildTools.GetDeclaration(ctx, accVar.Declaration, useVar: true)}{accVar.Name} = {value};");
             if (!useEmpty
-                && !isBuiltInOwned
+                && !isOptimizedOwnershipAccumulator
                 && ctx.RootContext.IsThreadSafeEnabled
                 && accVar.InstanceType.AllInterfaces.Any(i =>
                     symbolNames.GetGlobalName(i) == Names.IAccumulatorTypeName))
@@ -314,17 +314,26 @@ class Accumulators(
     private bool IsAccumulatorExposedToUserGraph(
         DependencyGraph graph,
         IDependencyNode node) =>
-        IsBuiltInOwned(node.Node.Type)
+        IsBuiltInOwnershipAccumulator(node.Node.Type)
         && graph.Graph.TryGetOutEdges(node.Node, out var consumers)
         && consumers.Any(i => !IsOwnershipInfrastructure(i.Target.Type));
 
     private bool IsOwnershipInfrastructure(ITypeSymbol type) =>
-        IsBuiltInOwned(type)
+        IsBuiltInOwnershipAccumulator(type)
         || type is INamedTypeSymbol namedType
-        && namedType.AllInterfaces.Any(i => symbolNames.GetGlobalName(i) == Names.IOwnedTypeName);
+        && namedType.AllInterfaces.Any(i =>
+        {
+            var interfaceName = symbolNames.GetGlobalName(i);
+            return interfaceName == Names.IOwnedTypeName
+                   || interfaceName == Names.AbstractionsIOwnTypeName;
+        });
 
-    private bool IsBuiltInOwned(ITypeSymbol type) =>
-        symbolNames.GetGlobalName(type) == Names.OwnedTypeName;
+    private bool IsBuiltInOwnershipAccumulator(ITypeSymbol type)
+    {
+        var typeName = symbolNames.GetGlobalName(type);
+        return typeName == Names.OwnedTypeName
+               || typeName == Names.AbstractionsOwnTypeName;
+    }
 
     private IEnumerable<(MdAccumulator, Dependency)> GetBranchAccumulators(
         DependencyGraph graph,
