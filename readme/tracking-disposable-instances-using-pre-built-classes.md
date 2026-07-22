@@ -169,10 +169,13 @@ partial class Composition: IDisposable
       () =>
       {
         // Creates a deferred value
-        var perBlockOwn = new Abstractions.Own();
+        var perBlockOwn = new Abstractions.Own(1, _lock);
         Abstractions.Own<IDbConnection> perBlockOwnIDbConnection;
         // Creates the owner of an instance
-        Abstractions.Own localOwn = perBlockOwn;
+        Abstractions.Own transientOwn;
+        Abstractions.Own localOwn1 = perBlockOwn;
+        transientOwn = localOwn1;
+        Abstractions.IOwn localOwn = transientOwn;
         var transientDbConnection = new DbConnection();
         lock (_lock)
         {
@@ -193,10 +196,13 @@ partial class Composition: IDisposable
       () =>
       {
         // Creates a deferred value
-        var perBlockOwn1 = new Abstractions.Own();
+        var perBlockOwn1 = Abstractions.Own.Empty;
         Abstractions.Own<IDbConnection> perBlockOwnIDbConnection1;
         // Creates the owner of an instance
-        Abstractions.Own localOwn1 = perBlockOwn1;
+        Abstractions.Own transientOwn1;
+        Abstractions.Own localOwn3 = perBlockOwn1;
+        transientOwn1 = localOwn3;
+        Abstractions.IOwn localOwn2 = transientOwn1;
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           lock (_lock)
             if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
@@ -206,12 +212,7 @@ partial class Composition: IDisposable
             }
 
         IDbConnection localValue3 = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
-        perBlockOwnIDbConnection1 = new Abstractions.Own<IDbConnection>(localValue3, localOwn1);
-        lock (_lock)
-        {
-          perBlockOwn1.Add(perBlockOwnIDbConnection1);
-        }
-
+        perBlockOwnIDbConnection1 = new Abstractions.Own<IDbConnection>(localValue3, localOwn2);
         return perBlockOwnIDbConnection1;
       });
       return new DataService(perBlockFuncOwnIDbConnection, perBlockFuncOwnIDbConnection1);
@@ -265,6 +266,7 @@ Class diagram:
 ---
 classDiagram
 	Composition --|> IDisposable
+	Own --|> IOwn
 	DbConnection --|> IDbConnection
 	DataService --|> IDataService
 	Composition ..> DataService : DataService DataService
@@ -272,11 +274,14 @@ classDiagram
 	DataService o-- "PerBlock" FuncᐸOwnᐸIDbConnectionᐳᐳ : "shared" FuncᐸOwnᐸIDbConnectionᐳᐳ
 	FuncᐸOwnᐸIDbConnectionᐳᐳ o-- "PerBlock" OwnᐸIDbConnectionᐳ : OwnᐸIDbConnectionᐳ
 	FuncᐸOwnᐸIDbConnectionᐳᐳ o-- "PerBlock" OwnᐸIDbConnectionᐳ : "shared" OwnᐸIDbConnectionᐳ
+	OwnᐸIDbConnectionᐳ *-- Own : IOwn
 	OwnᐸIDbConnectionᐳ *-- DbConnection : IDbConnection
-	OwnᐸIDbConnectionᐳ o-- "PerBlock" Own : Own
+	OwnᐸIDbConnectionᐳ *-- Own : IOwn
 	OwnᐸIDbConnectionᐳ o-- "Singleton" DbConnection : "shared" IDbConnection
-	OwnᐸIDbConnectionᐳ o-- "PerBlock" Own : Own
 	namespace Pure.DI.Abstractions {
+		class IOwn {
+			<<interface>>
+		}
 		class Own {
 				<<class>>
 		}
