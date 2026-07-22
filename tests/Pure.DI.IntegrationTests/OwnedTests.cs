@@ -6989,4 +6989,71 @@ public class OwnedTests
         result.StdOut.ShouldBe(["True", "True"], result);
     }
 
+    [Fact]
+    public async Task ShouldNotGenerateEmptyRootCatchForOwnedFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var transaction = new Composition().Transaction;
+                                       var resource = transaction.Resource;
+                                       transaction.Dispose();
+                                       Console.WriteLine(resource.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Resource : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Transaction : IDisposable
+                               {
+                                   private readonly Owned<Resource> resource;
+
+                                   public Transaction(Func<Owned<Resource>> resourceFactory) =>
+                                       resource = resourceFactory();
+
+                                   public Resource Resource => resource.Value;
+
+                                   public void Dispose() => resource.Dispose();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Resource>()
+                                           .Bind().To<Transaction>()
+                                           .Root<Transaction>("Transaction");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        var rootCode = global::System.Text.RegularExpressions.Regex.Match(
+            result.GeneratedCode,
+            @"public global::Sample\.Transaction Transaction\s*\{(?<body>.*?)#endregion",
+            global::System.Text.RegularExpressions.RegexOptions.Singleline)
+            .Groups["body"]
+            .Value;
+        rootCode.ShouldNotBeEmpty(result.ToString());
+        rootCode.ShouldNotContain("try");
+        rootCode.ShouldNotContain("catch");
+    }
+
 }

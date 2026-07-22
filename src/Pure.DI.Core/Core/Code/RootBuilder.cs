@@ -38,31 +38,35 @@ class RootBuilder(
             []);
 
         accumulators.BuildAccumulators(ctx);
-        if (rootAccumulators.All(i => i.IsEmpty)
-            && !accumulators.HasNonEmptyNestedAccumulators(rootContext.Graph, rootContext.Root.Node))
+        var body = new Lines();
+        ctx = ctx with { Lines = body };
+        BuildCode(ctx);
+        rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
+        var rollbackAccumulators = rootAccumulators
+            .Where(i => !i.IsEmpty)
+            .Select(i => i.VarInjection.Var)
+            .Reverse()
+            .Concat(rootContext.ConstructionFailureAccumulators.AsEnumerable().Reverse())
+            .GroupBy(i => i.Name)
+            .Select(i => i.First())
+            .Where(CanRollback)
+            .ToImmutableArray();
+        if (rollbackAccumulators.IsEmpty)
         {
-            BuildCode(ctx);
+            lines.AppendLines(body);
         }
         else
         {
             lines.AppendLine("try");
             using (lines.CreateBlock())
             {
-                BuildCode(ctx);
-                rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
+                lines.AppendLines(body);
                 lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
             }
 
             lines.AppendLine("catch");
             using (lines.CreateBlock())
             {
-                var rollbackAccumulators = rootAccumulators
-                    .Where(i => !i.IsEmpty)
-                    .Select(i => i.VarInjection.Var)
-                    .Reverse()
-                    .Concat(rootContext.ConstructionFailureAccumulators.AsEnumerable().Reverse())
-                    .GroupBy(i => i.Name)
-                    .Select(i => i.First());
                 foreach (var accumulator in rollbackAccumulators)
                 {
                     AddRollback(lines, accumulator);
@@ -74,13 +78,15 @@ class RootBuilder(
             rootContext.ReturnWasAdded = true;
         }
 
-        rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
-
         var setup = rootContext.Graph.Source;
         AddPerResolveVars(rootContext.Lines, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve), setup);
         rootContext.Lines.AppendLines(lines);
         return rootVarInjection;
     }
+
+    private bool CanRollback(Var accumulator) =>
+        Implements(accumulator.InstanceType, Names.IDisposableTypeName)
+        || Implements(accumulator.InstanceType, Names.IAsyncDisposableTypeName);
 
     private void AddRollback(Lines lines, Var accumulator)
     {

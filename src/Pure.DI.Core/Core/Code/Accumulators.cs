@@ -111,51 +111,6 @@ class Accumulators(
         }
     }
 
-    public bool HasNonEmptyNestedAccumulators(
-        DependencyGraph graph,
-        IDependencyNode targetNode)
-    {
-        var processed = new HashSet<IDependencyNode>();
-        var nodes = new Stack<IDependencyNode>();
-        nodes.Push(targetNode);
-        while (nodes.TryPop(out var node))
-        {
-            if (!processed.Add(node))
-            {
-                continue;
-            }
-
-            if (!ReferenceEquals(node, targetNode))
-            {
-                var boundaryAccumulators = GetBoundaryAccumulators(graph, node).ToImmutableArray();
-                foreach (var item in boundaryAccumulators)
-                {
-                    if (!IsBuiltInOwned(item.Item1.AccumulatorType)
-                        || boundaryAccumulators
-                            .Where(i => typeSymbolComparer.RuntimeEquals(
-                                i.Item1.AccumulatorType,
-                                item.Item1.AccumulatorType))
-                            .Any(i => HasAccumulatedResources(graph, node, i.Item1)))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            if (!graph.Graph.TryGetInEdges(node.Node, out var dependencies))
-            {
-                continue;
-            }
-
-            foreach (var dependency in dependencies)
-            {
-                nodes.Push(dependency.Source);
-            }
-        }
-
-        return false;
-    }
-
     public IEnumerable<Accumulator> CreateAccumulators(
         DependencyGraph graph,
         IDependencyNode targetNode,
