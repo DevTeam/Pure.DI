@@ -16,6 +16,8 @@ $r=Shouldly
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable LocalizableElement
+// ReSharper disable RedundantArgumentDefaultValue
 namespace Pure.DI.UsageTests.HighPerformance.NetworkPacketParsingScenario;
 
 using System.Buffers.Binary;

@@ -121,7 +121,7 @@ sealed class RootCodeBuilder(
             ctx = ctx with
             {
                 Accumulators = inheritedAccumulators.AddRange(createdAccumulators),
-                IsFactory = isLazy ? false : ctx.IsFactory,
+                IsFactory = !isLazy && ctx.IsFactory,
                 IsDeferred = isLazy || ctx.IsDeferred
             };
             if (isLazy)

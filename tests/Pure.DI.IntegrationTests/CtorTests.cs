@@ -1426,11 +1426,11 @@ public class CtorTests
             .InstanceConstructors
             .Single(i => !i.IsImplicitlyDeclared);
         var types = new Moq.Mock<ITypes>();
-        types.Setup(i => i.TryGet(Core.SpecialType.OverloadResolutionPriorityAttribute, compilation))
+        types.Setup(i => i.TryGet(SpecialType.OverloadResolutionPriorityAttribute, compilation))
             .Returns(attributeType);
         types.Setup(i => i.TypeEquals(Moq.It.IsAny<ISymbol?>(), Moq.It.IsAny<ISymbol?>()))
             .Returns((ISymbol? left, ISymbol? right) => SymbolEqualityComparer.Default.Equals(left, right));
-        var sut = new Core.OverloadResolutionPriority(types.Object);
+        var sut = new OverloadResolutionPriority(types.Object);
 
         // When
         var isExplicit = sut.TryGet(compilation, constructor, out var priority);

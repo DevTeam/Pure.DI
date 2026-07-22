@@ -21,6 +21,7 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ConvertToAutoPropertyWithPrivateSetter
+// ReSharper disable RedundantTypeArgumentsOfMethod
 namespace Pure.DI.UsageTests.BCL.AllowsRefStructFactoryScenario;
 
 using Shouldly;

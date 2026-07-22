@@ -1,5 +1,9 @@
 namespace Pure.DI.IntegrationTests;
 
+using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
+
+[SuppressMessage("Performance", "SYSLIB1045:Convert to \'GeneratedRegexAttribute\'.")]
 public class OwnedTests
 {
     [Fact]
@@ -2287,7 +2291,7 @@ public class OwnedTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
-        global::System.Text.RegularExpressions.Regex.IsMatch(
+        Regex.IsMatch(
                 result.GeneratedCode,
                 @"\(\(global::System\.IDisposable\)\w+\)\.Dispose\(\);")
             .ShouldBeTrue(result);
@@ -5528,7 +5532,7 @@ public class OwnedTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
-        global::System.Text.RegularExpressions.Regex.IsMatch(
+        Regex.IsMatch(
                 result.GeneratedCode,
                 @"\(\(global::System\.IAsyncDisposable\)\w+\)\.DisposeAsync\(\)\.GetAwaiter\(\)\.GetResult\(\);")
             .ShouldBeTrue(result);
@@ -5601,16 +5605,13 @@ public class OwnedTests
         result.GeneratedCode.ShouldContain("Pure.DI.Owned.Empty");
         result.GeneratedCode.ShouldNotContain("((global::Pure.DI.IAccumulator)");
         result.GeneratedCode.ShouldNotContain("disposableAccumulator");
-        var accumulatorMatch = global::System.Text.RegularExpressions.Regex.Match(
+        var accumulatorMatch = Regex.Match(
             result.GeneratedCode,
             @"var (?<name>\w+) = (?:global::)?Pure\.DI\.Owned\.Empty;");
         accumulatorMatch.Success.ShouldBeTrue(result);
-        var accumulatorName = global::System.Text.RegularExpressions.Regex.Escape(
+        var accumulatorName = Regex.Escape(
             accumulatorMatch.Groups["name"].Value);
-        global::System.Text.RegularExpressions.Regex.Matches(
-                result.GeneratedCode,
-                $@"\b{accumulatorName}\.Add\(")
-            .Count.ShouldBe(0, result);
+        Regex.Count(result.GeneratedCode, $@"\b{accumulatorName}\.Add\(").ShouldBe(0, result);
     }
 
     [Fact]
@@ -5907,16 +5908,13 @@ public class OwnedTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["1", "1", "True"], result);
-        var accumulatorMatch = global::System.Text.RegularExpressions.Regex.Match(
+        var accumulatorMatch = Regex.Match(
             result.GeneratedCode,
             @"var (?<name>\w+) = new Pure\.DI\.Owned\(1(?:, _lock\w*)?\);");
         accumulatorMatch.Success.ShouldBeTrue(result);
-        var accumulatorName = global::System.Text.RegularExpressions.Regex.Escape(
+        var accumulatorName = Regex.Escape(
             accumulatorMatch.Groups["name"].Value);
-        global::System.Text.RegularExpressions.Regex.Matches(
-                result.GeneratedCode,
-                $@"\b{accumulatorName}\.Add\(")
-            .Count.ShouldBe(2, result);
+        Regex.Count(result.GeneratedCode, $@"\b{accumulatorName}\.Add\(").ShouldBe(2, result);
         result.GeneratedCode.ShouldNotContain("((global::Pure.DI.IAccumulator)");
         result.GeneratedCode.ShouldNotContain("disposableAccumulator");
     }
@@ -6025,7 +6023,7 @@ public class OwnedTests
         result.StdOut.ShouldBe(
             ["3", "3", "True", "True", "True", "True", "True"],
             result);
-        global::System.Text.RegularExpressions.Regex.IsMatch(
+        Regex.IsMatch(
                 result.GeneratedCode,
                 @"new (?:global::)?Pure\.DI\.Owned\(3(?:, _lock\w*)?\)")
             .ShouldBeTrue(result);
@@ -6527,10 +6525,7 @@ public class OwnedTests
         result.StdOut.ShouldBe([expectedInitialization, expectedInitialization], result);
         if (string.IsNullOrEmpty(threadSafeHint))
         {
-            global::System.Text.RegularExpressions.Regex.Matches(
-                    result.GeneratedCode,
-                    @"\(\(global::Pure\.DI\.IAccumulator\)\w+\)\.Initialize\(_lock\w*\);")
-                .Count.ShouldBe(1, result);
+            Regex.Count(result.GeneratedCode, @"\(\(global::Pure\.DI\.IAccumulator\)\w+\)\.Initialize\(_lock\w*\);").ShouldBe(1, result);
             result.GeneratedCode.ShouldNotContain(" is global::Pure.DI.IAccumulator");
         }
         else
@@ -6683,7 +6678,7 @@ public class OwnedTests
         {
             const string synchronizationPattern =
                 @"\(\(global::Pure\.DI\.IAccumulator\)\w+\)\.Initialize\((?<lock>_lock\w*)\);";
-            var synchronizationMatches = global::System.Text.RegularExpressions.Regex.Matches(
+            var synchronizationMatches = Regex.Matches(
                 result.GeneratedCode,
                 synchronizationPattern);
             synchronizationMatches.Count.ShouldBe(2, result);

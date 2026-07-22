@@ -14,7 +14,7 @@ $r=Shouldly
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
-
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageTests.Advanced.TracingOwnedDisposalExceptionsScenario
 {
     using Shouldly;

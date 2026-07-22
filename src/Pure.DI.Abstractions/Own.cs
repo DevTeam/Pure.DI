@@ -1,4 +1,6 @@
 // ReSharper disable RedundantUsingDirective
+// ReSharper disable UseNegatedPatternInIsExpression
+// ReSharper disable ArrangeObjectCreationWhenTypeEvident
 namespace Pure.DI.Abstractions;
 
 using System;

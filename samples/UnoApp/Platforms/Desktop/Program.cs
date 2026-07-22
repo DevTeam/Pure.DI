@@ -1,11 +1,12 @@
 using Uno.UI.Hosting;
+// ReSharper disable CheckNamespace
 
 namespace UnoApp;
 
-internal static class Program
+static class Program
 {
     [STAThread]
-    public static void Main(string[] args)
+    public static void Main()
     {
         var host = UnoPlatformHostBuilder.Create()
             .App(() => new App())

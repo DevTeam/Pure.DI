@@ -1,9 +1,9 @@
 namespace Pure.DI.IntegrationTests.Owned;
 
-using Pure.DI.IntegrationTests;
+using IntegrationTests;
 using System.Globalization;
 
-internal static class PureDiOwnedRunner
+static class PureDiOwnedRunner
 {
     public static async Task<IReadOnlyList<string>> RunAsync(OwnedComparisonScenario scenario)
     {

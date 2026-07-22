@@ -324,15 +324,13 @@ class Accumulators(
         && namedType.AllInterfaces.Any(i =>
         {
             var interfaceName = symbolNames.GetGlobalName(i);
-            return interfaceName == Names.IOwnedTypeName
-                   || interfaceName == Names.AbstractionsIOwnTypeName;
+            return interfaceName is Names.IOwnedTypeName or Names.AbstractionsIOwnTypeName;
         });
 
     private bool IsBuiltInOwnershipAccumulator(ITypeSymbol type)
     {
         var typeName = symbolNames.GetGlobalName(type);
-        return typeName == Names.OwnedTypeName
-               || typeName == Names.AbstractionsOwnTypeName;
+        return typeName is Names.OwnedTypeName or Names.AbstractionsOwnTypeName;
     }
 
     private IEnumerable<(MdAccumulator, Dependency)> GetBranchAccumulators(

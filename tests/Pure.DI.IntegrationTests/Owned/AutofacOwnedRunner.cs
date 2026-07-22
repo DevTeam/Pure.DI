@@ -1,9 +1,12 @@
+// ReSharper disable MemberHidesStaticFromOuterClass
 namespace Pure.DI.IntegrationTests.Owned;
 
+using System.Diagnostics.CodeAnalysis;
 using Autofac;
 using Autofac.Features.OwnedInstances;
 
-internal static class AutofacOwnedRunner
+[SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
+static class AutofacOwnedRunner
 {
     public static IReadOnlyList<string> Run(OwnedComparisonScenario scenario)
     {

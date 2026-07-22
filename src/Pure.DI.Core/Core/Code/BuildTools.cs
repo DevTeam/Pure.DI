@@ -118,8 +118,7 @@ sealed class BuildTools(
             return false;
         }
 
-        return accumulatorTypeName == Names.OwnedTypeName
-               || accumulatorTypeName == Names.AbstractionsOwnTypeName;
+        return accumulatorTypeName is Names.OwnedTypeName or Names.AbstractionsOwnTypeName;
     }
 
     public string OnInjected(CodeContext ctx, VarInjection varInjection)
