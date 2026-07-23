@@ -6884,9 +6884,26 @@ public class OwnedTests
                                        var resource = owned.Value;
                                        resource.Reenter = owned.Dispose;
 
-                                       var disposeTask = Task.Run(owned.Dispose);
+                                       Exception? disposeError = null;
+                                       var disposeThread = new Thread(() =>
+                                       {
+                                           try
+                                           {
+                                               owned.Dispose();
+                                           }
+                                           catch (Exception exception)
+                                           {
+                                               disposeError = exception;
+                                           }
+                                       })
+                                       {
+                                           IsBackground = true
+                                       };
+                                       disposeThread.Start();
 
-                                       Console.WriteLine(disposeTask.Wait(TimeSpan.FromSeconds(5)));
+                                       Console.WriteLine(
+                                           disposeThread.Join(TimeSpan.FromSeconds(5))
+                                           && disposeError is null);
                                        Console.WriteLine(resource.DisposeCount == 1);
                                    }
                                }
