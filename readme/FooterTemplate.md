@@ -2075,15 +2075,15 @@ Examples of how to set up a composition
 - [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composition.cs)
 
 Articles
-- [What's new in Pure.DI: union types, interface generation, and DI without unnecessary allocations](/readme/ru_art_2026.2/art_eng_2026.2.md)
-- [An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/en_art_basics/en_basics.md)
+- [What's new in Pure.DI: union types, interface generation, and DI without unnecessary allocations](/readme/art_2026.2/art_eng_2026.2.md)
+- [An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/art_basics/en_basics.md)
 
 <details>
 <summary>Additional resources in Russian</summary>
 
 Articles
-- [An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/ru_art_basics/ru_basics.md)
-- [What's new in Pure.DI: union types, interface generation, and DI without unnecessary allocations](/readme/ru_art_2026.2/art_rus_2026.2.md)
+- [An introductory article that will help you understand the basic idea and get started with Pure.DI](/readme/art_basics/ru_basics.md)
+- [What's new in Pure.DI: union types, interface generation, and DI without unnecessary allocations](/readme/art_2026.2/art_rus_2026.2.md)
 - [Pure.DI: new features](https://habr.com/ru/articles/1010646/)
 - [New in Pure.DI by the end of 2024](https://habr.com/ru/articles/868744/)
 - [New in Pure.DI](https://habr.com/ru/articles/808297/)

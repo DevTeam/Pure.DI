@@ -202,4 +202,4 @@ The full equivalent of this application with top-level statements can be found [
 
 Want to try it right away? Create a project from the [project template](#project-template).
 
-[An introductory article that will help you understand the basic idea and get started with Pure.DI](readme/en_art_basics/en_basics.md)
+[An introductory article that will help you understand the basic idea and get started with Pure.DI](readme/art_basics/en_basics.md)
