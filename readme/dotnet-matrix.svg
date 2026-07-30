@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">.NET Matrix</title>
+  <rect width="64" height="64" rx="15" fill="#0b0d12"/>
+
+  <g fill="#8e98a8" opacity=".42">
+    <rect x="11" y="11" width="9" height="9" rx="1.5"/>
+    <rect x="22" y="11" width="9" height="9" rx="1.5"/>
+    <rect x="33" y="11" width="9" height="9" rx="1.5"/>
+    <rect x="11" y="22" width="9" height="9" rx="1.5"/>
+    <rect x="22" y="22" width="9" height="9" rx="1.5"/>
+    <rect x="44" y="22" width="9" height="9" rx="1.5"/>
+    <rect x="11" y="33" width="9" height="9" rx="1.5"/>
+    <rect x="33" y="33" width="9" height="9" rx="1.5"/>
+    <rect x="44" y="33" width="9" height="9" rx="1.5"/>
+    <rect x="22" y="44" width="9" height="9" rx="1.5"/>
+    <rect x="33" y="44" width="9" height="9" rx="1.5"/>
+    <rect x="44" y="44" width="9" height="9" rx="1.5"/>
+  </g>
+
+  <g fill="#68d8ef">
+    <rect x="33" y="11" width="9" height="9" rx="1.5"/>
+    <rect x="22" y="22" width="9" height="9" rx="1.5"/>
+    <rect x="11" y="33" width="9" height="9" rx="1.5"/>
+  </g>
+
+  <path d="M15.5 48.5h7l4-4v-7h7l4-4v-7h7l4-4v-7"
+        fill="none"
+        stroke="#b7f34a"
+        stroke-width="7"
+        stroke-linecap="square"
+        stroke-linejoin="miter"/>
+</svg>

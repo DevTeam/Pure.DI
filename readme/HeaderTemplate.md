@@ -5,5 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![GitHub Build](https://github.com/DevTeam/Pure.DI/actions/workflows/main.yml/badge.svg)
 
+<a href="https://matrix.dev-team.org/"><img src="https://github.com/DevTeam/Pure.DI/blob/master/readme/dotnet-matrix.svg" height="20" width="20" alt=".NET Matrix"></a> [Pure.DI in .NET Matrix](https://matrix.dev-team.org/?category=dependency-injection&library=Pure.DI)
+
 ![](readme/di.gif)
 
