@@ -19,7 +19,7 @@ public static class TestTools
 
     private static string GetSolutionDirectory()
     {
-        var solutionFile = TryFindFile(Environment.CurrentDirectory, "Pure.DI.sln") ?? Environment.CurrentDirectory;
+        var solutionFile = TryFindFile(Environment.CurrentDirectory, "Pure.DI.slnx") ?? Environment.CurrentDirectory;
         return Path.GetDirectoryName(solutionFile) ?? Environment.CurrentDirectory;
     }
 

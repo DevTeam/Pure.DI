@@ -1,0 +1,89 @@
+<Solution>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/Pure.DI.Benchmarks/Pure.DI.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/docs/">
+    <File Path="docs/cat.png" />
+    <File Path="docs/cat.webp" />
+    <File Path="docs/icon.ico" />
+    <File Path="docs/icon.png" />
+    <File Path="docs/README.md" />
+  </Folder>
+  <Folder Name="/github/">
+    <File Path=".github/ISSUE_TEMPLATE/bug_report.md" />
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.md" />
+    <File Path=".github/workflows/main.yml" />
+  </Folder>
+  <Folder Name="/readme/">
+    <File Path="docs/README.md" />
+    <File Path="readme/AvaloniaPageTemplate.md" />
+    <File Path="readme/BlazorServerAppPageTemplate.md" />
+    <File Path="readme/BlazorWebAssemblyAppPageTemplate.md" />
+    <File Path="readme/ConsoleNativeAOTPageTemplate.md" />
+    <File Path="readme/ConsolePageTemplate.md" />
+    <File Path="readme/ConsoleTopLevelStatementsPageTemplate.md" />
+    <File Path="readme/ContributingTemplate.md" />
+    <File Path="readme/EntityFrameworkPageTemplate.md" />
+    <File Path="readme/FooterTemplate.md" />
+    <File Path="readme/GrpcServicePageTemplate.md" />
+    <File Path="readme/HeaderTemplate.md" />
+    <File Path="readme/MauiPageTemplate.md" />
+    <File Path="readme/MinimalWebAPIPageTemplate.md" />
+    <File Path="readme/ReadmeTemplate.md" />
+    <File Path="readme/UnityPageTemplate.md" />
+    <File Path="readme/UnoAppPageTemplate.md" />
+    <File Path="readme/WebAPIPageTemplate.md" />
+    <File Path="readme/WebAppPageTemplate.md" />
+    <File Path="readme/WinFormsAppNetCorePageTemplate.md" />
+    <File Path="readme/WinFormsAppPageTemplate.md" />
+    <File Path="readme/WpfPageTemplate.md" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/AvaloniaApp/AvaloniaApp.csproj" />
+    <Project Path="samples/AvaloniaSimpleApp/AvaloniaSimpleApp.csproj" />
+    <Project Path="samples/BlazorServerApp/BlazorServerApp.csproj" />
+    <Project Path="samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj" />
+    <Project Path="samples/Clock.Tests/Clock.Tests.csproj" />
+    <Project Path="samples/Clock/Clock.csproj" />
+    <Project Path="samples/ConsoleApp/ConsoleApp.csproj" />
+    <Project Path="samples/EF/EF.csproj" />
+    <Project Path="samples/GrpcClient/GrpcClient.csproj" />
+    <Project Path="samples/GrpcService/GrpcService.csproj" />
+    <Project Path="samples/HugeComposition/HugeComposition.csproj" />
+    <Project Path="samples/MinimalWebAPI/MinimalWebAPI.csproj" />
+    <Project Path="samples/ShroedingersCat/ShroedingersCat.csproj" />
+    <Project Path="samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.csproj" />
+    <Project Path="samples/ShroedingersCatTopLevelStatements/ShroedingersCatTopLevelStatements.csproj" />
+    <Project Path="samples/SingleRootAvaloniaApp/SingleRootAvaloniaApp.csproj" />
+    <Project Path="samples/UnoApp/UnoApp.csproj" />
+    <Project Path="samples/WebAPI/WebAPI.csproj" />
+    <Project Path="samples/WebApp/WebApp.csproj" />
+    <Project Path="samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj" />
+    <Project Path="samples/WpfAppNetCore/WpfAppNetCore.csproj" />
+  </Folder>
+  <Folder Name="/solution/">
+    <File Path=".gitignore" />
+    <File Path="build.cmd" />
+    <File Path="build.sh" />
+    <File Path="DIAGNOSTICS.md" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Library.props" />
+    <Project Path="src/Pure.DI.Abstractions/Pure.DI.Abstractions.csproj" />
+    <Project Path="src/Pure.DI.Core/Pure.DI.Core.csproj" />
+    <Project Path="src/Pure.DI.MS/Pure.DI.MS.csproj" />
+    <Project Path="src/Pure.DI.Templates/Pure.DI.Templates.csproj" />
+    <Project Path="src/Pure.DI/Pure.DI.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/Directory.Build.props" />
+    <Project Path="tests/Pure.DI.Example/Pure.DI.Example.csproj" />
+    <Project Path="tests/Pure.DI.GeneratedCodeReview/Pure.DI.GeneratedCodeReview.csproj" />
+    <Project Path="tests/Pure.DI.IntegrationTests/Pure.DI.IntegrationTests.csproj" />
+    <Project Path="tests/Pure.DI.Tests/Pure.DI.Tests.csproj" />
+    <Project Path="tests/Pure.DI.UsageTests/Pure.DI.UsageTests.csproj" />
+  </Folder>
+  <Project Path="build/build.csproj" />
+</Solution>

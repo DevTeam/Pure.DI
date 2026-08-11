@@ -123,12 +123,12 @@ public partial class LocalizationTests
     private static string GetSolutionDirectory()
     {
         var path = AppContext.BaseDirectory;
-        while (path is not null && !File.Exists(Path.Combine(path, "Pure.DI.sln")))
+        while (path is not null && !File.Exists(Path.Combine(path, "Pure.DI.slnx")))
         {
             path = Path.GetDirectoryName(path);
         }
 
-        return path ?? throw new InvalidOperationException("Cannot find the solution directory containing Pure.DI.sln.");
+        return path ?? throw new InvalidOperationException("Cannot find the solution directory containing Pure.DI.slnx.");
     }
 
     [GeneratedRegex(@"\{\d+\}")]

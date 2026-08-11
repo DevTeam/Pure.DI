@@ -36,7 +36,7 @@ This repository contains the following directories and files:
 📄 README.md                     this README.md file
 📄 SECURITY.md                   policy file for handling security bugs and vulnerabilities
 📄 Directory.Build.props         basic MSBUILD properties for all projects
-📄 Pure.DI.sln                   .NET solution file
+📄 Pure.DI.slnx                  .NET solution file
 ```
 
 The build logic is a regular [.NET console application](/build). You can use [build.cmd](/build.cmd) and [build.sh](/build.sh) with the appropriate command parameters to perform all basic actions on the project, for example:

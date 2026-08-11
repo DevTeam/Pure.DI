@@ -8,7 +8,7 @@ class Env
     public string GetPath(PathType pathType) =>
         pathType switch
         {
-            PathType.SolutionDirectory => Path.GetDirectoryName(TryFindFile(Environment.CurrentDirectory, "Pure.DI.sln")) ?? Environment.CurrentDirectory,
+            PathType.SolutionDirectory => Path.GetDirectoryName(TryFindFile(Environment.CurrentDirectory, "Pure.DI.slnx")) ?? Environment.CurrentDirectory,
             PathType.TempDirectory => Path.Combine(Path.GetTempPath(), "Pure.DI", $"{Guid.NewGuid().ToString()[..4]}"),
             PathType.BenchmarksResultDirectory => Path.Combine(GetPath(PathType.SolutionDirectory), "benchmarks", "data"),
             PathType.SourceDirectory => Path.Combine(GetPath(PathType.SolutionDirectory), "src"),
