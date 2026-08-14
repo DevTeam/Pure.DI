@@ -2627,6 +2627,12 @@ alt="DotNext Pure.DI" width="640" border="10"/></a>
 
 </details>
 
+## Benchmarks
+
+- [Pure.DI in .NET Matrix](https://matrix.dev-team.org/?category=dependency-injection&library=Pure.DI)
+- [Dependency Injection in .NET Matrix](https://matrix.dev-team.org/?category=dependency-injection)
+- [.NET Matrix](https://github.com/DevTeam/dotnet-matrix) project.
+
 ## AI Context
 
 AI needs to understand the situation it’s in (context). This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:
@@ -2723,109 +2729,3 @@ If you are using the Rider IDE, it already has a set of configurations to run th
 | [![Tests](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType&guest=1) | [![Examples](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_TestExamples)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_TestExamples&guest=1) | [![Performance](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_PerformanceTests)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_PerformanceTests&guest=1) |
 
 Thanks!
-
-## Benchmarks
-
-BenchmarkDotNet v0.15.8, Windows 10 (10.0.19045.6456/22H2/2022Update)
-AMD Ryzen 9 5900X 4.20GHz, 1 CPU, 24 logical and 12 physical cores
-.NET SDK 10.0.102
-
-<details>
-<summary>Transient</summary>
-
-| Method |                                            Mean | Error | StdDev |  Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
-|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Hand Coded | 2.820 ns | 0.0419 ns | 0.0350 ns | 1.00 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI composition root | 3.088 ns | 0.0493 ns | 0.0461 ns | 1.10 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve<T>() | 3.099 ns | 0.0666 ns | 0.0556 ns | 1.10 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 6.624 ns | 0.3614 ns | 1.0656 ns | 2.35 | 0.38 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| LightInject | 6.817 ns | 0.0597 ns | 0.0558 ns | 2.42 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Microsoft DI | 8.662 ns | 0.0450 ns | 0.0420 ns | 3.07 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Simple Injector | 10.092 ns | 0.0394 ns | 0.0307 ns | 3.58 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| DryIoc | 10.987 ns | 0.0503 ns | 0.0471 ns | 3.90 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Unity | 3,393.989 ns | 45.3389 ns | 42.4101 ns | 1,203.77 | 20.37 | 0.3090 | 0.0000 | 5176 B | 215.67 |
-| Autofac | 13,207.209 ns | 85.5680 ns | 80.0403 ns | 4,684.30 | 61.85 | 1.8158 | 0.0916 | 30424 B | 1,267.67 |
-| Castle Windsor | 25,027.822 ns | 101.3300 ns | 94.7841 ns | 8,876.81 | 109.92 | 3.0518 | 0.0305 | 51520 B | 2,146.67 |
-| Ninject | 128,400.442 ns | 3,583.9720 ns | 10,225.2745 ns | 45,540.77 | 3,648.86 | 6.9580 | 1.3428 | 116912 B | 4,871.33 |
-
-[Transient details](readme/TransientDetails.md)
-
-</details>
-
-<details>
-<summary>Singleton</summary>
-
-| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
-|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Hand Coded | 2.745 ns | 0.0343 ns | 0.0321 ns | 1.00 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI composition root | 2.805 ns | 0.0680 ns | 0.0636 ns | 1.02 | 0.03 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve<T>() | 3.035 ns | 0.0303 ns | 0.0253 ns | 1.11 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 6.552 ns | 0.1817 ns | 0.2719 ns | 2.39 | 0.10 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Microsoft DI | 9.770 ns | 0.0539 ns | 0.0504 ns | 3.56 | 0.04 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| DryIoc | 10.695 ns | 0.0397 ns | 0.0372 ns | 3.90 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Simple Injector | 11.548 ns | 0.0561 ns | 0.0525 ns | 4.21 | 0.05 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| LightInject | 365.712 ns | 1.0748 ns | 0.8391 ns | 133.26 | 1.53 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Unity | 2,235.283 ns | 16.7074 ns | 14.8106 ns | 814.51 | 10.53 | 0.1869 | 0.0000 | 3184 B | 132.67 |
-| Autofac | 8,143.869 ns | 55.7270 ns | 49.4005 ns | 2,967.51 | 37.58 | 1.3123 | 0.0458 | 22048 B | 918.67 |
-| Castle Windsor | 12,680.576 ns | 50.3451 ns | 47.0928 ns | 4,620.62 | 54.47 | 1.3733 | 0.0000 | 23112 B | 963.00 |
-| Ninject | 65,921.823 ns | 856.5931 ns | 759.3474 ns | 24,020.97 | 379.71 | 3.9063 | 0.9766 | 67040 B | 2,793.33 |
-
-[Singleton details](readme/SingletonDetails.md)
-
-</details>
-
-<details>
-<summary>Func</summary>
-
-| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
-|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Pure.DI composition root | 2.774 ns | 0.0205 ns | 0.0192 ns | 0.90 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Hand Coded | 3.089 ns | 0.0514 ns | 0.0480 ns | 1.00 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve<T>() | 3.265 ns | 0.0588 ns | 0.0491 ns | 1.06 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 4.355 ns | 0.0301 ns | 0.0281 ns | 1.41 | 0.02 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| DryIoc | 21.244 ns | 0.1662 ns | 0.1473 ns | 6.88 | 0.11 | 0.0072 | 0.0000 | 120 B | 5.00 |
-| LightInject | 97.412 ns | 0.3602 ns | 0.3369 ns | 31.54 | 0.49 | 0.0148 | 0.0000 | 248 B | 10.33 |
-| Unity | 1,389.847 ns | 8.7991 ns | 7.8002 ns | 449.97 | 7.21 | 0.1507 | 0.0000 | 2552 B | 106.33 |
-| Autofac | 4,800.897 ns | 15.6675 ns | 13.8888 ns | 1,554.31 | 23.83 | 0.7782 | 0.0076 | 13128 B | 547.00 |
-
-[Func details](readme/FuncDetails.md)
-
-</details>
-
-<details>
-<summary>Enum</summary>
-
-| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
-|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Pure.DI composition root | 8.284 ns | 0.0358 ns | 0.0335 ns | 0.97 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Hand Coded | 8.531 ns | 0.0436 ns | 0.0364 ns | 1.00 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve<T>() | 8.599 ns | 0.1092 ns | 0.0912 ns | 1.01 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Pure.DI Resolve(Type) | 9.931 ns | 0.0740 ns | 0.0618 ns | 1.16 | 0.01 | 0.0014 | 0.0000 | 24 B | 1.00 |
-| Microsoft DI | 19.950 ns | 0.1708 ns | 0.2280 ns | 2.34 | 0.03 | 0.0072 | 0.0000 | 120 B | 5.00 |
-| LightInject | 54.081 ns | 0.4381 ns | 0.3658 ns | 6.34 | 0.05 | 0.0244 | 0.0000 | 408 B | 17.00 |
-| DryIoc | 57.213 ns | 0.5495 ns | 0.4290 ns | 6.71 | 0.06 | 0.0244 | 0.0000 | 408 B | 17.00 |
-| Unity | 1,516.437 ns | 8.2701 ns | 7.3313 ns | 177.76 | 1.11 | 0.1278 | 0.0000 | 2168 B | 90.33 |
-| Autofac | 12,752.668 ns | 47.7926 ns | 42.3669 ns | 1,494.91 | 7.83 | 1.5717 | 0.0610 | 26496 B | 1,104.00 |
-
-[Enum details](readme/EnumDetails.md)
-
-</details>
-
-<details>
-<summary>Array</summary>
-
-| Method |                                            Mean | Error | StdDev | Ratio | RatioSD | Gen0 | Gen1 | Allocated | Alloc Ratio |
-|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| Hand Coded | 49.80 ns | 0.313 ns | 0.293 ns | 1.00 | 0.01 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| Pure.DI Resolve(Type) | 51.19 ns | 0.426 ns | 0.398 ns | 1.03 | 0.01 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| Pure.DI composition root | 51.32 ns | 0.426 ns | 0.398 ns | 1.03 | 0.01 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| Pure.DI Resolve<T>() | 52.24 ns | 1.072 ns | 1.003 ns | 1.05 | 0.02 | 0.0244 | 0.0000 | 408 B | 1.00 |
-| LightInject | 58.74 ns | 1.209 ns | 1.734 ns | 1.18 | 0.03 | 0.0243 | 0.0000 | 408 B | 1.00 |
-| DryIoc | 59.59 ns | 1.230 ns | 2.121 ns | 1.20 | 0.04 | 0.0243 | 0.0000 | 408 B | 1.00 |
-| Unity | 3,257.81 ns | 64.417 ns | 138.665 ns | 65.42 | 2.79 | 0.8659 | 0.0076 | 14520 B | 35.59 |
-| Autofac | 13,300.06 ns | 219.742 ns | 194.795 ns | 267.08 | 4.07 | 1.5717 | 0.0610 | 26496 B | 64.94 |
-
-[Array details](readme/ArrayDetails.md)
-
-</details>
-
