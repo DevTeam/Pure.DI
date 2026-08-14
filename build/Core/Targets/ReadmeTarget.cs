@@ -5,8 +5,6 @@
 // ReSharper disable ArrangeRedundantParentheses
 namespace Build.Core.Targets;
 
-using Pure.DI.Benchmarks.Benchmarks;
-
 class ReadmeTarget(
     Commands commands,
     Env env,
@@ -14,7 +12,6 @@ class ReadmeTarget(
     RootCommand rootCommand,
     ReadmeTools readmeTools,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
-    [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget,
     [Tag(typeof(AIContextTarget))] ITarget<AIContext> aiContextTarget)
     : IInitializable, ITarget<int>
 {
@@ -27,14 +24,6 @@ class ReadmeTarget(
     private const string ReadmeFile = "README.md";
     private const string ContributingFile = "CONTRIBUTING.md";
     private static readonly string Salt = $"{DateTime.Now.DayOfYear}d";
-    private static readonly List<string> Reports =
-    [
-        "Transient", "Singleton", "Func", "Enum", "Array"
-    ];
-    private static readonly HashSet<string> Columns =
-    [
-        "Method", "Mean", "Error", "StdDev", "Ratio", "RatioSD", "Gen0", "Gen1", "Allocated", "Alloc Ratio"
-    ];
     private static readonly Dictionary<string, string> GroupDescriptions = new(StringComparer.Ordinal)
     {
         ["QuickStart"] = "A short path through the smallest examples that show how a composition is declared, generated, and used.",
@@ -60,9 +49,6 @@ class ReadmeTarget(
         var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
 
-        // Run benchmarks
-        await benchmarksTarget.RunAsync(cancellationToken);
-
         // Delete generated files
         var generatedFiles = Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator");
         if (Directory.Exists(generatedFiles))
@@ -87,8 +73,6 @@ class ReadmeTarget(
         await AddAIContextAsync(readmeWriter, cancellationToken);
 
         await AddContributingAsync(readmeWriter);
-
-        await AddBenchmarksAsync(logsDirectory, readmeWriter);
 
         await readmeWriter.FlushAsync(cancellationToken);
 
@@ -390,138 +374,6 @@ class ReadmeTarget(
             await writer.WriteLineAsync();
             await writer.WriteLineAsync("</details>");
         }
-    }
-
-    private static async Task AddBenchmarksAsync(string logsDirectory, TextWriter readmeWriter)
-    {
-        var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.csv").ToArray();
-        if (benchmarksReportFiles.Length != 0)
-        {
-            await readmeWriter.WriteLineAsync();
-            await readmeWriter.WriteLineAsync("## Benchmarks");
-            await readmeWriter.WriteLineAsync();
-            if (Directory.EnumerateFiles(logsDirectory, "*.html").FirstOrDefault() is {} htmlFile)
-            {
-                var lines = await File.ReadAllLinesAsync(htmlFile);
-                var env = lines.SkipWhile(i => i != "<pre><code>").Skip(1).Reverse().SkipWhile(i => i != "</code></pre>").Skip(1).Reverse().Take(3).ToList();
-                if (env.Count > 0)
-                {
-                    foreach (var line in env)
-                    {
-                        await readmeWriter.WriteLineAsync(line);
-                    }
-
-                    await readmeWriter.WriteLineAsync();
-                }
-            }
-
-            var reports = new Dictionary<string, string>();
-            foreach (var benchmarksReportFile in benchmarksReportFiles)
-            {
-                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(ch => ch != ' ').Skip(1).ToArray());
-                reports[reportName] = benchmarksReportFile;
-            }
-
-            foreach (var report in Reports)
-            {
-                if (reports.TryGetValue(report, out var benchmarksReportFile))
-                {
-                    await AddReport(readmeWriter, report, benchmarksReportFile);
-                }
-            }
-
-            foreach (var reportItem in reports.Where(reportItem => !Reports.Contains(reportItem.Key)))
-            {
-                await AddReport(readmeWriter, reportItem.Key, reportItem.Value);
-            }
-        }
-
-        var benchmarks = new (string name, string description, string? classDiagram)[]
-        {
-            (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()),
-            (nameof(Singleton), "Creating an object graph of 20 transition objects plus 1 singleton with an additional 6 transition objects .", new Singleton().ToString()),
-            (nameof(Func), "Creating an object graph of 7 transition objects plus 1 `Func<T>` with additional 1 transition object.", new Func().ToString()),
-            (nameof(Array), "Creating an object graph of 27 transient objects, including 4 transient array objects.", new Array().ToString()),
-            (nameof(Enum), "Creating an object graph of 12 transient objects, including 1 transient enumerable object.", new Enum().ToString())
-        };
-
-        foreach (var (name, description, classDiagram) in benchmarks)
-        {
-            await using var classDiagramWriter = File.CreateText(Path.Combine(ReadmeDir, $"{name}Details.md"));
-            await classDiagramWriter.WriteLineAsync($"## {name} details");
-            await classDiagramWriter.WriteLineAsync();
-            await classDiagramWriter.WriteLineAsync(description);
-            await classDiagramWriter.WriteLineAsync();
-            await classDiagramWriter.WriteLineAsync("### Class diagram");
-            await classDiagramWriter.WriteLineAsync("```mermaid");
-            await classDiagramWriter.WriteLineAsync(classDiagram);
-            await classDiagramWriter.WriteLineAsync("```");
-
-            await classDiagramWriter.WriteLineAsync();
-            await classDiagramWriter.WriteLineAsync("### Generated code");
-            await classDiagramWriter.WriteLineAsync();
-            await AddExample(logsDirectory, $"Pure.DI.Benchmarks.Benchmarks.{name}.g.cs", classDiagramWriter);
-        }
-    }
-
-    private static async Task AddReport(TextWriter readmeWriter, string reportName, string benchmarksReportFile)
-    {
-        Info($"Processing benchmarks \"{reportName}\"");
-        var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
-        var vals = lines.Select(line => line.Split(';')).Where(i => i.Length > Columns.Count).Where(i => i.All(j => j.Trim() != "NA")).ToList();
-        if (vals.Count == 0)
-        {
-            Warning($"Empty report \"{reportName}\"");
-            return;
-        }
-
-        await readmeWriter.WriteLineAsync("<details>");
-        await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
-        await readmeWriter.WriteLineAsync();
-
-        var columnsRow = vals.First();
-        var columnsIndices = new HashSet<int>();
-        await readmeWriter.WriteAsync("|");
-        for (var index = 0; index < columnsRow.Length; index++)
-        {
-            await readmeWriter.WriteAsync(" ");
-            var columnName = columnsRow[index].Trim();
-            if (!Columns.Contains(columnName))
-            {
-                continue;
-            }
-
-            columnsIndices.Add(index);
-            await readmeWriter.WriteAsync(columnName);
-            await readmeWriter.WriteAsync(" |");
-        }
-
-        await readmeWriter.WriteLineAsync();
-        await readmeWriter.WriteLineAsync($"|{string.Join("|", Enumerable.Range(0, columnsIndices.Count).Select(_ => "--:"))}|");
-        foreach (var row in vals.Skip(1))
-        {
-            await readmeWriter.WriteAsync("|");
-            for (var index = 0; index < row.Length; index++)
-            {
-                if (!columnsIndices.Contains(index))
-                {
-                    continue;
-                }
-
-                var val = row[index].Replace("'", "").Replace("\"", "").Trim();
-                await readmeWriter.WriteAsync(" ");
-                await readmeWriter.WriteAsync(val);
-                await readmeWriter.WriteAsync(" |");
-            }
-
-            await readmeWriter.WriteLineAsync();
-        }
-
-        await readmeWriter.WriteLineAsync();
-        await readmeWriter.WriteLineAsync($"[{reportName} details]({ReadmeDir}/{reportName}Details.md)");
-        await readmeWriter.WriteLineAsync();
-        await readmeWriter.WriteLineAsync("</details>");
-        await readmeWriter.WriteLineAsync();
     }
 
     private static string CreateExampleFileName(string text) =>

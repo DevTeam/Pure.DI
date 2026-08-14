@@ -2097,3 +2097,9 @@ DotNext video
 alt="DotNext Pure.DI" width="640" border="10"/></a>
 
 </details>
+
+## Benchmarks
+
+- [Pure.DI in .NET Matrix](https://matrix.dev-team.org/?category=dependency-injection&library=Pure.DI)
+- [Dependency Injection in .NET Matrix](https://matrix.dev-team.org/?category=dependency-injection)
+- [.NET Matrix](https://github.com/DevTeam/dotnet-matrix) project.
