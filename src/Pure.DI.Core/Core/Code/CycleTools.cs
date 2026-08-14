@@ -2,62 +2,36 @@
 
 class CycleTools : ICycleTools
 {
-    public DependencyNode? GetCyclicNode(
+    public bool IsCyclic(
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode node)
     {
-        var visited = new HashSet<DependencyNode>();
-        var recursionStack = new HashSet<DependencyNode>();
-        var stack = new Stack<(DependencyNode node, IEnumerator<Dependency>? enumerator)>();
-        stack.Push((node, null));
+        var visited = new HashSet<DependencyNode> { node };
+        var stack = new Stack<DependencyNode>();
+        stack.Push(node);
         while (stack.Count > 0)
         {
-            var (currentNode, enumerator) = stack.Peek();
-            if (enumerator == null)
+            var currentNode = stack.Pop();
+            if (!graph.TryGetInEdges(currentNode, out var dependencies))
             {
-                if (visited.Contains(currentNode) && !recursionStack.Contains(currentNode))
-                {
-                    stack.Pop();
-                    continue;
-                }
-                
-                visited.Add(currentNode);
-                recursionStack.Add(currentNode);
-                
-                if (!graph.TryGetInEdges(currentNode, out var dependencies))
-                {
-                    stack.Pop();
-                    recursionStack.Remove(currentNode);
-                    continue;
-                }
-                
-                stack.Pop();
-                // ReSharper disable once GenericEnumeratorNotDisposed
-                stack.Push((currentNode, dependencies.GetEnumerator()));
+                continue;
             }
-            else
+
+            foreach (var dependency in dependencies)
             {
-                if (!enumerator.MoveNext())
+                var source = dependency.Source;
+                if (source == node)
                 {
-                    enumerator.Dispose();
-                    stack.Pop();
-                    recursionStack.Remove(currentNode);
-                    continue;
+                    return true;
                 }
-                
-                var dependency = enumerator.Current;
-                if (!visited.Contains(dependency.Source))
+
+                if (visited.Add(source))
                 {
-                    stack.Push((dependency.Source, null));
-                }
-                else if (recursionStack.Contains(dependency.Source))
-                {
-                    enumerator.Dispose();
-                    return dependency.Source;
+                    stack.Push(source);
                 }
             }
         }
-        
-        return null;
+
+        return false;
     }
 }

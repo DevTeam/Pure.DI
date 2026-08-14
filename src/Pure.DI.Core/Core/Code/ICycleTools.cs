@@ -2,7 +2,7 @@
 
 interface ICycleTools
 {
-    DependencyNode? GetCyclicNode(
+    bool IsCyclic(
         IGraph<DependencyNode, Dependency> graph,
         DependencyNode node);
 }
