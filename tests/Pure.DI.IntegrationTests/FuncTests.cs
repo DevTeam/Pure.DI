@@ -3394,4 +3394,176 @@ public class FuncTests
         result.Success.ShouldBeFalse(result);
         result.Logs.Count(i => i.Id == LogId.ErrorCyclicDependency && i.Locations.FirstOrDefault().GetSource() == "var appMode").ShouldBe(1, result);
     }
+
+    [Fact]
+    public async Task ShouldSupportNestedFuncFactoryCycleWhenDefaultLifetimeIsSingleton()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface INotifyMessageService {}
+                               interface IDialogService {}
+
+                               sealed class DialogService : IDialogService {}
+
+                               sealed class NotifyMessageService : INotifyMessageService
+                               {
+                                   public NotifyMessageService(Lazy<IDialogService> dialogService) =>
+                                       DialogService = dialogService;
+
+                                   public Lazy<IDialogService> DialogService { get; }
+                               }
+
+                               sealed class Folder {};
+                               sealed class Token {};
+
+                               sealed class Helper
+                               {
+                                   public Helper(Func<Token, Helper> createHelper) => Factory = createHelper;
+
+                                   public Func<Token, Helper> Factory { get; }
+                               }
+
+                               sealed class FolderViewModel
+                               {
+                                   public FolderViewModel(
+                                       Helper helper,
+                                       INotifyMessageService notifyMessageService,
+                                       Folder folder,
+                                       Func<Folder, FolderViewModel> createFolderViewModel)
+                                   {
+                                       Helper = helper;
+                                       NotifyMessageService = notifyMessageService;
+                                       Folder = folder;
+                                       Factory = createFolderViewModel;
+                                   }
+
+                                   public Helper Helper { get; }
+                                   public INotifyMessageService NotifyMessageService { get; }
+                                   public Folder Folder { get; }
+                                   public Func<Folder, FolderViewModel> Factory { get; }
+                               }
+
+                               sealed class Root
+                               {
+                                   public Root(Func<Folder, FolderViewModel> createFolderViewModel) =>
+                                       Factory = createFolderViewModel;
+
+                                   public Func<Folder, FolderViewModel> Factory { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() => DI.Setup(nameof(Composition))
+                                       .Hint(Hint.ThreadSafe, "Off")
+                                       .DefaultLifetime(Lifetime.Singleton)
+                                       .Bind<IDialogService>().To<DialogService>()
+                                       .Bind<INotifyMessageService>().To<NotifyMessageService>()
+                                       .Bind<Root>().To<Root>().Root<Root>("Root");
+                               }
+
+                               static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var root = new Composition().Root;
+                                       var folderViewModel = root.Factory(new Folder());
+                                       Console.WriteLine(folderViewModel.Factory(new Folder()));
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.FolderViewModel"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncFactoryCycleWithMultipleReachableCycles()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               sealed class Input {};
+                               sealed class FirstKey {};
+                               sealed class SecondKey {};
+
+                               sealed class FirstCycle
+                               {
+                                   public FirstCycle(Func<FirstKey, FirstCycle> factory) => Factory = factory;
+
+                                   public Func<FirstKey, FirstCycle> Factory { get; }
+                               }
+
+                               sealed class SecondCycle
+                               {
+                                   public SecondCycle(Func<SecondKey, SecondCycle> factory) => Factory = factory;
+
+                                   public Func<SecondKey, SecondCycle> Factory { get; }
+                               }
+
+                               sealed class Item
+                               {
+                                   public Item(
+                                       FirstCycle firstCycle,
+                                       SecondCycle secondCycle,
+                                       Input input,
+                                       Func<Input, Item> factory)
+                                   {
+                                       FirstCycle = firstCycle;
+                                       SecondCycle = secondCycle;
+                                       Input = input;
+                                       Factory = factory;
+                                   }
+
+                                   public FirstCycle FirstCycle { get; }
+                                   public SecondCycle SecondCycle { get; }
+                                   public Input Input { get; }
+                                   public Func<Input, Item> Factory { get; }
+                               }
+
+                               sealed class Root
+                               {
+                                   public Root(Func<Input, Item> factory) => Factory = factory;
+
+                                   public Func<Input, Item> Factory { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() => DI.Setup(nameof(Composition))
+                                       .Root<Root>("Root");
+                               }
+
+                               static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var item = new Composition().Root.Factory(new Input());
+                                       var nextItem = item.Factory(new Input());
+                                       var first = nextItem.FirstCycle.Factory(new FirstKey());
+                                       var second = nextItem.SecondCycle.Factory(new SecondKey());
+                                       Console.WriteLine($"{first.GetType().Name} {second.GetType().Name}");
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["FirstCycle SecondCycle"], result);
+    }
 }

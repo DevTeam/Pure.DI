@@ -67,7 +67,7 @@ class VarsMap(
 
         IsThreadSafe |= IsThreadSafeNode(node);
 
-        varInjection.Var.HasCycle = cycleTools.GetCyclicNode(graph.Graph, node.Node) == node.Node;
+        varInjection.Var.HasCycle = cycleTools.IsCyclic(graph.Graph, node.Node);
         return varInjection;
     }
 
