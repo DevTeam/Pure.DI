@@ -10,6 +10,7 @@ DI.Setup(nameof(Composition))
     .PerResolve<RootCommand, Settings>()
     .Bind<ITeamCityArtifactsWriter>().To(_ => GetService<ITeamCityWriter>())
     .Transient(_ => GetService<INuGet>())
+    .Transient(_ => GetService<ICommandLineRunner>())
     .PerBlock<DotNetEnv>()
 
     // Targets
@@ -29,6 +30,7 @@ DI.Setup(nameof(Composition))
         UpdateTarget,
         PublishBlazorTarget,
         PerformanceTestsTarget,
+        CodeGenerationPerformanceTarget,
         AIContextTarget>(Tag.Type);
 
 return await new Composition().Root.RunAsync(CancellationToken.None);

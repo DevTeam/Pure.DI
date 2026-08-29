@@ -2,16 +2,25 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#
-    const int moduleCount = 12;
-    const int useCasesPerModule = 8;
-    const int repositoriesPerModule = 5;
-    const int validatorsPerUseCase = 3;
-    const int policiesPerModule = 4;
+    // This workload intentionally stays outside the main solution. These values
+    // create a large, connected graph suitable for generator profiling.
+    const int moduleCount = 20;
+    const int useCasesPerModule = 10;
+    const int repositoriesPerModule = 6;
+    const int validatorsPerUseCase = 4;
+    const int policiesPerModule = 5;
+    const int setupGroupCount = 4;
 
     var bindingCount = 0;
     var rootCount = 0;
     var declarationCount = 0;
     var bindings = new StringBuilder();
+    var setupBindings = new StringBuilder[setupGroupCount];
+    for (var setupGroup = 0; setupGroup < setupGroupCount; setupGroup++)
+    {
+        setupBindings[setupGroup] = new StringBuilder();
+    }
+    var currentSetupGroup = 0;
     var declarations = new StringBuilder();
 
     string LifetimeFor(int index)
@@ -29,7 +38,7 @@
     void AppendBinding(string contract, string implementation, string lifetime)
     {
         bindingCount++;
-        bindings.AppendLine($"        .Bind<{contract}>().As({lifetime}).To<{implementation}>()");
+        setupBindings[currentSetupGroup].AppendLine($"        .Bind<{contract}>().As({lifetime}).To<{implementation}>()");
     }
 
     void AppendRoot(string contract, string name)
@@ -87,6 +96,7 @@
 
     for (var module = 0; module < moduleCount; module++)
     {
+        currentSetupGroup = module % setupGroupCount;
         var moduleFacadeContract = $"IModule{module}Facade";
         AppendService(
             $"IModule{module}Audit",
@@ -187,6 +197,7 @@
     applicationParameters.Add("IClock clock");
     applicationParameters.Add("IRequestContext requestContext");
 
+    currentSetupGroup = 0;
     AppendService(
         "IApplication",
         "Application",
@@ -266,6 +277,9 @@ public partial class Composition
 {
     private void Setup() => DI.Setup()
         .DependsOn("HugeSharedFeatures")
+<# for (var setupGroup = 0; setupGroup < setupGroupCount; setupGroup++) { #>
+        .DependsOn("HugeBulkGroup<#= setupGroup #>")
+<# } #>
 <#= bindings.ToString().TrimEnd() #>;
 
     private partial IFeatureLeaf GetPrivateFeatureLeaf();
@@ -273,6 +287,15 @@ public partial class Composition
     public IFeatureLeaf WrappedFeatureLeaf => GetPrivateFeatureLeaf();
 }
 
+<# for (var setupGroup = 0; setupGroup < setupGroupCount; setupGroup++) { #>
+internal static class HugeBulkGroup<#= setupGroup #>Setup
+{
+    private static void Setup() =>
+        DI.Setup("HugeBulkGroup<#= setupGroup #>", CompositionKind.Internal)
+<#= setupBindings[setupGroup].ToString().TrimEnd() #>;
+}
+
+<# } #>
 <#= declarations.ToString() #>
 
 // Feature: dependent setup.

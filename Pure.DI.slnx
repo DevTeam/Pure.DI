@@ -49,7 +49,6 @@
     <Project Path="samples/EF/EF.csproj" />
     <Project Path="samples/GrpcClient/GrpcClient.csproj" />
     <Project Path="samples/GrpcService/GrpcService.csproj" />
-    <Project Path="samples/HugeComposition/HugeComposition.csproj" />
     <Project Path="samples/MinimalWebAPI/MinimalWebAPI.csproj" />
     <Project Path="samples/ShroedingersCat/ShroedingersCat.csproj" />
     <Project Path="samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.csproj" />

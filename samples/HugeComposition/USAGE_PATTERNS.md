@@ -6,10 +6,10 @@ This document defines the Pure.DI patterns that the `HugeComposition` sample sho
 
 The bulk part of the generator, before the additional feature islands, stresses a large constructor-injected graph:
 
-- 12 application modules;
-- 536 explicit bindings;
-- 13 named roots;
-- 1,072 service declarations;
+- 20 application modules;
+- 1,280 bulk bindings before feature islands, split into four internal setups;
+- 21 named bulk roots before feature islands;
+- 2,560 service declarations;
 - `Transient`, `PerBlock`, `PerResolve`, and `Singleton` lifetimes.
 
 Future versions should preserve this large connected graph while adding representative islands that exercise different Pure.DI features. Every generated island must be reachable from at least one root unless the island intentionally tests an anonymous root or diagnostic.
