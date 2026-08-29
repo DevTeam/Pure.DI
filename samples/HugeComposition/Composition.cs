@@ -1,4 +1,4 @@
-﻿// ReSharper disable InconsistentNaming
+// ReSharper disable InconsistentNaming
 // ReSharper disable EmptyConstructor
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
@@ -8,16 +8,21 @@
 namespace HugeComposition;
 
 using Pure.DI;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 // Modules: 12
-// Bindings: 536
-// Roots: 13
-// Service declarations: 1072
+// Main setup bindings: 567
+// Main setup roots: 20
+// Bulk service declarations: 1072
+// Additional feature compositions: 4
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
 public partial class Composition
 {
     private void Setup() => DI.Setup()
+        .DependsOn("HugeSharedFeatures")
         .Bind<IClock>().As(Lifetime.Singleton).To<SystemClock>()
         .Bind<IAppLogger>().As(Lifetime.Singleton).To<StructuredLogger>()
         .Bind<IMetrics>().As(Lifetime.Singleton).To<Metrics>()
@@ -566,7 +571,51 @@ public partial class Composition
         .Bind<IModule11Facade>().As(Lifetime.PerBlock).To<Module11Facade>()
         .Root<IModule11Facade>("Module11")
         .Bind<IApplication>().As(Lifetime.PerBlock).To<Application>()
+        .Bind<IFeaturePlugin>("primary", default).To<PrimaryFeaturePlugin>()
+        .Bind<IFeaturePlugin>("secondary").To<SecondaryFeaturePlugin>()
+        .Bind<IFeatureRepository<TT>>().As(Lifetime.PerBlock).To<FeatureRepository<TT>>()
+        .Bind<IFeatureReader, IFeatureWriter, FeatureStore>().As(Lifetime.PerBlock).To<FeatureStore>()
+        .Bind<string>("feature-format").To(() => "json")
+        .Bind<IFeatureFormatter>().To((FeatureFormatter formatter, [Tag("feature-format")] string format) => { formatter.Initialize(format); return formatter; })
+        .Bind<IFeatureConnection>().To<FeatureConnection>(ctx => { ctx.Inject(out FeatureConnection connection); connection.Open(); return connection; })
+        .Bind<IFeatureCommand>("core").To<CoreFeatureCommand>()
+        .Bind<IFeatureCommand>().To<LoggingFeatureCommand>()
+        .Bind().To<FeatureLeaf>()
+        .Bind<IFeatureLeaf>("wrapped").To<FeatureLeaf>()
+        .Bind<IFeatureParameterized>().To<FeatureParameterized>()
+        .Bind(Tag.Unique).To((EmailFeatureChannel channel) => new KeyValuePair<FeatureChannel, IFeatureChannel>(FeatureChannel.Email, channel))
+        .Bind(Tag.Unique).To((QueueFeatureChannel channel) => new KeyValuePair<FeatureChannel, IFeatureChannel>(FeatureChannel.Queue, channel))
+        .Bind().To(Guid.NewGuid)
+        .Bind().To<FeatureWeapon>()
+        .Bind().To(ctx => { var instance = new FeatureBuildUp(); ctx.BuildUp(instance); return instance; })
+        .Bind().To<FeatureEnvironment>()
+        .Bind().To<FeatureMemberInjected>()
+        .Bind().To<FeatureOptionalConsumer>()
+        .Bind().To<FeatureLifetimeProbe>()
+        .Bind().To<FeatureTransient>()
+        .Bind().As(Lifetime.PerBlock).To<FeaturePerBlock>()
+        .Bind().As(Lifetime.PerResolve).To<FeaturePerResolve>()
+        .Bind().As(Lifetime.Singleton).To<FeatureSingleton>()
+        .Bind().As(Lifetime.Singleton).To<FeatureDisposableSingleton>()
+        .Bind().To<FeatureDisposableOperation>()
+        .Bind().To<FeatureAsyncDisposableOperation>()
+        .Bind<IFeatureOwnedHandler>().To<FeatureOwnedHandler>()
+        .Bind().To<FeatureDashboard>()
+        .Bind().To<FeatureAnonymous>()
+        .Arg<string>("environmentName", "environment")
+        .Builder<FeatureBuildTarget>("BuildFeatureTarget")
+        .Root<FeatureDashboard>("Features")
+        .Root<IFeaturePlugin>("SecondaryPlugin", "secondary")
+        .Root<Owned<IFeatureOwnedHandler>>("OwnedHandler", kind: RootKinds.Internal)
+        .Root<FeatureStaticLeaf>("StaticLeaf", kind: RootKinds.Internal | RootKinds.Static)
+        .Root<IFeatureLeaf>("GetFeatureLeaf", kind: RootKinds.Public | RootKinds.Method)
+        .Root<IFeatureLeaf>("GetPrivateFeatureLeaf", "wrapped", RootKinds.Private | RootKinds.Partial | RootKinds.Method)
+        .Root<FeatureAnonymous>()
         .Root<IApplication>("Application");
+
+    private partial IFeatureLeaf GetPrivateFeatureLeaf();
+
+    public IFeatureLeaf WrappedFeatureLeaf => GetPrivateFeatureLeaf();
 }
 
 public interface IClock;
@@ -2178,3 +2227,303 @@ public interface IApplication;
 public class Application(IModule0Facade module0, IModule1Facade module1, IModule2Facade module2, IModule3Facade module3, IModule4Facade module4, IModule5Facade module5, IModule6Facade module6, IModule7Facade module7, IModule8Facade module8, IModule9Facade module9, IModule10Facade module10, IModule11Facade module11, IMessageBus messageBus, IEventPublisher events, IAuditTrail auditTrail, IAppLogger logger, IMetrics metrics, ITracer tracer, IClock clock, IRequestContext requestContext) : IApplication;
 
 
+
+// Feature: dependent setup.
+internal static class HugeSharedFeatureSetup
+{
+    private static void Setup() =>
+        DI.Setup("HugeSharedFeatures", CompositionKind.Internal)
+            .Bind<ISharedFeatureSeed>().As(Lifetime.Singleton).To<SharedFeatureSeed>();
+}
+
+public interface ISharedFeatureSeed;
+
+public sealed class SharedFeatureSeed : ISharedFeatureSeed;
+
+// Feature: tags, default selection, multi-bindings and collections.
+public interface IFeaturePlugin;
+
+public sealed class PrimaryFeaturePlugin : IFeaturePlugin;
+
+public sealed class SecondaryFeaturePlugin : IFeaturePlugin;
+
+// Feature: marker-based generic binding with several closed usages.
+public interface IFeatureRepository<T>;
+
+public sealed class FeatureRepository<T>(ISharedFeatureSeed seed) : IFeatureRepository<T>;
+
+public sealed record FeatureCustomer;
+
+public sealed record FeatureOrder;
+
+// Feature: one implementation explicitly satisfies several contracts.
+public interface IFeatureReader;
+
+public interface IFeatureWriter;
+
+public sealed class FeatureStore(ISharedFeatureSeed seed)
+    : IFeatureReader, IFeatureWriter;
+
+// Feature: context and simplified factories.
+public interface IFeatureFormatter
+{
+    string Format { get; }
+}
+
+public sealed class FeatureFormatter : IFeatureFormatter
+{
+    public string Format { get; private set; } = "";
+
+    public void Initialize(string format) => Format = format;
+}
+
+public interface IFeatureConnection
+{
+    bool IsOpen { get; }
+}
+
+public sealed class FeatureConnection(ISharedFeatureSeed seed) : IFeatureConnection
+{
+    public bool IsOpen { get; private set; }
+
+    public void Open() => IsOpen = true;
+}
+
+// Feature: a tagged decorator chain.
+public interface IFeatureCommand;
+
+public sealed class CoreFeatureCommand : IFeatureCommand;
+
+public sealed class LoggingFeatureCommand(
+    [Tag("core")] IFeatureCommand inner,
+    IFeatureFormatter formatter)
+    : IFeatureCommand;
+
+// Feature: deferred and BCL-provided dependency shapes.
+public interface IFeatureLeaf;
+
+public sealed class FeatureLeaf : IFeatureLeaf;
+
+public sealed class FeatureBclShapes(
+    Lazy<IFeatureLeaf> lazyLeaf,
+    Func<IFeatureLeaf> leafFactory,
+    Func<int, string, IFeatureParameterized> parameterizedFactory,
+    Task<IFeatureLeaf> leafTask,
+    ValueTask<IFeatureLeaf> leafValueTask,
+    (IFeatureLeaf Left, IFeatureLeaf Right) leaves,
+    IReadOnlyDictionary<FeatureChannel, IFeatureChannel> channels);
+
+public interface IFeatureParameterized;
+
+public sealed class FeatureParameterized(
+    int id,
+    string name,
+    ISharedFeatureSeed seed)
+    : IFeatureParameterized;
+
+public enum FeatureChannel
+{
+    Email,
+    Queue
+}
+
+public interface IFeatureChannel;
+
+public sealed class EmailFeatureChannel : IFeatureChannel;
+
+public sealed class QueueFeatureChannel : IFeatureChannel;
+
+// Feature: BuildUp and generated Builder entry points.
+public interface IFeatureWeapon;
+
+public sealed class FeatureWeapon : IFeatureWeapon;
+
+public sealed class FeatureBuildUp
+{
+    [Dependency]
+    public IFeatureWeapon Weapon { get; set; } = null!;
+
+    public Guid Id { get; private set; }
+
+    [Dependency(ordinal: 1)]
+    public void SetId(Guid id) => Id = id;
+}
+
+public sealed class FeatureBuildTarget
+{
+    [Dependency]
+    public IFeatureWeapon Weapon { get; set; } = null!;
+
+    public Guid Id { get; private set; }
+
+    [Dependency(ordinal: 1)]
+    public void SetId(Guid id) => Id = id;
+}
+
+// Feature: composition and root arguments.
+public sealed class FeatureEnvironment(
+    [Tag("environment")] string environmentName);
+
+public sealed class FeatureOperation(
+    [Tag("operation")] Guid operationId);
+
+// Feature: property, field and method injection.
+public sealed class FeatureMemberInjected
+{
+    [Dependency]
+    public IFeatureConnection Connection { get; set; } = null!;
+
+    [Dependency(ordinal: 1)]
+    public IFeatureFormatter Formatter = null!;
+
+    public ISharedFeatureSeed? Seed { get; private set; }
+
+    [Dependency(ordinal: 2)]
+    public void Initialize(ISharedFeatureSeed seed) => Seed = seed;
+}
+
+// Feature: a missing optional abstraction is supplied by the default value.
+public interface IFeatureOptional;
+
+public sealed class FeatureOptionalConsumer(IFeatureOptional? optional = null);
+
+// Feature: all principal non-scoped reuse boundaries in one observable graph.
+public sealed class FeatureTransient;
+
+public sealed class FeaturePerBlock;
+
+public sealed class FeaturePerResolve;
+
+public sealed class FeatureSingleton;
+
+public sealed class FeatureLifetimeProbe(
+    FeatureTransient transient1,
+    FeatureTransient transient2,
+    FeaturePerBlock perBlock1,
+    FeaturePerBlock perBlock2,
+    FeaturePerResolve perResolve1,
+    FeaturePerResolve perResolve2,
+    FeatureSingleton singleton1,
+    FeatureSingleton singleton2);
+
+// Feature: synchronous/asynchronous disposal and explicit root ownership.
+public sealed class FeatureDisposableSingleton : IDisposable
+{
+    public void Dispose() { }
+}
+
+public sealed class FeatureDisposableOperation : IDisposable
+{
+    public void Dispose() { }
+}
+
+public sealed class FeatureAsyncDisposableOperation : IAsyncDisposable
+{
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+}
+
+public interface IFeatureOwnedHandler;
+
+public sealed class FeatureOwnedHandler(
+    FeatureDisposableOperation disposable,
+    FeatureAsyncDisposableOperation asyncDisposable)
+    : IFeatureOwnedHandler;
+
+// Feature: attribute-declared tagged singleton binding.
+public interface IFeatureAttributed;
+
+[Bind(typeof(IFeatureAttributed), Lifetime.Singleton, "attribute")]
+public sealed class FeatureAttributed : IFeatureAttributed;
+
+// Feature: a high-connectivity facade makes every feature binding reachable.
+public sealed class FeatureDashboard(
+    ISharedFeatureSeed sharedSeed,
+    IEnumerable<IFeaturePlugin> plugins,
+    IFeaturePlugin[] pluginArray,
+    IFeatureRepository<FeatureCustomer> customers,
+    IFeatureRepository<FeatureOrder> orders,
+    IFeatureReader reader,
+    IFeatureWriter writer,
+    IFeatureFormatter formatter,
+    IFeatureConnection connection,
+    IFeatureCommand command,
+    FeatureBclShapes bclShapes,
+    FeatureEnvironment environment,
+    FeatureMemberInjected memberInjected,
+    FeatureBuildUp builtUp,
+    FeatureOptionalConsumer optionalConsumer,
+    FeatureLifetimeProbe lifetimes,
+    FeatureDisposableSingleton disposableSingleton,
+    [Tag("attribute")] IFeatureAttributed attributed);
+
+public sealed class FeatureAnonymous(FeatureDashboard dashboard);
+
+public sealed class FeatureStaticLeaf;
+
+// Feature: Scoped lifetime through a composition-derived request scope.
+public interface IFeatureScopedContext;
+
+public sealed class FeatureScopedContext : IFeatureScopedContext, IDisposable
+{
+    public void Dispose() { }
+}
+
+public sealed class FeatureScopedService(
+    IFeatureScopedContext context1,
+    IFeatureScopedContext context2);
+
+public sealed class FeatureRequestScope(FeatureScopedComposition parent)
+    : FeatureScopedComposition(parent);
+
+public sealed class FeatureScopeHost(Func<FeatureRequestScope> scopeFactory);
+
+public partial class FeatureScopedComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+            .Bind().As(Lifetime.Scoped).To<FeatureScopedContext>()
+            .Bind().To<FeatureScopedService>()
+            .Root<FeatureScopedService>("Request")
+            .Root<FeatureScopeHost>("ScopeHost");
+}
+
+// Feature: generation hints are isolated because they affect a whole composition.
+public partial class FeatureHintComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+            .Hint(Hint.Resolve, "Off")
+            .Hint(Hint.ThreadSafe, "Off")
+            .Bind().To<FeatureHintLeaf>()
+            .Root<FeatureHintLeaf>("Root");
+}
+
+public sealed class FeatureHintLeaf;
+
+// Feature: root arguments are isolated from Resolve because dynamic resolution
+// cannot provide per-call root arguments.
+public partial class FeatureArgumentComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+            .Hint(Hint.Resolve, "Off")
+            .RootArg<Guid>("operationId", "operation")
+            .Root<FeatureOperation>("CreateOperation");
+}
+
+// Feature: asynchronous Task and ValueTask roots, including cancellation flow.
+public interface IFeatureAsyncService;
+
+public sealed class FeatureAsyncService(IFeatureLeaf leaf) : IFeatureAsyncService;
+
+public partial class FeatureAsyncComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+            .Hint(Hint.Resolve, "Off")
+            .RootArg<System.Threading.CancellationToken>("cancellationToken")
+            .Bind().To<FeatureLeaf>()
+            .Bind<IFeatureAsyncService>().To<FeatureAsyncService>()
+            .Root<Task<IFeatureAsyncService>>("GetServiceAsync")
+            .Root<ValueTask<IFeatureAsyncService>>("GetServiceValueAsync");
+}
