@@ -145,12 +145,13 @@ namespace Pure.DI.MS
                 .Hint(global::Pure.DI.Hint.OnNewRoot, "On")
                 .Hint(global::Pure.DI.Hint.OnNewRootPartial, "Off")
                 // Specifies not to attempt to resolve types whose fully qualified name
-                // begins with Microsoft.Extensions, Microsoft.AspNetCore, Microsoft.Maui
+                // begins with Microsoft.Extensions, Microsoft.AspNetCore, ... etc.
                 // since ServiceProvider will be used to retrieve them.
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Extensions.*")
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.AspNetCore.*")
                 .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.Maui.*")
-                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.EntityFrameworkCore.*");
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.EntityFrameworkCore.*")
+                .Hint(global::Pure.DI.Hint.OnCannotResolveContractTypeNameWildcard, "Microsoft.JSInterop.*");
         }
 
         /// <summary>

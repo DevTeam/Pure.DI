@@ -1,9 +1,9 @@
 ﻿namespace Pure.DI.Core.Code;
 
 record Var(
-    DependencyGraph graph,
-    IConstructors constructors,
-    IVarStateTracker stateTracker,
+    DependencyGraph Graph,
+    IConstructors Constructors,
+    IVarStateTracker StateTracker,
     VarDeclaration Declaration,
     // ReSharper disable once NotAccessedPositionalProperty.Global
     ImmutableArray<string> Trace)
@@ -44,7 +44,7 @@ record Var(
             _baseName ??= Declaration.Name;
 
             // ReSharper disable once InvertIf
-            if (AbstractNode.ActualLifetime is Lifetime.Singleton && constructors.IsEnabled(graph))
+            if (AbstractNode.ActualLifetime is Lifetime.Singleton && Constructors.IsEnabled(Graph))
             {
                 _rootBaseName ??= Names.RootVarName + "." + _baseName;
                 return _rootBaseName;
@@ -67,7 +67,7 @@ record Var(
                 return;
             }
 
-            stateTracker.OnStateChanging(AbstractNode.BindingId);
+            StateTracker.OnStateChanging(AbstractNode.BindingId);
             RawCodeExpression = value;
         }
     }
@@ -103,7 +103,7 @@ record Var(
                 return;
             }
 
-            stateTracker.OnStateChanging(AbstractNode.BindingId);
+            StateTracker.OnStateChanging(AbstractNode.BindingId);
             _isCreated = value;
         }
     }
@@ -121,7 +121,7 @@ record Var(
                 return;
             }
 
-            stateTracker.OnStateChanging(AbstractNode.BindingId);
+            StateTracker.OnStateChanging(AbstractNode.BindingId);
             _isLocalFunctionCalled = value;
         }
     }

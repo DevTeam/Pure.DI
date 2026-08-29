@@ -8,7 +8,7 @@ sealed class RootUseSiteCounter : IRootUseSiteCounter
         // To walk from root downward through its dependencies we follow IN-edges.
         var counts = new Dictionary<int, int>();
         var factoryDownstream = new HashSet<int>();
-        var visited = new HashSet<DependencyNode> { root };
+        var visited = new HashSet<int> { root.BindingId };
         var stack = new Stack<(DependencyNode Node, bool UnderFactory)>();
         stack.Push((root, false));
 
@@ -36,7 +36,7 @@ sealed class RootUseSiteCounter : IRootUseSiteCounter
                     factoryDownstream.Add(dep.BindingId);
                 }
 
-                if (visited.Add(dep))
+                if (visited.Add(dep.BindingId))
                 {
                     stack.Push((dep, depUnderFactory));
                 }

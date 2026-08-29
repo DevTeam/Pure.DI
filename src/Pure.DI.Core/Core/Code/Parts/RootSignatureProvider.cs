@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Code.Parts;
+﻿// ReSharper disable UseCollectionExpression
+namespace Pure.DI.Core.Code.Parts;
 
 class RootSignatureProvider(
     IRootAccessModifierResolver rootAccessModifierResolver,

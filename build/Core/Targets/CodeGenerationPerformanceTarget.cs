@@ -15,6 +15,16 @@ class CodeGenerationPerformanceTarget(
     : IInitializable, ITarget<string>
 {
     private const string ToolsPathMetadataName = "DotTraceToolsPath";
+    private static readonly ProfileDefinition[] Profiles =
+    [
+        new("AllPatterns", 1311, 28, 2560),
+        new("Bindings", 2400, 38, 0),
+        new("Roots", 160, 512, 0),
+        new("Declarations", 0, 1, 1600),
+        new("FactoriesAndTags", 400, 1, 0),
+        new("ScopesAndAccumulators", 400, 1, 0),
+        new("GenericsAndVariants", 400, 1, 0)
+    ];
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
         this,
@@ -33,16 +43,20 @@ class CodeGenerationPerformanceTarget(
             "HugeComposition.csproj");
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         var reportsDirectory = Path.Combine(logsDirectory, "code-generation-performance");
-        var reportPath = Path.Combine(
+        var runReportsDirectory = Path.Combine(
             reportsDirectory,
-            $"{DateTime.UtcNow:yyyyMMdd-HHmmssfff}.xml");
+            $"{DateTime.UtcNow:yyyyMMdd-HHmmssfff}");
         var sessionDirectory = Path.Combine(
             logsDirectory,
             $"code-generation-performance-{Guid.NewGuid():N}");
-        var snapshotPath = Path.Combine(sessionDirectory, "code-generation.dtp");
         var patternPath = Path.Combine(sessionDirectory, "patterns.xml");
+        var templatePath = Path.Combine(
+            solutionDirectory,
+            "samples",
+            "HugeComposition",
+            "Composition.tt");
 
-        Directory.CreateDirectory(reportsDirectory);
+        Directory.CreateDirectory(runReportsDirectory);
         Directory.CreateDirectory(sessionDirectory);
         try
         {
@@ -51,79 +65,59 @@ class CodeGenerationPerformanceTarget(
             var reporterPath = Path.Combine(toolsPath, "Reporter.exe");
             EnsureFileExists(dotTracePath);
             EnsureFileExists(reporterPath);
+            EnsureFileExists(templatePath);
 
             await CreatePatternsAsync(patternPath, cancellationToken);
 
             await RunAsync(
+                new CommandLine("dotnet", ["tool", "restore"])
+                    .WithWorkingDirectory(solutionDirectory),
+                "Local tool restore",
+                cancellationToken);
+
+            await RunAsync(
                 new CommandLine(
-                    "dotnet",
-                    [
-                        "build",
-                        projectPath,
-                        "--configuration", settings.Configuration,
-                        "--no-restore",
-                        "--nologo",
-                        "--verbosity", "minimal"
-                    ])
+                    "dotnet", "build", projectPath, "--configuration", settings.Configuration, "--no-restore", "--nologo", "--verbosity", "minimal")
                     .WithWorkingDirectory(solutionDirectory),
                 "HugeComposition preparation",
                 cancellationToken);
 
-            Summary(
-                "Profiling code generation for ",
-                Path.GetRelativePath(solutionDirectory, projectPath).WithColor(Color.Details));
+            foreach (var profile in Profiles)
+            {
+                var profileSessionDirectory = Path.Combine(sessionDirectory, profile.Name);
+                var sourcePath = Path.Combine(profileSessionDirectory, "Composition.Profile.cs");
+                var snapshotPath = Path.Combine(profileSessionDirectory, "code-generation.dtp");
+                var reportPath = Path.Combine(runReportsDirectory, $"{profile.Name}.xml");
+                Directory.CreateDirectory(profileSessionDirectory);
 
-            await RunAsync(
-                new CommandLine(
-                    dotTracePath,
-                    [
-                        "start",
-                        "--profiling-type=Sampling",
-                        "--profile-child",
-                        "--propagate-exit-code",
-                        "--no-check-for-updates",
-                        "--overwrite",
-                        $"--save-to={snapshotPath}",
-                        $"--work-dir={solutionDirectory}",
-                        GetDotNetPath(),
-                        "--",
-                        "build",
-                        projectPath,
-                        "--configuration", settings.Configuration,
-                        "--no-restore",
-                        "--no-dependencies",
-                        "--no-incremental",
-                        "--nologo",
-                        "--verbosity", "minimal",
-                        "-m:1",
-                        "-nodeReuse:false",
-                        "-p:UseSharedCompilation=false"
-                    ])
-                    .WithWorkingDirectory(solutionDirectory),
-                "dotTrace profiling",
-                cancellationToken);
+                await GenerateProfileAsync(
+                    templatePath,
+                    sourcePath,
+                    profile,
+                    solutionDirectory,
+                    cancellationToken);
 
-            await RunAsync(
-                new CommandLine(
-                    reporterPath,
-                    [
-                        "--no-check-for-updates",
-                        "--add-process-info",
-                        "report",
-                        Path.Combine(sessionDirectory, "*.dtp"),
-                        $"--pattern={patternPath}",
-                        $"--save-to={reportPath}",
-                        "--overwrite",
-                        "--save-signature"
-                    ])
-                    .WithWorkingDirectory(solutionDirectory),
-                "dotTrace report generation",
-                cancellationToken,
-                () => IsValidReport(reportPath));
+                Summary("Profiling code generation profile ", profile.Name.WithColor(Color.Details));
+                await RunAsync(
+                    new CommandLine(
+                        dotTracePath, "start", "--profiling-type=Sampling", "--profile-child", "--propagate-exit-code", "--no-check-for-updates", "--overwrite", $"--save-to={snapshotPath}", $"--work-dir={solutionDirectory}", GetDotNetPath(), "--", "build", projectPath, "--configuration", settings.Configuration, "--no-restore", "--no-dependencies", "--no-incremental", "--nologo", "--verbosity", "minimal", "-m:1", "-nodeReuse:false", "-p:UseSharedCompilation=false", $"-p:HugeCompositionSource={sourcePath}")
+                        .WithWorkingDirectory(solutionDirectory),
+                    $"dotTrace profiling ({profile.Name})",
+                    cancellationToken);
 
-            EnsureValidReport(reportPath);
-            Summary("Report: ", reportPath.WithColor(Color.Details));
-            return reportPath;
+                await RunAsync(
+                    new CommandLine(
+                        reporterPath, "--no-check-for-updates", "--add-process-info", "report", Path.Combine(profileSessionDirectory, "*.dtp"), $"--pattern={patternPath}", $"--save-to={reportPath}", "--overwrite", "--save-signature")
+                        .WithWorkingDirectory(solutionDirectory),
+                    $"dotTrace report generation ({profile.Name})",
+                    cancellationToken,
+                    () => IsValidReport(reportPath));
+
+                EnsureValidReport(reportPath);
+                Summary("Report: ", reportPath.WithColor(Color.Details));
+            }
+
+            return runReportsDirectory;
         }
         finally
         {
@@ -133,6 +127,19 @@ class CodeGenerationPerformanceTarget(
             }
         }
     }
+
+    private async Task GenerateProfileAsync(
+        string templatePath,
+        string sourcePath,
+        ProfileDefinition profile,
+        string workingDirectory,
+        CancellationToken cancellationToken) =>
+        await RunAsync(
+            new CommandLine(
+                GetDotNetPath(), "tool", "run", "t4", "--", $"--out={sourcePath}", $"--parameter=Profile={profile.Name}", $"--parameter=BindingCount={profile.BindingCount}", $"--parameter=RootCount={profile.RootCount}", $"--parameter=DeclarationCount={profile.DeclarationCount}", templatePath)
+                .WithWorkingDirectory(workingDirectory),
+            $"HugeComposition profile generation ({profile.Name})",
+            cancellationToken);
 
     private async Task RunAsync(
         ICommandLine commandLine,
@@ -156,21 +163,29 @@ class CodeGenerationPerformanceTarget(
         }
     }
 
-    private static string GetDotTraceToolsPath()
+    private static string GetDotTraceToolsPath() => GetAssemblyMetadataPath(ToolsPathMetadataName);
+
+    private static string GetAssemblyMetadataPath(string metadataName)
     {
         var path = Assembly
             .GetExecutingAssembly()
             .GetCustomAttributes<AssemblyMetadataAttribute>()
-            .FirstOrDefault(attribute => attribute.Key == ToolsPathMetadataName)
+            .FirstOrDefault(attribute => attribute.Key == metadataName)
             ?.Value;
         if (string.IsNullOrWhiteSpace(path))
         {
             throw new InvalidOperationException(
-                "The JetBrains.dotTrace.CommandLineTools package path was not embedded into the build application.");
+                $"The package path '{metadataName}' was not embedded into the build application.");
         }
 
         return path;
     }
+
+    private sealed record ProfileDefinition(
+        string Name,
+        int BindingCount,
+        int RootCount,
+        int DeclarationCount);
 
     private static string GetDotNetPath()
     {

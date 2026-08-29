@@ -44,7 +44,9 @@ sealed class BuildTools(
 
     public Lines OnCreated(CodeContext ctx, VarInjection varInjection)
     {
-        if (varInjection.Var.AbstractNode.Arg is not null)
+        if (varInjection.Var.AbstractNode.Arg is not null
+            || ctx.Accumulators.IsDefaultOrEmpty
+            && !ctx.RootContext.Graph.Source.Hints.IsOnNewInstanceEnabled)
         {
             return new Lines();
         }
@@ -148,20 +150,6 @@ sealed class BuildTools(
     private string OnInjectedInternal(CodeContext ctx, VarInjection varInjection)
     {
         var variableCode = varInjection.Var.CodeExpression;
-        if (variableCode == varInjection.Var.Name)
-        {
-            var hasCycle = varInjection.Var.HasCycle ?? false;
-            var skipNotNullCheck =
-                varInjection.Var.InstanceType.IsReferenceType
-                && ctx.RootContext.Graph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable
-                && (hasCycle || varInjection.Var.AbstractNode.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
-
-            if (skipNotNullCheck && (hasCycle || varInjection.Var.AbstractNode.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve))
-            {
-                variableCode = $"{variableCode}";
-            }
-        }
-
         if (varInjection.Var.InstanceType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
             && varInjection.ContractType.NullableAnnotation != NullableAnnotation.Annotated)
         {

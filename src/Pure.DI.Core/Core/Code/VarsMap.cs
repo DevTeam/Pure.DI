@@ -1,4 +1,5 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 /// <summary>
@@ -8,7 +9,8 @@ class VarsMap(
     [Tag(Tag.VarNameIdGenerator)] IIdGenerator idGenerator,
     INameProvider nameProvider,
     ICycleTools cycleTools,
-    IConstructors constructors)
+    IConstructors constructors,
+    [Tag(Tag.Local)] ICache<DependencyNode, bool> hasCycleCache)
     : IVarsMap,
       IVarStateTracker
 {
@@ -67,7 +69,13 @@ class VarsMap(
 
         IsThreadSafe |= IsThreadSafeNode(node);
 
-        varInjection.Var.HasCycle = cycleTools.IsCyclic(graph.Graph, node.Node);
+        if (!hasCycleCache.TryGet(node.Node, out var hasCycle))
+        {
+            hasCycle = cycleTools.IsCyclic(graph.Graph, node.Node);
+            hasCycleCache.Set(node.Node, hasCycle);
+        }
+
+        varInjection.Var.HasCycle = hasCycle;
         return varInjection;
     }
 

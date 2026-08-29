@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 using static Lifetime;

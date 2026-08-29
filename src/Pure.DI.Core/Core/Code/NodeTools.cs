@@ -10,10 +10,19 @@ sealed class NodeTools(
     ICache<NodeTools.LazyKey, bool> isLazy,
     ITypeSymbolComparer typeSymbolComparer) : INodeTools
 {
-    public bool IsLazy(DependencyNode node, DependencyGraph graph) =>
-        isLazy.Get(new LazyKey(node, graph.Source.SemanticModel), key =>
-            (IsDelegate(key.Node) || IsEnumerable(key.Node) || IsAsyncEnumerable(key.Node))
-            && (key.Node.Factory is not {} factory || IsLazyFactory(factory, key.SemanticModel)));
+    public bool IsLazy(DependencyNode node, DependencyGraph graph)
+    {
+        var key = new LazyKey(node, graph.Source.SemanticModel);
+        if (isLazy.TryGet(key, out var result))
+        {
+            return result;
+        }
+
+        result = (IsDelegate(node) || IsEnumerable(node) || IsAsyncEnumerable(node))
+                 && (node.Factory is not {} factory || IsLazyFactory(factory, key.SemanticModel));
+        isLazy.Set(key, result);
+        return result;
+    }
 
     public bool IsBlock(IDependencyNode node) =>
         node.ActualLifetime is Singleton or Scoped or PerResolve;

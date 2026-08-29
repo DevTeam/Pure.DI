@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class RootsBuilder(
@@ -48,9 +49,13 @@ sealed class RootsBuilder(
             node = rootDependencies.Single().Source;
 
             // ReSharper disable once LoopCanBeConvertedToQuery
-            // ReSharper disable once UnusedVariable
-            foreach (var injection in contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag, root.Injection.Tag)).Where(i => IsRootContractMatch(i, root.Injection)).Take(1))
+            foreach (var injection in contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag, root.Injection.Tag)))
             {
+                if (!IsRootContractMatch(injection, root.Injection))
+                {
+                    continue;
+                }
+
                 var rootInjection = ReferenceEquals(root.Injection.Tag, MdTag.ContextTag) ? root.Injection with { Tag = null } : root.Injection;
                 rootsPairs.Add(new KeyValuePair<Injection, Root>(
                     rootInjection,
@@ -65,6 +70,7 @@ sealed class RootsBuilder(
                         root.Source.Kind,
                         default,
                         root.Source.IsBuilder)));
+                break;
             }
         }
 

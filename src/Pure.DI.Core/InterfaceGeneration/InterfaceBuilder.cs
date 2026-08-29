@@ -1,4 +1,5 @@
 // ReSharper disable LoopCanBeConvertedToQuery
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.InterfaceGeneration;
 
 using System;

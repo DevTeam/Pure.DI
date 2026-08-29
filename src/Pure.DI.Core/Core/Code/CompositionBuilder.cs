@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 class CompositionBuilder(
@@ -93,8 +94,14 @@ class CompositionBuilder(
                 {
                     lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
                 }
-                foreach (var localFunction in varsMap.Vars.Select(i => i.LocalFunction).Where(i => i.Count > 0))
+                foreach (var variable in varsMap.Vars)
                 {
+                    var localFunction = variable.LocalFunction;
+                    if (localFunction.Count == 0)
+                    {
+                        continue;
+                    }
+
                     lines.AppendLine();
                     lines.AppendLines(localFunction);
                 }
@@ -105,11 +112,17 @@ class CompositionBuilder(
 
             var currentArgs = varDeclarationTools.Sort(args).ToList();
 
-            var currentClassArgs = currentArgs.GetArgsOfKind(ArgKind.Composition)
-                .Where(arg => arg.Node.Arg is not { Source.IsSetupContext: true })
-                .Where(arg => bindingsRegistry.IsRegistered(graph.Source, arg.Node.BindingId));
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var currentClassArg in currentArgs.GetArgsOfKind(ArgKind.Composition))
+            {
+                if (currentClassArg.Node.Arg is { Source.IsSetupContext: true }
+                    || !bindingsRegistry.IsRegistered(graph.Source, currentClassArg.Node.BindingId))
+                {
+                    continue;
+                }
 
-            classArgs.AddRange(currentClassArgs);
+                classArgs.Add(currentClassArg);
+            }
 
             var currentRootArgs = currentArgs.GetArgsOfKind(ArgKind.Root).ToImmutableArray();
 
@@ -161,9 +174,16 @@ class CompositionBuilder(
         }
         var setupContextMembers = graph.Source.SetupContextMembers;
         var setupContextMembersToCopy = GetSetupContextMembersToCopy(setupContextMembers);
-        var setupContextArgsToCopy = setupContextArgs
-            .Where(arg => arg.Kind != SetupContextKind.RootArgument)
-            .ToImmutableArray();
+        var setupContextArgsToCopyBuilder = ImmutableArray.CreateBuilder<SetupContextArg>();
+        foreach (var setupContextArg in setupContextArgs)
+        {
+            if (setupContextArg.Kind != SetupContextKind.RootArgument)
+            {
+                setupContextArgsToCopyBuilder.Add(setupContextArg);
+            }
+        }
+
+        var setupContextArgsToCopy = setupContextArgsToCopyBuilder.ToImmutable();
 
         var totalDisposablesCount = 0;
         var disposablesCount = 0;

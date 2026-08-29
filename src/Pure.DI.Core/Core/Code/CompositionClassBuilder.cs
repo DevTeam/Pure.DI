@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 using Parts;

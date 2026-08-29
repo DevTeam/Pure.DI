@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable UseCollectionExpression
+namespace Pure.DI.Core;
 
 class BindingsFactory(
     Func<IFastBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,

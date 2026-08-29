@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable UseCollectionExpression
 #pragma warning disable RS1024 // Pure.DI intentionally uses ITypeSymbolComparer to control nullable-reference contract equality.
 
 namespace Pure.DI.Core.Code;

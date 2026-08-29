@@ -4,6 +4,7 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 using System.Collections;
@@ -42,15 +43,28 @@ class RootBuilder(
         ctx = ctx with { Lines = body };
         BuildCode(ctx);
         rootVarInjection.Var.CodeExpression = buildTools.OnInjected(ctx, rootVarInjection);
-        var rollbackAccumulators = rootAccumulators
-            .Where(i => !i.IsEmpty)
-            .Select(i => i.VarInjection.Var)
-            .Reverse()
-            .Concat(rootContext.ConstructionFailureAccumulators.AsEnumerable().Reverse())
-            .GroupBy(i => i.Name)
-            .Select(i => i.First())
-            .Where(CanRollback)
-            .ToImmutableArray();
+        var rollbackAccumulatorNames = new HashSet<string>();
+        var rollbackAccumulatorsBuilder = ImmutableArray.CreateBuilder<Var>();
+        for (var index = rootAccumulators.Length - 1; index >= 0; index--)
+        {
+            var accumulator = rootAccumulators[index];
+            var accumulatorVar = accumulator.VarInjection.Var;
+            if (!accumulator.IsEmpty && rollbackAccumulatorNames.Add(accumulatorVar.Name) && CanRollback(accumulatorVar))
+            {
+                rollbackAccumulatorsBuilder.Add(accumulatorVar);
+            }
+        }
+
+        for (var index = rootContext.ConstructionFailureAccumulators.Count - 1; index >= 0; index--)
+        {
+            var accumulator = rootContext.ConstructionFailureAccumulators[index];
+            if (rollbackAccumulatorNames.Add(accumulator.Name) && CanRollback(accumulator))
+            {
+                rollbackAccumulatorsBuilder.Add(accumulator);
+            }
+        }
+
+        var rollbackAccumulators = rollbackAccumulatorsBuilder.ToImmutable();
         if (rollbackAccumulators.IsEmpty)
         {
             lines.AppendLines(body);

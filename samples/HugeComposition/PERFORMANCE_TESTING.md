@@ -2,22 +2,15 @@
 
 ## Purpose
 
-`HugeComposition` is the workload for finding and verifying performance bottlenecks in the Pure.DI source generator. Its supported dependency-injection patterns are documented in [USAGE_PATTERNS.md](USAGE_PATTERNS.md).
+`HugeComposition` is an isolated, scalable workload for locating performance bottlenecks in the Pure.DI source generator. Supported dependency-injection patterns are listed in [USAGE_PATTERNS.md](USAGE_PATTERNS.md).
 
-The current workload contains 1,311 bindings, 28 roots, and 2,560 generated service declarations. Its bulk bindings are distributed across four internal setups and merged into one public composition through `DependsOn`.
-
-The performance target profiles compilation of:
-
-```text
-samples/HugeComposition/HugeComposition.csproj
-```
-
-This is a code-generation profiling process. It is separate from the runtime benchmarks executed by the `performance` target.
-`HugeComposition` is intentionally excluded from `Pure.DI.slnx`; build the standalone solution when working with this workload:
+The workload is intentionally excluded from `Pure.DI.slnx`. Its standalone solution can be built with:
 
 ```powershell
 dotnet build .\samples\HugeComposition\HugeComposition.slnx
 ```
+
+This process measures source generation during compilation. It is separate from the runtime benchmarks executed by the `performance` target.
 
 ## Run
 
@@ -27,102 +20,81 @@ From the repository root:
 dotnet run --project .\build -- codegen-performance
 ```
 
-Short aliases are also available:
+The aliases `codegen-perf` and `cgp` are also available. The target restores the repository-local `dotnet-t4` tool and uses `JetBrains.dotTrace.CommandLineTools.windows-x64` from the build project. Global installations are not required.
 
-```powershell
-dotnet run --project .\build -- codegen-perf
-dotnet run --project .\build -- cgp
-```
+## Profiles
 
-The target uses the `JetBrains.dotTrace.CommandLineTools.windows-x64` package restored for the build project. A global dotTrace installation is not required.
+One invocation generates and profiles seven compositions from [Composition.tt](Composition.tt). Each profile isolates a different scaling dimension or generator subsystem.
+
+| Profile | Generated scale | Purpose |
+|---|---:|---|
+| `AllPatterns` | 1,311 bindings; 28 roots; 2,560 declarations | Representative connected composition covering the broad Pure.DI feature set. |
+| `Bindings` | 2,413 bindings; 38 roots; 4,826 declarations | Binding parsing and graph growth with bounded module roots. |
+| `Roots` | 146 bindings; 512 roots; 292 declarations | Root validation and code emission over a moderately sized graph. |
+| `Declarations` | 0 bindings; 1 root; 1,600 declarations | Auto-binding discovery and emission over a balanced eight-way graph. |
+| `FactoriesAndTags` | 399 bindings; 1 root; 401 declarations | Simplified factories, unique collection bindings, and tagged injection. |
+| `ScopesAndAccumulators` | 401 bindings; 1 root; 403 declarations | Scoped lifetimes, collections, and accumulator generation. |
+| `GenericsAndVariants` | 400 bindings; 1 root; 801 declarations | Marker-based open generics expanded into many closed graphs. |
+
+These sizes are workload definitions, not a machine-specific baseline. They are derived from the profile parameters in the build target. Change them only as an intentional workload revision. Reports from different profile definitions are not directly comparable.
+
+The normal checked-in `Composition.cs` remains the `AllPatterns` development workload. During profiling, the target generates a temporary source file for each profile and passes it to the exact project through `HugeCompositionSource`.
 
 ## What the target does
 
-1. Builds `HugeComposition` once to prepare its project dependencies.
-2. Runs a non-incremental Release compilation under dotTrace in `Sampling` mode.
-3. Disables compiler-server and MSBuild-node reuse and uses one MSBuild worker.
-4. Profiles child processes so the compiler process executing the source generator is included.
-5. Uses dotTrace Reporter patterns for `Pure.DI.SourceGenerator.*` and `Pure.DI.Core.*`.
-6. Generates an XML report with full signatures and call stacks.
-7. Deletes the temporary snapshot and pattern file.
+1. Restores the local T4 tool and prepares `HugeComposition` dependencies.
+2. Generates a temporary composition source for each profile.
+3. Runs a clean, single-worker compilation of `HugeComposition.csproj` under dotTrace sampling.
+4. Disables compiler-server and MSBuild-node reuse and profiles compiler child processes.
+5. Limits Reporter output to `Pure.DI.SourceGenerator.*` and `Pure.DI.Core.*` call stacks.
+6. Writes and validates one XML report per profile.
+7. Deletes temporary generated sources, snapshots, and pattern files.
 
-All external processes are launched through the build application's `ICommandLineRunner`.
+All external processes are launched through the build application's `ICommandLineRunner`. No profiling instrumentation is added to the generator.
 
 ## Output
 
-Every invocation creates exactly one persistent artifact:
+Every invocation creates one timestamped report set:
 
 ```text
-.logs/code-generation-performance/yyyyMMdd-HHmmssfff.xml
+.logs/code-generation-performance/yyyyMMdd-HHmmssfff/
+  AllPatterns.xml
+  Bindings.xml
+  Roots.xml
+  Declarations.xml
+  FactoriesAndTags.xml
+  ScopesAndAccumulators.xml
+  GenericsAndVariants.xml
 ```
 
-The report path is printed after a successful run. Timestamped names preserve the baseline and candidate reports from successive optimization iterations.
-
-The XML is produced directly by JetBrains `Reporter.exe`. Its `Function` elements contain:
+The directory path is printed after a successful run. Each file is produced by JetBrains `Reporter.exe` and contains only the selected Pure.DI functions. Important XML attributes are:
 
 - `FQN`: fully qualified method name and signature;
 - `TotalTime`: time in the method and its callees;
 - `OwnTime`: time spent directly in the method;
-- `Calls`: invocation count when it is available for the selected profiling mode;
+- `Calls`: invocation count when available in sampling mode;
 - `Instance`: call-stack-specific measurements when available.
-
-The report also contains process information, which helps distinguish compiler child processes from the outer build process.
 
 ## Optimization iteration
 
-Use the following process for each performance change.
+Do not store a universal baseline: profiler values depend on hardware and machine state. Create a fresh local series for the current revision.
 
-### 1. Create a baseline
+1. Run the target two or three times before changing the generator.
+2. Compare the same named profile across runs and determine normal variation.
+3. Use `OwnTime`, `TotalTime`, and call stacks to select a bottleneck. Use the focused profile to form the hypothesis and `AllPatterns` to detect end-to-end regressions.
+4. Make one small generator change without reducing workload coverage or scale.
+5. Run the standalone build and relevant tests.
+6. Generate the same number of candidate report sets.
+7. Keep the change only when the improvement repeats beyond normal variation and the cost is not merely moved elsewhere.
 
-Run the target without changing the generator and keep the resulting XML path. Prefer two or three runs to learn the normal variation on the current machine.
-
-### 2. Select a bottleneck
-
-Inspect functions under `Pure.DI.Core`:
-
-- sort primarily by `OwnTime` to find expensive implementation code;
-- use `TotalTime` to find expensive subtrees;
-- use `Calls`, when available, to distinguish a slow operation from a cheap operation repeated too often;
-- inspect `Instance` call stacks to verify that the cost belongs to the Pure.DI generation path.
-
-Do not optimize a method solely because it has high inclusive time. First identify which child method or repeated operation accounts for that time.
-
-### 3. Make one focused change
-
-Change the smallest relevant generator path. Do not reduce `HugeComposition` coverage, binding count, root count, declaration count, or generated-code correctness to improve the result.
-
-Keep unrelated refactoring out of the same iteration so the report remains attributable to one change.
-
-### 4. Generate the candidate report
-
-Run the same target again. Compare the new XML with the baseline by matching `Function/@FQN` and reviewing changes in `OwnTime`, `TotalTime`, and `Calls`.
-
-An improvement is credible when:
-
-- the targeted method or subtree becomes faster;
-- the cost is not merely moved to another Pure.DI method;
-- the result repeats in another candidate run;
-- the change is larger than the baseline run-to-run variation.
-
-### 5. Continue or revert
-
-If the result is repeatable, keep the change and use the candidate report as the next baseline. Otherwise revert only that optimization attempt and choose another hotspot.
-
-## Comparison rules
-
-- Compare reports created on the same machine, power mode, .NET SDK, configuration, and workload revision.
-- Close unrelated CPU-intensive applications before profiling.
-- dotTrace sampling adds overhead. Treat the values as comparative profiling data, not as normal build duration.
-- Prefer changes visible in several runs; small differences are usually noise.
-- When call counts are present, they should normally remain stable for an unchanged workload. Unexpected changes require investigation.
-- Generated-code size and behavior must remain valid even when a change improves profiler results.
+Never compare `Bindings.xml` with `Roots.xml`, or reports created from different profile definitions. Compare report sets only on the same machine, SDK, configuration, power mode, and workload revision.
 
 ## Verification policy
 
-While the profiling process itself is being developed, it is sufficient to verify that:
+For changes to this profiling infrastructure, verify that:
 
 - the build target compiles;
-- `HugeComposition` compiles under dotTrace;
-- Reporter creates a valid, non-empty XML report containing Pure.DI functions.
+- every generated profile compiles;
+- the target produces all seven non-empty XML reports containing Pure.DI functions.
 
-After an actual generator optimization, run the relevant functional tests before accepting the change. The exact test scope depends on the modified generator component; performance improvement alone is not sufficient evidence of correctness.
+For generator optimizations, run the relevant functional tests for every accepted change. Run the full integration suite periodically and whenever a change affects a broadly shared or integration-sensitive path. Performance evidence never replaces correctness tests.

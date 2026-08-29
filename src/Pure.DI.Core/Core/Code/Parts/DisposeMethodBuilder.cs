@@ -136,14 +136,7 @@ sealed class DisposeMethodBuilder(
             code.AppendLine("try");
             using (code.CreateBlock())
             {
-                if (makeAsyncCall)
-                {
-                    code.AppendLine("await asyncDisposableInstance.DisposeAsync();");
-                }
-                else
-                {
-                    code.AppendLine("asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();");
-                }
+                code.AppendLine(makeAsyncCall ? "await asyncDisposableInstance.DisposeAsync();" : "asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();");
             }
 
             code.AppendLine($"catch ({Names.ExceptionTypeName} exception)");

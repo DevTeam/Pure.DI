@@ -12,7 +12,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
         CancellationToken cancellationToken)
     {
         HashSet<ProcessedKey> processed = [];
-        var nodeInfos = new Stack<NodeInfo>();
+        var nodeInfos = new Stack<NodeInfo>(16);
         var graph = dependencyGraph.Graph;
         var visitingInfo = visitor.Create(ctx, dependencyGraph, root);
         if (!visitor.Visit(ctx, dependencyGraph, visitingInfo))
@@ -44,7 +44,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
 
                 var isLazy = nodeTools.IsLazy(dependency.Source, dependencyGraph);
                 var depIndices = isLazy ? nodeInfo.DepIndices.Add(depIndex++) : ImmutableArray.Create(depIndex++);
-                var processedKey = new ProcessedKey(dependency.Target, dependency.Source, depIndices);
+                var processedKey = new ProcessedKey(dependency.Target.BindingId, dependency.Source.BindingId, depIndices);
                 if (processed.Add(processedKey))
                 {
                      nodeInfos.Push(new NodeInfo(dependency.Source, visitingInfo, depIndices));
@@ -57,18 +57,18 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
 
     private readonly record struct NodeInfo(DependencyNode Node, T Info, in ImmutableArray<int> DepIndices);
 
-    private readonly record struct ProcessedKey(DependencyNode Target, DependencyNode Source, in ImmutableArray<int> DepIndices)
+    private readonly record struct ProcessedKey(int TargetBindingId, int SourceBindingId, in ImmutableArray<int> DepIndices)
     {
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = Target.GetHashCode();
-                hashCode = hashCode * 397 ^ Source.GetHashCode();
-                // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-                foreach (var depIndex in DepIndices)
+                var hashCode = TargetBindingId;
+                hashCode = hashCode * 397 ^ SourceBindingId;
+                // ReSharper disable once ForCanBeConvertedToForeach
+                for (var index = 0; index < DepIndices.Length; index++)
                 {
-                    hashCode = hashCode * 397 ^ depIndex;
+                    hashCode = hashCode * 397 ^ DepIndices[index];
                 }
 
                 return hashCode;
@@ -76,8 +76,9 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
         }
 
         public bool Equals(ProcessedKey other) =>
-            Target.Equals(other.Target) &&
-            Source.Equals(other.Source) &&
-            DepIndices.SequenceEqual(other.DepIndices);
+            TargetBindingId == other.TargetBindingId &&
+            SourceBindingId == other.SourceBindingId &&
+            DepIndices.Length == other.DepIndices.Length &&
+            DepIndices.AsSpan().SequenceEqual(other.DepIndices.AsSpan());
     }
 }

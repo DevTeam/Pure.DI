@@ -6,6 +6,7 @@
 
 // ReSharper disable HeapView.ObjectAllocation.Evident
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;

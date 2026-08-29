@@ -1,4 +1,5 @@
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class InstanceDpProvider(
@@ -117,9 +118,26 @@ sealed class InstanceDpProvider(
             properties.ToImmutableArray());
     }
 
-    private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member, IMethodSymbol method) =>
-        GetOrdinal(setup, setupAttributes, member) ??
-        (method.Parameters.Length > 0 ? method.Parameters.Select(i => GetOrdinal(setup, setupAttributes, i)).Min() : null);
+    private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member, IMethodSymbol method)
+    {
+        if (GetOrdinal(setup, setupAttributes, member) is {} ordinal)
+        {
+            return ordinal;
+        }
+
+        int? minOrdinal = null;
+        foreach (var parameter in method.Parameters)
+        {
+            if (GetOrdinal(setup, setupAttributes, parameter) is not {} parameterOrdinal)
+            {
+                continue;
+            }
+
+            minOrdinal = minOrdinal is null || parameterOrdinal < minOrdinal ? parameterOrdinal : minOrdinal;
+        }
+
+        return minOrdinal;
+    }
 
     private int? GetOrdinal(MdSetup setup, ImmutableArray<IMdAttribute> setupAttributes, ISymbol member) =>
         attributes.GetAttribute(setup.SemanticModel, setupAttributes, member, AttributeKind.Ordinal, default(int?))

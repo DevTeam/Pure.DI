@@ -24,6 +24,8 @@
         <DesignTime>True</DesignTime>
         <DependentUpon>Composition.tt</DependentUpon>
       </Compile>
+      <Compile Remove="Composition.cs" Condition="'$(HugeCompositionSource)' != ''" />
+      <Compile Include="$(HugeCompositionSource)" Link="Composition.Profile.cs" Condition="'$(HugeCompositionSource)' != ''" />
     </ItemGroup>
 
 </Project>

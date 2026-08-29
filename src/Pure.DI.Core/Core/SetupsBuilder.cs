@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable UseCollectionExpression
 #pragma warning disable RS1024 // Pure.DI intentionally uses ITypeSymbolComparer to control nullable-reference contract equality.
 
 namespace Pure.DI.Core;
@@ -247,13 +248,24 @@ sealed class SetupsBuilder(
             return;
         }
 
-        var contacts = binding.Contracts.Where(i => i.ContractType is not null).ToList();
-        if (contacts.Count == 0)
+        MdContract? contract = null;
+        foreach (var bindingContract in binding.Contracts)
+        {
+            if (bindingContract.ContractType is null)
+            {
+                continue;
+            }
+
+            contract = bindingContract;
+            break;
+        }
+
+        if (contract is null)
         {
             return;
         }
 
-        var contract = contacts.First();
+        var firstContract = contract.Value;
 
         var membersToBind = (
             from member in type.GetMembers()
@@ -391,14 +403,14 @@ sealed class SetupsBuilder(
             TrackMemberBindings(contractType, tags);
 
             object? valueTag = null;
-            if (!contract.Tags.IsDefaultOrEmpty)
+            if (!firstContract.Tags.IsDefaultOrEmpty)
             {
-                valueTag = contract.Tags.First().Value;
+                valueTag = firstContract.Tags.First().Value;
             }
 
             if (!member.IsStatic)
             {
-                resolvers.Add(CreateResolver(typeConstructor, Names.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position));
+                resolvers.Add(CreateResolver(typeConstructor, Names.DefaultInstanceValueName, firstContract.ContractType!, valueTag, ref position));
             }
 
             VisitContract(
@@ -425,7 +437,7 @@ sealed class SetupsBuilder(
                 VisitTag(new MdTag(tagPosition, null));
             }
 
-            var memberResolver = CreateResolver(typeConstructor, Names.DefaultInstanceValueName, contract.ContractType!, valueTag, ref position);
+            var memberResolver = CreateResolver(typeConstructor, Names.DefaultInstanceValueName, firstContract.ContractType!, valueTag, ref position);
             memberResolver = memberResolver with { Member = member };
 
             LambdaExpressionSyntax factoryExpression;
@@ -516,12 +528,12 @@ sealed class SetupsBuilder(
             }
 
             object? valueTag = null;
-            if (!contract.Tags.IsDefaultOrEmpty)
+            if (!firstContract.Tags.IsDefaultOrEmpty)
             {
-                valueTag = contract.Tags.First().Value;
+                valueTag = firstContract.Tags.First().Value;
             }
 
-            var compositionContractType = contract.ContractType;
+            var compositionContractType = firstContract.ContractType;
             if (compositionContractType is null)
             {
                 continue;

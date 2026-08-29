@@ -2,6 +2,7 @@
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable HeapView.PossibleBoxingAllocation
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Tests;
 
 using System.Runtime.CompilerServices;

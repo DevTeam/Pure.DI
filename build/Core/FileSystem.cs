@@ -1,6 +1,7 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBeMadeStatic.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Build.Core;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]

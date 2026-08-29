@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable InvertIf
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 sealed class FactoryRewriter(

@@ -163,17 +163,41 @@ sealed class ImplementationCodeBuilder(
     {
         var var = ctx.VarInjection.Var;
         var code = new StringBuilder();
-        var required = requiredFields
-            .OrderBy(i => i.RequiredField.Ordinal ?? int.MaxValue)
-            .Select(i => (Variable: i.RequiredVariable, i.RequiredField.Field.Name))
-            .Concat(requiredProperties
-                .OrderBy(i => i.RequiredProperty.Ordinal ?? int.MaxValue)
-                .Select(i => (Variable: i.RequiredVariable, i.RequiredProperty.Property.Name)))
-            .ToList();
+        var required = new List<(VarInjection Variable, string Name)>(requiredFields.Count + requiredProperties.Count);
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var requiredField in requiredFields.OrderBy(i => i.RequiredField.Ordinal ?? int.MaxValue))
+        {
+            required.Add((requiredField.RequiredVariable, requiredField.RequiredField.Field.Name));
+        }
 
-        var args = string.Join(", ", ctorArgs.Select(i => buildTools.OnInjected(ctx, i)));
+        // ReSharper disable once LoopCanBeConvertedToQuery
+        foreach (var requiredProperty in requiredProperties.OrderBy(i => i.RequiredProperty.Ordinal ?? int.MaxValue))
+        {
+            required.Add((requiredProperty.RequiredVariable, requiredProperty.RequiredProperty.Property.Name));
+        }
+
         var instanceType = RemoveNullableAnnotation(var.InstanceType);
-        code.Append(var.InstanceType.IsTupleType ? $"({args})" : $"new {typeResolver.Resolve(ctx.RootContext.Graph.Source, instanceType)}({args})");
+        if (var.InstanceType.IsTupleType)
+        {
+            code.Append('(');
+        }
+        else
+        {
+            code.Append($"new {typeResolver.Resolve(ctx.RootContext.Graph.Source, instanceType)}(");
+        }
+
+        var argumentIndex = 0;
+        foreach (var ctorArg in ctorArgs)
+        {
+            if (argumentIndex++ > 0)
+            {
+                code.Append(", ");
+            }
+
+            code.Append(buildTools.OnInjected(ctx, ctorArg));
+        }
+
+        code.Append(')');
         if (required.Count > 0)
         {
             code.Append($" {LinesExtensions.BlockStart} ");

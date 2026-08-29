@@ -29,6 +29,8 @@ sealed class TypeSymbolComparer : ITypeSymbolComparer
 
     private sealed class DependencyTypeComparer : IEqualityComparer<ITypeSymbol>
     {
+        private readonly Dictionary<ITypeSymbol, string> _keys = new(SymbolEqualityComparer.IncludeNullability);
+
         public bool Equals(ITypeSymbol? x, ITypeSymbol? y)
         {
             if (ReferenceEquals(x, y))
@@ -46,6 +48,18 @@ sealed class TypeSymbolComparer : ITypeSymbolComparer
 
         public int GetHashCode(ITypeSymbol obj) =>
             GetDependencyKey(obj).GetHashCode();
+
+        private string GetDependencyKey(ITypeSymbol type)
+        {
+            if (_keys.TryGetValue(type, out var key))
+            {
+                return key;
+            }
+
+            key = CreateDependencyKey(type);
+            _keys.Add(type, key);
+            return key;
+        }
     }
 
     private sealed class RuntimeTypeComparer : IEqualityComparer<ITypeSymbol>
@@ -62,7 +76,7 @@ sealed class TypeSymbolComparer : ITypeSymbolComparer
                 : type;
     }
 
-    private static string GetDependencyKey(ITypeSymbol type) =>
+    private static string CreateDependencyKey(ITypeSymbol type) =>
         $"{type.ToDisplayString(NullableFlowState.None, DependencyFormat)}{GetTopLevelNullableMarker(type)}";
 
     private static string GetTopLevelNullableMarker(ITypeSymbol type) =>

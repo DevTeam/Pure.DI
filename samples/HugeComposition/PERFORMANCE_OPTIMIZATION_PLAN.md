@@ -2,7 +2,7 @@
 
 ## Objective
 
-Reduce the CPU time required to generate code for `HugeComposition` without changing its generated API, supported Pure.DI patterns, binding count, root count, declaration count, or diagnostics.
+Reduce the CPU time required to generate code for `HugeComposition` without changing its generated API, supported Pure.DI patterns, profile scale, or diagnostics.
 
 The optimization process uses the XML reports produced by:
 
@@ -11,10 +11,11 @@ dotnet run --project .\build -- codegen-performance
 ```
 
 The measurement and report format are described in [PERFORMANCE_TESTING.md](PERFORMANCE_TESTING.md).
+Track the status and evidence for each optimization in [PERFORMANCE_OPTIMIZATION_PROGRESS.md](PERFORMANCE_OPTIMIZATION_PROGRESS.md).
 
-## Current workload
+## Current workloads
 
-The current workload contains:
+The `AllPatterns` workload contains:
 
 - 1,311 bindings;
 - 28 roots;
@@ -22,7 +23,9 @@ The current workload contains:
 - four internal bulk setups merged into one public composition;
 - the feature compositions listed in [USAGE_PATTERNS.md](USAGE_PATTERNS.md).
 
-Do not reduce these values during optimization. A workload change starts a new baseline and cannot be compared directly with older reports.
+Six focused profiles separately stress bindings, roots, declarations, factories and tags, scopes and accumulators, and generic variants. Their definitions are documented in [PERFORMANCE_TESTING.md](PERFORMANCE_TESTING.md).
+
+Do not reduce profile sizes during optimization. A workload change starts a new local comparison series and cannot be compared directly with older reports.
 
 ## Establishing a baseline
 
@@ -32,8 +35,8 @@ Create a fresh baseline on the machine used for every optimization series:
 
 1. Keep the source revision and workload unchanged.
 2. Close unrelated CPU-intensive applications.
-3. Run the profiling target at least three times.
-4. Calculate the median for the generator total and the relevant method subtrees.
+3. Run the profiling target at least three times to create three complete report sets.
+4. Calculate the median for the same named profile's generator total and relevant method subtrees.
 5. Record the spread between runs to define the noise threshold.
 6. Keep the resulting XML files together with the candidate reports for that local optimization series.
 
@@ -44,15 +47,17 @@ Do not compare absolute values from different machines. Historical reports may h
 For every optimization candidate:
 
 1. Keep the machine, .NET SDK, power mode, configuration, and workload unchanged.
-2. Create three baseline XML reports before the first code change.
+2. Create three baseline report sets before the first code change.
 3. Record the median `TotalTime` and `OwnTime` for the targeted method and its parent subtree.
 4. Make one focused implementation change.
 5. Build the standalone solution and run the relevant functional tests.
-6. Create three candidate XML reports.
-7. Compare medians by matching `Function/@FQN`.
+6. Create three candidate report sets.
+7. Compare medians within each named profile by matching `Function/@FQN`.
 8. Keep the change only when the improvement is larger than baseline variation and appears in both the targeted method and its parent subtree.
 
 Sampling data is intended for relative comparison. Do not treat its absolute duration as normal build time.
+
+Use the focused profile associated with the changed subsystem as the primary signal. Also inspect `AllPatterns` to reject local improvements that regress the representative end-to-end workload.
 
 ## Optimization sequence
 
@@ -193,7 +198,7 @@ Success criteria:
 
 During initial profiler development, a successful standalone build is sufficient. Once generator code is changed, validate proportionally to the affected area.
 
-Minimum checks for an accepted optimization:
+Run the first two checks for every accepted optimization. Run the full integration suite periodically before accepting a notable series of changes, and earlier when a candidate affects integration-sensitive behavior. Do not run the full suite for every optimization iteration.
 
 ```powershell
 dotnet build .\samples\HugeComposition\HugeComposition.slnx --no-restore
@@ -211,6 +216,7 @@ Also run focused usage tests for modified DSL parsing, lifetimes, tags, factorie
 - Do not parallelize generator phases until shared caches, deterministic ordering, cancellation, and source emission are proven thread-safe.
 - Do not accept reduced generated-code size when it changes roots, lifetime semantics, disposal, or diagnostics.
 - Treat improvements below 5% as inconclusive unless baseline variance is demonstrably smaller.
+- Reject an optimization that materially complicates a hot path unless profiling demonstrates a substantial, repeatable local benefit.
 
 ## Completion criteria
 

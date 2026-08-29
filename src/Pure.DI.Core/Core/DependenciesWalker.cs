@@ -5,6 +5,7 @@
 // ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable UnusedParameter.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 class DependenciesWalker<TContext>(

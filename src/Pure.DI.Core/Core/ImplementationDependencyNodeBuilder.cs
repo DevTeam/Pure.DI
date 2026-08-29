@@ -3,6 +3,7 @@
 // ReSharper disable ConvertToAutoPropertyWhenPossible
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class ImplementationDependencyNodeBuilder(
@@ -41,7 +42,7 @@ sealed class ImplementationDependencyNodeBuilder(
                     nameof(Strings.Error_Template_CannotConstructAbstractType));
             }
 
-            var constructors = new List<DpMethod>();
+            var constructors = new List<DpMethod>(implementationType.Constructors.Length);
             var hasExplicitlyDeclaredNonStaticCtor = implementationType.Constructors.Any(i => !i.IsImplicitlyDeclared && !i.IsStatic);
             foreach (var constructor in implementationType.Constructors)
             {
@@ -88,8 +89,10 @@ sealed class ImplementationDependencyNodeBuilder(
             }
 
             var instanceDp = instanceDpProvider.Get(ctx.OriginalSetup, ctx.TypeConstructor, implementationType);
-            var implementations = constructors
-                .Select(constructor =>
+            var implementations = new List<DpImplementation>(constructors.Count);
+            foreach (var constructor in constructors)
+            {
+                implementations.Add(
                     new DpImplementation(
                         implementation,
                         binding,
@@ -97,8 +100,8 @@ sealed class ImplementationDependencyNodeBuilder(
                         instanceDp.Methods,
                         instanceDp.Properties,
                         instanceDp.Fields,
-                        locationProvider))
-                .ToList();
+                        locationProvider));
+            }
 
             var implementationsWithOrdinal = implementations
                 .Where(i => i.Constructor.Ordinal.HasValue)

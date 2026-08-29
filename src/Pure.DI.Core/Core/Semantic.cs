@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;
@@ -122,6 +123,12 @@ sealed class Semantic(
                     // Name and Tag (no semantic model needed)
                     if (className is nameof(Name) or nameof(Tag) && typeof(T) == typeof(object))
                     {
+                        if (className == nameof(Tag)
+                            && TryGetSpecialTagValue(semanticModel, memberAccess, valueStr, out T? specialTag))
+                        {
+                            return specialTag;
+                        }
+
                         return GetConstantValueFromSemanticModel<T>(semanticModel, node, smartTagKind, valueStr);
                     }
                 }
@@ -347,6 +354,38 @@ sealed class Semantic(
         }
 
         return default;
+    }
+
+    private static bool TryGetSpecialTagValue<T>(
+        SemanticModel semanticModel,
+        MemberAccessExpressionSyntax memberAccess,
+        string memberName,
+        [NotNullWhen(true)] out T? value)
+    {
+        value = default;
+        if (memberName is not (nameof(Tag.Type) or nameof(Tag.Unique) or nameof(Tag.Any))
+            || semanticModel.GetSymbolInfo(memberAccess).Symbol is not IFieldSymbol
+            {
+                IsStatic: true,
+                ContainingType:
+                {
+                    Name: nameof(Tag),
+                    ContainingNamespace: { Name: "DI", ContainingNamespace: var parentNamespace }
+                }
+            }
+            // ReSharper disable once MergeIntoNegatedPattern
+            || parentNamespace is not { Name: "Pure", ContainingNamespace.IsGlobalNamespace: true })
+        {
+            return false;
+        }
+
+        value = (T)(object)(memberName switch
+        {
+            nameof(Tag.Type) => Tag.Type,
+            nameof(Tag.Unique) => Tag.Unique,
+            _ => Tag.Any
+        });
+        return true;
     }
 
     private T? GetConstantValueFromSemanticModel<T>(SemanticModel semanticModel, SyntaxNode node, SmartTagKind smartTagKind, string text)

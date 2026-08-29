@@ -86,13 +86,13 @@ class StripeGateway(StripeApiClient api)
 
 class BankAccount
 {
-    public string Iban => "DE00 1234 5678";
+    public string IBAN => "DE00 1234 5678";
 }
 
 class BankGateway(BankAccount account)
 {
     public string Transfer(int amountInCents) =>
-        $"bank transfer {amountInCents} from {account.Iban}";
+        $"bank transfer {amountInCents} from {account.IBAN}";
 }
 
 // A union type: its case types are implicitly convertible

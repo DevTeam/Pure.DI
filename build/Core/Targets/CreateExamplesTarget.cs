@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable InvertIf
+// ReSharper disable UseCollectionExpression
 namespace Build.Core.Targets;
 
 class CreateExamplesTarget(
@@ -223,7 +224,7 @@ class CreateExamplesTarget(
                 .Distinct()
                 .Select(title => (Title: title, Example: i)))
             .GroupBy(i => i.Title, i => i.Example)
-            .OrderBy(i => groups.TryGetValue(i.Key, out var index) ? index : int.MaxValue)
+            .OrderBy(i => groups.GetValueOrDefault(i.Key, int.MaxValue))
             .Select(i => new ExampleGroup(
                 i.Key,
                 i.OrderBy(j => GetPriority(j, i.Key)).ThenBy(j => j[DescriptionKey]).Select(j => new Example(j)).ToList()))

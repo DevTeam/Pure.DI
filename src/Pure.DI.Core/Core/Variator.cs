@@ -2,6 +2,7 @@
 // ReSharper disable IdentifierTypo
 
 // ReSharper disable InvertIf
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class Variator<T> : IVariator<T>

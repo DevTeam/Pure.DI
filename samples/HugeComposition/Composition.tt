@@ -1,10 +1,26 @@
 <#@ template language="C#" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
+<#@ parameter name="Profile" type="System.String" #>
+<#@ parameter name="BindingCount" type="System.Int32" #>
+<#@ parameter name="RootCount" type="System.Int32" #>
+<#@ parameter name="DeclarationCount" type="System.Int32" #>
 <#
     // This workload intentionally stays outside the main solution. These values
     // create a large, connected graph suitable for generator profiling.
-    const int moduleCount = 20;
+    var profile = string.IsNullOrWhiteSpace(Profile) ? "AllPatterns" : Profile;
+    var requestedBindingCount = BindingCount > 0 ? BindingCount : 1311;
+    var requestedRootCount = RootCount > 0 ? RootCount : 28;
+    var requestedDeclarationCount = DeclarationCount > 0 ? DeclarationCount : 2560;
+    var includeBulk = profile is "AllPatterns" or "Bindings" or "Roots";
+    var includeFeatures = profile is "AllPatterns";
+    var moduleCount = profile switch
+    {
+        "Bindings" => System.Math.Max(1, (requestedBindingCount - 20 + 62) / 63),
+        "Roots" => 2,
+        "AllPatterns" => 20,
+        _ => 0
+    };
     const int useCasesPerModule = 10;
     const int repositoriesPerModule = 6;
     const int validatorsPerUseCase = 4;
@@ -22,6 +38,25 @@
     }
     var currentSetupGroup = 0;
     var declarations = new StringBuilder();
+    var declarationProfileTypes = new List<KeyValuePair<string, List<string>>>();
+    var declarationProfileRoot = "DeclarationProfileService0";
+    if (profile == "Declarations")
+    {
+        var typeCount = System.Math.Max(1, requestedDeclarationCount);
+        for (var declaration = 0; declaration < typeCount; declaration++)
+        {
+            var name = $"DeclarationProfileService{declaration}";
+            var dependencies = new List<string>();
+            for (var child = 8 * declaration + 1;
+                 child < System.Math.Min(typeCount, 8 * declaration + 9);
+                 child++)
+            {
+                dependencies.Add($"DeclarationProfileService{child}");
+            }
+
+            declarationProfileTypes.Add(new KeyValuePair<string, List<string>>(name, dependencies));
+        }
+    }
 
     string LifetimeFor(int index)
     {
@@ -83,16 +118,19 @@
         new[] { "IRequestContext", "RequestContext", "Lifetime.PerBlock" }
     };
 
-    foreach (var service in sharedServices)
+    if (includeBulk || includeFeatures)
     {
-        AppendLeafService(service[0], service[1], service[2]);
-    }
+        foreach (var service in sharedServices)
+        {
+            AppendLeafService(service[0], service[1], service[2]);
+        }
 
-    AppendService(
-        "IAuditTrail",
-        "AuditTrail",
-        "IClock clock, IAppLogger logger, IEventPublisher events, IRequestContext requestContext",
-        "Lifetime.PerBlock");
+        AppendService(
+            "IAuditTrail",
+            "AuditTrail",
+            "IClock clock, IAppLogger logger, IEventPublisher events, IRequestContext requestContext",
+            "Lifetime.PerBlock");
+    }
 
     for (var module = 0; module < moduleCount; module++)
     {
@@ -179,7 +217,10 @@
             string.Join(", ", facadeParameters),
             "Lifetime.PerBlock");
 
-        AppendRoot(moduleFacadeContract, $"Module{module}");
+        if (profile is "AllPatterns" or "Bindings")
+        {
+            AppendRoot(moduleFacadeContract, $"Module{module}");
+        }
     }
 
     var applicationParameters = new List<string>();
@@ -197,15 +238,20 @@
     applicationParameters.Add("IClock clock");
     applicationParameters.Add("IRequestContext requestContext");
 
-    currentSetupGroup = 0;
-    AppendService(
-        "IApplication",
-        "Application",
-        string.Join(", ", applicationParameters),
-        "Lifetime.PerBlock");
+    if (includeBulk && profile != "Bindings")
+    {
+        currentSetupGroup = 0;
+        AppendService(
+            "IApplication",
+            "Application",
+            string.Join(", ", applicationParameters),
+            "Lifetime.PerBlock");
+    }
 
     // Feature islands keep the workload application-shaped while covering
     // substantially more Pure.DI code-generation paths than the bulk graph.
+    if (includeFeatures)
+    {
     bindings.AppendLine("        .Bind<IFeaturePlugin>(\"primary\", default).To<PrimaryFeaturePlugin>()");
     bindings.AppendLine("        .Bind<IFeaturePlugin>(\"secondary\").To<SecondaryFeaturePlugin>()");
     bindings.AppendLine("        .Bind<IFeatureRepository<TT>>().As(Lifetime.PerBlock).To<FeatureRepository<TT>>()");
@@ -249,8 +295,48 @@
     bindings.AppendLine("        .Root<IFeatureLeaf>(\"GetPrivateFeatureLeaf\", \"wrapped\", RootKinds.Private | RootKinds.Partial | RootKinds.Method)");
     bindings.AppendLine("        .Root<FeatureAnonymous>()");
     rootCount += 6;
+    }
 
-    AppendRoot("IApplication", "Application");
+    if (includeBulk)
+    {
+        if (profile == "Roots")
+        {
+            for (var root = 0; root < requestedRootCount; root++)
+            {
+                AppendRoot($"RootProfile{root}", $"Application{root}");
+            }
+        }
+        else if (profile != "Bindings")
+        {
+            AppendRoot("IApplication", "Application");
+        }
+    }
+
+    if (profile == "Declarations")
+    {
+        rootCount = 1;
+        declarationCount = declarationProfileTypes.Count;
+    }
+    else if (profile == "FactoriesAndTags")
+    {
+        var itemCount = System.Math.Max(1, (requestedBindingCount - 1) / 2);
+        bindingCount = 1 + 2 * itemCount;
+        rootCount = 1;
+        declarationCount = 3 + 2 * itemCount;
+    }
+    else if (profile == "ScopesAndAccumulators")
+    {
+        bindingCount = requestedBindingCount + 1;
+        rootCount = 1;
+        declarationCount = requestedBindingCount + 3;
+    }
+    else if (profile == "GenericsAndVariants")
+    {
+        var variantCount = System.Math.Max(1, requestedBindingCount - 1);
+        bindingCount = 1 + variantCount;
+        rootCount = 1;
+        declarationCount = 3 + 2 * variantCount;
+    }
 #>
 // ReSharper disable InconsistentNaming
 // ReSharper disable EmptyConstructor
@@ -270,23 +356,32 @@ using System.Threading.Tasks;
 // Main setup bindings: <#= bindingCount #>
 // Main setup roots: <#= rootCount #>
 // Bulk service declarations: <#= declarationCount #>
-// Additional feature compositions: 4
+// Additional feature compositions: <#= includeFeatures ? 4 : 0 #>
 
+<# if (includeBulk || includeFeatures) { #>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
 public partial class Composition
 {
     private void Setup() => DI.Setup()
+<# if (includeFeatures) { #>
         .DependsOn("HugeSharedFeatures")
+<# } #>
+<# if (includeBulk) { #>
 <# for (var setupGroup = 0; setupGroup < setupGroupCount; setupGroup++) { #>
         .DependsOn("HugeBulkGroup<#= setupGroup #>")
 <# } #>
+<# } #>
 <#= bindings.ToString().TrimEnd() #>;
 
+<# if (includeFeatures) { #>
     private partial IFeatureLeaf GetPrivateFeatureLeaf();
 
     public IFeatureLeaf WrappedFeatureLeaf => GetPrivateFeatureLeaf();
+<# } #>
 }
+<# } #>
 
+<# if (includeBulk) { #>
 <# for (var setupGroup = 0; setupGroup < setupGroupCount; setupGroup++) { #>
 internal static class HugeBulkGroup<#= setupGroup #>Setup
 {
@@ -296,9 +391,16 @@ internal static class HugeBulkGroup<#= setupGroup #>Setup
 }
 
 <# } #>
+<# } #>
 <#= declarations.ToString() #>
+<# if (profile == "Roots") { #>
+<# for (var root = 0; root < requestedRootCount; root++) { #>
+public sealed class RootProfile<#= root #>(IApplication application);
+<# } #>
+<# } #>
 
 // Feature: dependent setup.
+<# if (includeFeatures) { #>
 internal static class HugeSharedFeatureSetup
 {
     private static void Setup() =>
@@ -597,3 +699,98 @@ public partial class FeatureAsyncComposition
             .Root<Task<IFeatureAsyncService>>("GetServiceAsync")
             .Root<ValueTask<IFeatureAsyncService>>("GetServiceValueAsync");
 }
+<# } #>
+
+<# if (profile == "Declarations") { #>
+// Profile: a large auto-binding graph with one root. This isolates the cost
+// of discovering and emitting declarations from explicit binding/root volume.
+public partial class DeclarationProfileComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+            .Root<<#= declarationProfileRoot #>>("Root");
+}
+
+<# foreach (var declarationType in declarationProfileTypes) { #>
+public sealed class <#= declarationType.Key #><# if (declarationType.Value.Count > 0) { #>(<# for (var dependency = 0; dependency < declarationType.Value.Count; dependency++) { if (dependency > 0) { #>, <# } #><#= declarationType.Value[dependency] #> dependency<#= dependency #><# } #>)<# } #>;
+<# } #>
+<# } #>
+
+<# if (profile == "FactoriesAndTags") {
+    var factoryItemCount = System.Math.Max(1, (requestedBindingCount - 1) / 2);
+#>
+// Profile: simplified factories and tagged injection paths.
+public partial class FactoryProfileComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+            .Bind().As(Lifetime.Singleton).To<FactoryProfileDependency>()
+<# for (var item = 0; item < factoryItemCount; item++) { #>
+            .Bind<IFactoryProfileItem>(<#= item #>).To((FactoryProfileDependency dependency) => new FactoryProfileItem<#= item #>(dependency))
+            .Bind<IFactoryProfileConsumer>(Tag.Unique).To<FactoryProfileConsumer<#= item #>>()
+<# } #>
+            .Root<IFactoryProfileConsumer[]>("Root");
+}
+
+public sealed class FactoryProfileDependency;
+
+public interface IFactoryProfileItem;
+
+public interface IFactoryProfileConsumer;
+<# for (var item = 0; item < factoryItemCount; item++) { #>
+public sealed class FactoryProfileItem<#= item #>(FactoryProfileDependency dependency) : IFactoryProfileItem;
+
+public sealed class FactoryProfileConsumer<#= item #>([Tag(<#= item #>)] IFactoryProfileItem item) : IFactoryProfileConsumer;
+<# } #>
+<# } #>
+
+<# if (profile == "ScopesAndAccumulators") { #>
+// Profile: scoped instances collected through an accumulator.
+public partial class ScopeAccumulatorProfileComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+<# for (var item = 0; item < requestedBindingCount; item++) { #>
+            .Bind<IScopeProfileTelemetry>(Tag.Unique).As(Lifetime.Scoped).To<ScopeProfileTelemetry<#= item #>>()
+<# } #>
+            .Bind().To<ScopeProfileConsumer>()
+            .Accumulate<IScopeProfileTelemetry, ScopeProfileAccumulator>(Lifetime.Scoped)
+            .Root<(ScopeProfileConsumer Consumer, ScopeProfileAccumulator Accumulator)>("Root");
+}
+
+public interface IScopeProfileTelemetry;
+
+public sealed class ScopeProfileAccumulator : List<IScopeProfileTelemetry>;
+
+public sealed class ScopeProfileConsumer(IEnumerable<IScopeProfileTelemetry> telemetry);
+<# for (var item = 0; item < requestedBindingCount; item++) { #>
+public sealed class ScopeProfileTelemetry<#= item #> : IScopeProfileTelemetry;
+<# } #>
+<# } #>
+
+<# if (profile == "GenericsAndVariants") {
+    var genericVariantCount = System.Math.Max(1, requestedBindingCount - 1);
+#>
+// Profile: one marker-based generic binding expanded into many closed graphs.
+public partial class GenericVariantProfileComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+            .Bind<IGenericProfileRepository<TT>>().As(Lifetime.PerBlock).To<GenericProfileRepository<TT>>()
+<# for (var item = 0; item < genericVariantCount; item++) { #>
+            .Bind<IGenericProfileVariant>(Tag.Unique).To<GenericProfileVariant<#= item #>>()
+<# } #>
+            .Root<IGenericProfileVariant[]>("Root");
+}
+
+public interface IGenericProfileRepository<T>;
+
+public sealed class GenericProfileRepository<T> : IGenericProfileRepository<T>;
+
+public interface IGenericProfileVariant;
+<# for (var item = 0; item < genericVariantCount; item++) { #>
+public sealed class GenericProfileToken<#= item #>;
+
+public sealed class GenericProfileVariant<#= item #>(IGenericProfileRepository<GenericProfileToken<#= item #>> repository) : IGenericProfileVariant;
+<# } #>
+<# } #>

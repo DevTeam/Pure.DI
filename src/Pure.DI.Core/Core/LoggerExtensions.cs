@@ -4,6 +4,7 @@
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable HeapView.DelegateAllocation
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;

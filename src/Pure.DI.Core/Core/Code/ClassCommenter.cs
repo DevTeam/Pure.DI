@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 
 // ReSharper disable ConvertIfStatementToSwitchStatement
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 sealed class ClassCommenter(

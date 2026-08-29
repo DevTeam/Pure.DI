@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UseCollectionExpression
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.Core;
 

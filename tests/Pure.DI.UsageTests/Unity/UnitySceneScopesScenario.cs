@@ -113,7 +113,7 @@ public interface IClockConfig
     TimeSpan Offset { get; }
 }
 
-[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+[CreateAssetMenu(FileName = "ClockConfig", MenuName = "Clock/Config")]
 public class ClockConfig : ScriptableObject, IClockConfig
 {
     [SerializeField] int offsetHours;

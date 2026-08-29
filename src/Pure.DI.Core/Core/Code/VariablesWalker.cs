@@ -3,13 +3,25 @@ namespace Pure.DI.Core.Code;
 sealed class VariablesWalker : DependenciesWalker<Unit>, IVariablesWalker
 {
     private readonly List<VarInjection> _result = [];
-    private readonly Dictionary<Injection, LinkedList<VarInjection>> _varInjectionsMap;
+    private readonly ICache<Injection, Queue<VarInjection>> _varInjectionsMap;
 
-    public VariablesWalker(ILocationProvider locationProvider, IEnumerable<VarInjection> varInjections) : base(locationProvider)
+    public VariablesWalker(
+        ILocationProvider locationProvider,
+        IEnumerable<VarInjection> varInjections,
+        [Tag(Tag.Local)] ICache<Injection, Queue<VarInjection>> varInjectionsMap)
+        : base(locationProvider)
     {
-        _varInjectionsMap = varInjections
-            .GroupBy(varInjection => varInjection.Injection)
-            .ToDictionary(i => i.Key, i => new LinkedList<VarInjection>(i));
+        _varInjectionsMap = varInjectionsMap;
+        foreach (var varInjection in varInjections)
+        {
+            if (!_varInjectionsMap.TryGet(varInjection.Injection, out var injections))
+            {
+                injections = new Queue<VarInjection>();
+                _varInjectionsMap.Set(varInjection.Injection, injections);
+            }
+
+            injections.Enqueue(varInjection);
+        }
     }
 
     public IReadOnlyList<VarInjection> GetResult()
@@ -27,10 +39,9 @@ sealed class VariablesWalker : DependenciesWalker<Unit>, IVariablesWalker
         in ImmutableArray<Location> locations,
         int? position)
     {
-        if (_varInjectionsMap.TryGetValue(injection, out var vars))
+        if (_varInjectionsMap.TryGet(injection, out var vars))
         {
-            var var = vars.First.Value;
-            vars.RemoveFirst();
+            var var = vars.Dequeue();
             if (vars.Count == 0)
             {
                 _varInjectionsMap.Remove(injection);

@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class FactoryDependencyNodeBuilder(

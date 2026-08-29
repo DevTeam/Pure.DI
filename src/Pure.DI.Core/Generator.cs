@@ -69,6 +69,7 @@ public sealed partial class Generator
             .Transient(_ => Compiled | CultureInvariant | Singleline | IgnoreCase)
             .Transient((RegexOptions options) => new Func<string, Regex>(p => new Regex(p, options)))
             .Transient<ApiInvocationProcessor, DependencyGraphBuilder, TypeConstructor, BindingBuilder, SetupContextRewriter, SetupContextMembersCollector>()
+            .Transient<Cache<TT1, TT2>>(Local)
 
             // Walkers
             .SpecialType<CSharpSyntaxRewriter>()
@@ -84,11 +85,12 @@ public sealed partial class Generator
             .PerBlock<Arguments, Comments, BuildTools, Resources, GlobalProperties, Marker, MarkerTypeRewriter, Variator<TT>, Profiler, BaseSymbolsProvider, Formatter,
                 NodeTools, LocalFunctions, ExceptionHandler, WildcardMatcher, InjectionSiteFactory, Semantic, Attributes, Compilations, GraphWalker<TT, TT1>,
                 LifetimeAnalyzer, InstanceDpProvider, Injections, NameFormatter, BindingsFactory, NodesFactory, LocationProvider,
-                CycleTools, LifetimeProvider, VarDeclarationTools, ContractTagComparer, TypeSymbolComparer, InjectionComparer,
+                CycleTools, LifetimeProvider, VarDeclarationTools, ContractTagComparer, TypeSymbolComparer,
                 CodeNameProvider, DependencyNodePrioritizer, FileHeader, RootUseSiteCounter, RefSafety, OverloadResolutionPriority>()
             .PerBlock<LifetimesValidatorVisitor, CyclicDependencyValidatorVisitor, RootArgsVisitor, RootStatisticsVisitor>()
             .PerBlock<GraphOverrider>(Overrider)
             .PerBlock<GraphCleaner>(Cleaner)
+            .Bind<IEqualityComparer<Injection>, IInjectionComparer>().As(Lifetime.PerBlock).To<InjectionComparer>()
 
             // Validators
             .PerBlock<MetadataValidator, DependsOnInstanceMemberValidator, DependencyGraphValidator, CyclicDependenciesValidator, RootValidator, TagOnSitesValidator, BindingsValidator, LifetimesValidator, RefSafetyValidator, OverloadResolutionPriorityValidator>(Type)

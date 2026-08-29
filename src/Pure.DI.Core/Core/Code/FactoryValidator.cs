@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Code;
+﻿// ReSharper disable UseCollectionExpression
+namespace Pure.DI.Core.Code;
 
 sealed class FactoryValidator(ILocationProvider locationProvider, DpFactory factory)
     : CSharpSyntaxWalker, IFactoryValidator

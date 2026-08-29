@@ -8,6 +8,7 @@
 // ReSharper disable LoopCanBeConvertedToQuery
 
 // ReSharper disable ForCanBeConvertedToForeach
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class MetadataBuilder(

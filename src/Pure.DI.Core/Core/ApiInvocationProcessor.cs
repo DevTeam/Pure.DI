@@ -1,6 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;

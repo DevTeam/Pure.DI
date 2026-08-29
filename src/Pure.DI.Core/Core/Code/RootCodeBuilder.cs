@@ -1,3 +1,4 @@
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 using System.Collections;
@@ -78,15 +79,20 @@ sealed class RootCodeBuilder(
                     .Where(i => !nestedBoundaryAccumulatorTypes.Contains(i.Item1.AccumulatorType, SymbolEqualityComparer.Default))
                     .ToImmutableArray()
                 : ImmutableArray<(MdAccumulator, Dependency)>.Empty;
-        var isolatedAccumulatorTypes = acc
-            .Select(i => i.Item1.AccumulatorType)
-            .Where(i => !ContainsType(var.InstanceType, i))
-            .ToImmutableArray();
-        var accumulatorBindingIds = parentCtx.Accumulators
-            .Where(i => isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
-            .Select(i => i.VarInjection.Var.AbstractNode.BindingId)
-            .Distinct()
-            .ToImmutableArray();
+        var isolatedAccumulatorTypes = ImmutableArray<ITypeSymbol>.Empty;
+        var accumulatorBindingIds = ImmutableArray<int>.Empty;
+        if (isLazy || isAccumulatorBoundary)
+        {
+            isolatedAccumulatorTypes = acc
+                .Select(i => i.Item1.AccumulatorType)
+                .Where(i => !ContainsType(var.InstanceType, i))
+                .ToImmutableArray();
+            accumulatorBindingIds = parentCtx.Accumulators
+                .Where(i => isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
+                .Select(i => i.VarInjection.Var.AbstractNode.BindingId)
+                .Distinct()
+                .ToImmutableArray();
+        }
         var isLocalFunction = localFunctions.UseFor(varCtx);
         var mapToken =
             isLocalFunction
@@ -138,8 +144,13 @@ sealed class RootCodeBuilder(
             {
                 if (!ctx.IsDeferred)
                 {
-                    foreach (var accumulator in createdAccumulators.Where(i => !i.IsEmpty))
+                    foreach (var accumulator in createdAccumulators)
                     {
+                        if (accumulator.IsEmpty)
+                        {
+                            continue;
+                        }
+
                         var accumulatorVar = accumulator.VarInjection.Var;
                         if (parentCtx.RootContext.ConstructionFailureAccumulators.Any(i => ReferenceEquals(i, accumulatorVar)))
                         {
@@ -187,6 +198,7 @@ sealed class RootCodeBuilder(
 
         accumulatorBoundaryToken.Dispose();
         mapToken.Dispose();
+
 
         if (isLocalFunction)
         {

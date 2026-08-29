@@ -1,6 +1,7 @@
 ﻿// ReSharper disable HeapView.DelegateAllocation
 
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class Attributes(
@@ -131,24 +132,25 @@ sealed class Attributes(
     private static SmartTagKind GetSmartTagKind(AttributeKind kind) =>
         kind == AttributeKind.Tag ? SmartTagKind.Tag : SmartTagKind.Unknown;
 
-    private IReadOnlyList<AttributeData> GetAttributes(ISymbol member, INamedTypeSymbol attributeType) =>
-        member
-            .GetAttributes()
-            .Where(attr => {
-                if (attr.AttributeClass is null)
-                {
-                    return false;
-                }
+    private IReadOnlyList<AttributeData> GetAttributes(ISymbol member, INamedTypeSymbol attributeType)
+    {
+        var attributeTypeName = symbolNames.GetGlobalName(attributeType);
+        List<AttributeData>? attributes = null;
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+        foreach (var attribute in member.GetAttributes())
+        {
+            var unboundTypeSymbol = GetUnboundTypeSymbol(attribute.AttributeClass);
+            if (unboundTypeSymbol is null || symbolNames.GetGlobalName(unboundTypeSymbol) != attributeTypeName)
+            {
+                continue;
+            }
 
-                var unboundTypeSymbol = GetUnboundTypeSymbol(attr.AttributeClass);
-                if (unboundTypeSymbol is null)
-                {
-                    return false;
-                }
+            attributes ??= [];
+            attributes.Add(attribute);
+        }
 
-                return symbolNames.GetGlobalName(unboundTypeSymbol) == symbolNames.GetGlobalName(attributeType);
-            })
-            .ToList();
+        return attributes is not null ? attributes : Array.Empty<AttributeData>();
+    }
 
     private static INamedTypeSymbol? GetUnboundTypeSymbol(INamedTypeSymbol? typeSymbol) =>
         typeSymbol is null

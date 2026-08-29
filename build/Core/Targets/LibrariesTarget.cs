@@ -5,6 +5,7 @@
 // ReSharper disable ReturnTypeCanBeEnumerable.Local
 // ReSharper disable InvertIf
 
+// ReSharper disable UseCollectionExpression
 namespace Build.Core.Targets;
 
 using NuGet.Versioning;

@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable UseCollectionExpression
+namespace Pure.DI.Core;
 
 sealed class RootArgsVisitor
     : IGraphVisitor<RootArgsContext, ImmutableArray<Dependency>>
@@ -33,7 +34,7 @@ sealed class RootArgsVisitor
         var source = dependency.Source;
         if (source.Arg is not null)
         {
-            ctx.Args.Add(ctx.varsMap.GetInjection(dependencyGraph, dependency.Injection, source).Var.Declaration);
+            ctx.Args.Add(ctx.Map.GetInjection(dependencyGraph, dependency.Injection, source).Var.Declaration);
         }
 
         return true;

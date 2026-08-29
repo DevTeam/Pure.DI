@@ -3,6 +3,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable IdentifierTypo
+// ReSharper disable UseCollectionExpression
 #pragma warning disable RS1024 // Pure.DI intentionally uses ITypeSymbolComparer to control nullable-reference contract equality.
 
 namespace Pure.DI.Core;
@@ -476,7 +477,29 @@ sealed class DependencyGraphBuilder(
         }
 
         var entries = new List<GraphEntry<DependencyNode, Dependency>>(processed.Count);
-        foreach (var node in processed.Concat(notProcessed))
+        foreach (var node in processed)
+        {
+            AddEntry(node);
+        }
+
+        foreach (var node in notProcessed)
+        {
+            AddEntry(node);
+        }
+
+        IGraph<DependencyNode, Dependency> graph = new Graph<DependencyNode, Dependency>(entries);
+        var lastId = maxBindingId;
+        graph = graphOverrider.Rewrite(setup, graph, ref maxBindingId);
+        // Has overrides
+        if (lastId != maxBindingId)
+        {
+            graph = graphCleaner.Rewrite(setup, graph, ref maxBindingId);
+        }
+
+        ctx.Graph = graph;
+        yield break;
+
+        void AddEntry(IProcessingNode node)
         {
             if (!edgesMap.TryGetValue(node, out var edges))
             {
@@ -500,18 +523,6 @@ sealed class DependencyGraphBuilder(
 
             entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges));
         }
-
-        IGraph<DependencyNode, Dependency> graph = new Graph<DependencyNode, Dependency>(entries);
-        var lastId = maxBindingId;
-        graph = graphOverrider.Rewrite(setup, graph, ref maxBindingId);
-        // Has overrides
-        if (lastId != maxBindingId)
-        {
-            graph = graphCleaner.Rewrite(setup, graph, ref maxBindingId);
-        }
-
-        ctx.Graph = graph;
-        yield break;
 
         void UpdateMap(Injection injection, DependencyNode node)
         {

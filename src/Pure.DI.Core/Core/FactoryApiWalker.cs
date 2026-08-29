@@ -1,3 +1,4 @@
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class FactoryApiWalker : CSharpSyntaxWalker, IFactoryApiWalker

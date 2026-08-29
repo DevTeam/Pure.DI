@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class SmartTags : ISmartTags

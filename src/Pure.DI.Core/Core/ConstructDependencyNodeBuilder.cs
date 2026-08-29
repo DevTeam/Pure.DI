@@ -1,6 +1,7 @@
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ClassNeverInstantiated.Global
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
@@ -38,7 +39,7 @@ sealed class ConstructDependencyNodeBuilder(ILocationProvider locationProvider)
                 0,
                 binding,
                 ctx.TypeConstructor,
-                Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(),locationProvider));
+                Construct: new DpConstruct(construct, binding, injections.ToImmutableArray(), locationProvider));
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Pure.DI.UsageTests.Unity;
 [AttributeUsage(AttributeTargets.Class)]
 public class CreateAssetMenuAttribute: Attribute
 {
-    public string? fileName { get; set; }
+    public string? FileName { get; set; }
 
-    public string? menuName{ get; set; }
+    public string? MenuName{ get; set; }
 }

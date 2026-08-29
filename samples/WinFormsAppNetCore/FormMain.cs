@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+// ReSharper disable UseCollectionExpression
 
 namespace WinFormsAppNetCore;
 

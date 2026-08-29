@@ -1,6 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
 using System.Text.Json;
+// ReSharper disable UseCollectionExpression
 
 namespace Build.Core.Targets;
 

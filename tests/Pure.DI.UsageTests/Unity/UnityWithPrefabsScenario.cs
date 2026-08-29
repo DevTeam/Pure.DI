@@ -96,7 +96,7 @@ public class ClockDigital : MonoBehaviour
     void FixedUpdate()
     {
         var now = ClockService.Now;
-        timeText.text = now.ToString("HH:mm:ss");
+        timeText.Value = now.ToString("HH:mm:ss");
     }
 }
 
@@ -109,7 +109,7 @@ public interface IClockConfig
     ClockDigital ClockDigitalPrefab { get; }
 }
 
-[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+[CreateAssetMenu(FileName = "ClockConfig", MenuName = "Clock/Config")]
 public class ClockConfig : ScriptableObject, IClockConfig
 {
     [SerializeField] int offsetHours;
