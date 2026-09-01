@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable UseCollectionExpression
+namespace Pure.DI.Core;
 
 sealed class LifetimesValidatorVisitor(
     ILogger logger,
@@ -39,6 +40,7 @@ sealed class LifetimesValidatorVisitor(
             var targetNode = dependency.Target;
             if (!lifetimeAnalyzer.ValidateScopedToSingleton(actualTargetLifetimeNode.Lifetime, targetNode.Lifetime))
             {
+                ctx.HasErrors = true;
                 if (ctx.Errors.Add(new ScopedToSingletonErrorKey(actualTargetLifetimeNode, targetNode)))
                 {
                     logger.CompileError(
@@ -56,6 +58,7 @@ sealed class LifetimesValidatorVisitor(
 
             if (!lifetimeAnalyzer.ValidateRootKindSpecificLifetime(ctx.Root, targetNode.Lifetime))
             {
+                ctx.HasErrors = true;
                 if (ctx.Errors.Add(new RootKindSpecificLifetimeErrorKey(ctx.Root, targetNode)))
                 {
                     logger.CompileError(
@@ -73,6 +76,7 @@ sealed class LifetimesValidatorVisitor(
             var sourceNode = dependency.Source;
             if (!lifetimeAnalyzer.ValidateRootKindSpecificLifetime(ctx.Root, sourceNode.Lifetime))
             {
+                ctx.HasErrors = true;
                 if (ctx.Errors.Add(new RootKindSpecificLifetimeErrorKey(ctx.Root, sourceNode)))
                 {
                     logger.CompileError(

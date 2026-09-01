@@ -24,7 +24,7 @@ The aliases `codegen-perf` and `cgp` are also available. The target restores the
 
 ## Profiles
 
-One invocation generates and profiles eight compositions from [Composition.tt](Composition.tt). Each profile isolates a different scaling dimension or generator subsystem.
+One invocation generates and profiles nine compositions from [Composition.tt](Composition.tt). Each profile isolates a different scaling dimension or generator subsystem.
 
 | Profile | Generated scale | Purpose |
 |---|---:|---|
@@ -35,6 +35,7 @@ One invocation generates and profiles eight compositions from [Composition.tt](C
 | `FactoriesAndTags` | 399 bindings; 1 root; 401 declarations | Simplified factories, unique collection bindings, and tagged injection. |
 | `ScopesAndAccumulators` | 401 bindings; 1 root; 403 declarations | Scoped lifetimes, collections, and accumulator generation. |
 | `MultiTypeLifetimes` | 2,400 bindings; 1 root; 2,401 declarations | Multi-type `Transient`, `Singleton`, `Scoped`, `PerResolve`, and `PerBlock` API processing. |
+| `AttributeApis` | 0 bindings; 1 root; 2,401 declarations | Attribute-related configuration API processing with 2,400 unique type arguments. |
 | `GenericsAndVariants` | 400 bindings; 1 root; 801 declarations | Marker-based open generics expanded into many closed graphs. |
 
 These sizes are workload definitions, not a machine-specific baseline. They are derived from the profile parameters in the build target. Change them only as an intentional workload revision. Reports from different profile definitions are not directly comparable.
@@ -66,6 +67,7 @@ Every invocation creates one timestamped report set:
   FactoriesAndTags.xml
   ScopesAndAccumulators.xml
   MultiTypeLifetimes.xml
+  AttributeApis.xml
   GenericsAndVariants.xml
 ```
 
@@ -97,6 +99,6 @@ For changes to this profiling infrastructure, verify that:
 
 - the build target compiles;
 - every generated profile compiles;
-- the target produces all seven non-empty XML reports containing Pure.DI functions.
+- the target produces all nine non-empty XML reports containing Pure.DI functions.
 
 For generator optimizations, run the relevant functional tests for every accepted change. Run the full integration suite periodically and whenever a change affects a broadly shared or integration-sensitive path. Performance evidence never replaces correctness tests.

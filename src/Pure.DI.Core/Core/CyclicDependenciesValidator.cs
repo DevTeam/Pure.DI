@@ -5,6 +5,7 @@ namespace Pure.DI.Core;
 sealed class CyclicDependenciesValidator(
     IGraphWalker<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>> graphWalker,
     IGraphVisitor<CyclicDependenciesValidatorContext, ImmutableArray<Dependency>> visitor,
+    [Tag(Tag.Local)] ICache<SingleDependencyValidationKey, bool> validatedSingleDependencies,
     ILogger logger,
     ILocationProvider locationProvider,
     ITypeResolver typeResolver,
@@ -16,6 +17,13 @@ sealed class CyclicDependenciesValidator(
         var errors = new HashSet<object>();
         foreach (var root in dependencyGraph.Roots)
         {
+            var hasSingleDependency = dependencyGraph.TryGetSingleResolvedDependency(root.Node, out var singleDependency);
+            var validationKey = new SingleDependencyValidationKey(dependencyGraph.Graph, singleDependency);
+            if (hasSingleDependency && validatedSingleDependencies.TryGet(validationKey, out _))
+            {
+                continue;
+            }
+
             var ctx = new CyclicDependenciesValidatorContext(dependencyGraph, errors);
             var path = graphWalker.Walk(
                 ctx,
@@ -25,6 +33,11 @@ sealed class CyclicDependenciesValidator(
 
             if (ctx.Cyclicdependency is not {} dependency)
             {
+                if (hasSingleDependency)
+                {
+                    validatedSingleDependencies.Set(validationKey, true);
+                }
+
                 continue;
             }
 

@@ -4719,6 +4719,41 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeFalse(result);
     }
 
+    [Fact]
+    public async Task ShouldValidateSharedDependencyForRegularAndStaticRootsSeparately()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           DI.Setup(nameof(Composition))
+                               .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                               .Bind<IService>().To<Service>()
+                               .Root<RegularRoot>("Regular")
+                               .Root<StaticRoot>("Static", kind: RootKinds.Static);
+
+                           interface IDependency;
+
+                           class Dependency : IDependency;
+
+                           interface IService;
+
+                           class Service(IDependency dependency) : IService;
+
+                           class RegularRoot(IService service);
+
+                           class StaticRoot(IService service);
+
+                           public class Program { public static void Main() { } }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Logs.Count(i => i.Id == LogId.ErrorLifetimeDefect).ShouldBe(1, result);
+    }
+
     [Theory]
     [InlineData("Singleton")]
     [InlineData("Scoped")]

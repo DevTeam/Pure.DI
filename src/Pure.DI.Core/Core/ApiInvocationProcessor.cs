@@ -541,8 +541,38 @@ sealed class ApiInvocationProcessor(
                             default:
                                 // .Transient<T>()
                                 var lifetimesTags = BuildTags(semanticModel, lifetimeInvocationArgs);
-                                foreach (var typeArgument in genericName.TypeArgumentList.Arguments)
+                                var method = lifetimeInvocationTypeArgs.Count > 1
+                                    ? semanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol
+                                    : null;
+                                var useMethodTypeArguments = method is not null
+                                                             && method.TypeArguments.Length == lifetimeInvocationTypeArgs.Count;
+                                if (useMethodTypeArguments)
                                 {
+                                    // ReSharper disable once LoopCanBeConvertedToQuery
+                                    for (var index = 0; index < method!.TypeArguments.Length; index++)
+                                    {
+                                        // ReSharper disable once InvertIf
+                                        if (method.TypeArguments[index] is not INamedTypeSymbol)
+                                        {
+                                            useMethodTypeArguments = false;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                for (var index = 0; index < lifetimeInvocationTypeArgs.Count; index++)
+                                {
+                                    var typeArgument = lifetimeInvocationTypeArgs[index];
+                                    var implementationType = useMethodTypeArguments
+                                        ? (INamedTypeSymbol)method!.TypeArguments[index]
+                                        : semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, typeArgument);
+                                    if (useMethodTypeArguments
+                                        && typeArgument is NullableTypeSyntax
+                                        && implementationType.IsReferenceType)
+                                    {
+                                        implementationType = (INamedTypeSymbol)implementationType.WithNullableAnnotation(NullableAnnotation.Annotated);
+                                    }
+
                                     metadataVisitor.VisitContract(
                                         new MdContract(
                                             semanticModel,
@@ -553,7 +583,6 @@ sealed class ApiInvocationProcessor(
 
                                     metadataVisitor.VisitLifetime(new MdLifetime(semanticModel, typeArgument, bindingLifetime));
 
-                                    var implementationType = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, typeArgument);
                                     metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, typeArgument, implementationType));
                                 }
 
@@ -707,7 +736,7 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.GenericTypeArgument):
-                        if (TryGetAttributeType(genericName, semanticModel, out var genericTypeArgumentType))
+                        if (TryGetAttributeType(invocation, genericName, semanticModel, out var genericTypeArgumentType))
                         {
                             var attr = new MdGenericTypeArgument(
                                 semanticModel,
@@ -720,7 +749,7 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.GenericTypeArgumentAttribute):
-                        if (TryGetAttributeType(genericName, semanticModel, out var genericTypeArgumentAttributeType))
+                        if (TryGetAttributeType(invocation, genericName, semanticModel, out var genericTypeArgumentAttributeType))
                         {
                             var attr = new MdGenericTypeArgumentAttribute(
                                 semanticModel,
@@ -732,7 +761,7 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.TypeAttribute):
-                        if (TryGetAttributeType(genericName, semanticModel, out var typeAttributeType))
+                        if (TryGetAttributeType(invocation, genericName, semanticModel, out var typeAttributeType))
                         {
                             var attr = new MdTypeAttribute(
                                 semanticModel,
@@ -745,7 +774,7 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.TagAttribute):
-                        if (TryGetAttributeType(genericName, semanticModel, out var tagAttributeType))
+                        if (TryGetAttributeType(invocation, genericName, semanticModel, out var tagAttributeType))
                         {
                             var attr = new MdTagAttribute(
                                 semanticModel,
@@ -758,7 +787,7 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.LifetimeAttribute):
-                        if (TryGetAttributeType(genericName, semanticModel, out var lifetimeAttributeType))
+                        if (TryGetAttributeType(invocation, genericName, semanticModel, out var lifetimeAttributeType))
                         {
                             var attr = new MdLifetimeAttribute(
                                 semanticModel,
@@ -771,7 +800,7 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.OrdinalAttribute):
-                        if (TryGetAttributeType(genericName, semanticModel, out var ordinalAttributeType))
+                        if (TryGetAttributeType(invocation, genericName, semanticModel, out var ordinalAttributeType))
                         {
                             var attr = new MdOrdinalAttribute(
                                 semanticModel,
@@ -1005,6 +1034,7 @@ sealed class ApiInvocationProcessor(
     }
 
     private bool TryGetAttributeType(
+        InvocationExpressionSyntax invocation,
         GenericNameSyntax genericName,
         SemanticModel semanticModel,
         [NotNullWhen(true)] out INamedTypeSymbol? type)
@@ -1015,7 +1045,19 @@ sealed class ApiInvocationProcessor(
             return false;
         }
 
-        type = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, attributeTypeSyntax);
+        if (semanticModel.GetSymbolInfo(invocation).Symbol is IMethodSymbol { TypeArguments: [INamedTypeSymbol methodType and not IErrorTypeSymbol] })
+        {
+            type = methodType;
+            if (attributeTypeSyntax is NullableTypeSyntax && type.IsReferenceType)
+            {
+                type = (INamedTypeSymbol)type.WithNullableAnnotation(NullableAnnotation.Annotated);
+            }
+        }
+        else
+        {
+            type = semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, attributeTypeSyntax);
+        }
+
         if (type.IsGenericType)
         {
             type = type.ConstructUnboundGenericType();

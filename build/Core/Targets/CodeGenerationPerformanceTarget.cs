@@ -24,6 +24,7 @@ class CodeGenerationPerformanceTarget(
         new("FactoriesAndTags", 400, 1, 0),
         new("ScopesAndAccumulators", 400, 1, 0),
         new("MultiTypeLifetimes", 2400, 1, 0),
+        new("AttributeApis", 2400, 1, 0),
         new("GenericsAndVariants", 400, 1, 0)
     ];
 
@@ -71,7 +72,7 @@ class CodeGenerationPerformanceTarget(
             await CreatePatternsAsync(patternPath, cancellationToken);
 
             await RunAsync(
-                new CommandLine("dotnet", ["tool", "restore"])
+                new CommandLine("dotnet", "tool", "restore")
                     .WithWorkingDirectory(solutionDirectory),
                 "Local tool restore",
                 cancellationToken);

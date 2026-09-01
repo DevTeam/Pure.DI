@@ -175,6 +175,7 @@ class CompositionBuilder(
         var setupContextMembers = graph.Source.SetupContextMembers;
         var setupContextMembersToCopy = GetSetupContextMembersToCopy(setupContextMembers);
         var setupContextArgsToCopyBuilder = ImmutableArray.CreateBuilder<SetupContextArg>();
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var setupContextArg in setupContextArgs)
         {
             if (setupContextArg.Kind != SetupContextKind.RootArgument)

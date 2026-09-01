@@ -1,6 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable IdentifierTypo
 
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
 sealed class ImplementationVariantsBuilder(

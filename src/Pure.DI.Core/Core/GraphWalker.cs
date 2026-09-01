@@ -66,6 +66,7 @@ sealed class GraphWalker<TContext, T>(INodeTools nodeTools)
                 var hashCode = TargetBindingId;
                 hashCode = hashCode * 397 ^ SourceBindingId;
                 // ReSharper disable once ForCanBeConvertedToForeach
+                // ReSharper disable once LoopCanBeConvertedToQuery
                 for (var index = 0; index < DepIndices.Length; index++)
                 {
                     hashCode = hashCode * 397 ^ DepIndices[index];

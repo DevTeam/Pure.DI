@@ -3,6 +3,7 @@
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable UnusedMethodReturnValue.Local
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
+// ReSharper disable UseCollectionExpression
 #pragma warning disable CS8500
 namespace Pure.DI.Benchmarks.Tests;
 

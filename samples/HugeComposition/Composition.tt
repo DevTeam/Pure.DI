@@ -343,6 +343,12 @@
         rootCount = 1;
         declarationCount = requestedBindingCount + 1;
     }
+    else if (profile == "AttributeApis")
+    {
+        bindingCount = 0;
+        rootCount = 1;
+        declarationCount = requestedBindingCount + 1;
+    }
 #>
 // ReSharper disable InconsistentNaming
 // ReSharper disable EmptyConstructor
@@ -800,6 +806,36 @@ public sealed class MultiTypeLifetimeProfileRoot;
 public sealed class MultiTypeLifetimeService<#= type #>;
 <# } #>
 #pragma warning restore DIW003
+<# } #>
+
+<# if (profile == "AttributeApis") {
+    var attributeApiMethods = new[]
+    {
+        "GenericTypeArgument",
+        "GenericTypeArgumentAttribute",
+        "TypeAttribute",
+        "TagAttribute",
+        "LifetimeAttribute",
+        "OrdinalAttribute"
+    };
+#>
+// Profile: many attribute-related API calls with unique type arguments. It
+// isolates semantic processing performed by TryGetAttributeType while keeping
+// the generated object graph intentionally trivial.
+public partial class AttributeApisProfileComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+<# for (var type = 0; type < requestedBindingCount; type++) { #>
+            .<#= attributeApiMethods[type % attributeApiMethods.Length] #><AttributeApiType<#= type #>>()
+<# } #>
+            .Root<AttributeApisProfileRoot>("Root");
+}
+
+public sealed class AttributeApisProfileRoot;
+<# for (var type = 0; type < requestedBindingCount; type++) { #>
+public sealed class AttributeApiType<#= type #> : Attribute;
+<# } #>
 <# } #>
 
 <# if (profile == "GenericsAndVariants") {

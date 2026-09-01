@@ -129,6 +129,7 @@ sealed class NodeTools(
 
     internal readonly struct LazyKey(DependencyNode node, SemanticModel semanticModel) : IEquatable<LazyKey>
     {
+        // ReSharper disable once UnusedMember.Global
         public readonly DependencyNode Node = node;
         private readonly int _bindingId = node.BindingId;
         public readonly SemanticModel SemanticModel = semanticModel;

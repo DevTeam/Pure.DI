@@ -1,3 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-record LifetimesValidatorContext(Root Root, HashSet<object> Errors);
+record LifetimesValidatorContext(Root Root, HashSet<object> Errors)
+{
+    public bool HasErrors;
+}

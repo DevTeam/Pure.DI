@@ -2019,6 +2019,33 @@ public class CtorTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency).ShouldBe(1, result);
     }
+
+    [Fact]
+    public async Task ShouldHandleCyclicDependencyInSubgraphSharedByRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           DI.Setup(nameof(Composition))
+                               .Root<RootA>("RootA")
+                               .Root<RootB>("RootB");
+
+                           class RootA(Shared dependency);
+
+                           class RootB(Shared dependency);
+
+                           class Shared(RootB root);
+
+                           public class Program { public static void Main() { } }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency).ShouldBeGreaterThan(0, result);
+    }
     
     [Fact]
     public async Task ShouldSupportCtorWithInParameter()
