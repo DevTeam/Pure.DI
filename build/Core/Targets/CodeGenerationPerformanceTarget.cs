@@ -23,6 +23,7 @@ class CodeGenerationPerformanceTarget(
         new("Declarations", 0, 1, 1600),
         new("FactoriesAndTags", 400, 1, 0),
         new("ScopesAndAccumulators", 400, 1, 0),
+        new("MultiTypeLifetimes", 2400, 1, 0),
         new("GenericsAndVariants", 400, 1, 0)
     ];
 

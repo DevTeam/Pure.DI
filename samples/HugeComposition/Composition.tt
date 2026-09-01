@@ -337,6 +337,12 @@
         rootCount = 1;
         declarationCount = 3 + 2 * variantCount;
     }
+    else if (profile == "MultiTypeLifetimes")
+    {
+        bindingCount = requestedBindingCount;
+        rootCount = 1;
+        declarationCount = requestedBindingCount + 1;
+    }
 #>
 // ReSharper disable InconsistentNaming
 // ReSharper disable EmptyConstructor
@@ -766,6 +772,34 @@ public sealed class ScopeProfileConsumer(IEnumerable<IScopeProfileTelemetry> tel
 <# for (var item = 0; item < requestedBindingCount; item++) { #>
 public sealed class ScopeProfileTelemetry<#= item #> : IScopeProfileTelemetry;
 <# } #>
+<# } #>
+
+<# if (profile == "MultiTypeLifetimes") {
+    const int lifetimeTypesPerInvocation = 8;
+    var lifetimeMethods = new[] { "Transient", "Singleton", "Scoped", "PerResolve", "PerBlock" };
+#>
+// Profile: many multi-type lifetime API calls. It isolates semantic processing
+// of Transient<T...>(), Singleton<T...>(), Scoped<T...>(), PerResolve<T...>(),
+// and PerBlock<T...>() without factory or graph-construction noise.
+#pragma warning disable DIW003
+public partial class MultiTypeLifetimeProfileComposition
+{
+    private static void Setup() =>
+        DI.Setup()
+<# for (var firstType = 0; firstType < requestedBindingCount; firstType += lifetimeTypesPerInvocation) {
+       var invocationIndex = firstType / lifetimeTypesPerInvocation;
+       var lastType = System.Math.Min(requestedBindingCount, firstType + lifetimeTypesPerInvocation);
+#>
+            .<#= lifetimeMethods[invocationIndex % lifetimeMethods.Length] #><<# for (var type = firstType; type < lastType; type++) { if (type > firstType) { #>, <# } #>MultiTypeLifetimeService<#= type #><# } #>>()
+<# } #>
+            .Root<MultiTypeLifetimeProfileRoot>("Root");
+}
+
+public sealed class MultiTypeLifetimeProfileRoot;
+<# for (var type = 0; type < requestedBindingCount; type++) { #>
+public sealed class MultiTypeLifetimeService<#= type #>;
+<# } #>
+#pragma warning restore DIW003
 <# } #>
 
 <# if (profile == "GenericsAndVariants") {

@@ -24,7 +24,7 @@ The aliases `codegen-perf` and `cgp` are also available. The target restores the
 
 ## Profiles
 
-One invocation generates and profiles seven compositions from [Composition.tt](Composition.tt). Each profile isolates a different scaling dimension or generator subsystem.
+One invocation generates and profiles eight compositions from [Composition.tt](Composition.tt). Each profile isolates a different scaling dimension or generator subsystem.
 
 | Profile | Generated scale | Purpose |
 |---|---:|---|
@@ -34,6 +34,7 @@ One invocation generates and profiles seven compositions from [Composition.tt](C
 | `Declarations` | 0 bindings; 1 root; 1,600 declarations | Auto-binding discovery and emission over a balanced eight-way graph. |
 | `FactoriesAndTags` | 399 bindings; 1 root; 401 declarations | Simplified factories, unique collection bindings, and tagged injection. |
 | `ScopesAndAccumulators` | 401 bindings; 1 root; 403 declarations | Scoped lifetimes, collections, and accumulator generation. |
+| `MultiTypeLifetimes` | 2,400 bindings; 1 root; 2,401 declarations | Multi-type `Transient`, `Singleton`, `Scoped`, `PerResolve`, and `PerBlock` API processing. |
 | `GenericsAndVariants` | 400 bindings; 1 root; 801 declarations | Marker-based open generics expanded into many closed graphs. |
 
 These sizes are workload definitions, not a machine-specific baseline. They are derived from the profile parameters in the build target. Change them only as an intentional workload revision. Reports from different profile definitions are not directly comparable.
@@ -64,6 +65,7 @@ Every invocation creates one timestamped report set:
   Declarations.xml
   FactoriesAndTags.xml
   ScopesAndAccumulators.xml
+  MultiTypeLifetimes.xml
   GenericsAndVariants.xml
 ```
 
