@@ -1077,6 +1077,44 @@ sealed class ApiInvocationProcessor(
         GenericNameSyntax genericName)
     {
         var contractTypes = genericName.TypeArgumentList.Arguments;
+        if (semanticModel.GetSymbolInfo(invocation).Symbol is IMethodSymbol method
+            && method.TypeArguments.Length == contractTypes.Count)
+        {
+            var hasErrorType = false;
+            for (var index = 0; index < contractTypes.Count; index++)
+            {
+                // ReSharper disable once InvertIf
+                if (method.TypeArguments[index] is IErrorTypeSymbol)
+                {
+                    hasErrorType = true;
+                    break;
+                }
+            }
+
+            if (!hasErrorType)
+            {
+                for (var index = 0; index < contractTypes.Count; index++)
+                {
+                    var contractTypeSymbol = method.TypeArguments[index];
+                    var contractType = contractTypes[index];
+                    if (contractType is NullableTypeSyntax && contractTypeSymbol.IsReferenceType)
+                    {
+                        contractTypeSymbol = contractTypeSymbol.WithNullableAnnotation(NullableAnnotation.Annotated);
+                    }
+
+                    metadataVisitor.VisitContract(
+                        new MdContract(
+                            semanticModel,
+                            invocation,
+                            contractTypeSymbol,
+                            ContractKind.Explicit,
+                            tags));
+                }
+
+                return;
+            }
+        }
+
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var contractType in contractTypes)
         {
