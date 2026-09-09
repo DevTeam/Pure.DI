@@ -541,6 +541,396 @@ public class ArgsTests
         result.StdOut.ShouldBe(["Some Name_99"], result);
     }
 
+    [Fact]
+    public async Task ShouldNotConflictRootArgNameWithPerResolveVariableNameWhenDefaultLifetimeIsPerResolve()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IServiceHost
+                              {
+                                  Type ServiceType { get; }
+                              }
+
+                              class ServiceHostImpl: IServiceHost
+                              {
+                                  public ServiceHostImpl(Type serviceType) => ServiceType = serviceType;
+
+                                  public Type ServiceType { get; }
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // Resolve = Off
+                                      DI.Setup("Composition")
+                                          .DefaultLifetime(Lifetime.PerResolve)
+                                          .Bind<IServiceHost>().To<ServiceHostImpl>()
+                                          .RootArg<Type>("serviceType")
+                                          .Root<IServiceHost>("GetServiceHost");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.GetServiceHost(typeof(IServiceHost)).ServiceType);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.IServiceHost"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotConflictRootArgNameWithPerBlockVariableNameWhenDefaultLifetimeIsPerBlock()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IServiceHost
+                              {
+                                  Type ServiceType { get; }
+                              }
+
+                              class ServiceHostImpl: IServiceHost
+                              {
+                                  public ServiceHostImpl(Type serviceType) => ServiceType = serviceType;
+
+                                  public Type ServiceType { get; }
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // Resolve = Off
+                                      DI.Setup("Composition")
+                                          .DefaultLifetime(Lifetime.PerBlock)
+                                          .Bind<IServiceHost>().To<ServiceHostImpl>()
+                                          .RootArg<Type>("serviceType")
+                                          .Root<IServiceHost>("GetServiceHost");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.GetServiceHost(typeof(IServiceHost)).ServiceType);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.IServiceHost"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotDeclareUnusedSingletonFieldForRootArgWhenDefaultLifetimeIsSingleton()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IServiceHost
+                              {
+                                  Type ServiceType { get; }
+                              }
+
+                              class ServiceHostImpl: IServiceHost
+                              {
+                                  public ServiceHostImpl(Type serviceType) => ServiceType = serviceType;
+
+                                  public Type ServiceType { get; }
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // Resolve = Off
+                                      DI.Setup("Composition")
+                                          .DefaultLifetime(Lifetime.Singleton)
+                                          .Bind<IServiceHost>().To<ServiceHostImpl>()
+                                          .RootArg<Type>("serviceType")
+                                          .Root<IServiceHost>("GetServiceHost");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.GetServiceHost(typeof(IServiceHost)).ServiceType);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.IServiceHost"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotDeclareUnusedScopedFieldForRootArgWhenDefaultLifetimeIsScoped()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IServiceHost
+                              {
+                                  Type ServiceType { get; }
+                              }
+
+                              class ServiceHostImpl: IServiceHost
+                              {
+                                  public ServiceHostImpl(Type serviceType) => ServiceType = serviceType;
+
+                                  public Type ServiceType { get; }
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // Resolve = Off
+                                      DI.Setup("Composition")
+                                          .DefaultLifetime(Lifetime.Scoped)
+                                          .Bind<IServiceHost>().To<ServiceHostImpl>()
+                                          .RootArg<Type>("serviceType")
+                                          .Root<IServiceHost>("GetServiceHost");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.GetServiceHost(typeof(IServiceHost)).ServiceType);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.IServiceHost"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotConflictArgNameWithPerResolveVariableNameWhenDefaultLifetimeIsPerResolve()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IServiceHost
+                              {
+                                  Type ServiceType { get; }
+                              }
+
+                              class ServiceHostImpl: IServiceHost
+                              {
+                                  public ServiceHostImpl(Type serviceType) => ServiceType = serviceType;
+
+                                  public Type ServiceType { get; }
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      DI.Setup("Composition")
+                                          .DefaultLifetime(Lifetime.PerResolve)
+                                          .Bind<IServiceHost>().To<ServiceHostImpl>()
+                                          .Arg<Type>("serviceType")
+                                          .Root<IServiceHost>("GetServiceHost");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition(typeof(IServiceHost));
+                                      Console.WriteLine(composition.GetServiceHost.ServiceType);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.IServiceHost"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportRootArgNamedLikeGeneratedPerResolveVariable()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                              interface IServiceHost
+                              {
+                                  Type ServiceType { get; }
+                              }
+
+                              class ServiceHostImpl: IServiceHost
+                              {
+                                  public ServiceHostImpl(Type perResolveType) => ServiceType = perResolveType;
+
+                                  public Type ServiceType { get; }
+                              }
+
+                              static class Setup
+                              {
+                                  private static void SetupComposition()
+                                  {
+                                      // Resolve = Off
+                                      DI.Setup("Composition")
+                                          .DefaultLifetime(Lifetime.PerResolve)
+                                          .Bind<IServiceHost>().To<ServiceHostImpl>()
+                                          .RootArg<Type>("perResolveType")
+                                          .Root<IServiceHost>("GetServiceHost");
+                                  }
+                              }
+
+                              public class Program
+                              {
+                                  public static void Main()
+                                  {
+                                      var composition = new Composition();
+                                      Console.WriteLine(composition.GetServiceHost(typeof(IServiceHost)).ServiceType);
+                                  }
+                              }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Sample.IServiceHost"], result);
+    }
+
+    [Fact]
+    public async Task ShouldStillCachePerResolveDependenciesWhenRootArgSharesDefaultLifetime()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+
+                               class Dependency: IDependency {}
+
+                               interface IService
+                               {
+                                   IDependency Dep1 { get; }
+
+                                   IDependency Dep2 { get; }
+
+                                   Type ServiceType { get; }
+                               }
+
+                               class Service: IService
+                               {
+                                   public Service(IDependency dep1, IDependency dep2, Type serviceType)
+                                   {
+                                       Dep1 = dep1;
+                                       Dep2 = dep2;
+                                       ServiceType = serviceType;
+                                   }
+
+                                   public IDependency Dep1 { get; }
+
+                                   public IDependency Dep2 { get; }
+
+                                   public Type ServiceType { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // Resolve = Off
+                                       DI.Setup("Composition")
+                                           .DefaultLifetime(Lifetime.PerResolve)
+                                           .Bind<IDependency>().To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .RootArg<Type>("serviceType")
+                                           .Root<IService>("GetService");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.GetService(typeof(IService));
+                                       Console.WriteLine(service.Dep1 == service.Dep2);
+                                       Console.WriteLine(service.ServiceType);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "Sample.IService"], result);
+    }
+
 #if ROSLYN5_6_OR_GREATER
     [Fact]
     public async Task ShouldSupportScopedReadOnlySpanRootArg()

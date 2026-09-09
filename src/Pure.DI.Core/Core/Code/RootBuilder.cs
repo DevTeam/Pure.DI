@@ -93,7 +93,7 @@ class RootBuilder(
         }
 
         var setup = rootContext.Graph.Source;
-        AddPerResolveVars(rootContext.Lines, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve), setup);
+        AddPerResolveVars(rootContext.Lines, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve && i.Node.Arg is null), setup);
         rootContext.Lines.AppendLines(lines);
         return rootVarInjection;
     }
