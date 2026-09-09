@@ -7057,10 +7057,10 @@ public class OwnedTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
-        var rootCode = global::System.Text.RegularExpressions.Regex.Match(
+        var rootCode = Regex.Match(
             result.GeneratedCode,
             @"public global::Sample\.Transaction Transaction\s*\{(?<body>.*?)#endregion",
-            global::System.Text.RegularExpressions.RegexOptions.Singleline)
+            RegexOptions.Singleline)
             .Groups["body"]
             .Value;
         rootCode.ShouldNotBeEmpty(result.ToString());

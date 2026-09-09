@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ConvertToStaticClass
 namespace AvaloniaApp;
 
 public class Program

@@ -15,6 +15,7 @@ $r=Shouldly
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedParameter.Global
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.BCL.EnumerableScenario;
 
 using System.Collections.Immutable;

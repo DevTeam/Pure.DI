@@ -2828,7 +2828,7 @@ if (i < 4)
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration <#= lifetime #><T>(global::System.Func<IContext, T> factory, params object[] tags)<#=allowsRefLikeResult ? $"{GetAllowsRefStructBlock(new[] { "T" }, "            ")}{Environment.NewLine}            ;" : ";"#>
+        IConfiguration <#= lifetime #><T>(global::System.Func<IContext, T> factory, params object[] tags)<#=allowsRefLikeResult ? $"{GetAllowsRefStructBlock([ "T" ], "            ")}{Environment.NewLine}            ;" : ";"#>
 
         /// <summary>
         /// Binds to a lifetime-specific context-free factory delegate that creates the implementation instance.
@@ -2866,7 +2866,7 @@ if (i < 4)
         /// <item>When specific object states need to be set during creation</item>
         /// </list>
         /// </remarks>
-        IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags)<#=allowsRefLikeResult ? $"{GetAllowsRefStructBlock(new[] { "T" }, "            ")}{Environment.NewLine}            ;" : ";"#>
+        IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags)<#=allowsRefLikeResult ? $"{GetAllowsRefStructBlock([ "T" ], "            ")}{Environment.NewLine}            ;" : ";"#>
 <#
 for (var i = 0; i < baseCount; i++)
 {
@@ -3908,13 +3908,13 @@ var allowsRefStructBlock = allowsRefLikeResult
 #>
 
             /// <inheritdoc />
-            public IConfiguration <#=lifetime#><T>(global::System.Func<IContext, T> factory, params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock(new[] { "T" }, "                ") : ""#>
+            public IConfiguration <#=lifetime#><T>(global::System.Func<IContext, T> factory, params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock([ "T" ], "                ") : ""#>
             {
                 return this;
             }
 
             /// <inheritdoc />
-            public IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock(new[] { "T" }, "                ") : ""#>
+            public IConfiguration <#= lifetime #><T>(global::System.Func<T> factory, params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock([ "T" ], "                ") : ""#>
             {
                 return this;
             }
