@@ -2029,15 +2029,30 @@ public class CtorTests
         var result = await """
                            using Pure.DI;
 
-                           DI.Setup(nameof(Composition))
-                               .Root<RootA>("RootA")
-                               .Root<RootB>("RootB");
+                           static class Setup
+                           {
+                               private static void SetupComposition()
+                               {
+                                   DI.Setup(nameof(Composition))
+                                       .Root<RootA>("RootA")
+                                       .Root<RootB>("RootB");
+                               }
+                           }
 
-                           class RootA(Shared dependency);
+                           class RootA
+                           {
+                               public RootA(Shared dependency) { }
+                           }
 
-                           class RootB(Shared dependency);
+                           class RootB
+                           {
+                               public RootB(Shared dependency) { }
+                           }
 
-                           class Shared(RootB root);
+                           class Shared
+                           {
+                               public Shared(RootB root) { }
+                           }
 
                            public class Program { public static void Main() { } }
                            """.RunAsync();

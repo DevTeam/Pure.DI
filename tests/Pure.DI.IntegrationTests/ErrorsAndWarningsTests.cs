@@ -4728,23 +4728,38 @@ public class ErrorsAndWarningsTests
         var result = await """
                            using Pure.DI;
 
-                           DI.Setup(nameof(Composition))
-                               .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                               .Bind<IService>().To<Service>()
-                               .Root<RegularRoot>("Regular")
-                               .Root<StaticRoot>("Static", kind: RootKinds.Static);
+                           static class Setup
+                           {
+                               private static void SetupComposition()
+                               {
+                                   DI.Setup(nameof(Composition))
+                                       .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                                       .Bind<IService>().To<Service>()
+                                       .Root<RegularRoot>("Regular")
+                                       .Root<StaticRoot>("Static", kind: RootKinds.Static);
+                               }
+                           }
 
-                           interface IDependency;
+                           interface IDependency { }
 
-                           class Dependency : IDependency;
+                           class Dependency : IDependency { }
 
-                           interface IService;
+                           interface IService { }
 
-                           class Service(IDependency dependency) : IService;
+                           class Service : IService
+                           {
+                               public Service(IDependency dependency) { }
+                           }
 
-                           class RegularRoot(IService service);
+                           class RegularRoot
+                           {
+                               public RegularRoot(IService service) { }
+                           }
 
-                           class StaticRoot(IService service);
+                           class StaticRoot
+                           {
+                               public StaticRoot(IService service) { }
+                           }
 
                            public class Program { public static void Main() { } }
                            """.RunAsync();

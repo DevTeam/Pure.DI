@@ -23,13 +23,13 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
         node switch
         {
             { Construct.Source: { Kind: MdConstructKind.Override, State: DpOverride @override } } => GetOverrideVariableName(@override.Source),
-            { ActualLifetime: Lifetime.Singleton } => GetPersistentVariableName(Names.SingletonVariablePrefix, node.Node.Type.Name, node.BindingId),
-            { ActualLifetime: Lifetime.Scoped } => GetPersistentVariableName(Names.ScopedVariablePrefix, node.Node.Type.Name, node.BindingId),
-            { ActualLifetime: Lifetime.PerResolve } => GetUniqueVariableName(Names.PerResolveVariablePrefix, GetTypeName(node.Node.Type)),
             { Arg: { Source.Kind: ArgKind.Composition } arg } => arg.Source.IsSetupContext
                 ? arg.Source.ArgName
                 : $"{Names.ArgVariablePrefix}{ToTitleCase(arg.Source.ArgName)}{Names.Salt}",
             { Arg: { Source.Kind: ArgKind.Root } arg } => arg.Source.ArgName,
+            { ActualLifetime: Lifetime.Singleton } => GetPersistentVariableName(Names.SingletonVariablePrefix, node.Node.Type.Name, node.BindingId),
+            { ActualLifetime: Lifetime.Scoped } => GetPersistentVariableName(Names.ScopedVariablePrefix, node.Node.Type.Name, node.BindingId),
+            { ActualLifetime: Lifetime.PerResolve } => GetUniqueVariableName(Names.PerResolveVariablePrefix, GetTypeName(node.Node.Type)),
             { ActualLifetime: Lifetime.PerBlock } => GetUniqueVariableName(Names.PerBlockVariablePrefix, GetTypeName(node.Node.Type)),
             _ => GetUniqueVariableName(Names.TransientVariablePrefix, GetTypeName(node.Node.Type))
         };

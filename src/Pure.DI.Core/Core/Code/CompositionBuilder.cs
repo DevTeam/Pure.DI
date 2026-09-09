@@ -142,7 +142,7 @@ class CompositionBuilder(
         }
 
         var singletons = varsMap.Declarations
-            .Where(i => i.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped)
+            .Where(i => i.Node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped && i.Node.Arg is null)
             .ToImmutableArray();
         var publicRoots = roots
             .OrderByDescending(root => root.IsPublic)
