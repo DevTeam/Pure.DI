@@ -46,6 +46,7 @@ The build logic is a regular [.NET console application](/build). You can use [bu
 |  | Generate AI context |
 | bm | Run benchmarks |
 | c | Compatibility checks |
+| cgp, codegen-perf | Profile Pure.DI code generation |
 | dp | Package deployment |
 | e | Create examples |
 | g | Build and test the source code generator |

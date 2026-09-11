@@ -2567,13 +2567,13 @@ class StripeGateway(StripeApiClient api)
 
 class BankAccount
 {
-    public string Iban => "DE00 1234 5678";
+    public string IBAN => "DE00 1234 5678";
 }
 
 class BankGateway(BankAccount account)
 {
     public string Transfer(int amountInCents) =>
-        $"bank transfer {amountInCents} from {account.Iban}";
+        $"bank transfer {amountInCents} from {account.IBAN}";
 }
 
 // A union type: its case types are implicitly convertible
@@ -12465,7 +12465,7 @@ public interface IClockConfig
     TimeSpan Offset { get; }
 }
 
-[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+[CreateAssetMenu(FileName = "ClockConfig", MenuName = "Clock/Config")]
 public class ClockConfig : ScriptableObject, IClockConfig
 {
     [SerializeField] int offsetHours;
@@ -12563,7 +12563,7 @@ public class ClockDigital : MonoBehaviour
     void FixedUpdate()
     {
         var now = ClockService.Now;
-        timeText.text = now.ToString("HH:mm:ss");
+        timeText.Value = now.ToString("HH:mm:ss");
     }
 }
 
@@ -12576,7 +12576,7 @@ public interface IClockConfig
     ClockDigital ClockDigitalPrefab { get; }
 }
 
-[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+[CreateAssetMenu(FileName = "ClockConfig", MenuName = "Clock/Config")]
 public class ClockConfig : ScriptableObject, IClockConfig
 {
     [SerializeField] int offsetHours;
@@ -12735,7 +12735,7 @@ public interface IClockConfig
     TimeSpan Offset { get; }
 }
 
-[CreateAssetMenu(fileName = "ClockConfig", menuName = "Clock/Config")]
+[CreateAssetMenu(FileName = "ClockConfig", MenuName = "Clock/Config")]
 public class ClockConfig : ScriptableObject, IClockConfig
 {
     [SerializeField] int offsetHours;
@@ -12996,7 +12996,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -13067,11 +13067,11 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -13149,11 +13149,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -13247,7 +13247,7 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -13350,7 +13350,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -13439,7 +13439,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -13547,11 +13547,11 @@ The [project file](/samples/EF/EF.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -13622,11 +13622,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -13793,11 +13793,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -13893,11 +13893,11 @@ The [project file](/samples/MinimalWebAPI/MinimalWebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -14225,7 +14225,7 @@ The [project file](/samples/UnoApp/UnoApp.csproj) uses the current single-projec
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -14311,11 +14311,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -14387,11 +14387,11 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk.Web">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.5.3" />
+        <PackageReference Include="Pure.DI.MS" Version="2.5.4" />
     </ItemGroup>
 
 </Project>
@@ -14467,7 +14467,7 @@ The [project file](/samples/WinFormsAppNetCore/WinFormsAppNetCore.csproj) looks 
 <Project Sdk="Microsoft.NET.Sdk">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -14548,7 +14548,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -14691,7 +14691,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
 <Project Sdk="Microsoft.NET.Sdk">
    ...
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.3">
+        <PackageReference Include="Pure.DI" Version="2.5.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
