@@ -20,6 +20,10 @@ interface IHints : IReadOnlyDictionary<Hint, LinkedList<string>>
 
     bool IsOnNewRootPartial { get; }
 
+    bool IsOnDisposeEnabled { get; }
+
+    bool IsOnDisposeAsyncEnabled { get; }
+
     bool IsThreadSafeEnabled { get; }
 
     bool IsToStringEnabled { get; }

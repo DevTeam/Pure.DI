@@ -31,6 +31,12 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
     public bool IsOnNewRootPartial =>
         IsEnabled(Hint.OnNewRootPartial, SettingState.On);
 
+    public bool IsOnDisposeEnabled =>
+        IsEnabled(Hint.OnDispose, SettingState.Off);
+
+    public bool IsOnDisposeAsyncEnabled =>
+        IsEnabled(Hint.OnDisposeAsync, SettingState.Off);
+
     public bool IsThreadSafeEnabled =>
         IsEnabled(Hint.ThreadSafe, SettingState.On);
 

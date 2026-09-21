@@ -81,6 +81,9 @@ static class Names
     public const string OnNewInstanceMethodName = "OnNewInstance";
     public const string OnDisposeExceptionMethodName = "OnDisposeException";
     public const string OnDisposeAsyncExceptionMethodName = "OnDisposeAsyncException";
+    public const string OnDisposeMethodName = "OnDispose";
+    public const string OnDisposeAsyncMethodName = "OnDisposeAsync";
+    public const string DisposedVariableName = "disposed";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
     public const string OnNewRootMethodName = "OnNewRoot";

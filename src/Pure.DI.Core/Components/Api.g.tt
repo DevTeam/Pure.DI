@@ -699,6 +699,52 @@ namespace Pure.DI
         OnNewRootPartial,
 
         /// <summary>
+        /// Enables or disables the <c>OnDispose</c> hook for tracked disposable instances.
+        /// When enabled, the composition declares a <c>partial bool OnDispose&lt;T&gt;(in T disposableInstance)</c>
+        /// extended partial method that lets you replace the default <see cref="global::System.IDisposable.Dispose"/>
+        /// invocation with a custom strategy (e.g. <c>Close</c> with timeout / <c>Abort</c> fallback for WCF clients).
+        /// Return <c>true</c> from the hook to skip the default disposal call. Default: <c>Off</c>.
+        /// <example>
+        /// <code>
+        /// // OnDispose = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        ///
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnDispose, "On")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        OnDispose,
+
+        /// <summary>
+        /// Enables or disables the <c>OnDisposeAsync</c> hook for tracked async disposable instances.
+        /// When enabled, the composition declares a <c>partial System.Threading.Tasks.ValueTask&lt;bool&gt; OnDisposeAsync&lt;T&gt;(in T asyncDisposableInstance)</c>
+        /// extended partial method that lets you replace the default <see cref="global::System.IAsyncDisposable.DisposeAsync"/>
+        /// invocation with a custom strategy (e.g. <c>CloseAsync</c> with timeout / <c>Abort</c> fallback for WCF clients).
+        /// Return <c>true</c> from the hook to skip the default disposal call. Default: <c>Off</c>.
+        /// <example>
+        /// <code>
+        /// // OnDisposeAsync = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        ///
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnDisposeAsync, "On")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        OnDisposeAsync,
+
+        /// <summary>
         /// Enables or disables generation of a Mermaid class diagram via ToString(). Default: <c>Off</c>.
         /// <example>
         /// <code>
