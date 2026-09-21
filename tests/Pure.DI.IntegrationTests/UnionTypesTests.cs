@@ -2483,7 +2483,9 @@ public class UnionTypesTests
 
 #pragma warning disable RSEXPERIMENTAL006
         var conversion = compilation.ClassifyConversion(sourceType, targetType);
-        conversion.IsUnion.ShouldBeFalse();
+        // Roslyn 5.9+ now classifies the IUnionMembers.Create(T) provider conversion as a union conversion,
+        // which is exactly the "compiler-driven" behavior Pure.DI relies on (no provider emulation in Pure.DI itself).
+        conversion.IsUnion.ShouldBeTrue();
 #pragma warning restore RSEXPERIMENTAL006
     }
 

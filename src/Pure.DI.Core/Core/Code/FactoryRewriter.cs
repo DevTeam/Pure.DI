@@ -1,4 +1,4 @@
-﻿// ReSharper disable ConvertIfStatementToReturnStatement
+// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable InvertIf
 
 // ReSharper disable UseCollectionExpression
@@ -218,6 +218,48 @@ sealed class FactoryRewriter(
         }
 
         return newNode;
+    }
+
+    public override SyntaxNode? VisitSwitchSection(SwitchSectionSyntax node)
+    {
+        var visited = (SwitchSectionSyntax?)base.VisitSwitchSection(node);
+        if (visited is null)
+        {
+            return null;
+        }
+
+        // When ctx.Inject (or similar context action) is used directly inside a switch
+        // case without an explicit block, VisitExpressionStatement wraps the inject call
+        // in a new Block to keep the local variable in scope. However, this leaves any
+        // following statements (such as `return workerA;`) outside the new block, which
+        // causes a compile error: the local variable is not visible outside the block.
+        // To fix this, if any statement in the section became a Block, we merge all
+        // statements into a single Block so they share the same scope.
+        if (visited.Statements.Count > 1 && visited.Statements.Any(s => s is BlockSyntax))
+        {
+            var mergedStatements = new List<StatementSyntax>(visited.Statements.Count);
+            foreach (var statement in visited.Statements)
+            {
+                if (statement is BlockSyntax innerBlock)
+                {
+                    mergedStatements.AddRange(innerBlock.Statements);
+                }
+                else
+                {
+                    mergedStatements.Add(statement);
+                }
+            }
+
+            var firstStatement = visited.Statements[0];
+            var lastStatement = visited.Statements[visited.Statements.Count - 1];
+            var mergedBlock = SyntaxFactory.Block(mergedStatements)
+                .WithLeadingTrivia(firstStatement.GetLeadingTrivia())
+                .WithTrailingTrivia(lastStatement.GetTrailingTrivia());
+
+            return visited.WithStatements(new SyntaxList<StatementSyntax>(mergedBlock));
+        }
+
+        return visited;
     }
 
     private static SyntaxTrivia GetPrefix(SyntaxNode node)
