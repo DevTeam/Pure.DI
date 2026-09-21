@@ -2138,7 +2138,8 @@ public class UnionTypesTests
         result.StdOut.ShouldBe(["0", "1"], result);
     }
 
-    [Fact(Skip = "Roslyn 5.6 does not classify IUnionMembers provider conversions yet.")]
+#if ROSLYN5_10_OR_GREATER
+    [Fact]
     public async Task ShouldResolveGenericCustomUnionWithMemberProvider()
     {
         var result = await """
@@ -2186,8 +2187,10 @@ public class UnionTypesTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Success"], result);
     }
+#endif
 
-    [Fact(Skip = "Roslyn 5.6 does not classify IUnionMembers provider conversions yet.")]
+#if ROSLYN5_10_OR_GREATER
+    [Fact]
     public async Task ShouldResolveCustomUnionThroughInMemberProviderFactory()
     {
         var result = await """
@@ -2239,8 +2242,10 @@ public class UnionTypesTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["CacheHit { Value = 42 }"], result);
     }
+#endif
 
-    [Fact(Skip = "Roslyn 5.6 does not classify IUnionMembers provider conversions yet.")]
+#if ROSLYN5_10_OR_GREATER
+    [Fact]
     public async Task ShouldShowAmbiguityForCustomUnionMemberProviderCases()
     {
         var result = await """
@@ -2289,6 +2294,7 @@ public class UnionTypesTests
         result.Success.ShouldBeFalse(result);
         result.Errors.Count(i => i.Id == LogId.ErrorAmbiguousUnionCaseBindings).ShouldBe(1, result);
     }
+#endif
 
     [Theory]
     [InlineData("List<PaymentGateway>")]
@@ -2439,6 +2445,7 @@ public class UnionTypesTests
         result.StdOut.ShouldBe(["2", "Bank,Stripe"], result);
     }
 
+#if ROSLYN5_10_OR_GREATER
     [Fact]
     public void ShouldKeepMemberProviderSupportCompilerDriven()
     {
@@ -2488,6 +2495,7 @@ public class UnionTypesTests
         conversion.IsUnion.ShouldBeTrue();
 #pragma warning restore RSEXPERIMENTAL006
     }
+#endif
 
     [Theory]
     [InlineData("List<PaymentGateway>")]
