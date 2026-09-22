@@ -452,7 +452,52 @@ sealed class FactoryRewriter(
                         : SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression, SyntaxFactory.Token(SyntaxKind.FalseKeyword));
 
                 case nameof(IContext.RootType):
-                    return SyntaxFactory.ParseExpression($"typeof({typeResolver.ResolveRuntime(_ctx!.RootContext.Graph.Source, _ctx!.RootContext.Root.Injection.Type)})");
+                    {
+                        // #154 When a user root's per-block lambda body is generated inside a wrapping lightweight
+                        // root (LightweightKind.RootsProvider), the surrounding RootContext points to the wrapping
+                        // instance and ctx.RootType would otherwise be the lightweight root type. The user expects
+                        // ctx.RootType to match the type passed to Resolve<T>(), so we look up the actual user root
+                        // (any non-wrapper root whose Injection.Type matches a node in the Parents chain or the
+                        // current variable).
+                        var rootContext = _ctx!.RootContext;
+                        var rootContextRootType = rootContext.Root.Injection.Type;
+                        ITypeSymbol? owningRootType = null;
+                        if (rootContext.Root.Source.LightweightKind == LightweightKind.RootsProvider)
+                        {
+                            foreach (var candidate in rootContext.Graph.Roots)
+                            {
+                                if (candidate.Source.LightweightKind == LightweightKind.RootsProvider)
+                                {
+                                    continue;
+                                }
+
+                                var candidateType = candidate.Injection.Type;
+                                var found = false;
+                                foreach (var parent in _ctx.Parents)
+                                {
+                                    if (SymbolEqualityComparer.Default.Equals(parent.Var.AbstractNode.Node.Type, candidateType))
+                                    {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!found && SymbolEqualityComparer.Default.Equals(_ctx.VarInjection.Var.AbstractNode.Node.Type, candidateType))
+                                {
+                                    found = true;
+                                }
+
+                                if (found)
+                                {
+                                    owningRootType = candidateType;
+                                    break;
+                                }
+                            }
+                        }
+
+                        var rootType = owningRootType ?? rootContextRootType;
+                        return SyntaxFactory.ParseExpression($"typeof({typeResolver.ResolveRuntime(rootContext.Graph.Source, rootType)})");
+                    }
 
                 case nameof(IContext.RootName):
                     return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(_ctx!.RootContext.Root.DisplayName));
