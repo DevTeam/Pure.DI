@@ -2017,6 +2017,9 @@ namespace Pure.DI
                             try
                             {
                                 // Handle async disposables natively
+                                var skipAsync = false;
+                                OnDisposeAsync(in asyncDisposableInstance, ref skipAsync);
+                                if (skipAsync) break;
                                 await asyncDisposableInstance.DisposeAsync();
                             }
                             catch (global::System.Exception exception)
@@ -2030,6 +2033,9 @@ namespace Pure.DI
                             try
                             {
                                 // Handle sync disposables directly
+                                var skipSync = false;
+                                OnDispose(in disposableInstance, ref skipSync);
+                                if (skipSync) break;
                                 disposableInstance.Dispose();
                             }
                             catch (global::System.Exception exception)
@@ -2084,6 +2090,9 @@ namespace Pure.DI
                 case global::System.IDisposable disposableInstance:
                     try
                     {
+                        var skipSync = false;
+                        OnDispose(in disposableInstance, ref skipSync);
+                        if (skipSync) break;
                         disposableInstance.Dispose();
                     }
                     catch (global::System.Exception exception)
@@ -2096,6 +2105,9 @@ namespace Pure.DI
                 case global::System.IAsyncDisposable asyncDisposableInstance:
                     try
                     {
+                        var skipAsync = false;
+                        OnDisposeAsync(in asyncDisposableInstance, ref skipAsync);
+                        if (skipAsync) break;
                         asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();
                     }
                     catch (global::System.Exception exception)
@@ -2123,6 +2135,19 @@ namespace Pure.DI
         partial void OnDisposeException<T>(T disposableInstance, global::System.Exception exception)
             where T: global::System.IDisposable;
 
+        /// <summary>
+        /// Override this partial method to customize the synchronous disposal of a tracked instance.
+        /// Set <paramref name="skipDefaultDispose"/> to <c>true</c> when the instance has already been disposed of by the hook
+        /// (for example via a Close-with-timeout / Abort fallback) and the default
+        /// <see cref="global::System.IDisposable.Dispose"/> call must be skipped;
+        /// leave it <c>false</c> to let this owner invoke the default disposal afterwards.
+        /// </summary>
+        /// <param name="disposableInstance">The disposable instance to be disposed.</param>
+        /// <param name="skipDefaultDispose">When set to <c>true</c> by the hook, the default disposal is skipped.</param>
+        /// <typeparam name="T">Concrete type of the disposable instance</typeparam>
+        partial void OnDispose<T>(in T disposableInstance, ref bool skipDefaultDispose)
+            where T: global::System.IDisposable;
+
 #if NET || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <summary>
         /// Override this partial method to implement custom exception handling
@@ -2132,6 +2157,19 @@ namespace Pure.DI
         /// <param name="exception">Exception that occurred during disposal</param>
         /// <typeparam name="T">Concrete type of the disposable instance</typeparam>
         partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, global::System.Exception exception)
+            where T: global::System.IAsyncDisposable;
+
+        /// <summary>
+        /// Override this partial method to customize the asynchronous disposal of a tracked instance.
+        /// Set <paramref name="skipDefaultDispose"/> to <c>true</c> when the instance has already been disposed of by the hook
+        /// (for example via a CloseAsync-with-timeout / Abort fallback) and the default
+        /// <see cref="global::System.IAsyncDisposable.DisposeAsync"/> call must be skipped;
+        /// leave it <c>false</c> to let this owner invoke the default disposal afterwards.
+        /// </summary>
+        /// <param name="asyncDisposableInstance">The async disposable instance to be disposed.</param>
+        /// <param name="skipDefaultDispose">When set to <c>true</c> by the hook, the default disposal is skipped.</param>
+        /// <typeparam name="T">Concrete type of the async disposable instance</typeparam>
+        partial void OnDisposeAsync<T>(in T asyncDisposableInstance, ref bool skipDefaultDispose)
             where T: global::System.IAsyncDisposable;
 #endif
     }
