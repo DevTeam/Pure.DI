@@ -361,6 +361,20 @@ sealed class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.DependsOn):
+                        // DependsOn(params string[] setupNames)
+                        // Several setup names may be passed as separate arguments,
+                        // which is resolved by the compiler to the params overload.
+                        if (IsDependsOnWithSeveralSetups(semanticModel, invocation))
+                        {
+                            if (BuildConstantArgs<string>(semanticModel, invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
+                            {
+                                var names = compositionTypeNames.Select(compositionName => new MdDependsOnItem(CreateCompositionName(compositionName, @namespace, invocation.ArgumentList))).ToImmutableArray();
+                                metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation, names, true));
+                            }
+
+                            break;
+                        }
+
                         // DependsOn(string setupName, SetupContextKind kind, string name = "")
                         var dependsOnArgs = arguments.GetArgs(invocation.ArgumentList, "setupName", "kind", "name");
                         if (dependsOnArgs is [{ Expression: {} setupNameExpression }, _, _]
@@ -1666,6 +1680,13 @@ sealed class ApiInvocationProcessor(
             ImmutableArray.Create(locationProvider.GetLocation(source)),
             LogId.ErrorNotSupportedSyntax,
             nameof(Strings.Error_Template_NotSupported));
+
+    private static bool IsDependsOnWithSeveralSetups(
+        SemanticModel semanticModel,
+        InvocationExpressionSyntax invocation) =>
+        // The compiler resolves several setup names passed as separate arguments,
+        // as well as a single array or collection expression, to the params overload.
+        semanticModel.GetSymbolInfo(invocation).Symbol is IMethodSymbol { Parameters: [{ IsParams: true }] };
 
     private IReadOnlyList<T> BuildConstantArgs<T>(
         SemanticModel semanticModel,

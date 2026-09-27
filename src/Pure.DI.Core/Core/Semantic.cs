@@ -318,7 +318,8 @@ sealed class Semantic(
             return true;
         }
 
-        if (typeof(T).IsEnum)
+        if (typeof(T).IsEnum
+            && obj.GetType() == Enum.GetUnderlyingType(typeof(T)))
         {
             val = (T)Enum.ToObject(typeof(T), obj);
             return true;

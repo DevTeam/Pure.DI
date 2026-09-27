@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 using System.Text;
 using Core;
@@ -1723,6 +1723,58 @@ public class SetupTests
         result.StdOut.ShouldBe(["(1, 2)"], result);
     }
 #endif
+
+    [Fact]
+    public async Task ShouldSupportDependsOnWhenSeveralSetupsArePassedAsSeparateArguments()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupBaseComposition1()
+                                   {
+                                       DI.Setup("BaseComposition1")
+                                           .RootBind<int>().To(_ => 1);
+                                   }
+                           
+                                   private static void SetupBaseComposition2()
+                                   {
+                                       DI.Setup("BaseComposition2")
+                                           .RootBind<string>().To(_ => "2");
+                                   }
+                           
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition").DependsOn("BaseComposition1", "BaseComposition2")
+                                           .Root<(int, string)>("Root");
+                                   }
+                               }  
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        // Every argument of the params overload is a setup name, not a setup context kind,
+        // so the generator must not fail with the unhandled error DIE043.
+        result.Errors.ShouldNotContain(i => i.Id == LogId.ErrorUnhandled, result);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["(1, 2)"], result);
+    }
 
     [Fact]
     public async Task ShouldSupportNestedUsing()
@@ -4283,5 +4335,119 @@ public class SetupTests
 
         // Then
         result.Success.ShouldBeTrue(result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportDependsOnParamsOverloadWithMoreThanTwoSetups()
+    {
+        // Given
+        // Same params overload but with three setup names passed as separate arguments,
+        // which exercises BuildConstantArgs with a list longer than two.
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal partial class Composition1
+                               {
+                                   private void Setup() => DI.Setup(nameof(Composition1), CompositionKind.Internal)
+                                       .Bind<int>().To(_ => 1);
+                               }
+
+                               internal partial class Composition2
+                               {
+                                   private void Setup() => DI.Setup(nameof(Composition2), CompositionKind.Internal)
+                                       .Bind<long>().To(_ => 2L);
+                               }
+
+                               internal partial class Composition3
+                               {
+                                   private void Setup() => DI.Setup(nameof(Composition3), CompositionKind.Internal)
+                                       .Bind<string>().To(_ => "C");
+                               }
+
+                               internal partial class Composition
+                               {
+                                   void Setup() => DI.Setup()
+                                       .DependsOn(
+                                           nameof(Composition1),
+                                           nameof(Composition2),
+                                           nameof(Composition3))
+                                       .Root<int>("RootInt")
+                                       .Root<long>("RootLong")
+                                       .Root<string>("RootString");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.RootInt);
+                                       Console.WriteLine(composition.RootLong);
+                                       Console.WriteLine(composition.RootString);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Errors.ShouldNotContain(i => i.Id == LogId.ErrorUnhandled, result);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1", "2", "C"], result);
+    }
+
+    [Fact]
+    public async Task ShouldHandleDependsOnSetupNameKindAndNamedContextName()
+    {
+        // Given
+        // Regression: the original DependsOn(string setupName, SetupContextKind kind, string name)
+        // overload must keep working after the params overload was added.
+        // The setup uses named arguments to disambiguate from the new params overload.
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               internal partial class BaseComposition
+                               {
+                                   internal int Value => 42;
+
+                                   internal int GetValue() => Value;
+
+                                   private void Setup() => DI.Setup(nameof(BaseComposition), CompositionKind.Internal)
+                                       .Bind<int>().To(_ => GetValue());
+                               }
+
+                               internal partial class Composition : BaseComposition
+                               {
+                                   private void Setup() => DI.Setup(nameof(Composition))
+                                       .DependsOn(
+                                           setupName: nameof(BaseComposition),
+                                           kind: SetupContextKind.Members,
+                                           name: "baseContext")
+                                       .Root<int>("Root");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       Console.WriteLine(new Composition().Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion: LanguageVersion.CSharp9));
+
+        // Then
+        result.Errors.ShouldNotContain(i => i.Id == LogId.ErrorUnhandled, result);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["42"], result);
     }
 }
