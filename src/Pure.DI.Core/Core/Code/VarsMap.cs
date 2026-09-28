@@ -191,6 +191,21 @@ class VarsMap(
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
 
+        if (restoreLocalFunctionCalled)
+        {
+            // A deferred branch can run before any of its sibling branches. A singleton or
+            // scoped instance created while generating a sibling must be checked again here.
+            foreach (var existingVar in _map.Values)
+            {
+                if (existingVar.IsCreated
+                    && existingVar.AbstractNode.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped
+                    && !_activeScopes.Any(active => active.ExcludeBindingId == existingVar.AbstractNode.BindingId))
+                {
+                    existingVar.ResetStateToDefaults(true);
+                }
+            }
+        }
+
         // If the lazy graph injects an accumulator already used by its parent,
         // it defines a nested accumulation boundary. This is intentionally
         // based on accumulator metadata, not on a specific ownership wrapper.
