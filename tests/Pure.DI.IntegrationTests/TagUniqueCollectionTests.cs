@@ -15,6 +15,68 @@ namespace Pure.DI.IntegrationTests;
 public class TagUniqueCollectionTests
 {
     [Fact]
+    public async Task ShouldAggregateUniqueBindingsInFactoryFromInternalSetup()
+    {
+        // Two namespace blocks in one file must retain their own setup names.
+        // Singleton<GenericAdapter>() also contributes its IAdapter contract to the collection.
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using Pure.DI;
+
+                           namespace Sample.Contracts
+                           {
+                               internal interface IAdapter { }
+                               internal sealed class GenericAdapter : IAdapter { }
+                               internal sealed class FileAdapter : IAdapter { }
+                               internal sealed class ProcessAdapter : IAdapter { }
+
+                               internal sealed class Presentations
+                               {
+                                   public Presentations(GenericAdapter generic, IReadOnlyCollection<IAdapter> adapters)
+                                   {
+                                       foreach (var adapter in adapters)
+                                       {
+                                           Console.WriteLine(adapter.GetType().Name);
+                                       }
+                                   }
+                               }
+
+                               internal sealed class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(kind: CompositionKind.Internal)
+                                           .Bind<Presentations>().As(Lifetime.Singleton)
+                                               .To((GenericAdapter generic, IReadOnlyCollection<IAdapter> adapters)
+                                                   => new Presentations(generic, adapters))
+                                           .Singleton<GenericAdapter>()
+                                           .Bind<IAdapter>(Tag.Unique).To<FileAdapter>()
+                                           .Bind<IAdapter>(Tag.Unique).To<ProcessAdapter>();
+                               }
+                           }
+
+                           namespace Sample
+                           {
+                               internal sealed partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup()
+                                           .DependsOn("Sample.Contracts.Composition")
+                                           .Root<Sample.Contracts.Presentations>("Root");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync();
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["GenericAdapter", "FileAdapter", "ProcessAdapter"], result);
+    }
+
+    [Fact]
     public async Task ShouldAggregateIntoIEnumerable()
     {
         // Given

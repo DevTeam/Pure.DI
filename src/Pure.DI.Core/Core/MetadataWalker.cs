@@ -18,7 +18,6 @@ sealed class MetadataWalker(
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private readonly List<UsingDirectiveSyntax> _usingDirectives = [];
     private bool _isMetadata;
-    private string _namespace = string.Empty;
     private SemanticModel? _semanticModel;
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
@@ -49,7 +48,11 @@ sealed class MetadataWalker(
         invocations.Reverse();
         foreach (var invocation in invocations)
         {
-            invocationProcessor.ProcessInvocation(metadataVisitor, _semanticModel, invocation, _namespace);
+            var @namespace = string.Join(".", invocation.Ancestors()
+                .OfType<BaseNamespaceDeclarationSyntax>()
+                .Reverse()
+                .Select(declaration => declaration.Name.ToString().Trim()));
+            invocationProcessor.ProcessInvocation(metadataVisitor, _semanticModel, invocation, @namespace);
         }
 
         var usings = new List<string>();
@@ -93,18 +96,6 @@ sealed class MetadataWalker(
         {
             _invocations.Push(invocation);
         }
-    }
-
-    public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax namespaceDeclaration)
-    {
-        _namespace = namespaceDeclaration.Name.ToString().Trim();
-        base.VisitFileScopedNamespaceDeclaration(namespaceDeclaration);
-    }
-
-    public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
-    {
-        _namespace = namespaceDeclaration.Name.ToString().Trim();
-        base.VisitNamespaceDeclaration(namespaceDeclaration);
     }
 
     public override void VisitUsingDirective(UsingDirectiveSyntax node)

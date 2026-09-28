@@ -1514,7 +1514,7 @@ public class SetupTests
                                {
                                    public static void Main()
                                    {
-                                       var composition = new global::Sample.Composition();
+                                       var composition = new global::RootNamespace.Sample.Composition();
                                        Console.WriteLine(composition.Root);
                                    }
                                }
