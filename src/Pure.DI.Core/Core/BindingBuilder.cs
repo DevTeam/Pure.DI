@@ -1,4 +1,4 @@
-﻿// ReSharper disable InvertIf
+// ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
 
 // ReSharper disable UseCollectionExpression
@@ -14,7 +14,8 @@ sealed class BindingBuilder(
     IBaseSymbolsProvider baseSymbolsProvider,
     ILocationProvider locationProvider,
     ILifetimeProvider lifetimeProvider,
-    ITypeSymbolComparer typeSymbolComparer)
+    ITypeSymbolComparer typeSymbolComparer,
+    ITypes types)
     : IBindingBuilder
 {
     private readonly List<MdContract> _contracts = [];
@@ -135,11 +136,12 @@ sealed class BindingBuilder(
         if (implementationType is { SpecialType: Microsoft.CodeAnalysis.SpecialType.None, TypeKind: TypeKind.Class or TypeKind.Struct, IsAbstract: false })
         {
             var specialTypes = setup.SpecialTypes.Select(i => i.Type).ToImmutableHashSet(typeSymbolComparer.Runtime);
+            var compilation = semanticModel.Compilation;
             baseSymbols = baseSymbolsProvider
                 .GetBaseSymbols(implementationType, (type, deepness) => deepness switch
                 {
                     0 => true,
-                    1 => IsSuitableForBinding(specialTypes, type),
+                    1 => IsSuitableForBinding(compilation, specialTypes, type),
                     _ => false
                 }, 1)
                 .Select(i => i.Type);
@@ -158,7 +160,7 @@ sealed class BindingBuilder(
         }
     }
 
-    private static bool IsSuitableForBinding(ImmutableHashSet<ITypeSymbol> specialTypes, ITypeSymbol type)
+    private bool IsSuitableForBinding(Compilation compilation, ImmutableHashSet<ITypeSymbol> specialTypes, ITypeSymbol type)
     {
         // Checks if the type is an interface or an abstract class, which are typical candidates for DI contracts.
         var isAbstractOrInterface = type.TypeKind == TypeKind.Interface || type.IsAbstract;
@@ -166,10 +168,15 @@ sealed class BindingBuilder(
         // Ensures the type is not a predefined system type like 'object', 'string', or 'int' (SpecialType.None).
         var isNotSpecialType = type.SpecialType == Microsoft.CodeAnalysis.SpecialType.None;
 
+        // 'System.IAsyncDisposable' is not covered by the Roslyn special types, so it is excluded explicitly
+        // to keep it in line with 'System.IDisposable'.
+        var isNotAsyncDisposable = types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is not {} asyncDisposableType
+            || !types.TypeEquals(type, asyncDisposableType);
+
         // Verifies that the type is not explicitly excluded via the 'SpecialTypes' setup configuration.
         var isNotMarkedAsSpecial = !specialTypes.Contains(type);
 
-        return isAbstractOrInterface && isNotSpecialType && isNotMarkedAsSpecial;
+        return isAbstractOrInterface && isNotSpecialType && isNotAsyncDisposable && isNotMarkedAsSpecial;
     }
 
     private static MdTag BuildTag(MdTag tag, ITypeSymbol? type, Lazy<int> id)
