@@ -15,48 +15,91 @@ public class LightweightAnonymousSingletonTests
                            sealed class Signal : ISignal { }
 
                            interface IWrites { ISignal Signal { get; } }
-                           sealed class Writes(ISignal signal) : IWrites
+                           sealed class Writes : IWrites
                            {
-                               public ISignal Signal { get; } = signal ?? throw new InvalidOperationException("Signal was null");
+                               public Writes(ISignal signal) =>
+                                   Signal = signal ?? throw new InvalidOperationException("Signal was null");
+
+                               public ISignal Signal { get; }
                            }
 
                            interface ITool { IWrites Writes { get; } }
-                           sealed class FirstTool(Func<IDispatcher> dispatcher, IWrites writes) : ITool
+                           sealed class FirstTool : ITool
                            {
-                               public IWrites Writes { get; } = writes;
-                               public IDispatcher Dispatcher => dispatcher();
+                               private readonly Func<IDispatcher> _dispatcher;
+
+                               public FirstTool(Func<IDispatcher> dispatcher, IWrites writes)
+                               {
+                                   _dispatcher = dispatcher;
+                                   Writes = writes;
+                               }
+
+                               public IWrites Writes { get; }
+
+                               public IDispatcher Dispatcher => _dispatcher();
                            }
-                           sealed class SecondTool(Func<IDispatcher> dispatcher, IWrites writes) : ITool
+                           sealed class SecondTool : ITool
                            {
-                               public IWrites Writes { get; } = writes;
-                               public IDispatcher Dispatcher => dispatcher();
+                               private readonly Func<IDispatcher> _dispatcher;
+
+                               public SecondTool(Func<IDispatcher> dispatcher, IWrites writes)
+                               {
+                                   _dispatcher = dispatcher;
+                                   Writes = writes;
+                               }
+
+                               public IWrites Writes { get; }
+
+                               public IDispatcher Dispatcher => _dispatcher();
                            }
 
-                           sealed class ToolHost(System.Collections.Generic.IEnumerable<ITool> tools)
+                           sealed class ToolHost
                            {
-                               public ITool[] Tools { get; } = System.Linq.Enumerable.ToArray(tools);
+                               public ToolHost(System.Collections.Generic.IEnumerable<ITool> tools) =>
+                                   Tools = System.Linq.Enumerable.ToArray(tools);
+
+                               public ITool[] Tools { get; }
                            }
 
                            interface IConnection { ToolHost Host { get; } }
-                           sealed class Connection(ToolHost host) : IConnection { public ToolHost Host { get; } = host; }
+                           sealed class Connection : IConnection
+                           {
+                               public Connection(ToolHost host) => Host = host;
+
+                               public ToolHost Host { get; }
+                           }
 
                            interface ISessionFactory { ToolHost Host { get; } }
-                           sealed class SessionFactory(System.Collections.Generic.IEnumerable<IConnection> connections) : ISessionFactory
+                           sealed class SessionFactory : ISessionFactory
                            {
-                               public ToolHost Host { get; } = System.Linq.Enumerable.First(connections).Host;
+                               public SessionFactory(System.Collections.Generic.IEnumerable<IConnection> connections) =>
+                                   Host = System.Linq.Enumerable.First(connections).Host;
+
+                               public ToolHost Host { get; }
                            }
 
                            interface IDispatcher { ISessionFactory Sessions { get; } }
-                           sealed class Dispatcher(Func<ISessionFactory> sessions) : IDispatcher
+                           sealed class Dispatcher : IDispatcher
                            {
-                               public ISessionFactory Sessions => sessions();
+                               private readonly Func<ISessionFactory> _sessions;
+
+                               public Dispatcher(Func<ISessionFactory> sessions) => _sessions = sessions;
+
+                               public ISessionFactory Sessions => _sessions();
                            }
 
                            interface IPublisher { }
-                           sealed class Publisher(ISignal signal, IDispatcher dispatcher) : IPublisher
+                           sealed class Publisher : IPublisher
                            {
-                               public ISignal Signal { get; } = signal;
-                               public IDispatcher Dispatcher { get; } = dispatcher;
+                               public Publisher(ISignal signal, IDispatcher dispatcher)
+                               {
+                                   Signal = signal;
+                                   Dispatcher = dispatcher;
+                               }
+
+                               public ISignal Signal { get; }
+
+                               public IDispatcher Dispatcher { get; }
                            }
 
                            partial class Composition

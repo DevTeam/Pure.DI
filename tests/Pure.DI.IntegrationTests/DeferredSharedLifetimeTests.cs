@@ -15,32 +15,59 @@ public class DeferredSharedLifetimeTests
                            sealed class Signal : ISignal { }
 
                            interface IWrites { ISignal Signal { get; } }
-                           sealed class Writes(ISignal signal) : IWrites
+                           sealed class Writes : IWrites
                            {
-                               public ISignal Signal { get; } = signal ?? throw new InvalidOperationException("Signal was null");
+                               public Writes(ISignal signal) =>
+                                   Signal = signal ?? throw new InvalidOperationException("Signal was null");
+
+                               public ISignal Signal { get; }
                            }
 
                            interface ITool { IWrites Writes { get; } }
-                           sealed class FirstTool(IWrites writes) : ITool { public IWrites Writes { get; } = writes; }
-                           sealed class SecondTool(IWrites writes) : ITool { public IWrites Writes { get; } = writes; }
+                           sealed class FirstTool : ITool
+                           {
+                               public FirstTool(IWrites writes) => Writes = writes;
+
+                               public IWrites Writes { get; }
+                           }
+                           sealed class SecondTool : ITool
+                           {
+                               public SecondTool(IWrites writes) => Writes = writes;
+
+                               public IWrites Writes { get; }
+                           }
 
                            interface ISession { ITool[] Tools { get; } }
-                           sealed class Session(System.Collections.Generic.IEnumerable<ITool> tools) : ISession
+                           sealed class Session : ISession
                            {
-                               public ITool[] Tools { get; } = System.Linq.Enumerable.ToArray(tools);
+                               public Session(System.Collections.Generic.IEnumerable<ITool> tools) =>
+                                   Tools = System.Linq.Enumerable.ToArray(tools);
+
+                               public ITool[] Tools { get; }
                            }
 
                            interface IDispatcher { ISession Open(); }
-                           sealed class Dispatcher(Func<ISession> sessions) : IDispatcher
+                           sealed class Dispatcher : IDispatcher
                            {
-                               public ISession Open() => sessions();
+                               private readonly Func<ISession> _sessions;
+
+                               public Dispatcher(Func<ISession> sessions) => _sessions = sessions;
+
+                               public ISession Open() => _sessions();
                            }
 
                            interface IPublisher { ISignal Signal { get; } }
-                           sealed class Publisher(ISignal signal, IDispatcher dispatcher) : IPublisher
+                           sealed class Publisher : IPublisher
                            {
-                               public ISignal Signal { get; } = signal;
-                               public IDispatcher Dispatcher { get; } = dispatcher;
+                               public Publisher(ISignal signal, IDispatcher dispatcher)
+                               {
+                                   Signal = signal;
+                                   Dispatcher = dispatcher;
+                               }
+
+                               public ISignal Signal { get; }
+
+                               public IDispatcher Dispatcher { get; }
                            }
 
                            partial class Composition
@@ -87,26 +114,43 @@ public class DeferredSharedLifetimeTests
                            sealed class Signal : ISignal { }
 
                            interface ITool { ISignal Signal { get; } }
-                           sealed class FirstTool(ISignal signal) : ITool
+                           sealed class FirstTool : ITool
                            {
-                               public ISignal Signal { get; } = signal ?? throw new InvalidOperationException("Signal was null");
+                               public FirstTool(ISignal signal) =>
+                                   Signal = signal ?? throw new InvalidOperationException("Signal was null");
+
+                               public ISignal Signal { get; }
                            }
-                           sealed class SecondTool(ISignal signal) : ITool
+                           sealed class SecondTool : ITool
                            {
-                               public ISignal Signal { get; } = signal ?? throw new InvalidOperationException("Signal was null");
+                               public SecondTool(ISignal signal) =>
+                                   Signal = signal ?? throw new InvalidOperationException("Signal was null");
+
+                               public ISignal Signal { get; }
                            }
 
                            interface IDispatcher { ITool[] Open(); }
-                           sealed class Dispatcher(Func<IEnumerable<ITool>> tools) : IDispatcher
+                           sealed class Dispatcher : IDispatcher
                            {
-                               public ITool[] Open() => tools().ToArray();
+                               private readonly Func<IEnumerable<ITool>> _tools;
+
+                               public Dispatcher(Func<IEnumerable<ITool>> tools) => _tools = tools;
+
+                               public ITool[] Open() => _tools().ToArray();
                            }
 
                            interface IPublisher { ISignal Signal { get; } }
-                           sealed class Publisher(ISignal signal, IDispatcher dispatcher) : IPublisher
+                           sealed class Publisher : IPublisher
                            {
-                               public ISignal Signal { get; } = signal;
-                               public IDispatcher Dispatcher { get; } = dispatcher;
+                               public Publisher(ISignal signal, IDispatcher dispatcher)
+                               {
+                                   Signal = signal;
+                                   Dispatcher = dispatcher;
+                               }
+
+                               public ISignal Signal { get; }
+
+                               public IDispatcher Dispatcher { get; }
                            }
 
                            partial class Composition

@@ -33,27 +33,49 @@ public class EnumerableEscapingScopeExtendedTests
 
                            interface IToolSession { string Info { get; } }
 
-                           sealed class ToolSession(
-                               IEnumerable<IMcpServerConnection> connections,
-                               IEnumerable<IAppTool> tools) : IToolSession
+                           sealed class ToolSession : IToolSession
                            {
+                               private readonly IEnumerable<IMcpServerConnection> _connections;
+                               private readonly IEnumerable<IAppTool> _tools;
+
+                               public ToolSession(
+                                   IEnumerable<IMcpServerConnection> connections,
+                                   IEnumerable<IAppTool> tools)
+                               {
+                                   _connections = connections;
+                                   _tools = tools;
+                               }
+
                                public string Info =>
-                                   string.Join(",", connections.Select(i => i.Name)) + "|" +
-                                   string.Join(",", tools.Select(i => i.Name));
+                                   string.Join(",", _connections.Select(i => i.Name)) + "|" +
+                                   string.Join(",", _tools.Select(i => i.Name));
                            }
 
                            interface IToolSessionFactory { IToolSession Create(); }
 
-                           sealed class ToolSessionFactory(Func<IToolSession> factory) : IToolSessionFactory
+                           sealed class ToolSessionFactory : IToolSessionFactory
                            {
-                               public IToolSession Create() => factory();
+                               private readonly Func<IToolSession> _factory;
+
+                               public ToolSessionFactory(Func<IToolSession> factory) => _factory = factory;
+
+                               public IToolSession Create() => _factory();
                            }
 
-                           sealed class Host(
-                               IToolSessionFactory factory,
-                               Func<IToolSession> deferred)
+                           sealed class Host
                            {
-                               public string Run() => factory.Create().Info + ";" + deferred().Info;
+                               private readonly IToolSessionFactory _factory;
+                               private readonly Func<IToolSession> _deferred;
+
+                               public Host(
+                                   IToolSessionFactory factory,
+                                   Func<IToolSession> deferred)
+                               {
+                                   _factory = factory;
+                                   _deferred = deferred;
+                               }
+
+                               public string Run() => _factory.Create().Info + ";" + _deferred().Info;
                            }
 
                            partial class Composition
@@ -105,16 +127,30 @@ public class EnumerableEscapingScopeExtendedTests
 
                            interface IConnectionSet { string Names { get; } }
 
-                           sealed class ConnectionSet(IEnumerable<IConnection> connections) : IConnectionSet
+                           sealed class ConnectionSet : IConnectionSet
                            {
-                               public string Names => string.Join(",", connections.Select(i => i.Name));
+                               private readonly IEnumerable<IConnection> _connections;
+
+                               public ConnectionSet(IEnumerable<IConnection> connections) =>
+                                   _connections = connections;
+
+                               public string Names => string.Join(",", _connections.Select(i => i.Name));
                            }
 
-                           sealed class Consumer(
-                               IConnectionSet set,
-                               Func<IConnectionSet> deferred)
+                           sealed class Consumer
                            {
-                               public string Run() => set.Names + ";" + deferred().Names;
+                               private readonly IConnectionSet _set;
+                               private readonly Func<IConnectionSet> _deferred;
+
+                               public Consumer(
+                                   IConnectionSet set,
+                                   Func<IConnectionSet> deferred)
+                               {
+                                   _set = set;
+                                   _deferred = deferred;
+                               }
+
+                               public string Run() => _set.Names + ";" + _deferred().Names;
                            }
 
                            partial class Composition

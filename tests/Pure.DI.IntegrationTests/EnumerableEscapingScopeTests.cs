@@ -41,9 +41,15 @@ public class EnumerableEscapingScopeTests
                                string Info { get; }
                            }
 
-                           sealed class ToolSession(IEnumerable<IMcpServerConnection> connections) : IToolSession
+                           sealed class ToolSession : IToolSession
                            {
-                               public string Info => string.Join(",", connections.Select(i => i.Name));
+                               private readonly IEnumerable<IMcpServerConnection> _connections;
+
+                               public ToolSession(IEnumerable<IMcpServerConnection> connections) =>
+                                   _connections = connections;
+
+                               public string Info =>
+                                   string.Join(",", _connections.Select(i => i.Name));
                            }
 
                            interface ICompositeToolSessionFactory
@@ -51,15 +57,23 @@ public class EnumerableEscapingScopeTests
                                IToolSession Create();
                            }
 
-                           sealed class CompositeToolSessionFactory(
-                               IEnumerable<IMcpServerConnection> connections,
-                               Func<IToolSession> toolSessionFactory)
-                               : ICompositeToolSessionFactory
+                           sealed class CompositeToolSessionFactory : ICompositeToolSessionFactory
                            {
+                               private readonly IEnumerable<IMcpServerConnection> _connections;
+                               private readonly Func<IToolSession> _toolSessionFactory;
+
+                               public CompositeToolSessionFactory(
+                                   IEnumerable<IMcpServerConnection> connections,
+                                   Func<IToolSession> toolSessionFactory)
+                               {
+                                   _connections = connections;
+                                   _toolSessionFactory = toolSessionFactory;
+                               }
+
                                public IToolSession Create()
                                {
-                                   Console.WriteLine(string.Join(",", connections.Select(i => i.Name)));
-                                   return toolSessionFactory();
+                                   Console.WriteLine(string.Join(",", _connections.Select(i => i.Name)));
+                                   return _toolSessionFactory();
                                }
                            }
 
@@ -68,9 +82,13 @@ public class EnumerableEscapingScopeTests
                                string Run();
                            }
 
-                           sealed class RunService(ICompositeToolSessionFactory factory) : IRunService
+                           sealed class RunService : IRunService
                            {
-                               public string Run() => factory.Create().Info;
+                               private readonly ICompositeToolSessionFactory _factory;
+
+                               public RunService(ICompositeToolSessionFactory factory) => _factory = factory;
+
+                               public string Run() => _factory.Create().Info;
                            }
 
                            partial class Composition

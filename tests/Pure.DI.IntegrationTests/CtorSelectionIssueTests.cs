@@ -36,11 +36,15 @@ public class CtorSelectionIssueTests
                                        => Mode = "location:" + retentionDays;
                                }
 
-                               sealed class Service(JsonLineFileLoggerProvider provider)
+                               sealed class Service
                                {
-                                   public string Value => provider.Mode;
+                                   private readonly JsonLineFileLoggerProvider _provider;
 
-                                   public override string ToString() => provider.Mode;
+                                   public Service(JsonLineFileLoggerProvider provider) => _provider = provider;
+
+                                   public string Value => _provider.Mode;
+
+                                   public override string ToString() => _provider.Mode;
                                }
 
                                partial class Composition
@@ -141,9 +145,13 @@ public class CtorSelectionIssueTests
                                        => Mode = "location:" + retentionDays;
                                }
 
-                               sealed class Service(JsonLineFileLoggerProvider provider)
+                               sealed class Service
                                {
-                                   public override string ToString() => provider.Mode;
+                                   private readonly JsonLineFileLoggerProvider _provider;
+
+                                   public Service(JsonLineFileLoggerProvider provider) => _provider = provider;
+
+                                   public override string ToString() => _provider.Mode;
                                }
 
                                partial class Composition

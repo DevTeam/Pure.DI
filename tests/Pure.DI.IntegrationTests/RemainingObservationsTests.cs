@@ -32,14 +32,22 @@ public class SimplifiedBindingLimitationsTests
                                    public string Name => "file";
                                }
 
-                               sealed class CompositeMasterKeyStore(FileMasterKeyStore file) : IMasterKeyStore
+                               sealed class CompositeMasterKeyStore : IMasterKeyStore
                                {
-                                   public string Name => "composite:" + file.Name;
+                                   private readonly FileMasterKeyStore _file;
+
+                                   public CompositeMasterKeyStore(FileMasterKeyStore file) => _file = file;
+
+                                   public string Name => "composite:" + _file.Name;
                                }
 
-                               sealed class Service(IMasterKeyStore store)
+                               sealed class Service
                                {
-                                   public override string ToString() => store.Name;
+                                   private readonly IMasterKeyStore _store;
+
+                                   public Service(IMasterKeyStore store) => _store = store;
+
+                                   public override string ToString() => _store.Name;
                                }
 
                                partial class Composition
@@ -100,10 +108,15 @@ public class SimplifiedBindingLimitationsTests
                                    public override string Name => "write";
                                }
 
-                               sealed class Service(IReadOnlyCollection<IToolPresentationAdapter> adapters)
+                               sealed class Service
                                {
+                                   private readonly IReadOnlyCollection<IToolPresentationAdapter> _adapters;
+
+                                   public Service(IReadOnlyCollection<IToolPresentationAdapter> adapters) =>
+                                       _adapters = adapters;
+
                                    public override string ToString() =>
-                                       string.Join(",", adapters.Select(i => i.Name));
+                                       string.Join(",", _adapters.Select(i => i.Name));
                                }
 
                                partial class Composition
