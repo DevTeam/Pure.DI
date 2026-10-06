@@ -9,5 +9,9 @@ public enum OwnedComparisonScenario
     DisposeDiamondGraph,
     DisposeMiddleTripleNestedHandle,
     IsolateFactoryUnitsWithNestedHandles,
-    DisposeMixedLifetimeGraph
+    DisposeMixedLifetimeGraph,
+    KeepSingletonDependencyAliveAfterOwnedDisposal,
+    KeepSingletonDependencyAliveAcrossFactoryUnits,
+    KeepSingletonDependencyAliveWhenSingletonResolvedFirst,
+    KeepScopedDependencyAliveAfterOwnedDisposal
 }
