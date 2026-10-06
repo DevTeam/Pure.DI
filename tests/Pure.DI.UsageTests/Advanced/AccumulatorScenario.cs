@@ -6,6 +6,7 @@ $sa=Tracking disposable instances per a composition root
 $h=Accumulators allow you to accumulate instances of certain types and lifetimes.
 $h=Use this when you need an aggregated view of created dependencies (for diagnostics, telemetry, or registries).
 $f=Limitations: accumulation order depends on object creation order in the graph, so do not treat it as a stable business ordering.
+$f=The dependencies of a `Singleton` or `Scoped` instance belong to that shared instance, so `Transient`, `PerBlock` and `PerResolve` accumulators do not collect them.
 $f=See also: [Enumerable](enumerable.md), [Lifetimes](transient.md).
 $r=Shouldly
 */

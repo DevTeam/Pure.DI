@@ -203,6 +203,49 @@ class Accumulators(
         }
     }
 
+    public bool InjectsAccumulator(
+        DependencyGraph graph,
+        IDependencyNode targetNode,
+        ImmutableHashSet<int> accumulatorBindingIds)
+    {
+        var processed = new HashSet<IDependencyNode>();
+        var nodes = new Stack<IDependencyNode>();
+        nodes.Push(targetNode);
+        while (nodes.TryPop(out var node))
+        {
+            if (!processed.Add(node))
+            {
+                continue;
+            }
+
+            if (!ReferenceEquals(node, targetNode)
+                && (GetBoundaryAccumulators(graph, node).Any()
+                    || nodeTools.IsLazy(node.Node, graph)))
+            {
+                continue;
+            }
+
+            if (!graph.Graph.TryGetInEdges(node.Node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                var source = dependency.Source;
+                if (source.Construct is { Source.Kind: MdConstructKind.Accumulator }
+                    && accumulatorBindingIds.Contains(source.BindingId))
+                {
+                    return true;
+                }
+
+                nodes.Push(source);
+            }
+        }
+
+        return false;
+    }
+
     private int GetEagerAccumulatedResourceCount(
         DependencyGraph graph,
         IDependencyNode targetNode,
@@ -230,7 +273,9 @@ class Accumulators(
             if (!ReferenceEquals(node, targetNode))
             {
                 if (GetBoundaryAccumulators(graph, node).Any()
-                    || nodeTools.IsLazy(node.Node, graph))
+                    || nodeTools.IsLazy(node.Node, graph)
+                    // A shared instance does not feed the accumulators of the resolve that creates it.
+                    || nodeTools.IsSharedInstance(node.Node, graph))
                 {
                     continue;
                 }
@@ -283,7 +328,9 @@ class Accumulators(
             }
 
             if (!ReferenceEquals(node, targetNode)
-                && GetBoundaryAccumulators(graph, node).Any())
+                && (GetBoundaryAccumulators(graph, node).Any()
+                    // A shared instance does not feed the accumulators of the resolve that creates it.
+                    || nodeTools.IsSharedInstance(node.Node, graph)))
             {
                 continue;
             }

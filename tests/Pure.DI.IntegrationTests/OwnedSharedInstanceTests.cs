@@ -410,8 +410,13 @@ public class OwnedSharedInstanceTests
         result.StdOut.ShouldBe(["1", "True"], result);
     }
 
-    [Fact(Skip = "Known limitation: a PerResolve dependency is first created inside the singleton's construction, where the Owned's accumulators are cut, and is then reused through its Ensure...Exists() helper, so the Owned never collects it, whatever the constructor argument order. Before the fix the Owned collected it and disposed an instance the singleton still uses (#155).")]
-    public async Task ShouldDisposePerResolveDependencyOwnedValueTakesDirectlyWhenSingletonAlsoUsesIt()
+    // A PerResolve instance captured by a singleton belongs to the singleton (a captive dependency),
+    // so the Owned that happens to create it does not dispose it, whatever the constructor argument order.
+    // Before #155 was fixed, the Owned disposed an instance the singleton still uses.
+    [Theory]
+    [InlineData("Connection connection, Service service")]
+    [InlineData("Service service, Connection connection")]
+    public async Task ShouldNotDisposePerResolveDependencyCapturedBySingletonWithOwned(string dialogParameters)
     {
         // Given
 
@@ -430,6 +435,7 @@ public class OwnedSharedInstanceTests
                                        var composition = new Composition();
                                        Owned<Dialog> dialog = composition.CreateDialog();
                                        Connection connection = dialog.Value.Connection;
+                                       Console.WriteLine(ReferenceEquals(connection, dialog.Value.Service.Connection));
                                        dialog.Dispose();
                                        Console.WriteLine(connection.IsDisposed);
                                    }
@@ -444,14 +450,22 @@ public class OwnedSharedInstanceTests
 
                                sealed class Service
                                {
-                                   public Service(Connection connection) { }
+                                   public Service(Connection connection) => Connection = connection;
+
+                                   public Connection Connection { get; }
                                }
 
                                sealed class Dialog
                                {
-                                   public Dialog(Connection connection, Service service) => Connection = connection;
+                                   public Dialog(#dialogParameters#)
+                                   {
+                                       Connection = connection;
+                                       Service = service;
+                                   }
 
                                    public Connection Connection { get; }
+
+                                   public Service Service { get; }
                                }
 
                                partial class Composition
@@ -463,10 +477,10 @@ public class OwnedSharedInstanceTests
                                            .Root<Func<Owned<Dialog>>>("CreateDialog");
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+                           """.Replace("#dialogParameters#", dialogParameters).RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["True"], result);
+        result.StdOut.ShouldBe(["True", "False"], result);
     }
 }

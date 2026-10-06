@@ -21,4 +21,13 @@ interface IAccumulators
         IVarsMap varsMap);
 
     void BuildAccumulators(CodeContext ctx, bool includeDeclared = false);
+
+    /// <summary>
+    /// Determines whether the node or the dependencies constructed together with it
+    /// inject one of the accumulators directly.
+    /// </summary>
+    bool InjectsAccumulator(
+        DependencyGraph graph,
+        IDependencyNode targetNode,
+        ImmutableHashSet<int> accumulatorBindingIds);
 }

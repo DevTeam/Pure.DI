@@ -27,6 +27,10 @@ sealed class NodeTools(
     public bool IsBlock(IDependencyNode node) =>
         node.ActualLifetime is Singleton or Scoped or PerResolve;
 
+    public bool IsSharedInstance(DependencyNode node, DependencyGraph graph) =>
+        node.ActualLifetime is Singleton or Scoped
+        && !IsLazy(node, graph);
+
     public bool IsDisposableAny(DependencyNode node) =>
         node.Type.AllInterfaces.Any(i =>
             i.SpecialType == SpecialType.System_IDisposable

@@ -87,7 +87,10 @@ sealed class RootCodeBuilder(
                 .Select(i => i.Item1.AccumulatorType)
                 .Where(i => !ContainsType(var.InstanceType, i))
                 .ToImmutableArray();
+            // Accumulators detached by an enclosing shared instance are still in the vars map,
+            // so a nested boundary isolates them too and creates its own accumulators.
             accumulatorBindingIds = parentCtx.Accumulators
+                .AddRange(GetDetachedAccumulators(parentCtx))
                 .Where(i => isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
                 .Select(i => i.VarInjection.Var.AbstractNode.BindingId)
                 .Distinct()
@@ -96,21 +99,30 @@ sealed class RootCodeBuilder(
 
         // A shared instance is created once and outlives the resolve that happens to create it first,
         // so its construction does not feed the per-resolve accumulators of that resolve (an Owned<T>, for example).
-        if (isBlock
-            && !isLazy
-            && !isAccumulatorBoundary
-            && var.AbstractNode.ActualLifetime is Singleton or Scoped
-            && !varCtx.Accumulators.IsDefaultOrEmpty)
+        if (!isAccumulatorBoundary
+            && !varCtx.Accumulators.IsDefaultOrEmpty
+            && nodeTools.IsSharedInstance(var.AbstractNode.Node, varCtx.RootContext.Graph))
         {
             varCtx = varCtx with
             {
                 Accumulators = varCtx.Accumulators
                     .Where(i => i.Lifetime is Singleton or Scoped)
-                    .ToImmutableArray()
+                    .ToImmutableArray(),
+                DetachedAccumulators = GetDetachedAccumulators(varCtx)
+                    .AddRange(varCtx.Accumulators.Where(i => i.Lifetime is not (Singleton or Scoped)))
             };
         }
 
-        var isLocalFunction = localFunctions.UseFor(varCtx);
+        // A local function is declared at the root level, so it cannot read a detached accumulator
+        // declared inside a lambda when the instance injects it directly (IOwned, for example).
+        var isLocalFunction = localFunctions.UseFor(varCtx)
+                              && (varCtx.DetachedAccumulators.IsDefaultOrEmpty
+                                  || !accumulators.InjectsAccumulator(
+                                      varCtx.RootContext.Graph,
+                                      var.AbstractNode,
+                                      varCtx.DetachedAccumulators
+                                          .Select(i => i.VarInjection.Var.AbstractNode.BindingId)
+                                          .ToImmutableHashSet()));
         var mapToken =
             isLocalFunction
                 ? varsMap.LocalFunction(var, lines)
@@ -144,6 +156,10 @@ sealed class RootCodeBuilder(
             ctx = ctx with
             {
                 Accumulators = inheritedAccumulators.AddRange(createdAccumulators),
+                // An isolated accumulator is created anew inside the boundary, so it is no longer detached.
+                DetachedAccumulators = GetDetachedAccumulators(ctx)
+                    .Where(i => !accumulatorBindingIds.Contains(i.VarInjection.Var.AbstractNode.BindingId))
+                    .ToImmutableArray(),
                 IsFactory = !isLazy && ctx.IsFactory,
                 IsDeferred = isLazy || ctx.IsDeferred
             };
@@ -240,6 +256,9 @@ sealed class RootCodeBuilder(
         parentCtx.Lines.AppendLines(lines);
         var.Declaration.IsDeclared = true;
     }
+
+    private static ImmutableArray<Accumulator> GetDetachedAccumulators(CodeContext ctx) =>
+        ctx.DetachedAccumulators.IsDefault ? ImmutableArray<Accumulator>.Empty : ctx.DetachedAccumulators;
 
     private static bool ContainsType(ITypeSymbol type, ITypeSymbol expectedType)
     {
