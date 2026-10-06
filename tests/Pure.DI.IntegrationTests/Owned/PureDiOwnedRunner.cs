@@ -31,6 +31,10 @@ static class PureDiOwnedRunner
                                      case 6: DisposeMiddleTripleNestedHandle(); break;
                                      case 7: IsolateFactoryUnitsWithNestedHandles(); break;
                                      case 8: DisposeMixedLifetimeGraph(); break;
+                                     case 9: KeepSingletonDependencyAliveAfterOwnedDisposal(); break;
+                                     case 10: KeepSingletonDependencyAliveAcrossFactoryUnits(); break;
+                                     case 11: KeepSingletonDependencyAliveWhenSingletonResolvedFirst(); break;
+                                     case 12: KeepScopedDependencyAliveAfterOwnedDisposal(); break;
                                      default: throw new ArgumentOutOfRangeException();
                                  }
                              }
@@ -178,6 +182,61 @@ static class PureDiOwnedRunner
                                  Console.WriteLine($"after-nested={app.DisposeCount},{app.Worker.DisposeCount},{nestedJobValue.DisposeCount},{extraJobValue.DisposeCount},{app.Log.DisposeCount}");
                                  composition.Dispose();
                                  Console.WriteLine($"after-container={app.DisposeCount},{app.Worker.DisposeCount},{nestedJobValue.DisposeCount},{extraJobValue.DisposeCount},{app.Log.DisposeCount}");
+                             }
+
+                             private static void KeepSingletonDependencyAliveAfterOwnedDisposal()
+                             {
+                                 var composition = new Composition();
+                                 Owned<IDialog> owned = composition.OwnedDialog;
+                                 IDialog dialog = owned.Value;
+                                 ISingletonService service = dialog.Service;
+                                 IConnection connection = service.Connection;
+
+                                 owned.Dispose();
+                                 Console.WriteLine($"after-owned={dialog.DisposeCount},{connection.DisposeCount}");
+                                 Console.WriteLine("same-singleton=" + ReferenceEquals(service, composition.SingletonService));
+                             }
+
+                             private static void KeepSingletonDependencyAliveAcrossFactoryUnits()
+                             {
+                                 var composition = new Composition();
+                                 Func<Owned<IDialog>> factory = composition.DialogFactory;
+                                 Owned<IDialog> first = factory();
+                                 Owned<IDialog> second = factory();
+                                 IDialog firstDialog = first.Value;
+                                 IDialog secondDialog = second.Value;
+                                 IConnection connection = firstDialog.Service.Connection;
+
+                                 Console.WriteLine("same-singleton=" + ReferenceEquals(firstDialog.Service, secondDialog.Service));
+                                 first.Dispose();
+                                 Console.WriteLine($"after-first={firstDialog.DisposeCount},{secondDialog.DisposeCount},{connection.DisposeCount}");
+                                 second.Dispose();
+                                 Console.WriteLine($"after-second={firstDialog.DisposeCount},{secondDialog.DisposeCount},{connection.DisposeCount}");
+                             }
+
+                             private static void KeepSingletonDependencyAliveWhenSingletonResolvedFirst()
+                             {
+                                 var composition = new Composition();
+                                 ISingletonService service = composition.SingletonService;
+                                 Owned<IDialog> owned = composition.OwnedDialog;
+                                 IDialog dialog = owned.Value;
+
+                                 owned.Dispose();
+                                 Console.WriteLine($"after-owned={dialog.DisposeCount},{service.Connection.DisposeCount}");
+                                 Console.WriteLine("same-singleton=" + ReferenceEquals(service, dialog.Service));
+                             }
+
+                             private static void KeepScopedDependencyAliveAfterOwnedDisposal()
+                             {
+                                 var composition = new Composition();
+                                 Owned<IScopedDialog> owned = composition.OwnedScopedDialog;
+                                 IScopedDialog dialog = owned.Value;
+                                 IScopedService service = dialog.Service;
+                                 IConnection connection = service.Connection;
+
+                                 owned.Dispose();
+                                 Console.WriteLine($"after-owned={dialog.DisposeCount},{connection.DisposeCount}");
+                                 Console.WriteLine("same-scoped=" + ReferenceEquals(service, composition.ScopedService));
                              }
 
                              private static bool Distinct(params object[] values) =>
@@ -367,6 +426,68 @@ static class PureDiOwnedRunner
                              public Func<Owned<IJob>> JobFactory { get; }
                          }
 
+                         interface IConnection
+                         {
+                             int DisposeCount { get; }
+                         }
+
+                         sealed class Connection : Tracked, IConnection
+                         {
+                             public Connection() : base("Connection") { }
+                         }
+
+                         interface ISingletonService
+                         {
+                             IConnection Connection { get; }
+                         }
+
+                         sealed class SingletonService : ISingletonService
+                         {
+                             public SingletonService(IConnection connection) => Connection = connection;
+
+                             public IConnection Connection { get; }
+                         }
+
+                         interface IDialog
+                         {
+                             ISingletonService Service { get; }
+
+                             int DisposeCount { get; }
+                         }
+
+                         sealed class Dialog : Tracked, IDialog
+                         {
+                             public Dialog(ISingletonService service) : base("Dialog") => Service = service;
+
+                             public ISingletonService Service { get; }
+                         }
+
+                         interface IScopedService
+                         {
+                             IConnection Connection { get; }
+                         }
+
+                         sealed class ScopedService : IScopedService
+                         {
+                             public ScopedService(IConnection connection) => Connection = connection;
+
+                             public IConnection Connection { get; }
+                         }
+
+                         interface IScopedDialog
+                         {
+                             IScopedService Service { get; }
+
+                             int DisposeCount { get; }
+                         }
+
+                         sealed class ScopedDialog : Tracked, IScopedDialog
+                         {
+                             public ScopedDialog(IScopedService service) : base("ScopedDialog") => Service = service;
+
+                             public IScopedService Service { get; }
+                         }
+
                          partial class Composition
                          {
                              private static void Setup() =>
@@ -387,7 +508,17 @@ static class PureDiOwnedRunner
                                      .Root<Owned<IConsumer>>("OwnedConsumer")
                                      .Root<Owned<Owned<Owned<IService>>>>("TripleOwned")
                                      .Root<Func<Owned<IOuter>>>("OuterFactory")
-                                     .Root<Owned<IApp>>("OwnedApp");
+                                     .Bind<IConnection>().As(Transient).To<Connection>()
+                                     .Bind<ISingletonService>().As(Singleton).To<SingletonService>()
+                                     .Bind<IDialog>().As(Transient).To<Dialog>()
+                                     .Bind<IScopedService>().As(Scoped).To<ScopedService>()
+                                     .Bind<IScopedDialog>().As(Transient).To<ScopedDialog>()
+                                     .Root<Owned<IApp>>("OwnedApp")
+                                     .Root<Owned<IDialog>>("OwnedDialog")
+                                     .Root<Func<Owned<IDialog>>>("DialogFactory")
+                                     .Root<ISingletonService>("SingletonService")
+                                     .Root<Owned<IScopedDialog>>("OwnedScopedDialog")
+                                     .Root<IScopedService>("ScopedService");
                          }
                      }
                      """.Replace("#scenario#", ((int)scenario).ToString(CultureInfo.InvariantCulture));

@@ -9,7 +9,9 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
 
     public bool UseFor(CodeContext ctx)
     {
-        if (ctx.HasOverrides || ctx.Accumulators.Length != 0)
+        // A local function is shared by every use site in the root, so it can neither add to
+        // the accumulator of one particular resolve nor read a value overridden inside one lambda.
+        if (ctx.Accumulators.Length != 0)
         {
             return false;
         }
@@ -22,6 +24,11 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
 
         var bindingId = ctx.VarInjection.Var.Declaration.Node.Node.BindingId;
         var useSites = ctx.RootContext.UseSites;
+        if (ctx.HasOverrides && useSites.OverrideConsumers.Contains(bindingId))
+        {
+            return false;
+        }
+
         if (!useSites.UseSiteCount.TryGetValue(bindingId, out var count) || count < MinUseSites)
         {
             return false;

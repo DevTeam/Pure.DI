@@ -47,7 +47,73 @@ sealed class RootUseSiteCounter : IRootUseSiteCounter
             }
         }
 
-        return new RootUseSiteAnalysis(counts, factoryDownstream);
+        return new RootUseSiteAnalysis(counts, factoryDownstream, GetOverrideConsumers(graph, root));
+    }
+
+    // Binding ids of the nodes whose dependencies reach an overridden value (ctx.Override or ctx.Let),
+    // directly or through any number of other nodes. Such a node reads a local of the lambda
+    // that declares the override. Overridden graph branches can share a binding id
+    // with their non-overridden copies, so this walks node instances, not binding ids.
+    private static HashSet<int> GetOverrideConsumers(DependencyGraph graph, DependencyNode root)
+    {
+        var consumers = new Dictionary<DependencyNode, List<DependencyNode>>();
+        var overrideNodes = new List<DependencyNode>();
+        var visited = new HashSet<DependencyNode> { root };
+        var stack = new Stack<DependencyNode>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var consumer = stack.Pop();
+            if (!graph.Graph.TryGetInEdges(consumer, out var inEdges))
+            {
+                continue;
+            }
+
+            foreach (var edge in inEdges)
+            {
+                var dep = edge.Source;
+                if (!consumers.TryGetValue(dep, out var depConsumers))
+                {
+                    depConsumers = [];
+                    consumers.Add(dep, depConsumers);
+                }
+
+                depConsumers.Add(consumer);
+                if (!visited.Add(dep))
+                {
+                    continue;
+                }
+
+                if (dep.Construct is { Source.Kind: MdConstructKind.Override })
+                {
+                    overrideNodes.Add(dep);
+                }
+
+                stack.Push(dep);
+            }
+        }
+
+        var result = new HashSet<int>();
+        var reached = new HashSet<DependencyNode>(overrideNodes);
+        var pending = new Stack<DependencyNode>(overrideNodes);
+        while (pending.Count > 0)
+        {
+            if (!consumers.TryGetValue(pending.Pop(), out var nodeConsumers))
+            {
+                continue;
+            }
+
+            foreach (var consumer in nodeConsumers)
+            {
+                result.Add(consumer.BindingId);
+                if (reached.Add(consumer))
+                {
+                    pending.Push(consumer);
+                }
+            }
+        }
+
+        return result;
     }
 
     private static void PropagateFactory(DependencyGraph graph, DependencyNode start, HashSet<int> factoryDownstream)

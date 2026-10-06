@@ -7,4 +7,5 @@ interface IRootUseSiteCounter
 
 record RootUseSiteAnalysis(
     IReadOnlyDictionary<int, int> UseSiteCount,
-    HashSet<int> FactoryDownstream);
+    HashSet<int> FactoryDownstream,
+    HashSet<int> OverrideConsumers);
