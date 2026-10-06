@@ -12,7 +12,8 @@ record CodeContext(
     bool HasOverrides = false,
     object? ContextTag = null,
     bool IsFactory = false,
-    bool IsDeferred = false)
+    bool IsDeferred = false,
+    ImmutableArray<Accumulator> SetAsideAccumulators = default)
 {
     public CodeContext CreateChild(VarInjection injection) =>
         this with { Parents = Parents.Add(VarInjection), VarInjection = injection };

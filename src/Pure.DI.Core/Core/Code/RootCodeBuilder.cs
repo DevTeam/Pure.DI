@@ -87,7 +87,10 @@ sealed class RootCodeBuilder(
                 .Select(i => i.Item1.AccumulatorType)
                 .Where(i => !ContainsType(var.InstanceType, i))
                 .ToImmutableArray();
+            // The accumulators a shared instance set aside are still declared outside it,
+            // so an accumulator of the same type built inside it is isolated from them too.
             accumulatorBindingIds = parentCtx.Accumulators
+                .Concat(parentCtx.SetAsideAccumulators.IsDefault ? ImmutableArray<Accumulator>.Empty : parentCtx.SetAsideAccumulators)
                 .Where(i => isolatedAccumulatorTypes.Contains(i.VarInjection.Var.InstanceType, SymbolEqualityComparer.Default))
                 .Select(i => i.VarInjection.Var.AbstractNode.BindingId)
                 .Distinct()
@@ -96,6 +99,7 @@ sealed class RootCodeBuilder(
 
         // A shared instance is created once and outlives the resolve that happens to create it first,
         // so its construction does not feed the per-resolve accumulators of that resolve (an Owned<T>, for example).
+        // It sets them aside instead of dropping them: they are still declared, and in scope, outside it.
         if (isBlock
             && !isLazy
             && !isAccumulatorBoundary
@@ -106,7 +110,9 @@ sealed class RootCodeBuilder(
             {
                 Accumulators = varCtx.Accumulators
                     .Where(i => i.Lifetime is Singleton or Scoped)
-                    .ToImmutableArray()
+                    .ToImmutableArray(),
+                SetAsideAccumulators = (varCtx.SetAsideAccumulators.IsDefault ? ImmutableArray<Accumulator>.Empty : varCtx.SetAsideAccumulators)
+                    .AddRange(varCtx.Accumulators.Where(i => i.Lifetime is not (Singleton or Scoped)))
             };
         }
 

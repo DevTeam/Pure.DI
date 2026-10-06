@@ -348,6 +348,177 @@ public class OwnedSharedInstanceTests
     }
 
     [Fact]
+    public async Task ShouldGiveOwnedCreatedBySharedInstanceItsOwnAccumulatorWhenSharedInstanceIsFirstCreatedInsideOwned()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Dialog> dialog = composition.Top.CreateDialog();
+                                       Owned<Proxy> proxy = dialog.Value.Config.CreateProxy();
+                                       dialog.Dispose();
+                                       Console.WriteLine(proxy.Value.IsDisposed);
+                                       proxy.Dispose();
+                                       Console.WriteLine(proxy.Value.IsDisposed);
+                                       Console.WriteLine(ReferenceEquals(dialog.Value.Config, dialog.Value.Other.Config));
+                                   }
+                               }
+
+                               sealed class Proxy : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Connection : IDisposable
+                               {
+                                   public void Dispose() { }
+                               }
+
+                               sealed class ConfigProvider
+                               {
+                                   public ConfigProvider(Func<Owned<Proxy>> createProxy) => CreateProxy = createProxy;
+
+                                   public Func<Owned<Proxy>> CreateProxy { get; }
+                               }
+
+                               sealed class Other
+                               {
+                                   public Other(ConfigProvider config) => Config = config;
+
+                                   public ConfigProvider Config { get; }
+                               }
+
+                               sealed class Dialog
+                               {
+                                   public Dialog(Connection connection, ConfigProvider config, Other other)
+                                   {
+                                       Config = config;
+                                       Other = other;
+                                   }
+
+                                   public ConfigProvider Config { get; }
+
+                                   public Other Other { get; }
+                               }
+
+                               sealed class Top
+                               {
+                                   public Top(Func<Owned<Dialog>> createDialog) => CreateDialog = createDialog;
+
+                                   public Func<Owned<Dialog>> CreateDialog { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<ConfigProvider>().As(Singleton).To<ConfigProvider>()
+                                           .Root<Top>("Top");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        // The singleton's Ensure...Exists() helper builds the Func<Owned<Proxy>>, so that Owned must not
+        // reuse the accumulator of the Owned<Dialog> the singleton was first created in.
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["False", "True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldCompileSharedInstanceThatInjectsOwnedAccumulatorWhenFirstCreatedInsideOwned()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Dialog> dialog = composition.Top.CreateDialog();
+                                       Console.WriteLine(ReferenceEquals(dialog.Value.Holder, dialog.Value.Other.Holder));
+                                       dialog.Dispose();
+                                   }
+                               }
+
+                               sealed class Connection : IDisposable
+                               {
+                                   public void Dispose() { }
+                               }
+
+                               sealed class OwnedHolder
+                               {
+                                   public OwnedHolder(IOwned owned, Connection connection) => Owned = owned;
+
+                                   public IOwned Owned { get; }
+                               }
+
+                               sealed class Other
+                               {
+                                   public Other(OwnedHolder holder) => Holder = holder;
+
+                                   public OwnedHolder Holder { get; }
+                               }
+
+                               sealed class Dialog
+                               {
+                                   public Dialog(OwnedHolder holder, Other other)
+                                   {
+                                       Holder = holder;
+                                       Other = other;
+                                   }
+
+                                   public OwnedHolder Holder { get; }
+
+                                   public Other Other { get; }
+                               }
+
+                               sealed class Top
+                               {
+                                   public Top(Func<Owned<Dialog>> createDialog) => CreateDialog = createDialog;
+
+                                   public Func<Owned<Dialog>> CreateDialog { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<OwnedHolder>().As(Singleton).To<OwnedHolder>()
+                                           .Root<Top>("Top");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        // The singleton injects the accumulator of the Owned<Dialog> lambda it is first created in,
+        // which an Ensure...Exists() helper declared outside that lambda cannot see.
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
     public async Task ShouldNotCollectTransientDependencyOfSingletonWithTransientAccumulator()
     {
         // Given

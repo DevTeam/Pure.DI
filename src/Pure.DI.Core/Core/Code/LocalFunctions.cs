@@ -29,6 +29,13 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
             return false;
         }
 
+        // Inside a shared instance, the accumulators it set aside may be declared in a lambda the
+        // local function cannot see, so a node that injects one of them stays inline.
+        if (!ctx.SetAsideAccumulators.IsDefaultOrEmpty && useSites.AccumulatorConsumers.Contains(bindingId))
+        {
+            return false;
+        }
+
         if (!useSites.UseSiteCount.TryGetValue(bindingId, out var count) || count < MinUseSites)
         {
             return false;

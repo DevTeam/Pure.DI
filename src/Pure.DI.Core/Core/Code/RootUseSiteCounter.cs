@@ -1,6 +1,9 @@
 namespace Pure.DI.Core.Code;
 
-sealed class RootUseSiteCounter : IRootUseSiteCounter
+sealed class RootUseSiteCounter(
+    INodeTools nodeTools,
+    IAccumulators accumulators)
+    : IRootUseSiteCounter
 {
     public RootUseSiteAnalysis Analyze(DependencyGraph graph, DependencyNode root)
     {
@@ -47,17 +50,29 @@ sealed class RootUseSiteCounter : IRootUseSiteCounter
             }
         }
 
-        return new RootUseSiteAnalysis(counts, factoryDownstream, GetOverrideConsumers(graph, root));
+        var (consumers, overrideNodes, accumulatorNodes) = GetConsumers(graph, root);
+        return new RootUseSiteAnalysis(
+            counts,
+            factoryDownstream,
+            // A node whose dependencies reach an overridden value (ctx.Override or ctx.Let), directly or through
+            // any number of other nodes, reads a local of the lambda that declares the override.
+            GetBindingIdsReaching(overrideNodes, consumers, _ => true),
+            // A node that reaches a per-resolve accumulator other than through a lazy node or an accumulator
+            // boundary, each of which creates its own, adds to an accumulator declared where the resolve began.
+            GetBindingIdsReaching(accumulatorNodes, consumers, consumer =>
+                !nodeTools.IsLazy(consumer, graph)
+                && !accumulators.GetBoundaryAccumulators(graph, consumer).Any()));
     }
 
-    // Binding ids of the nodes whose dependencies reach an overridden value (ctx.Override or ctx.Let),
-    // directly or through any number of other nodes. Such a node reads a local of the lambda
-    // that declares the override. Overridden graph branches can share a binding id
-    // with their non-overridden copies, so this walks node instances, not binding ids.
-    private static HashSet<int> GetOverrideConsumers(DependencyGraph graph, DependencyNode root)
+    // Overridden graph branches can share a binding id with their non-overridden copies,
+    // so this walks node instances, not binding ids.
+    private static (Dictionary<DependencyNode, List<DependencyNode>> Consumers, List<DependencyNode> OverrideNodes, List<DependencyNode> AccumulatorNodes) GetConsumers(
+        DependencyGraph graph,
+        DependencyNode root)
     {
         var consumers = new Dictionary<DependencyNode, List<DependencyNode>>();
         var overrideNodes = new List<DependencyNode>();
+        var accumulatorNodes = new List<DependencyNode>();
         var visited = new HashSet<DependencyNode> { root };
         var stack = new Stack<DependencyNode>();
         stack.Push(root);
@@ -84,18 +99,34 @@ sealed class RootUseSiteCounter : IRootUseSiteCounter
                     continue;
                 }
 
-                if (dep.Construct is { Source.Kind: MdConstructKind.Override })
+                switch (dep.Construct?.Source.Kind)
                 {
-                    overrideNodes.Add(dep);
+                    case MdConstructKind.Override:
+                        overrideNodes.Add(dep);
+                        break;
+
+                    case MdConstructKind.Accumulator:
+                        accumulatorNodes.Add(dep);
+                        break;
                 }
 
                 stack.Push(dep);
             }
         }
 
+        return (consumers, overrideNodes, accumulatorNodes);
+    }
+
+    // Binding ids of the consumers of the given nodes, directly or through any number of other nodes,
+    // walking up only through the consumers the predicate accepts.
+    private static HashSet<int> GetBindingIdsReaching(
+        List<DependencyNode> nodes,
+        Dictionary<DependencyNode, List<DependencyNode>> consumers,
+        Func<DependencyNode, bool> canReachThrough)
+    {
         var result = new HashSet<int>();
-        var reached = new HashSet<DependencyNode>(overrideNodes);
-        var pending = new Stack<DependencyNode>(overrideNodes);
+        var reached = new HashSet<DependencyNode>(nodes);
+        var pending = new Stack<DependencyNode>(nodes);
         while (pending.Count > 0)
         {
             if (!consumers.TryGetValue(pending.Pop(), out var nodeConsumers))
@@ -105,6 +136,11 @@ sealed class RootUseSiteCounter : IRootUseSiteCounter
 
             foreach (var consumer in nodeConsumers)
             {
+                if (!canReachThrough(consumer))
+                {
+                    continue;
+                }
+
                 result.Add(consumer.BindingId);
                 if (reached.Add(consumer))
                 {
