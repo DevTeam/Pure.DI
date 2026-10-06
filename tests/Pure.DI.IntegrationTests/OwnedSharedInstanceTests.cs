@@ -213,4 +213,260 @@ public class OwnedSharedInstanceTests
         result.Success.ShouldBeTrue(result);
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.A4()")).ShouldBe(1, result);
     }
+
+    [Fact]
+    public async Task ShouldDisposeTransientCreatedDirectlyUnderOwnedNextToSharedInstance()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Dialog> dialog = composition.CreateDialog();
+                                       Connection ownConnection = dialog.Value.Connection;
+                                       Connection serviceConnection = dialog.Value.Service.Connection;
+                                       dialog.Dispose();
+                                       Console.WriteLine(ownConnection.IsDisposed);
+                                       Console.WriteLine(serviceConnection.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Connection : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Service
+                               {
+                                   public Service(Connection connection) => Connection = connection;
+
+                                   public Connection Connection { get; }
+                               }
+
+                               sealed class Dialog
+                               {
+                                   public Dialog(Connection connection, Service service)
+                                   {
+                                       Connection = connection;
+                                       Service = service;
+                                   }
+
+                                   public Connection Connection { get; }
+
+                                   public Service Service { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<Connection>().To<Connection>()
+                                           .Bind<Service>().As(Singleton).To<Service>()
+                                           .Root<Func<Owned<Dialog>>>("CreateDialog");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "False"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepSingletonAccumulatorWhenSharedInstanceIsCreatedInsideOwned()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Dialog> dialog = composition.CreateDialog();
+                                       Console.WriteLine(string.Join(",", dialog.Value.Registry.Select(i => i.GetType().Name)));
+                                   }
+                               }
+
+                               sealed class Registry : List<IDisposable> { }
+
+                               sealed class Cache : IDisposable
+                               {
+                                   public void Dispose() { }
+                               }
+
+                               sealed class Service : IDisposable
+                               {
+                                   public Service(Cache cache) { }
+
+                                   public void Dispose() { }
+                               }
+
+                               sealed class Dialog
+                               {
+                                   public Dialog(Service service, Registry registry) => Registry = registry;
+
+                                   public Registry Registry { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<IDisposable, Registry>(Singleton)
+                                           .Bind<Cache>().As(Singleton).To<Cache>()
+                                           .Bind<Service>().As(Singleton).To<Service>()
+                                           .Root<Func<Owned<Dialog>>>("CreateDialog");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Cache,Service"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotCollectTransientDependencyOfSingletonWithTransientAccumulator()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var (dialog, registry) = composition.Root;
+                                       Console.WriteLine(registry.Count);
+                                       Console.WriteLine(ReferenceEquals(registry[0], dialog.Connection));
+                                   }
+                               }
+
+                               sealed class Registry : List<IDisposable> { }
+
+                               sealed class Connection : IDisposable
+                               {
+                                   public void Dispose() { }
+                               }
+
+                               sealed class Service
+                               {
+                                   public Service(Connection connection) { }
+                               }
+
+                               sealed class Dialog
+                               {
+                                   public Dialog(Connection connection, Service service) => Connection = connection;
+
+                                   public Connection Connection { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<IDisposable, Registry>(Transient)
+                                           .Bind<Connection>().To<Connection>()
+                                           .Bind<Service>().As(Singleton).To<Service>()
+                                           .Root<(Dialog dialog, Registry registry)>("Root");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        // A singleton's transient dependencies belong to the singleton, not to the resolve that first created it.
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1", "True"], result);
+    }
+
+    [Fact(Skip = "Known limitation: a PerResolve dependency is first created inside the singleton's construction, where the Owned's accumulators are cut, and is then reused through its Ensure...Exists() helper, so the Owned never collects it, whatever the constructor argument order. Before the fix the Owned collected it and disposed an instance the singleton still uses (#155).")]
+    public async Task ShouldDisposePerResolveDependencyOwnedValueTakesDirectlyWhenSingletonAlsoUsesIt()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Owned<Dialog> dialog = composition.CreateDialog();
+                                       Connection connection = dialog.Value.Connection;
+                                       dialog.Dispose();
+                                       Console.WriteLine(connection.IsDisposed);
+                                   }
+                               }
+
+                               sealed class Connection : IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               sealed class Service
+                               {
+                                   public Service(Connection connection) { }
+                               }
+
+                               sealed class Dialog
+                               {
+                                   public Dialog(Connection connection, Service service) => Connection = connection;
+
+                                   public Connection Connection { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<Connection>().As(PerResolve).To<Connection>()
+                                           .Bind<Service>().As(Singleton).To<Service>()
+                                           .Root<Func<Owned<Dialog>>>("CreateDialog");
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
 }

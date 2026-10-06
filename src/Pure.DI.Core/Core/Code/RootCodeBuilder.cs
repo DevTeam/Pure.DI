@@ -93,6 +93,23 @@ sealed class RootCodeBuilder(
                 .Distinct()
                 .ToImmutableArray();
         }
+
+        // A shared instance is created once and outlives the resolve that happens to create it first,
+        // so its construction does not feed the per-resolve accumulators of that resolve (an Owned<T>, for example).
+        if (isBlock
+            && !isLazy
+            && !isAccumulatorBoundary
+            && var.AbstractNode.ActualLifetime is Singleton or Scoped
+            && !varCtx.Accumulators.IsDefaultOrEmpty)
+        {
+            varCtx = varCtx with
+            {
+                Accumulators = varCtx.Accumulators
+                    .Where(i => i.Lifetime is Singleton or Scoped)
+                    .ToImmutableArray()
+            };
+        }
+
         var isLocalFunction = localFunctions.UseFor(varCtx);
         var mapToken =
             isLocalFunction
