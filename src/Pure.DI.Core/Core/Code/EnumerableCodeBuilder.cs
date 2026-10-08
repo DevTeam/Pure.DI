@@ -20,6 +20,9 @@ sealed class EnumerableCodeBuilder(
         var construct = var.AbstractNode.Construct!;
         var setup = ctx.RootContext.Graph.Source;
         var localMethodName = $"{Names.EnumerateMethodNamePrefix}_{var.Declaration.Name}".Replace("__", "_");
+        var newEnum = $"{localMethodName}()";
+        // A cyclic element can request this enumerable while its iterator body is being generated.
+        var.CodeExpression = newEnum;
         if (compilations.GetLanguageVersion(construct.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
         {
             buildTools.AddAggressiveInlining(lines);
@@ -64,16 +67,13 @@ sealed class EnumerableCodeBuilder(
         }
 
         lines.AppendLine();
-        var newEnum = $"{localMethodName}()";
         var onEnumCreated = buildTools.OnCreated(ctx, varInjection);
         if (onEnumCreated.Count > 0)
         {
+            // The creation hook may replace the enumerable, so later injections must use the local.
+            var.CodeExpression = var.Name;
             lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {newEnum};");
             lines.AppendLines(onEnumCreated);
-        }
-        else
-        {
-            var.CodeExpression = newEnum;
         }
     }
 }

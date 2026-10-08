@@ -125,27 +125,7 @@ class VarsMap(
     public IDisposable LocalFunction(Var var, Lines lines)
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
-
-        // Per-block variables should be isolated between local functions.
-        List<KeyValuePair<int, Var>>? removed = null;
-        foreach (var bindingId in _perBlockBindingIds)
-        {
-            if (!_map.TryGetValue(bindingId, out var perBlockVar))
-            {
-                continue;
-            }
-
-            if (!ShouldIsolatePerBlockVar(perBlockVar))
-            {
-                continue;
-            }
-
-#if DEBUG
-            lines.AppendLine($"// {perBlockVar.Declaration.Name}: remove ({nameof(LocalFunction)})");
-#endif
-            (removed ??= new List<KeyValuePair<int, Var>>(_perBlockBindingIds.Count)).Add(new KeyValuePair<int, Var>(bindingId, perBlockVar));
-            _map.Remove(bindingId);
-        }
+        var removed = RemovePerBlockVars(lines, nameof(LocalFunction));
 
         return Disposables.Create(() => {
             _suppressedTrackingCount++;
@@ -153,18 +133,7 @@ class VarsMap(
             {
                 RemoveNewNonPersistentVars(var, scope, lines, nameof(LocalFunction));
                 RestoreState(scope, lines, nameof(LocalFunction), false);
-                if (removed is null)
-                {
-                    return;
-                }
-
-                foreach (var item in removed)
-                {
-#if DEBUG
-                    lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({nameof(LocalFunction)})");
-#endif
-                    _map[item.Key] = item.Value;
-                }
+                RestorePerBlockVars(removed, lines, nameof(LocalFunction));
             }
             finally
             {
@@ -176,7 +145,18 @@ class VarsMap(
 
     /// <inheritdoc />
     public IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds)
-        => IsolateAccumulators(var, lines, accumulatorBindingIds, nameof(Lazy), true);
+    {
+        // Enumeration runs outside the block that creates it. Keep the current enumerable
+        // so a cyclic element can call its iterator, but rebuild other per-block values inside it.
+        var removed = var.AbstractNode.Construct is { Source.Kind: MdConstructKind.Enumerable or MdConstructKind.AsyncEnumerable }
+            ? RemovePerBlockVars(lines, nameof(Lazy), var.AbstractNode.BindingId)
+            : null;
+        var scope = IsolateAccumulators(var, lines, accumulatorBindingIds, nameof(Lazy), true);
+        return Disposables.Create(() => {
+            scope.Dispose();
+            RestorePerBlockVars(removed, lines, nameof(Lazy));
+        });
+    }
 
     /// <inheritdoc />
     public IDisposable AccumulatorBoundary(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds)
@@ -256,27 +236,7 @@ class VarsMap(
     public IDisposable Block(Var var, Lines lines)
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
-
-        // Per-block variables should be isolated between blocks.
-        List<KeyValuePair<int, Var>>? removed = null;
-        foreach (var bindingId in _perBlockBindingIds)
-        {
-            if (!_map.TryGetValue(bindingId, out var perBlockVar))
-            {
-                continue;
-            }
-
-            if (!ShouldIsolatePerBlockVar(perBlockVar))
-            {
-                continue;
-            }
-
-#if DEBUG
-            lines.AppendLine($"// {perBlockVar.Declaration.Name}: remove ({nameof(Block)})");
-#endif
-            (removed ??= new List<KeyValuePair<int, Var>>(_perBlockBindingIds.Count)).Add(new KeyValuePair<int, Var>(bindingId, perBlockVar));
-            _map.Remove(bindingId);
-        }
+        var removed = RemovePerBlockVars(lines, nameof(Block));
 
         return Disposables.Create(() => {
             _suppressedTrackingCount++;
@@ -284,18 +244,7 @@ class VarsMap(
             {
                 RemoveNewNonPersistentVars(var, scope, lines, nameof(Block));
                 RestoreState(scope, lines, nameof(Block), false);
-                if (removed is null)
-                {
-                    return;
-                }
-
-                foreach (var item in removed)
-                {
-#if DEBUG
-                    lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({nameof(Block)})");
-#endif
-                    _map[item.Key] = item.Value;
-                }
+                RestorePerBlockVars(removed, lines, nameof(Block));
             }
             finally
             {
@@ -327,6 +276,45 @@ class VarsMap(
 
     private static bool ShouldIsolatePerBlockVar(Var perBlockVar) =>
         perBlockVar.AbstractNode.Construct is not { Source.Kind: MdConstructKind.Accumulator };
+
+    private List<KeyValuePair<int, Var>>? RemovePerBlockVars(Lines lines, string reason, int? retainedBindingId = null)
+    {
+        List<KeyValuePair<int, Var>>? removed = null;
+        foreach (var bindingId in _perBlockBindingIds)
+        {
+            if (bindingId == retainedBindingId
+                || !_map.TryGetValue(bindingId, out var perBlockVar)
+                || !ShouldIsolatePerBlockVar(perBlockVar))
+            {
+                continue;
+            }
+
+#if DEBUG
+            lines.AppendLine($"// {perBlockVar.Declaration.Name}: remove ({reason})");
+#endif
+            (removed ??= new List<KeyValuePair<int, Var>>(_perBlockBindingIds.Count))
+                .Add(new KeyValuePair<int, Var>(bindingId, perBlockVar));
+            _map.Remove(bindingId);
+        }
+
+        return removed;
+    }
+
+    private void RestorePerBlockVars(List<KeyValuePair<int, Var>>? removed, Lines lines, string reason)
+    {
+        if (removed is null)
+        {
+            return;
+        }
+
+        foreach (var item in removed)
+        {
+#if DEBUG
+            lines.AppendLine($"// {item.Value.Declaration.Name}: rollback ({reason})");
+#endif
+            _map[item.Key] = item.Value;
+        }
+    }
 
     private static bool ShouldKeepCurrentNodeInNestedScope(IDependencyNode node) =>
         node.ActualLifetime is Lifetime.PerBlock
