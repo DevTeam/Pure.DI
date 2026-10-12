@@ -149,7 +149,7 @@ class VarsMap(
         // Enumeration runs outside the block that creates it. Keep the current enumerable
         // so a cyclic element can call its iterator, but rebuild other per-block values inside it.
         var removed = var.AbstractNode.Construct is { Source.Kind: MdConstructKind.Enumerable or MdConstructKind.AsyncEnumerable }
-            ? RemovePerBlockVars(lines, nameof(Lazy), var.AbstractNode.BindingId)
+            ? RemovePerBlockVars(lines, nameof(Lazy), var.AbstractNode.BindingId, preserveActiveVars: true)
             : null;
         var scope = IsolateAccumulators(var, lines, accumulatorBindingIds, nameof(Lazy), true);
         return Disposables.Create(() => {
@@ -277,14 +277,21 @@ class VarsMap(
     private static bool ShouldIsolatePerBlockVar(Var perBlockVar) =>
         perBlockVar.AbstractNode.Construct is not { Source.Kind: MdConstructKind.Accumulator };
 
-    private List<KeyValuePair<int, Var>>? RemovePerBlockVars(Lines lines, string reason, int? retainedBindingId = null)
+    private List<KeyValuePair<int, Var>>? RemovePerBlockVars(
+        Lines lines,
+        string reason,
+        int? retainedBindingId = null,
+        bool preserveActiveVars = false)
     {
         List<KeyValuePair<int, Var>>? removed = null;
         foreach (var bindingId in _perBlockBindingIds)
         {
+            // A dependency still being built must remain visible to nested enumerables.
+            // Removing an active Func<T> or enumerable expands a cyclic branch indefinitely.
             if (bindingId == retainedBindingId
                 || !_map.TryGetValue(bindingId, out var perBlockVar)
-                || !ShouldIsolatePerBlockVar(perBlockVar))
+                || !ShouldIsolatePerBlockVar(perBlockVar)
+                || (preserveActiveVars && _activeScopes.Any(scope => scope.ExcludeBindingId == bindingId)))
             {
                 continue;
             }
