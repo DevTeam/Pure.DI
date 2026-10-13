@@ -122,7 +122,7 @@ public sealed partial class Generator
 
         // PerResolve
             .PerResolve<TypeResolver, RootSignatureProvider, LogObserver, Types, Filter, Registry<TT>, Locks, RootAccessModifierResolver, SmartTags, GenericTypeArguments,
-                NameProvider, OverrideIdProvider, OverridesRegistry, Accumulators, Constructors>()
+                NameProvider, OverrideIdProvider, OverridesRegistry, Accumulators, Constructors, FactoryRewriteCache>()
 
             // Id generators
             .PerResolve<IdGenerator>(UniqueTagIdGenerator)

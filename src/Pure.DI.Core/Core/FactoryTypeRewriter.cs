@@ -6,7 +6,8 @@ namespace Pure.DI.Core;
 sealed class FactoryTypeRewriter(
     IMarker marker,
     ITypeResolver typeResolver,
-    ITypes types)
+    ITypes types,
+    IFactoryRewriteCache cache)
     : CSharpSyntaxRewriter, IFastBuilder<RewriterContext<MdFactory>, MdFactory>
 {
     private RewriterContext<MdFactory> _context;
@@ -53,9 +54,7 @@ sealed class FactoryTypeRewriter(
 
     private SyntaxNode? TryCreateTypeSyntax(SyntaxNode node) =>
         TryGetNewTypeName(node, !IsObjectCreationType(node), out var newTypeName)
-            ? SyntaxFactory.ParseTypeName(newTypeName)
-                .WithLeadingTrivia(node.GetLeadingTrivia())
-                .WithTrailingTrivia(node.GetTrailingTrivia())
+            ? cache.GetTypeSyntax(node, newTypeName)
             : null;
 
     private bool TryGetNewTypeName(SyntaxNode? node, bool includeNullableAnnotation, [NotNullWhen(true)] out string? newTypeName)
@@ -69,7 +68,7 @@ sealed class FactoryTypeRewriter(
         var semanticModel = _context.State.SemanticModel;
         if (node.SyntaxTree == semanticModel.SyntaxTree)
         {
-            if (semanticModel.GetSymbolInfo(node).Symbol is ITypeSymbol type)
+            if (cache.GetTypeSymbol(semanticModel, node) is {} type)
             {
                 return TryGetNewTypeName(type, true, includeNullableAnnotation, out newTypeName);
             }
