@@ -35,8 +35,13 @@ sealed class ImplementationCodeBuilder(
             injectionsList.Sort(variableTools.InjectionComparer);
             foreach (var dependencyVar in injectionsList)
             {
-                yield return variablesCodeBuilderFactory().Build(ctx.CreateChild(dependencyVar));
-                varInjections.Add(dependencyVar);
+                // A preceding deferred dependency can remove a per-block variable from the map
+                // while its body is generated. Refresh the injection before using it in this scope.
+                var currentDependency = dependencyVar.Var.AbstractNode.ActualLifetime == PerBlock
+                    ? ctx.VarsMap.GetInjection(ctx.RootContext.Graph, dependencyVar.Injection, dependencyVar.Var.AbstractNode)
+                    : dependencyVar;
+                yield return variablesCodeBuilderFactory().Build(ctx.CreateChild(currentDependency));
+                varInjections.Add(currentDependency);
             }
         }
 
