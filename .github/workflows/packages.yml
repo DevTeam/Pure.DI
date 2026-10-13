@@ -37,5 +37,6 @@ jobs:
         with:
           name: nuget-packages
           path: .packages/*.nupkg
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
