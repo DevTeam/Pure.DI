@@ -67,9 +67,14 @@ partial class Settings
 
     private NuGetVersion GetNextVersion()
     {
-        // ReSharper disable once InvertIf
-        if (NuGetVersion.TryParse(_properties["version"], out var version))
+        var requestedVersion = _properties["version"];
+        if (!string.IsNullOrWhiteSpace(requestedVersion))
         {
+            if (!NuGetVersion.TryParse(requestedVersion, out var version))
+            {
+                throw new ArgumentException($"Invalid NuGet package version: '{requestedVersion}'.", nameof(requestedVersion));
+            }
+
             WriteLine($"The next version has been overridden by {version}.", Color.Details);
             return version;
         }

@@ -1,5 +1,6 @@
 namespace Pure.DI.IntegrationTests;
 
+#if ROSLYN4_8_OR_GREATER
 public class DeferredEnumerableFactoryCycleTests
 {
     [Fact]
@@ -143,3 +144,4 @@ public class DeferredEnumerableFactoryCycleTests
         result.StdOut.ShouldBe(["True"], result);
     }
 }
+#endif

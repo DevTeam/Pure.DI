@@ -1,0 +1,41 @@
+name: Build NuGet packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (leave empty for the next release version)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build and check packages
+        env:
+          PACKAGE_VERSION: ${{ inputs.version }}
+        run: |
+          if [[ -n "$PACKAGE_VERSION" ]]; then
+            dotnet run --project ./build -- "-p:version=$PACKAGE_VERSION" pack
+          else
+            dotnet run --project ./build -- pack
+          fi
+
+      - name: Save NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: .packages/*.nupkg
+          if-no-files-found: error
+          retention-days: 30
