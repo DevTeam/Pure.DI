@@ -1,3 +1,4 @@
 ﻿{
-  "parallelizeTestCollections": true
+  "parallelizeTestCollections": true,
+  "maxParallelThreads": 2
 }

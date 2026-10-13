@@ -15,7 +15,7 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup Condition="'$(CI)'!=''">
+    <ItemGroup>
         <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
