@@ -80,6 +80,7 @@ sealed class DependencyGraphBuilder(
         var edgesMap = new Dictionary<IProcessingNode, List<Dependency>>();
         var injectionPositionComparer = new InjectionPositionComparer(injectionComparer);
         var handledInjections = new Dictionary<IProcessingNode, HashSet<(Injection Injection, int? Position)>>();
+        var genericCandidates = new List<GenericCandidate>();
         var counter = 0;
         while (queue.Count > 0)
         {
@@ -207,23 +208,22 @@ sealed class DependencyGraphBuilder(
                         when namedTypeSymbol.IsGenericType || marker.IsMarkerBased(setup, namedTypeSymbol):
                     {
                         var isDone = false;
-                        foreach (var item in map.OrderByDescending(i => i.Value.Binding.Id))
+                        // Candidates are tried from the newest binding down, in map order among equal ids.
+                        // The map is filtered before it is ordered, into a list reused for every injection.
+                        genericCandidates.Clear();
+                        foreach (var candidate in map)
                         {
-                            if (item.Key.Type is not INamedTypeSymbol nextNamedTypeSymbol)
+                            if (candidate.Key.Type is INamedTypeSymbol nextNamedTypeSymbol
+                                && nextNamedTypeSymbol.IsGenericType == namedTypeSymbol.IsGenericType
+                                && Injection.EqualTags(injection.Tag, candidate.Key.Tag))
                             {
-                                continue;
+                                genericCandidates.Add(new GenericCandidate(genericCandidates.Count, candidate));
                             }
+                        }
 
-                            if (nextNamedTypeSymbol.IsGenericType != namedTypeSymbol.IsGenericType)
-                            {
-                                continue;
-                            }
-
-                            if (!Injection.EqualTags(injection.Tag, item.Key.Tag))
-                            {
-                                continue;
-                            }
-
+                        genericCandidates.Sort(GenericCandidate.NewestFirst);
+                        foreach (var (_, item) in genericCandidates)
+                        {
                             if (!typeConstructor.TryBind(setup, item.Key.Type, injection.Type))
                             {
                                 continue;
@@ -901,5 +901,15 @@ sealed class DependencyGraphBuilder(
         public override bool Equals(object? obj) => obj is ConstructKindKey other && Equals(other);
 
         public override int GetHashCode() => typeSymbolComparer.GetRuntimeHashCode(TypeSymbol);
+    }
+
+    // The position keeps map order among equal binding ids, as List.Sort is not stable.
+    private readonly record struct GenericCandidate(int Position, KeyValuePair<Injection, DependencyNode> Item)
+    {
+        public static readonly Comparison<GenericCandidate> NewestFirst = (x, y) =>
+        {
+            var byId = y.Item.Value.Binding.Id.CompareTo(x.Item.Value.Binding.Id);
+            return byId != 0 ? byId : x.Position.CompareTo(y.Position);
+        };
     }
 }
