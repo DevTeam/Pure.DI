@@ -72,6 +72,24 @@ sealed class BindingBuilder(
     public void AddTag(in MdTag tag) =>
         _tags.Add(tag);
 
+    public void CopyConfigurationTo(IBindingBuilder target)
+    {
+        foreach (var contract in _contracts)
+        {
+            target.AddContract(contract);
+        }
+
+        foreach (var tag in _tags)
+        {
+            target.AddTag(tag);
+        }
+
+        if (_lifetime is {} lifetime)
+        {
+            target.Lifetime = lifetime;
+        }
+    }
+
     public MdBinding Build(MdSetup setup)
     {
         if (_semanticModel is not {} semanticModel || _source is not {} source)

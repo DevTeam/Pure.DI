@@ -490,6 +490,28 @@ sealed class ApiInvocationProcessor(
                                 metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, invocation, implementationType));
                                 break;
 
+                            // .To<T1, T2, ...>()
+                            case [_, _, ..] when toInvocationArgs is []:
+                                var method = semanticModel.GetSymbolInfo(invocation).Symbol as IMethodSymbol;
+                                var implementations = new List<MdImplementation>(toInvocationTypeArgs.Count);
+                                for (var index = 0; index < toInvocationTypeArgs.Count; index++)
+                                {
+                                    var typeArgument = toInvocationTypeArgs[index];
+                                    var multiImplementationType = method?.TypeArguments.Length == toInvocationTypeArgs.Count
+                                        && method.TypeArguments[index] is INamedTypeSymbol namedType
+                                            ? namedType
+                                            : semantic.GetTypeSymbol<INamedTypeSymbol>(semanticModel, typeArgument);
+                                    if (typeArgument is NullableTypeSyntax && multiImplementationType.IsReferenceType)
+                                    {
+                                        multiImplementationType = (INamedTypeSymbol)multiImplementationType.WithNullableAnnotation(NullableAnnotation.Annotated);
+                                    }
+
+                                    implementations.Add(new MdImplementation(semanticModel, typeArgument, multiImplementationType));
+                                }
+
+                                metadataVisitor.VisitImplementations(implementations);
+                                break;
+
                             default:
                                 NotSupported(invocation);
                                 break;

@@ -16,5 +16,7 @@ interface IBindingBuilder
 
     void AddTag(in MdTag tag);
 
+    void CopyConfigurationTo(IBindingBuilder target);
+
     MdBinding Build(MdSetup setup);
 }

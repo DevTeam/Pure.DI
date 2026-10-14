@@ -14,6 +14,8 @@ interface IMetadataVisitor
 
     void VisitImplementation(in MdImplementation implementation);
 
+    void VisitImplementations(IReadOnlyList<MdImplementation> implementations);
+
     void VisitFactory(in MdFactory factory);
 
     void VisitResolver(in MdResolver resolver);

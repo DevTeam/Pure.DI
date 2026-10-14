@@ -96,6 +96,19 @@ sealed class SetupsBuilder(
         FinishBinding();
     }
 
+    public void VisitImplementations(IReadOnlyList<MdImplementation> implementations)
+    {
+        for (var index = 0; index < implementations.Count; index++)
+        {
+            var currentBuilder = _bindingBuilder;
+            VisitImplementation(implementations[index]);
+            if (index < implementations.Count - 1)
+            {
+                currentBuilder.CopyConfigurationTo(_bindingBuilder);
+            }
+        }
+    }
+
     public void VisitFactory(in MdFactory factory)
     {
         _bindingBuilder.Factory = factory;

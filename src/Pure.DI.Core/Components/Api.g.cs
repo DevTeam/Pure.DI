@@ -12647,6 +12647,5739 @@ namespace Pure.DI
             ;
 
         /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <typeparam name="T57">Implementation type 57 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <typeparam name="T57">Implementation type 57 to bind.</typeparam>
+        /// <typeparam name="T58">Implementation type 58 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <typeparam name="T57">Implementation type 57 to bind.</typeparam>
+        /// <typeparam name="T58">Implementation type 58 to bind.</typeparam>
+        /// <typeparam name="T59">Implementation type 59 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <typeparam name="T57">Implementation type 57 to bind.</typeparam>
+        /// <typeparam name="T58">Implementation type 58 to bind.</typeparam>
+        /// <typeparam name="T59">Implementation type 59 to bind.</typeparam>
+        /// <typeparam name="T60">Implementation type 60 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <typeparam name="T57">Implementation type 57 to bind.</typeparam>
+        /// <typeparam name="T58">Implementation type 58 to bind.</typeparam>
+        /// <typeparam name="T59">Implementation type 59 to bind.</typeparam>
+        /// <typeparam name="T60">Implementation type 60 to bind.</typeparam>
+        /// <typeparam name="T61">Implementation type 61 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <typeparam name="T57">Implementation type 57 to bind.</typeparam>
+        /// <typeparam name="T58">Implementation type 58 to bind.</typeparam>
+        /// <typeparam name="T59">Implementation type 59 to bind.</typeparam>
+        /// <typeparam name="T60">Implementation type 60 to bind.</typeparam>
+        /// <typeparam name="T61">Implementation type 61 to bind.</typeparam>
+        /// <typeparam name="T62">Implementation type 62 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
+        /// <typeparam name="T1">Implementation type 1 to bind.</typeparam>
+        /// <typeparam name="T2">Implementation type 2 to bind.</typeparam>
+        /// <typeparam name="T3">Implementation type 3 to bind.</typeparam>
+        /// <typeparam name="T4">Implementation type 4 to bind.</typeparam>
+        /// <typeparam name="T5">Implementation type 5 to bind.</typeparam>
+        /// <typeparam name="T6">Implementation type 6 to bind.</typeparam>
+        /// <typeparam name="T7">Implementation type 7 to bind.</typeparam>
+        /// <typeparam name="T8">Implementation type 8 to bind.</typeparam>
+        /// <typeparam name="T9">Implementation type 9 to bind.</typeparam>
+        /// <typeparam name="T10">Implementation type 10 to bind.</typeparam>
+        /// <typeparam name="T11">Implementation type 11 to bind.</typeparam>
+        /// <typeparam name="T12">Implementation type 12 to bind.</typeparam>
+        /// <typeparam name="T13">Implementation type 13 to bind.</typeparam>
+        /// <typeparam name="T14">Implementation type 14 to bind.</typeparam>
+        /// <typeparam name="T15">Implementation type 15 to bind.</typeparam>
+        /// <typeparam name="T16">Implementation type 16 to bind.</typeparam>
+        /// <typeparam name="T17">Implementation type 17 to bind.</typeparam>
+        /// <typeparam name="T18">Implementation type 18 to bind.</typeparam>
+        /// <typeparam name="T19">Implementation type 19 to bind.</typeparam>
+        /// <typeparam name="T20">Implementation type 20 to bind.</typeparam>
+        /// <typeparam name="T21">Implementation type 21 to bind.</typeparam>
+        /// <typeparam name="T22">Implementation type 22 to bind.</typeparam>
+        /// <typeparam name="T23">Implementation type 23 to bind.</typeparam>
+        /// <typeparam name="T24">Implementation type 24 to bind.</typeparam>
+        /// <typeparam name="T25">Implementation type 25 to bind.</typeparam>
+        /// <typeparam name="T26">Implementation type 26 to bind.</typeparam>
+        /// <typeparam name="T27">Implementation type 27 to bind.</typeparam>
+        /// <typeparam name="T28">Implementation type 28 to bind.</typeparam>
+        /// <typeparam name="T29">Implementation type 29 to bind.</typeparam>
+        /// <typeparam name="T30">Implementation type 30 to bind.</typeparam>
+        /// <typeparam name="T31">Implementation type 31 to bind.</typeparam>
+        /// <typeparam name="T32">Implementation type 32 to bind.</typeparam>
+        /// <typeparam name="T33">Implementation type 33 to bind.</typeparam>
+        /// <typeparam name="T34">Implementation type 34 to bind.</typeparam>
+        /// <typeparam name="T35">Implementation type 35 to bind.</typeparam>
+        /// <typeparam name="T36">Implementation type 36 to bind.</typeparam>
+        /// <typeparam name="T37">Implementation type 37 to bind.</typeparam>
+        /// <typeparam name="T38">Implementation type 38 to bind.</typeparam>
+        /// <typeparam name="T39">Implementation type 39 to bind.</typeparam>
+        /// <typeparam name="T40">Implementation type 40 to bind.</typeparam>
+        /// <typeparam name="T41">Implementation type 41 to bind.</typeparam>
+        /// <typeparam name="T42">Implementation type 42 to bind.</typeparam>
+        /// <typeparam name="T43">Implementation type 43 to bind.</typeparam>
+        /// <typeparam name="T44">Implementation type 44 to bind.</typeparam>
+        /// <typeparam name="T45">Implementation type 45 to bind.</typeparam>
+        /// <typeparam name="T46">Implementation type 46 to bind.</typeparam>
+        /// <typeparam name="T47">Implementation type 47 to bind.</typeparam>
+        /// <typeparam name="T48">Implementation type 48 to bind.</typeparam>
+        /// <typeparam name="T49">Implementation type 49 to bind.</typeparam>
+        /// <typeparam name="T50">Implementation type 50 to bind.</typeparam>
+        /// <typeparam name="T51">Implementation type 51 to bind.</typeparam>
+        /// <typeparam name="T52">Implementation type 52 to bind.</typeparam>
+        /// <typeparam name="T53">Implementation type 53 to bind.</typeparam>
+        /// <typeparam name="T54">Implementation type 54 to bind.</typeparam>
+        /// <typeparam name="T55">Implementation type 55 to bind.</typeparam>
+        /// <typeparam name="T56">Implementation type 56 to bind.</typeparam>
+        /// <typeparam name="T57">Implementation type 57 to bind.</typeparam>
+        /// <typeparam name="T58">Implementation type 58 to bind.</typeparam>
+        /// <typeparam name="T59">Implementation type 59 to bind.</typeparam>
+        /// <typeparam name="T60">Implementation type 60 to bind.</typeparam>
+        /// <typeparam name="T61">Implementation type 61 to bind.</typeparam>
+        /// <typeparam name="T62">Implementation type 62 to bind.</typeparam>
+        /// <typeparam name="T63">Implementation type 63 to bind.</typeparam>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>()
+#if NET9_0_OR_GREATER
+            where T : allows ref struct
+            where T1 : allows ref struct
+            where T2 : allows ref struct
+            where T3 : allows ref struct
+            where T4 : allows ref struct
+            where T5 : allows ref struct
+            where T6 : allows ref struct
+            where T7 : allows ref struct
+            where T8 : allows ref struct
+            where T9 : allows ref struct
+            where T10 : allows ref struct
+            where T11 : allows ref struct
+            where T12 : allows ref struct
+            where T13 : allows ref struct
+            where T14 : allows ref struct
+            where T15 : allows ref struct
+            where T16 : allows ref struct
+            where T17 : allows ref struct
+            where T18 : allows ref struct
+            where T19 : allows ref struct
+            where T20 : allows ref struct
+            where T21 : allows ref struct
+            where T22 : allows ref struct
+            where T23 : allows ref struct
+            where T24 : allows ref struct
+            where T25 : allows ref struct
+            where T26 : allows ref struct
+            where T27 : allows ref struct
+            where T28 : allows ref struct
+            where T29 : allows ref struct
+            where T30 : allows ref struct
+            where T31 : allows ref struct
+            where T32 : allows ref struct
+            where T33 : allows ref struct
+            where T34 : allows ref struct
+            where T35 : allows ref struct
+            where T36 : allows ref struct
+            where T37 : allows ref struct
+            where T38 : allows ref struct
+            where T39 : allows ref struct
+            where T40 : allows ref struct
+            where T41 : allows ref struct
+            where T42 : allows ref struct
+            where T43 : allows ref struct
+            where T44 : allows ref struct
+            where T45 : allows ref struct
+            where T46 : allows ref struct
+            where T47 : allows ref struct
+            where T48 : allows ref struct
+            where T49 : allows ref struct
+            where T50 : allows ref struct
+            where T51 : allows ref struct
+            where T52 : allows ref struct
+            where T53 : allows ref struct
+            where T54 : allows ref struct
+            where T55 : allows ref struct
+            where T56 : allows ref struct
+            where T57 : allows ref struct
+            where T58 : allows ref struct
+            where T59 : allows ref struct
+            where T60 : allows ref struct
+            where T61 : allows ref struct
+            where T62 : allows ref struct
+            where T63 : allows ref struct
+#endif
+            ;
+
+        /// <summary>
         /// Binds to a factory delegate; dependencies can be resolved via <see cref="IContext"/>.
         /// <example>
         /// <code>
@@ -13814,6 +19547,2589 @@ namespace Pure.DI
             public IConfiguration To<T>()
 #if NET9_0_OR_GREATER
                 where T : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+#endif
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration To<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63>()
+#if NET9_0_OR_GREATER
+                where T : allows ref struct
+                where T1 : allows ref struct
+                where T2 : allows ref struct
+                where T3 : allows ref struct
+                where T4 : allows ref struct
+                where T5 : allows ref struct
+                where T6 : allows ref struct
+                where T7 : allows ref struct
+                where T8 : allows ref struct
+                where T9 : allows ref struct
+                where T10 : allows ref struct
+                where T11 : allows ref struct
+                where T12 : allows ref struct
+                where T13 : allows ref struct
+                where T14 : allows ref struct
+                where T15 : allows ref struct
+                where T16 : allows ref struct
+                where T17 : allows ref struct
+                where T18 : allows ref struct
+                where T19 : allows ref struct
+                where T20 : allows ref struct
+                where T21 : allows ref struct
+                where T22 : allows ref struct
+                where T23 : allows ref struct
+                where T24 : allows ref struct
+                where T25 : allows ref struct
+                where T26 : allows ref struct
+                where T27 : allows ref struct
+                where T28 : allows ref struct
+                where T29 : allows ref struct
+                where T30 : allows ref struct
+                where T31 : allows ref struct
+                where T32 : allows ref struct
+                where T33 : allows ref struct
+                where T34 : allows ref struct
+                where T35 : allows ref struct
+                where T36 : allows ref struct
+                where T37 : allows ref struct
+                where T38 : allows ref struct
+                where T39 : allows ref struct
+                where T40 : allows ref struct
+                where T41 : allows ref struct
+                where T42 : allows ref struct
+                where T43 : allows ref struct
+                where T44 : allows ref struct
+                where T45 : allows ref struct
+                where T46 : allows ref struct
+                where T47 : allows ref struct
+                where T48 : allows ref struct
+                where T49 : allows ref struct
+                where T50 : allows ref struct
+                where T51 : allows ref struct
+                where T52 : allows ref struct
+                where T53 : allows ref struct
+                where T54 : allows ref struct
+                where T55 : allows ref struct
+                where T56 : allows ref struct
+                where T57 : allows ref struct
+                where T58 : allows ref struct
+                where T59 : allows ref struct
+                where T60 : allows ref struct
+                where T61 : allows ref struct
+                where T62 : allows ref struct
+                where T63 : allows ref struct
 #endif
             {
                 return this;

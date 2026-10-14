@@ -3151,6 +3151,40 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
             where T : allows ref struct
 #endif
             ;
+<#
+for (var i = 2; i <= lifetimeBindsCount; i++)
+{
+var typeArgs = string.Join(", ", GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"));
+var comments = string.Join(Environment.NewLine, GetSuffixes(0, i - 1).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Implementation type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
+var allowsRefStructBlock = GetAllowsRefStructBlock(GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"), "            ");
+#>
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+<#=comments#>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="As"/>
+        IConfiguration To<<#=typeArgs#>>()<#=allowsRefStructBlock#>
+            ;
+<#
+}
+#>
 
         /// <summary>
         /// Binds to a factory delegate; dependencies can be resolved via <see cref="IContext"/>.
@@ -3924,6 +3958,21 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
             {
                 return this;
             }
+<#
+for (var i = 2; i <= lifetimeBindsCount; i++)
+{
+var typeArgs = string.Join(", ", GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"));
+var allowsRefStructBlock = GetAllowsRefStructBlock(GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"), "                ");
+#>
+
+            /// <inheritdoc />
+            public IConfiguration To<<#=typeArgs#>>()<#=allowsRefStructBlock#>
+            {
+                return this;
+            }
+<#
+}
+#>
 
             /// <inheritdoc />
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)

@@ -98,6 +98,14 @@ abstract class MetadataWalkerBase : IMetadataVisitor
     {
     }
 
+    public virtual void VisitImplementations(IReadOnlyList<MdImplementation> implementations)
+    {
+        foreach (var implementation in implementations)
+        {
+            VisitImplementation(implementation);
+        }
+    }
+
     public virtual void VisitFactory(in MdFactory factory)
     {
         foreach (var md in factory.Resolvers)
