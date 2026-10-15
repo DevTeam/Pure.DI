@@ -261,38 +261,6 @@ partial class Scope: IDisposable
 
 </details>
 
-Class diagram:
-
-```mermaid
----
- config:
-  maxTextSize: 2147483647
-  maxEdges: 2147483647
-  class:
-   hideEmptyMembersBox: true
----
-classDiagram
-	ClockService --|> IClockService
-	Composition ..> Clock : Clock BuildUp(Pure.DI.UsageTests.Unity.UnityBasicScenario.Clock buildingInstance)
-	Clock o-- "Singleton" ClockService : IClockService
-	namespace Pure.DI.UsageTests.Unity.UnityBasicScenario {
-		class Clock {
-				<<class>>
-			-IClockService ClockService
-		}
-		class ClockService {
-				<<class>>
-			+ClockService()
-		}
-		class Composition {
-		<<partial>>
-		+Clock BuildUp(Pure.DI.UsageTests.Unity.UnityBasicScenario.Clock buildingInstance)
-		}
-		class IClockService {
-			<<interface>>
-		}
-	}
-```
 
 See also:
 
