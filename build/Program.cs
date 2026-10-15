@@ -31,6 +31,6 @@ DI.Setup(nameof(Composition))
         PublishBlazorTarget,
         PerformanceTestsTarget,
         CodeGenerationPerformanceTarget,
-        AIContextTarget>(Tag.Type);
+        AgentToolTarget>(Tag.Type);
 
 return await new Composition().Root.RunAsync(CancellationToken.None);

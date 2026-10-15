@@ -29,6 +29,7 @@ class TemplateTarget(
             Path.Combine(templatesPath, "Pure.DI.Template.ClassLibrary"),
             Path.Combine(templatesPath, "Pure.DI.Template.ConsoleApp")
         ];
+        EnsureAgentGuidanceIsCurrent(templateProjects);
 
         var jsonConfigPath = Path.Combine(".template.config", "template.json");
         var jsonConfigs = templateProjects.Select(templateProjectPath => Path.Combine(templateProjectPath, jsonConfigPath)).ToList();
@@ -78,6 +79,29 @@ class TemplateTarget(
         finally
         {
             await RestoreJsonFilesAsync(originalJsonConfigs, cancellationToken);
+        }
+    }
+
+    private static void EnsureAgentGuidanceIsCurrent(IEnumerable<string> templateProjects)
+    {
+        var contextRoot = Path.GetFullPath("agent-context");
+        var sourceFiles = Directory.EnumerateFiles(contextRoot, "*", SearchOption.AllDirectories).ToArray();
+        foreach (var template in templateProjects)
+        foreach (var source in sourceFiles)
+        {
+            var relative = Path.GetRelativePath(contextRoot, source);
+            var targets = relative.StartsWith($"skills{Path.DirectorySeparatorChar}", StringComparison.Ordinal)
+                ? new[]
+                {
+                    Path.Combine(template, ".agents", relative),
+                    Path.Combine(template, ".claude", relative)
+                }
+                : new[] { Path.Combine(template, relative) };
+            foreach (var target in targets)
+            {
+                if (File.Exists(target) && File.ReadAllBytes(source).AsSpan().SequenceEqual(File.ReadAllBytes(target))) continue;
+                throw new InvalidOperationException($"Agent guidance is out of sync: {target}. Copy it from {source}.");
+            }
         }
     }
 
@@ -165,11 +189,18 @@ class TemplateTarget(
 
         await dotNetNew.RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
 
-        var guidelinesPath = Path.Combine(outputDirectory, ".junie", "guidelines.md");
-        if (File.Exists(guidelinesPath))
+        foreach (var relativePath in new[]
+                 {
+                     "AGENTS.md",
+                     "CLAUDE.md",
+                     Path.Combine(".agents", "skills", "pure-di", "SKILL.md"),
+                     Path.Combine(".claude", "skills", "pure-di", "SKILL.md")
+                 })
         {
-            Error($"The generated project contains unexpected file: {guidelinesPath}");
-            throw new InvalidOperationException($"The generated project contains unexpected file: {guidelinesPath}");
+            var guidancePath = Path.Combine(outputDirectory, relativePath);
+            if (File.Exists(guidancePath)) continue;
+            Error($"The generated project is missing agent guidance: {guidancePath}");
+            throw new InvalidOperationException($"The generated project is missing agent guidance: {guidancePath}");
         }
 
         await new DotNetBuild()

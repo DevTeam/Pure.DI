@@ -32,6 +32,10 @@ jobs:
             dotnet run --project ./build -- pack
           fi
 
+      - name: Smoke test agent installer
+        shell: pwsh
+        run: ./tests/Pure.DI.Agent.ToolSmoke.ps1 -ToolDll ./src/Pure.DI.Agent/bin/Release/net8.0/Pure.DI.Agent.dll
+
       - name: Save NuGet packages
         uses: actions/upload-artifact@v4
         with:

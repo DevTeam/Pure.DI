@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RollForward>Major</RollForward>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackAsTool>true</PackAsTool>
+    <IsPackable>true</IsPackable>
+    <ToolCommandName>dotnet-puredi-agent</ToolCommandName>
+    <PackageId>Pure.DI.Agent</PackageId>
+    <Description>Install Pure.DI guidance for Codex and Claude Code in an existing .NET project.</Description>
+    <Version>$(InternalVersion)</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../agent-context/skills/pure-di/**/*" LogicalName="agent/skills/pure-di/%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../agent-context/AGENTS.md" LogicalName="agent/AGENTS.md" />
+    <EmbeddedResource Include="../../agent-context/CLAUDE.md" LogicalName="agent/CLAUDE.md" />
+  </ItemGroup>
+</Project>

@@ -44,3 +44,7 @@ Its high performance, zero memory consumption/preparation overhead, and lack of 
 | [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)       | Template package, for creating projects from the shell/command line |
 | [Pure.DI.MS](https://www.nuget.org/packages/Pure.DI.MS)                     | Add-ons for Pure.DI to work with Microsoft DI                       |
 
+## Agent support
+
+Projects created with the Pure.DI templates include compact Pure.DI skills for Codex and Claude Code. For an existing project, the `Pure.DI.Agent` .NET tool can add the same guidance with `dotnet puredi-agent init` after it is released. The command preserves existing project instructions. See the [repository instructions](https://github.com/DevTeam/Pure.DI#coding-agents) for installation and details.
+

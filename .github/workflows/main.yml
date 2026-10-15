@@ -18,6 +18,12 @@ jobs:
       - name: Build and test
         run: dotnet run --project ./build -- check
 
+      - name: Smoke test Pure.DI.Agent
+        shell: pwsh
+        run: |
+          dotnet build src/Pure.DI.Agent/Pure.DI.Agent.csproj -c Release
+          ./tests/Pure.DI.Agent.ToolSmoke.ps1 -ToolDll ./src/Pure.DI.Agent/bin/Release/net8.0/Pure.DI.Agent.dll
+
   test-examples:
 
     runs-on: ubuntu-latest

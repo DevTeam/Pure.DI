@@ -55,6 +55,10 @@ Its high performance, zero memory consumption/preparation overhead, and lack of 
 | [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)       | Template package, for creating projects from the shell/command line |
 | [Pure.DI.MS](https://www.nuget.org/packages/Pure.DI.MS)                     | Add-ons for Pure.DI to work with Microsoft DI                       |
 
+## Agent support
+
+Projects created with the Pure.DI templates include compact Pure.DI skills for Codex and Claude Code. For an existing project, the `Pure.DI.Agent` .NET tool can add the same guidance with `dotnet puredi-agent init` after it is released. The command preserves existing project instructions. See the [repository instructions](https://github.com/DevTeam/Pure.DI#coding-agents) for installation and details.
+
 ![](di.gif)
 
 ## Schrödinger's cat demonstrates how it all works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
@@ -2636,17 +2640,13 @@ alt="DotNext Pure.DI" width="640" border="10"/></a>
 - [Dependency Injection in .NET Matrix](https://matrix.dev-team.org/?category=dependency-injection)
 - [.NET Matrix](https://github.com/DevTeam/dotnet-matrix) project.
 
-## AI Context
+## Coding agents
 
-AI needs to understand the situation it’s in (context). This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:
+The Pure.DI project templates include compact instructions and a `pure-di` skill for Codex and Claude Code. The skill guides changes to bindings, roots, lifetimes, and generator diagnostics without loading the complete examples into every conversation.
 
-| AI context file | Size | Tokens |
-| --------------- | ---- | ------ |
-| [AGENTS_SMALL.md](AGENTS_SMALL.md) | 51KB | 13K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 130KB | 33K |
-| [AGENTS.md](AGENTS.md) | 512KB | 131K |
+For an existing project, after [Pure.DI.Agent](https://www.nuget.org/packages/Pure.DI.Agent) is published, install the .NET tool and run `dotnet puredi-agent init` at the repository root after adding a `Pure.DI` package reference. The command preserves existing project instructions, can preview changes with `--dry-run`, and can remove its own guidance with `dotnet puredi-agent remove`.
 
-For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
+To install the published tool: `dotnet tool install --global Pure.DI.Agent`. Restart an already-open agent session after adding project instructions so it discovers them.
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! If you are planning a big change or feature, please open an issue first. That way, we can coordinate and understand whether the change fits current priorities and whether we can commit to reviewing and merging it within a reasonable timeframe. We do not want you to spend your valuable time on something that may not align with the direction of Pure.DI.
@@ -2692,7 +2692,7 @@ The build logic is a regular [.NET console application](/build). You can use [bu
 
 | Commands | Description |
 |----------|-------------|
-|  | Generate AI context |
+|  | Create Pure.DI.Agent .NET tool package |
 | bm | Run benchmarks |
 | c | Compatibility checks |
 | cgp, codegen-perf | Profile Pure.DI code generation |

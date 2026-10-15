@@ -43,7 +43,7 @@ The build logic is a regular [.NET console application](/build). You can use [bu
 
 | Commands | Description |
 |----------|-------------|
-|  | Generate AI context |
+|  | Create Pure.DI.Agent .NET tool package |
 | bm | Run benchmarks |
 | c | Compatibility checks |
 | cgp, codegen-perf | Profile Pure.DI code generation |

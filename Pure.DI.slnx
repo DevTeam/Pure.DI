@@ -71,6 +71,7 @@
     <File Path="src/Directory.Build.props" />
     <File Path="src/Library.props" />
     <Project Path="src/Pure.DI.Abstractions/Pure.DI.Abstractions.csproj" />
+    <Project Path="src/Pure.DI.Agent/Pure.DI.Agent.csproj" />
     <Project Path="src/Pure.DI.Core/Pure.DI.Core.csproj" />
     <Project Path="src/Pure.DI.MS/Pure.DI.MS.csproj" />
     <Project Path="src/Pure.DI.Templates/Pure.DI.Templates.csproj" />

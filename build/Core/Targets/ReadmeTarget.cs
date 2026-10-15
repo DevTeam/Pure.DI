@@ -11,8 +11,7 @@ class ReadmeTarget(
     Settings settings,
     RootCommand rootCommand,
     ReadmeTools readmeTools,
-    [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget,
-    [Tag(typeof(AIContextTarget))] ITarget<AIContext> aiContextTarget)
+    [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget)
     : IInitializable, ITarget<int>
 {
     private const string ReadmeDir = "readme";
@@ -70,7 +69,7 @@ class ReadmeTarget(
 
         await AddContentAsync(FooterTemplateFile, readmeWriter);
 
-        await AddAIContextAsync(readmeWriter, cancellationToken);
+        await AddAgentGuidanceAsync(readmeWriter);
 
         await AddContributingAsync(readmeWriter);
 
@@ -85,24 +84,16 @@ class ReadmeTarget(
         return 0;
     }
 
-    private async Task AddAIContextAsync(StreamWriter writer, CancellationToken cancellationToken)
+    private static async Task AddAgentGuidanceAsync(StreamWriter writer)
     {
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("## AI Context");
+        await writer.WriteLineAsync("## Coding agents");
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("AI needs to understand the situation it’s in (context). This means knowing details like API, usage scenarios, etc. This helps the AI give more relevant and personalized responses. So Markdown docs below can be useful if you or your team rely on an AI assistant to write code using Pure.DI:");
+        await writer.WriteLineAsync("The Pure.DI project templates include compact instructions and a `pure-di` skill for Codex and Claude Code. The skill guides changes to bindings, roots, lifetimes, and generator diagnostics without loading the complete examples into every conversation.");
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("| AI context file | Size | Tokens |");
-        await writer.WriteLineAsync("| --------------- | ---- | ------ |");
-        var aiContext = await aiContextTarget.RunAsync(cancellationToken);
-        foreach (var aiContextFile in aiContext.Files)
-        {
-            var fileName = Path.GetFileName(aiContextFile.FileName);
-            await writer.WriteLineAsync($"| [{fileName}]({fileName}) | {aiContextFile.SizeKB}KB | {aiContextFile.SizeKTokens}K |");
-        }
-
+        await writer.WriteLineAsync("For an existing project, after [Pure.DI.Agent](https://www.nuget.org/packages/Pure.DI.Agent) is published, install the .NET tool and run `dotnet puredi-agent init` at the repository root after adding a `Pure.DI` package reference. The command preserves existing project instructions, can preview changes with `--dry-run`, and can remove its own guidance with `dotnet puredi-agent remove`.");
         await writer.WriteLineAsync();
-        await writer.WriteLineAsync("For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._");
+        await writer.WriteLineAsync("To install the published tool: `dotnet tool install --global Pure.DI.Agent`. Restart an already-open agent session after adding project instructions so it discovers them.");
     }
 
     private async Task AddContributingAsync(StreamWriter writer)
