@@ -69,21 +69,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Preferences? _singletonCompositionInOtherProject;
+  private Preferences? _singletonWcfLikeChannel;
 
   public SettingsWindow SettingsWindow
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new Preferences();
+            _singletonWcfLikeChannel = new Preferences();
           }
 
-      return new SettingsWindow(_singletonCompositionInOtherProject);
+      return new SettingsWindow(_singletonWcfLikeChannel);
     }
   }
 
@@ -92,14 +92,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new Preferences();
+            _singletonWcfLikeChannel = new Preferences();
           }
 
-      return new MainWindow(_singletonCompositionInOtherProject);
+      return new MainWindow(_singletonWcfLikeChannel);
     }
   }
 }

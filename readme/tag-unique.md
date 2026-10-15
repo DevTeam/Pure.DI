@@ -106,12 +106,12 @@ Class diagram:
 ---
 classDiagram
 	NotificationServiceᐸStringᐳ --|> INotificationServiceᐸStringᐳ
-	EmailChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #45"
-	SmsChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #46"
+	EmailChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #47"
+	SmsChannelᐸStringᐳ --|> INotificationChannelᐸStringᐳ : "Unique tag #48"
 	Composition ..> NotificationServiceᐸStringᐳ : INotificationServiceᐸStringᐳ NotificationService
 	NotificationServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸINotificationChannelᐸStringᐳᐳ : IEnumerableᐸINotificationChannelᐸStringᐳᐳ
-	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *-- EmailChannelᐸStringᐳ : "Unique tag #45" INotificationChannelᐸStringᐳ
-	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *-- SmsChannelᐸStringᐳ : "Unique tag #46" INotificationChannelᐸStringᐳ
+	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *-- EmailChannelᐸStringᐳ : "Unique tag #47" INotificationChannelᐸStringᐳ
+	IEnumerableᐸINotificationChannelᐸStringᐳᐳ *-- SmsChannelᐸStringᐳ : "Unique tag #48" INotificationChannelᐸStringᐳ
 	namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario {
 		class Composition {
 		<<partial>>

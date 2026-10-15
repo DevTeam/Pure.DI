@@ -1,4 +1,4 @@
-﻿## How to contribute to Pure.DI
+## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! If you are planning a big change or feature, please open an issue first. That way, we can coordinate and understand whether the change fits current priorities and whether we can commit to reviewing and merging it within a reasonable timeframe. We do not want you to spend your valuable time on something that may not align with the direction of Pure.DI.
 
@@ -56,6 +56,14 @@ or to run benchmarks:
 ```shell
 ./build.cmd benchmarks
 ```
+
+### Build NuGet packages on GitHub
+
+Open **Actions → Build NuGet packages → Run workflow**. Leave **Package version** empty to use the next release version in the `VersionRange` from `Directory.Build.props`, calculated from the published `Pure.DI` versions on NuGet.org. Enter a NuGet version (for example, `2.5.5` or `2.5.5-beta1`) to override it for this run.
+
+The workflow runs the `pack` target, including its compatibility checks. It saves the resulting `Pure.DI`, `Pure.DI.MS`, and `Pure.DI.Abstractions` `.nupkg` files under the run's **Artifacts** section for 30 days. It does not publish them to a package registry. The template package has a separate `template` target.
+
+Locally, use `./build.sh pack` (or `./build.cmd pack` on Windows). To override the version, pass `-p:version=2.5.5` before `pack`.
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands. This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET. This tool helps to make .NET builds more efficient.
 

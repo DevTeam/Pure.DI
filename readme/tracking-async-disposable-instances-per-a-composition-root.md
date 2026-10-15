@@ -174,7 +174,6 @@ Class diagram:
 classDiagram
 	Owned --|> IOwned
 	DbConnection --|> IDbConnection
-	DbConnection --|> IAsyncDisposable
 	Query --|> IQuery
 	Composition ..> OwnedᐸIQueryᐳ : OwnedᐸIQueryᐳ Query
 	Query *-- DbConnection : IDbConnection
@@ -209,11 +208,6 @@ classDiagram
 		class Query {
 				<<class>>
 			+Query(IDbConnection connection)
-		}
-	}
-	namespace System {
-		class IAsyncDisposable {
-			<<interface>>
 		}
 	}
 ```

@@ -2528,6 +2528,53 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
 
+## Multiple implementations
+
+Use `To<T1, T2, ...>()` to bind several implementations to the same contract in one call. Each type becomes a separate binding with the configured lifetime and tags. Up to 64 implementation types are supported.
+Use `Tag.Unique` when a collection should contain every implementation. Pure.DI assigns a distinct tag to each binding, so an array or `IEnumerable<T>` can collect them all.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    // Each channel gets a separate binding with Singleton lifetime.
+    .Bind<INotificationChannel>(Tag.Unique)
+        .As(Lifetime.Singleton)
+        .To<EmailChannel, SmsChannel, PushChannel>()
+    .Root<INotificationChannel[]>("Channels");
+
+var composition = new Composition();
+var channels = composition.Channels;
+
+channels.Length.ShouldBe(3);
+channels[0].ShouldBeOfType<EmailChannel>();
+channels[1].ShouldBeOfType<SmsChannel>();
+channels[2].ShouldBeOfType<PushChannel>();
+
+var channelsAgain = composition.Channels;
+for (var index = 0; index < channels.Length; index++)
+{
+    channelsAgain[index].ShouldBeSameAs(channels[index]);
+}
+
+interface INotificationChannel;
+
+class EmailChannel : INotificationChannel;
+
+class SmsChannel : INotificationChannel;
+
+class PushChannel : INotificationChannel;
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+You can use `Tag.Type` instead of `Tag.Unique` to give each binding the implementation type as its tag. For example, `EmailChannel` gets the tag `typeof(EmailChannel)`, which can also be used to resolve that implementation individually.
+A regular shared tag follows the usual binding rules: later bindings for the same contract and tag override earlier ones. `Tag.Unique` keeps each implementation available to collection injection.
+See also: [Tag Type](tag-type.md), [Tag Unique](tag-unique.md), [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md).
+
 ## Union types
 
 A union types C# feature allows declaring a union type such as `union PaymentGateway(StripeGateway, BankGateway);`. Each case type is implicitly convertible to the union, and Pure.DI uses this conversion to treat a case implementation as an implementation of the union DI contract. Unlike an interface contract, the case types do not have to share any common abstraction — they may even be third-party SDK types you cannot change. The checkout service below depends only on the `PaymentGateway` union and pattern matches over its cases, while the composition decides which gateway is used and builds the whole dependency graph of the selected case.
@@ -10663,6 +10710,7 @@ To run the above code, the following NuGet packages must be added:
  - [Shouldly](https://www.nuget.org/packages/Shouldly)
 
 Limitations: accumulation order depends on object creation order in the graph, so do not treat it as a stable business ordering.
+The dependencies of a `Singleton` or `Scoped` instance belong to that shared instance, so `Transient`, `PerBlock` and `PerResolve` accumulators do not collect them.
 See also: [Enumerable](enumerable.md), [Lifetimes](transient.md).
 
 ## Root Name
@@ -11014,6 +11062,135 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >Disposable tracking ensures proper cleanup of all disposable instances within a composition scope.
 
+## Custom dispose strategy
+
+The composition calls `Dispose()` on tracked singleton and scoped instances. Some types — most notably WCF clients that implement `ICommunicationObject` — require a specific shutdown sequence (try `Close()`, fall back to `Abort()` on a timeout or when the channel is faulted). Implement the partial `OnDispose` / `OnDisposeAsync` methods on the composition, perform the custom shutdown logic and return `true` to skip the default disposal call (or `false` to let the composition dispose the instance as usual).
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+var composition = new Composition();
+var service = composition.Service;
+
+// Simulate using the service
+service.Open();
+
+// Dispose the composition - this triggers our custom dispose strategy
+composition.Dispose();
+
+// The custom disposal strategy ensured the channel was properly closed
+service.State.ShouldBe("Closed");
+
+// Simulates a WCF-like client that requires Close-with-timeout and Abort fallback.
+class WcfLikeChannel : IDisposable, IAsyncDisposable
+{
+    public string State { get; private set; } = "Created";
+
+    public void Open() => State = "Opened";
+
+    public void Close(TimeSpan timeout)
+    {
+        if (State == "Faulted")
+        {
+            throw new InvalidOperationException("Cannot close a faulted channel.");
+        }
+
+        State = "Closed";
+    }
+
+    public void Abort() => State = "Aborted";
+
+    public void Dispose() => State = "Disposed";
+
+    public ValueTask DisposeAsync()
+    {
+        Dispose();
+        return ValueTask.CompletedTask;
+    }
+}
+
+interface IService
+{
+    string State { get; }
+
+    void Open();
+}
+
+class Service(WcfLikeChannel channel) : IService
+{
+    public string State => channel.State;
+
+    public void Open() => channel.Open();
+}
+
+partial class Composition
+{
+    static void Setup() =>
+
+        DI.Setup()
+            .Hint(Hint.OnDispose, "On")
+            .Hint(Hint.OnDisposeAsync, "On")
+            .Bind().As(Lifetime.Singleton).To<WcfLikeChannel>()
+            .Bind().To<Service>()
+            .Root<IService>("Service");
+
+    // Custom dispose strategy: wrap each tracked WcfLikeChannel instance
+    // in a "SafeClose" helper that performs Close(timeout) -> Abort() fallback.
+    // Returns true to tell the composition to skip the default Dispose() / DisposeAsync()
+    // call because the hook has already released the resource.
+    private partial bool OnDispose<T>(in T disposableInstance)
+        where T : IDisposable
+    {
+        if (disposableInstance is WcfLikeChannel channel)
+        {
+            SafeShutdown(channel);
+            return true;
+        }
+
+        return false;
+    }
+
+    private partial ValueTask<bool> OnDisposeAsync<T>(in T asyncDisposableInstance)
+        where T : IAsyncDisposable
+    {
+        if (asyncDisposableInstance is WcfLikeChannel channel)
+        {
+            SafeShutdown(channel);
+            return new ValueTask<bool>(true);
+        }
+
+        return new ValueTask<bool>(false);
+    }
+
+    private static void SafeShutdown(WcfLikeChannel channel)
+    {
+        if (channel.State == "Opened")
+        {
+            try
+            {
+                channel.Close(TimeSpan.FromSeconds(10));
+            }
+            catch
+            {
+                channel.Abort();
+            }
+        }
+        else
+        {
+            channel.Dispose();
+        }
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!IMPORTANT]
+>`OnDispose` and `OnDisposeAsync` are partial methods. They are not invoked when not implemented, so there is zero overhead for compositions that do not need a custom disposal strategy.
+
 ## Tracking disposable instances in delegates
 
 When a service creates disposable dependencies dynamically, inject `Func<Owned<T>>` instead of `Func<T>`. Each factory call returns an `Owned<T>` that owns all disposables created for that particular graph, so disposing it cleans up exactly those instances — graphs produced by other factory calls remain alive.
@@ -11201,6 +11378,7 @@ To run the above code, the following NuGet packages must be added:
 
 >[!NOTE]
 >The tracking mechanism respects lifetime semantics, ensuring that transient instances are disposed immediately while singleton instances persist until composition disposal.
+The dependencies of a `Singleton` or `Scoped` instance belong to that shared instance: an `Owned<T>` does not dispose them, even when it happens to create the shared instance first.
 
 ## Tracking disposable instances using pre-built classes
 
@@ -11665,6 +11843,92 @@ To run the above code, the following NuGet packages must be added:
 
 >[!IMPORTANT]
 >The hook belongs to the non-generic `Pure.DI.Owned` accumulator used internally by every `Owned<T>`, so its partial implementation must be declared in the `Pure.DI` namespace. The partial `Owned<T>` extension exposes only the events collected by its own accumulator.
+
+## Custom dispose strategy for Owned<T>
+
+`Owned<T>` calls `Dispose()` on every tracked resource when the owner is disposed. Some types — most notably WCF clients that implement `ICommunicationObject` — require a specific shutdown sequence (try `Close()`, fall back to `Abort()` on a timeout or when the channel is faulted). Implement the partial `OnDispose` / `OnDisposeAsync` hooks on the non-generic `Pure.DI.Owned` accumulator to perform the custom shutdown logic and set `skipDefaultDispose` to `true` to skip the default disposal call (or leave it `false` to let the owner dispose the instance as usual).
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+// The root is Owned<IWcfClient>, so the resources it tracks are released
+// when the Owned<T> owner is disposed, not when the composition is.
+var composition = new Composition();
+var ownedClient = composition.Client;
+
+// Disposing the owner runs the custom hook instead of the default disposal.
+ownedClient.Dispose();
+
+// Only "Close" was recorded: the hook performed the graceful shutdown and
+// skipped the default Dispose(), which would have recorded "Default".
+ownedClient.Value.ShutdownSequence.ShouldBe(["Close"]);
+
+DI.Setup(nameof(Composition))
+    .Bind<IWcfClient>().To<WcfClient>()
+    .Root<Owned<IWcfClient>>("Client");
+
+    // Minimal stand-in for a WCF client (ICommunicationObject): a graceful
+    // Close(timeout) plus an Abort() fallback.
+    public interface IWcfClient
+    {
+        // Records the shutdown calls in order so the test can assert which path was taken.
+        IReadOnlyList<string> ShutdownSequence { get; }
+
+        void Close(TimeSpan timeout);
+
+        void Abort();
+    }
+
+    public sealed class WcfClient : IWcfClient, IDisposable
+    {
+        private readonly List<string> _sequence = [];
+
+        public IReadOnlyList<string> ShutdownSequence => _sequence;
+
+        public void Close(TimeSpan timeout) => _sequence.Add("Close");
+
+        public void Abort() => _sequence.Add("Abort");
+
+        // Only reached when the owner falls back to the default disposal strategy.
+        public void Dispose() => _sequence.Add("Default");
+    }
+}
+
+// The hook belongs to the non-generic Pure.DI.Owned accumulator shared by every Owned<T>,
+// so the partial implementation must be declared in the Pure.DI namespace.
+namespace Pure.DI
+{
+    internal sealed partial class Owned
+    {
+        // Called for each IDisposable tracked by any Owned<T> graph before the default disposal.
+        // Set skipDefaultDispose to true after releasing the instance yourself, otherwise the
+        // accumulator disposes it in the usual way.
+        partial void OnDispose<T>(in T disposableInstance, ref bool skipDefaultDispose)
+            where T : IDisposable
+        {
+            switch (disposableInstance)
+            {
+                // WCF-like clients need Close(timeout) with an Abort() fallback instead of Dispose().
+                case UsageTests.Advanced.CustomOwnedDisposeStrategyScenario.IWcfClient wcfClient:
+                    wcfClient.Close(TimeSpan.FromSeconds(10));
+                    skipDefaultDispose = true;
+                    break;
+
+                // Any other resource: leave skipDefaultDispose as it is and let the
+                // accumulator dispose it as usual.
+            }
+        }
+    }
+}
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+>[!IMPORTANT]
+>The hook belongs to the non-generic `Pure.DI.Owned` accumulator used internally by every `Owned<T>`, so its partial implementation must be declared in the `Pure.DI` namespace.
 
 ## Exported roots
 

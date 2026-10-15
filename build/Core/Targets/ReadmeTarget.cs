@@ -376,12 +376,18 @@ class ReadmeTarget(
         }
     }
 
+    // Characters, that are not allowed in a file name on any supported OS.
+    private static readonly char[] InvalidFileNameChars = Path.GetInvalidFileNameChars();
+
     private static string CreateExampleFileName(string text) =>
-        text.Replace(" ", "-")
+        new string(text
+            .Replace(" ", "-")
             .Replace("_", string.Empty)
             .Replace("'", string.Empty)
             .Replace("/", string.Empty)
             .Replace("`", string.Empty)
             .Replace("\\", string.Empty)
+            .Where(i => !InvalidFileNameChars.Contains(i))
+            .ToArray())
             .ToLowerInvariant();
 }

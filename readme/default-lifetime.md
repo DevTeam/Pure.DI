@@ -109,7 +109,7 @@ partial class Composition
 #endif
 
   private RagChatAssistant? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
-  private LlmGateway? _singletonCompositionInOtherProject;
+  private LlmGateway? _singletonWcfLikeChannel;
 
   public IChatAssistant Assistant
   {
@@ -121,18 +121,18 @@ partial class Composition
           if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
             EnsureLlmGatewayExists();
-            _singletonCompositionWithGenericRootsAndArgsInOtherProject = new RagChatAssistant(_singletonCompositionInOtherProject, _singletonCompositionInOtherProject);
+            _singletonCompositionWithGenericRootsAndArgsInOtherProject = new RagChatAssistant(_singletonWcfLikeChannel, _singletonWcfLikeChannel);
           }
 
       return _singletonCompositionWithGenericRootsAndArgsInOtherProject;
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLlmGatewayExists()
       {
-        if (_singletonCompositionInOtherProject is null)
+        if (_singletonWcfLikeChannel is null)
           lock (_lock)
-            if (_singletonCompositionInOtherProject is null)
+            if (_singletonWcfLikeChannel is null)
             {
-              _singletonCompositionInOtherProject = new LlmGateway();
+              _singletonWcfLikeChannel = new LlmGateway();
             }
       }
     }

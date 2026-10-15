@@ -134,6 +134,7 @@ dotnet run
 
 >[!NOTE]
 >The tracking mechanism respects lifetime semantics, ensuring that transient instances are disposed immediately while singleton instances persist until composition disposal.
+The dependencies of a `Singleton` or `Scoped` instance belong to that shared instance: an `Owned<T>` does not dispose them, even when it happens to create the shared instance first.
 
 <details>
 <summary>The following partial class will be generated</summary>

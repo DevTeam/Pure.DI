@@ -103,7 +103,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private TicketIdGenerator? _singletonCompositionInOtherProject;
+  private TicketIdGenerator? _singletonWcfLikeChannel;
 
   public IQueueTerminal Terminal
   {
@@ -115,14 +115,14 @@ partial class Composition
       () =>
       {
         // Creates a deferred value
-        if (_singletonCompositionInOtherProject is null)
+        if (_singletonWcfLikeChannel is null)
           lock (_lock)
-            if (_singletonCompositionInOtherProject is null)
+            if (_singletonWcfLikeChannel is null)
             {
-              _singletonCompositionInOtherProject = new TicketIdGenerator();
+              _singletonWcfLikeChannel = new TicketIdGenerator();
             }
 
-        return new Ticket(_singletonCompositionInOtherProject);
+        return new Ticket(_singletonWcfLikeChannel);
       });
       return new QueueTerminal(perBlockFuncITicket);
     }

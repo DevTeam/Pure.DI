@@ -122,21 +122,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private RendererPool? _singletonCompositionInOtherProject;
+  private RendererPool? _singletonWcfLikeChannel;
 
   public INotificationComposer Composer
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new RendererPool();
+            _singletonWcfLikeChannel = new RendererPool();
           }
 
-      return new NotificationComposer(new RendererLease(_singletonCompositionInOtherProject));
+      return new NotificationComposer(new RendererLease(_singletonWcfLikeChannel));
     }
   }
 }

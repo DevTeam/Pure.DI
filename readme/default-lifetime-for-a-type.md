@@ -121,7 +121,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private GnssTimeSource? _singletonCompositionInOtherProject;
+  private GnssTimeSource? _singletonWcfLikeChannel;
 
   public IBaseStationController Controller
   {
@@ -129,15 +129,15 @@ partial class Composition
     get
     {
       EnsureGnssTimeSourceExists();
-      return new BaseStationController(_singletonCompositionInOtherProject, new RadioScheduler(_singletonCompositionInOtherProject));
+      return new BaseStationController(_singletonWcfLikeChannel, new RadioScheduler(_singletonWcfLikeChannel));
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureGnssTimeSourceExists()
       {
-        if (_singletonCompositionInOtherProject is null)
+        if (_singletonWcfLikeChannel is null)
           lock (_lock)
-            if (_singletonCompositionInOtherProject is null)
+            if (_singletonWcfLikeChannel is null)
             {
-              _singletonCompositionInOtherProject = new GnssTimeSource();
+              _singletonWcfLikeChannel = new GnssTimeSource();
             }
       }
     }

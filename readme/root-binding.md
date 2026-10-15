@@ -73,21 +73,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private DbConnection? _singletonCompositionInOtherProject;
+  private DbConnection? _singletonWcfLikeChannel;
 
   public IOrderService OrderService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new DbConnection();
+            _singletonWcfLikeChannel = new DbConnection();
           }
 
-      return new OrderService(_singletonCompositionInOtherProject);
+      return new OrderService(_singletonWcfLikeChannel);
     }
   }
 }

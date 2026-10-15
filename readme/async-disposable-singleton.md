@@ -119,22 +119,22 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private AuditLogWriter? _singletonCompositionInOtherProject;
+  private AuditLogWriter? _singletonWcfLikeChannel;
 
   public ICheckoutService CheckoutService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new AuditLogWriter();
-            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
+            _singletonWcfLikeChannel = new AuditLogWriter();
+            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
           }
 
-      return new CheckoutService(_singletonCompositionInOtherProject);
+      return new CheckoutService(_singletonWcfLikeChannel);
     }
   }
 
@@ -148,7 +148,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
     }
 
     while (disposeIndex-- > 0)
@@ -171,6 +171,7 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
 
+  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
   public async ValueTask DisposeAsync()
   {
     int disposeIndex;
@@ -180,7 +181,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
     }
 
     while (disposeIndex-- > 0)
@@ -200,8 +201,6 @@ partial class Composition: IDisposable, IAsyncDisposable
       }
     }
   }
-
-  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
 }
 ```
 
@@ -218,7 +217,6 @@ Class diagram:
 classDiagram
 	Composition --|> IDisposable
 	Composition --|> IAsyncDisposable
-	AuditLogWriter --|> IAsyncDisposable
 	CheckoutService --|> ICheckoutService
 	Composition ..> CheckoutService : ICheckoutService CheckoutService
 	CheckoutService o-- "Singleton" AuditLogWriter : AuditLogWriter

@@ -156,7 +156,7 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
-  private RequestContext? _singletonCompositionInOtherProject;
+  private RequestContext? _singletonWcfLikeChannel;
   private IdGenerator? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   internal static Composition SetupScope(Composition parentScope, Composition childScope)
@@ -176,20 +176,20 @@ partial class Composition: IDisposable
     get
     {
       var root = _root ?? this;
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
             if (root._singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               root._singletonCompositionWithGenericRootsAndArgsInOtherProject = new IdGenerator();
             }
 
-            _singletonCompositionInOtherProject = new RequestContext(root._singletonCompositionWithGenericRootsAndArgsInOtherProject);
-            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
+            _singletonWcfLikeChannel = new RequestContext(root._singletonCompositionWithGenericRootsAndArgsInOtherProject);
+            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
           }
 
-      return new CheckoutService(_singletonCompositionInOtherProject);
+      return new CheckoutService(_singletonWcfLikeChannel);
     }
   }
 
@@ -212,7 +212,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
       _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 

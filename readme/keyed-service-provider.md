@@ -112,7 +112,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private PayPalGateway? _singletonCompositionInOtherProject;
+  private PayPalGateway? _singletonWcfLikeChannel;
 
   private LightweightRoot LightRoot
   {
@@ -125,7 +125,7 @@ partial class Composition
       {
         // Creates a deferred value
         EnsurePayPalGatewayPayPalExists();
-        return _singletonCompositionInOtherProject;
+        return _singletonWcfLikeChannel;
       });
       Func<IOrderService> perBlockFuncIOrderService = new Func<IOrderService>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -133,7 +133,7 @@ partial class Composition
       {
         // Creates a deferred value
         EnsurePayPalGatewayPayPalExists();
-        return new OnlineOrderService(_singletonCompositionInOtherProject);
+        return new OnlineOrderService(_singletonWcfLikeChannel);
       });
       return new LightweightRoot()
       {
@@ -143,11 +143,11 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsurePayPalGatewayPayPalExists()
       {
-        if (_singletonCompositionInOtherProject is null)
+        if (_singletonWcfLikeChannel is null)
           lock (_lock)
-            if (_singletonCompositionInOtherProject is null)
+            if (_singletonWcfLikeChannel is null)
             {
-              _singletonCompositionInOtherProject = new PayPalGateway();
+              _singletonWcfLikeChannel = new PayPalGateway();
             }
       }
     }

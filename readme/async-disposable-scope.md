@@ -132,7 +132,7 @@ partial class Composition: IDisposable, IAsyncDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Dependency? _singletonCompositionInOtherProject;
+  private Dependency? _singletonWcfLikeChannel;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -159,15 +159,15 @@ partial class Composition: IDisposable, IAsyncDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new Dependency();
-            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
+            _singletonWcfLikeChannel = new Dependency();
+            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
           }
 
-      return new Service(_singletonCompositionInOtherProject);
+      return new Service(_singletonWcfLikeChannel);
     }
   }
 
@@ -197,7 +197,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
     }
 
     while (disposeIndex-- > 0)
@@ -220,6 +220,7 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
 
+  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
   public async ValueTask DisposeAsync()
   {
     int disposeIndex;
@@ -229,7 +230,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
     }
 
     while (disposeIndex-- > 0)
@@ -249,8 +250,6 @@ partial class Composition: IDisposable, IAsyncDisposable
       }
     }
   }
-
-  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
 }
 ```
 
@@ -268,7 +267,6 @@ classDiagram
 	Composition --|> IDisposable
 	Composition --|> IAsyncDisposable
 	Dependency --|> IDependency
-	Dependency --|> IAsyncDisposable
 	Service --|> IService
 	Composition ..> Program : Program ProgramRoot
 	Composition ..> Service : IService SessionRoot

@@ -135,7 +135,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private Configuration? _singletonCompositionInOtherProject;
+  private Configuration? _singletonWcfLikeChannel;
   private Session? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   [OrdinalAttribute(256)]
@@ -170,7 +170,7 @@ partial class Composition: IDisposable
       {
         // Creates a deferred value
         EnsureConfigurationExists();
-        return root._singletonCompositionInOtherProject;
+        return root._singletonWcfLikeChannel;
       });
       Func<ISession> perBlockFuncISession = new Func<ISession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -182,7 +182,7 @@ partial class Composition: IDisposable
             if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               EnsureConfigurationExists();
-              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Session(root._singletonCompositionInOtherProject);
+              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Session(root._singletonWcfLikeChannel);
               _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
             }
 
@@ -196,11 +196,11 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
       {
-        if (root._singletonCompositionInOtherProject is null)
+        if (root._singletonWcfLikeChannel is null)
           lock (_lock)
-            if (root._singletonCompositionInOtherProject is null)
+            if (root._singletonWcfLikeChannel is null)
             {
-              root._singletonCompositionInOtherProject = new Configuration();
+              root._singletonWcfLikeChannel = new Configuration();
             }
       }
     }
@@ -302,7 +302,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
       _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 

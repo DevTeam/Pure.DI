@@ -70,21 +70,21 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Configuration? _singletonCompositionInOtherProject;
+  private Configuration? _singletonWcfLikeChannel;
 
   public EmailService MyEmailService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new Configuration();
+            _singletonWcfLikeChannel = new Configuration();
           }
 
-      return new EmailService(_singletonCompositionInOtherProject);
+      return new EmailService(_singletonWcfLikeChannel);
     }
   }
 }

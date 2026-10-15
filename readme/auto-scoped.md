@@ -131,7 +131,7 @@ partial class Composition
   private readonly Object _lock;
 #endif
 
-  private PlaybackQueue? _singletonCompositionInOtherProject;
+  private PlaybackQueue? _singletonWcfLikeChannel;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -177,14 +177,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new PlaybackQueue();
+            _singletonWcfLikeChannel = new PlaybackQueue();
           }
 
-      return new ListeningSession(_singletonCompositionInOtherProject);
+      return new ListeningSession(_singletonWcfLikeChannel);
     }
   }
 }

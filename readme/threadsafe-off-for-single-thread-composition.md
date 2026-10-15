@@ -81,19 +81,19 @@ Use this only when the composition instance is not shared across threads. If del
 partial class Composition
 {
 
-  private ImportCache? _singletonCompositionInOtherProject;
+  private ImportCache? _singletonWcfLikeChannel;
 
   public IImportJob Job
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
       {
-        _singletonCompositionInOtherProject = new ImportCache();
+        _singletonWcfLikeChannel = new ImportCache();
       }
 
-      return new ImportJob(_singletonCompositionInOtherProject);
+      return new ImportJob(_singletonWcfLikeChannel);
     }
   }
 }

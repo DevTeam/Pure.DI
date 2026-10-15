@@ -122,7 +122,7 @@ partial class Composition: IDisposable
   private object[] _disposables = new object[2];
   private int _disposeIndex;
 
-  private OrderDatabase? _singletonCompositionInOtherProject;
+  private OrderDatabase? _singletonWcfLikeChannel;
   private PaymentGatewayConnection? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public IOrderProcessor OrderProcessor
@@ -130,12 +130,12 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new OrderDatabase();
-            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
+            _singletonWcfLikeChannel = new OrderDatabase();
+            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
           }
 
       if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
@@ -146,7 +146,7 @@ partial class Composition: IDisposable
             _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
           }
 
-      return new OrderProcessor(_singletonCompositionInOtherProject, _singletonCompositionWithGenericRootsAndArgsInOtherProject);
+      return new OrderProcessor(_singletonWcfLikeChannel, _singletonCompositionWithGenericRootsAndArgsInOtherProject);
     }
   }
 
@@ -160,7 +160,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[2];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
       _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
     }
 

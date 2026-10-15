@@ -73,7 +73,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private OtherAssembly.CompositionInOtherProject? _singletonCompositionInOtherProject;
+  private OtherAssembly.CompositionInOtherProject? _singletonWcfLikeChannel;
 
   public Program Program
   {
@@ -81,14 +81,14 @@ partial class Composition
     get
     {
       OtherAssembly.IMyService transientIMyService;
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new OtherAssembly.CompositionInOtherProject();
+            _singletonWcfLikeChannel = new OtherAssembly.CompositionInOtherProject();
           }
 
-      OtherAssembly.CompositionInOtherProject localInstance_1182D127 = _singletonCompositionInOtherProject;
+      OtherAssembly.CompositionInOtherProject localInstance_1182D127 = _singletonWcfLikeChannel;
       transientIMyService = localInstance_1182D127.MyService;
       return new Program(transientIMyService);
     }

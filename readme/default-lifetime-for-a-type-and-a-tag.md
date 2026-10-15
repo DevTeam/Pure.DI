@@ -117,7 +117,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private LiveAudioSource? _singletonCompositionInOtherProject;
+  private LiveAudioSource? _singletonWcfLikeChannel;
   private BufferedAudioSource? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
   public IPlaybackSession PlaybackSession
@@ -125,11 +125,11 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new LiveAudioSource();
+            _singletonWcfLikeChannel = new LiveAudioSource();
           }
 
       if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
@@ -139,7 +139,7 @@ partial class Composition
             _singletonCompositionWithGenericRootsAndArgsInOtherProject = new BufferedAudioSource();
           }
 
-      return new PlaybackSession(_singletonCompositionInOtherProject, _singletonCompositionWithGenericRootsAndArgsInOtherProject);
+      return new PlaybackSession(_singletonWcfLikeChannel, _singletonCompositionWithGenericRootsAndArgsInOtherProject);
     }
   }
 }

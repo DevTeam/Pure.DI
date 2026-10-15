@@ -94,7 +94,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private CommentsFactory? _singletonCompositionInOtherProject;
+  private CommentsFactory? _singletonWcfLikeChannel;
 
   public IArticleService ArticleService
   {
@@ -102,14 +102,14 @@ partial class Composition
     get
     {
       IComments<Article> transientICommentsArticle;
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new CommentsFactory();
+            _singletonWcfLikeChannel = new CommentsFactory();
           }
 
-      CommentsFactory localInstance_1182D127 = _singletonCompositionInOtherProject;
+      CommentsFactory localInstance_1182D127 = _singletonWcfLikeChannel;
       transientICommentsArticle = localInstance_1182D127.Create<Article>();
       return new ArticleService(transientICommentsArticle);
     }

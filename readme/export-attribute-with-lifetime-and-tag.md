@@ -91,7 +91,7 @@ partial class Composition
 #endif
 
   private IGpu? _singletonIGpu;
-  private GraphicsAdapter? _singletonCompositionInOtherProject;
+  private GraphicsAdapter? _singletonWcfLikeChannel;
 
   public IRenderer Renderer
   {
@@ -102,12 +102,12 @@ partial class Composition
         lock (_lock)
           if (_singletonIGpu is null)
           {
-            if (_singletonCompositionInOtherProject is null)
+            if (_singletonWcfLikeChannel is null)
             {
-              _singletonCompositionInOtherProject = new GraphicsAdapter();
+              _singletonWcfLikeChannel = new GraphicsAdapter();
             }
 
-            GraphicsAdapter localInstance_1182D127 = _singletonCompositionInOtherProject;
+            GraphicsAdapter localInstance_1182D127 = _singletonWcfLikeChannel;
             _singletonIGpu = localInstance_1182D127.HighPerfGpu;
           }
 

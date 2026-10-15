@@ -173,7 +173,6 @@ classDiagram
 	Owned --|> IOwned
 	DbConnection --|> IConnection
 	QueryService --|> IQueryService
-	QueryService --|> IAsyncDisposable
 	Composition ..> QueryService : QueryService QueryService
 	QueryService o-- "PerBlock" FuncᐸOwnedᐸIConnectionᐳᐳ : FuncᐸOwnedᐸIConnectionᐳᐳ
 	FuncᐸOwnedᐸIConnectionᐳᐳ o-- "PerBlock" OwnedᐸIConnectionᐳ : OwnedᐸIConnectionᐳ
@@ -213,9 +212,6 @@ classDiagram
 	namespace System {
 		class FuncᐸOwnedᐸIConnectionᐳᐳ {
 				<<delegate>>
-		}
-		class IAsyncDisposable {
-			<<interface>>
 		}
 	}
 ```

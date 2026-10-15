@@ -95,25 +95,25 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private GlobalCache? _singletonCompositionInOtherProject;
+  private GlobalCache? _singletonWcfLikeChannel;
 
   public IOrderProcessor OrderProcessor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            GlobalCache _singletonCompositionInOtherProjectTemp;
-            _singletonCompositionInOtherProjectTemp = new GlobalCache();
-            OnNewInstance<GlobalCache>(ref _singletonCompositionInOtherProjectTemp, null, Lifetime.Singleton);
+            GlobalCache _singletonWcfLikeChannelTemp;
+            _singletonWcfLikeChannelTemp = new GlobalCache();
+            OnNewInstance<GlobalCache>(ref _singletonWcfLikeChannelTemp, null, Lifetime.Singleton);
             Thread.MemoryBarrier();
-            _singletonCompositionInOtherProject = _singletonCompositionInOtherProjectTemp;
+            _singletonWcfLikeChannel = _singletonWcfLikeChannelTemp;
           }
 
-      var perBlockOrderProcessor = new OrderProcessor(_singletonCompositionInOtherProject);
+      var perBlockOrderProcessor = new OrderProcessor(_singletonWcfLikeChannel);
       OnNewInstance<OrderProcessor>(ref perBlockOrderProcessor, null, Lifetime.PerBlock);
       return perBlockOrderProcessor;
     }

@@ -144,7 +144,7 @@ partial class Composition: IDisposable
   private object[] _disposables;
   private int _disposeIndex;
 
-  private RequestContext? _singletonCompositionInOtherProject;
+  private RequestContext? _singletonWcfLikeChannel;
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -171,15 +171,15 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      if (_singletonCompositionInOtherProject is null)
+      if (_singletonWcfLikeChannel is null)
         lock (_lock)
-          if (_singletonCompositionInOtherProject is null)
+          if (_singletonWcfLikeChannel is null)
           {
-            _singletonCompositionInOtherProject = new RequestContext();
-            _disposables[_disposeIndex++] = _singletonCompositionInOtherProject;
+            _singletonWcfLikeChannel = new RequestContext();
+            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
           }
 
-      return new CheckoutService(_singletonCompositionInOtherProject);
+      return new CheckoutService(_singletonWcfLikeChannel);
     }
   }
 
@@ -209,7 +209,7 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonCompositionInOtherProject = null;
+      _singletonWcfLikeChannel = null;
     }
 
     while (disposeIndex-- > 0)

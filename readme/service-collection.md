@@ -90,7 +90,7 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private TemperatureSensor? _singletonCompositionInOtherProject;
+  private TemperatureSensor? _singletonWcfLikeChannel;
 
   private LightweightRoot LightRoot
   {
@@ -103,7 +103,7 @@ partial class Composition
       {
         // Creates a deferred value
         EnsureTemperatureSensorLivingRoomExists();
-        return _singletonCompositionInOtherProject;
+        return _singletonWcfLikeChannel;
       });
       Func<IThermostat> perBlockFuncIThermostat = new Func<IThermostat>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -111,7 +111,7 @@ partial class Composition
       {
         // Creates a deferred value
         EnsureTemperatureSensorLivingRoomExists();
-        return new Thermostat(_singletonCompositionInOtherProject);
+        return new Thermostat(_singletonWcfLikeChannel);
       });
       return new LightweightRoot()
       {
@@ -121,11 +121,11 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureTemperatureSensorLivingRoomExists()
       {
-        if (_singletonCompositionInOtherProject is null)
+        if (_singletonWcfLikeChannel is null)
           lock (_lock)
-            if (_singletonCompositionInOtherProject is null)
+            if (_singletonWcfLikeChannel is null)
             {
-              _singletonCompositionInOtherProject = new TemperatureSensor();
+              _singletonWcfLikeChannel = new TemperatureSensor();
             }
       }
     }

@@ -2528,6 +2528,53 @@ To run the above code, the following NuGet packages must be added:
 >[!NOTE]
 >`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
 
+## Multiple implementations
+
+Use `To<T1, T2, ...>()` to bind several implementations to the same contract in one call. Each type becomes a separate binding with the configured lifetime and tags. Up to 64 implementation types are supported.
+Use `Tag.Unique` when a collection should contain every implementation. Pure.DI assigns a distinct tag to each binding, so an array or `IEnumerable<T>` can collect them all.
+
+```c#
+using Shouldly;
+using Pure.DI;
+
+DI.Setup(nameof(Composition))
+    // Each channel gets a separate binding with Singleton lifetime.
+    .Bind<INotificationChannel>(Tag.Unique)
+        .As(Lifetime.Singleton)
+        .To<EmailChannel, SmsChannel, PushChannel>()
+    .Root<INotificationChannel[]>("Channels");
+
+var composition = new Composition();
+var channels = composition.Channels;
+
+channels.Length.ShouldBe(3);
+channels[0].ShouldBeOfType<EmailChannel>();
+channels[1].ShouldBeOfType<SmsChannel>();
+channels[2].ShouldBeOfType<PushChannel>();
+
+var channelsAgain = composition.Channels;
+for (var index = 0; index < channels.Length; index++)
+{
+    channelsAgain[index].ShouldBeSameAs(channels[index]);
+}
+
+interface INotificationChannel;
+
+class EmailChannel : INotificationChannel;
+
+class SmsChannel : INotificationChannel;
+
+class PushChannel : INotificationChannel;
+```
+
+To run the above code, the following NuGet packages must be added:
+ - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+ - [Shouldly](https://www.nuget.org/packages/Shouldly)
+
+You can use `Tag.Type` instead of `Tag.Unique` to give each binding the implementation type as its tag. For example, `EmailChannel` gets the tag `typeof(EmailChannel)`, which can also be used to resolve that implementation individually.
+A regular shared tag follows the usual binding rules: later bindings for the same contract and tag override earlier ones. `Tag.Unique` keeps each implementation available to collection injection.
+See also: [Tag Type](tag-type.md), [Tag Unique](tag-unique.md), [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md).
+
 ## PerResolve
 
 The `PerResolve` lifetime ensures that there will be one instance of the dependency for each composition root instance.

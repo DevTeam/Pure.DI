@@ -319,6 +319,7 @@ Core Pure.DI concepts: bindings, roots, arguments, members, and everyday object 
 - [Roots with filter](readme/roots-with-filter.md)
 - [Consumer type](readme/consumer-type.md)
 - [Ref dependencies](readme/ref-dependencies.md)
+- [Multiple implementations](readme/multiple-implementations.md)
 - [Union types](readme/union-types.md)
 ### Lifetimes
 
@@ -498,6 +499,7 @@ Less common but practical composition techniques for overrides, builders, depend
 - [Consumer types](readme/consumer-types.md)
 - [IsLockRequired](readme/islockrequired.md)
 - [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
+- [Custom dispose strategy](readme/custom-dispose-strategy.md)
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
 - [Tracking disposable instances with different lifetimes](readme/tracking-disposable-instances-with-different-lifetimes.md)
 - [Tracking disposable instances using pre-built classes](readme/tracking-disposable-instances-using-pre-built-classes.md)
@@ -505,6 +507,7 @@ Less common but practical composition techniques for overrides, builders, depend
 - [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
 - [Tracing exceptions during composition disposal](readme/tracing-exceptions-during-composition-disposal.md)
 - [Tracing exceptions during Owned disposal](readme/tracing-exceptions-during-owned-disposal.md)
+- [Custom dispose strategy for Owned<T>](readme/custom-dispose-strategy-for-ownedt.md)
 - [Exported roots](readme/exported-roots.md)
 - [Exported roots with tags](readme/exported-roots-with-tags.md)
 - [Exported roots via arg](readme/exported-roots-via-arg.md)
@@ -2640,8 +2643,8 @@ AI needs to understand the situation it’s in (context). This means knowing det
 | AI context file | Size | Tokens |
 | --------------- | ---- | ------ |
 | [AGENTS_SMALL.md](AGENTS_SMALL.md) | 51KB | 13K |
-| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 128KB | 32K |
-| [AGENTS.md](AGENTS.md) | 502KB | 128K |
+| [AGENTS_MEDIUM.md](AGENTS_MEDIUM.md) | 130KB | 33K |
+| [AGENTS.md](AGENTS.md) | 512KB | 131K |
 
 For different IDEs, you can use the _AGENTS.md_ file as is by simply copying it to the root directory. For use with _JetBrains Rider_ and _Junie_, please refer to [these instructions](https://www.jetbrains.com/help/junie/customize-guidelines.html). For example, you can copy any _AGENTS.md_ file into your project (using _Pure.DI_) as _.junie/guidelines.md._
 ## How to contribute to Pure.DI
@@ -2718,6 +2721,14 @@ or to run benchmarks:
 ```shell
 ./build.cmd benchmarks
 ```
+
+### Build NuGet packages on GitHub
+
+Open **Actions → Build NuGet packages → Run workflow**. Leave **Package version** empty to use the next release version in the `VersionRange` from `Directory.Build.props`, calculated from the published `Pure.DI` versions on NuGet.org. Enter a NuGet version (for example, `2.5.5` or `2.5.5-beta1`) to override it for this run.
+
+The workflow runs the `pack` target, including its compatibility checks. It saves the resulting `Pure.DI`, `Pure.DI.MS`, and `Pure.DI.Abstractions` `.nupkg` files under the run's **Artifacts** section for 30 days. It does not publish them to a package registry. The template package has a separate `template` target.
+
+Locally, use `./build.sh pack` (or `./build.cmd pack` on Windows). To override the version, pass `-p:version=2.5.5` before `pack`.
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands. This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET. This tool helps to make .NET builds more efficient.
 
