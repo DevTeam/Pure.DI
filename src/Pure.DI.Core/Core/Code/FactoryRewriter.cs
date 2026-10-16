@@ -456,55 +456,62 @@ sealed class FactoryRewriter(
                         // #154 When a user root's per-block lambda body is generated inside a wrapping lightweight
                         // root (LightweightKind.RootsProvider), the surrounding RootContext points to the wrapping
                         // instance and ctx.RootType would otherwise be the lightweight root type. The user expects
-                        // ctx.RootType to match the type passed to Resolve<T>(), so we look up the actual user root
-                        // (any non-wrapper root whose Injection.Type matches a node in the Parents chain or the
-                        // current variable).
+                        // ctx.RootType to match the type passed to Resolve<T>(), so we look up the actual user root.
                         var rootContext = _ctx!.RootContext;
-                        var rootContextRootType = rootContext.Root.Injection.Type;
-                        ITypeSymbol? owningRootType = null;
-                        if (rootContext.Root.Source.LightweightKind == LightweightKind.RootsProvider)
-                        {
-                            foreach (var candidate in rootContext.Graph.Roots)
-                            {
-                                if (candidate.Source.LightweightKind == LightweightKind.RootsProvider)
-                                {
-                                    continue;
-                                }
-
-                                var candidateType = candidate.Injection.Type;
-                                var found = false;
-                                foreach (var parent in _ctx.Parents)
-                                {
-                                    if (SymbolEqualityComparer.Default.Equals(parent.Var.AbstractNode.Node.Type, candidateType))
-                                    {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!found && SymbolEqualityComparer.Default.Equals(_ctx.VarInjection.Var.AbstractNode.Node.Type, candidateType))
-                                {
-                                    found = true;
-                                }
-
-                                if (found)
-                                {
-                                    owningRootType = candidateType;
-                                    break;
-                                }
-                            }
-                        }
-
-                        var rootType = owningRootType ?? rootContextRootType;
+                        var rootType = GetOwningRoot()?.Injection.Type ?? rootContext.Root.Injection.Type;
                         return SyntaxFactory.ParseExpression($"typeof({typeResolver.ResolveRuntime(rootContext.Graph.Source, rootType)})");
                     }
 
                 case nameof(IContext.RootName):
-                    return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(_ctx!.RootContext.Root.DisplayName));
+                    {
+                        // #154 The name has to describe the user root the same way ctx.RootType does: an anonymous
+                        // root has no name of its own, so the name of its type is used instead of the generated
+                        // member name (RootNN/LightRootNN).
+                        var owningRoot = GetOwningRoot() ?? _ctx!.RootContext.Root;
+                        var rootName = owningRoot.IsPublic
+                            ? owningRoot.Name
+                            : owningRoot.Injection.Type.Name;
+                        if (rootName.Length == 0)
+                        {
+                            rootName = owningRoot.DisplayName;
+                        }
+
+                        return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(rootName));
+                    }
             }
         }
 
         return base.VisitMemberAccessExpression(node);
+    }
+
+    // #154 Returns the user root which is being resolved from the current factory. When the factory body is
+    // generated inside a wrapping lightweight root (LightweightKind.RootsProvider), the RootContext describes
+    // that wrapper, so the actual user root is looked up by matching a non-wrapper root type against a node in
+    // the Parents chain or the current variable. Returns null when the RootContext already describes the user root.
+    private Root? GetOwningRoot()
+    {
+        var rootContext = _ctx!.RootContext;
+        if (rootContext.Root.Source.LightweightKind != LightweightKind.RootsProvider)
+        {
+            return null;
+        }
+
+        foreach (var candidate in rootContext.Graph.Roots)
+        {
+            if (candidate.Source.LightweightKind == LightweightKind.RootsProvider)
+            {
+                continue;
+            }
+
+            var candidateType = candidate.Injection.Type;
+            if (_ctx.Parents.Any(parent => SymbolEqualityComparer.Default.Equals(parent.Var.AbstractNode.Node.Type, candidateType))
+                || SymbolEqualityComparer.Default.Equals(_ctx.VarInjection.Var.AbstractNode.Node.Type, candidateType))
+            {
+                return candidate;
+            }
+        }
+
+        return null;
     }
 
     internal record Injection(string VariableName, bool DeclarationRequired);
