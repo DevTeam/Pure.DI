@@ -5,4 +5,5 @@ record Options(
     NullableContextOptions NullableContextOptions = NullableContextOptions.Enable,
     bool CheckCompilationErrors = true,
     ImmutableArray<string> PreprocessorSymbols = default,
-    string? Culture = "");
+    string? Culture = "",
+    ImmutableArray<MetadataReference> MetadataReferences = default);

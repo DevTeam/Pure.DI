@@ -155,6 +155,7 @@ sealed class BindingBuilder(
         {
             var specialTypes = setup.SpecialTypes.Select(i => i.Type).ToImmutableHashSet(typeSymbolComparer.Runtime);
             var compilation = semanticModel.Compilation;
+            var directInterfaces = GetDirectInterfaces(implementationType);
             baseSymbols = baseSymbolsProvider
                 .GetBaseSymbols(implementationType, (type, deepness) => deepness switch
                 {
@@ -162,7 +163,11 @@ sealed class BindingBuilder(
                     1 => IsSuitableForBinding(compilation, specialTypes, type),
                     _ => false
                 }, 1)
-                .Select(i => i.Type);
+                .Select(i => i.Type)
+                // For a type loaded from another assembly Roslyn may report transitive
+                // InterfaceImpl entries in Interfaces. Keep the source-level semantics:
+                // only interfaces implemented directly by the implementation are contracts.
+                .Where(type => type.TypeKind != TypeKind.Interface || directInterfaces.Contains(type));
         }
 
         var contracts = new HashSet<ITypeSymbol>(baseSymbols, typeSymbolComparer.Runtime) { implementationType };
@@ -178,13 +183,37 @@ sealed class BindingBuilder(
         }
     }
 
+    private ImmutableHashSet<ITypeSymbol> GetDirectInterfaces(ITypeSymbol implementationType)
+    {
+        var declaredInterfaces = implementationType.Interfaces;
+        if (declaredInterfaces.IsDefaultOrEmpty)
+        {
+            return ImmutableHashSet<ITypeSymbol>.Empty.WithComparer(typeSymbolComparer.Runtime);
+        }
+
+        var inheritedByBaseType = implementationType.BaseType?.AllInterfaces
+            .ToImmutableHashSet(typeSymbolComparer.Runtime)
+            ?? ImmutableHashSet<ITypeSymbol>.Empty.WithComparer(typeSymbolComparer.Runtime);
+
+        return declaredInterfaces
+            .Where(candidate => !inheritedByBaseType.Contains(candidate))
+            .Where(candidate => !declaredInterfaces.Any(other =>
+                !typeSymbolComparer.Runtime.Equals(other, candidate)
+                && other.AllInterfaces.Any(inherited => typeSymbolComparer.Runtime.Equals(inherited, candidate))))
+            .ToImmutableHashSet(typeSymbolComparer.Runtime);
+    }
+
     private bool IsSuitableForBinding(Compilation compilation, ImmutableHashSet<ITypeSymbol> specialTypes, ITypeSymbol type)
     {
         // Checks if the type is an interface or an abstract class, which are typical candidates for DI contracts.
         var isAbstractOrInterface = type.TypeKind == TypeKind.Interface || type.IsAbstract;
 
-        // Ensures the type is not a predefined system type like 'object', 'string', or 'int' (SpecialType.None).
-        var isNotSpecialType = type.SpecialType == Microsoft.CodeAnalysis.SpecialType.None;
+        // For constructed generic types Roslyn may expose the special type only on the original
+        // definition (for example IEnumerable<int> -> IEnumerable<T>).
+        var specialType = type is INamedTypeSymbol namedType
+            ? namedType.OriginalDefinition.SpecialType
+            : type.SpecialType;
+        var isNotSpecialType = specialType == Microsoft.CodeAnalysis.SpecialType.None;
 
         // 'System.IAsyncDisposable' is not covered by the Roslyn special types, so it is excluded explicitly
         // to keep it in line with 'System.IDisposable'.

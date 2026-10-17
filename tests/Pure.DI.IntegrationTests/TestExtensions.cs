@@ -119,6 +119,10 @@ public static class TestExtensions
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
             .AddSyntaxTrees(sourceList.Select(source => CSharpSyntaxTree.ParseText(source, parseOptions)));
+        if (!runOptions.MetadataReferences.IsDefaultOrEmpty)
+        {
+            compilation = compilation.AddReferences(runOptions.MetadataReferences);
+        }
         // .Check(stdOut, options);
 
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
