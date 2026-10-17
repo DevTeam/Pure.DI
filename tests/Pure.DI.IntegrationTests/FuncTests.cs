@@ -1878,7 +1878,7 @@ public class FuncTests
 
 #if ROSLYN4_8_OR_GREATER
     [Fact]
-    public async Task ShouldSupportFuncWithArgWhenOverrideValueIsNotUsed()
+    public async Task ShouldUseFuncArgumentToCreateSingleton()
     {
         // Given
 
@@ -2030,6 +2030,7 @@ public class FuncTests
                                    {
                                        _log = log;
                                        _subject = subject;
+                                       Console.WriteLine(period.Ticks);
                                        _timer = new Timer(Tick, null, TimeSpan.Zero, period);
                                        _log.Info("Created");
                                    }
@@ -2150,9 +2151,9 @@ public class FuncTests
                            }
                            """.RunAsync(new Options(LanguageVersion.Latest));
         // Then
-        result.Errors.Count.ShouldBe(0, result);
-        result.Warnings.Count.ShouldBe(1, result);
-        result.Warnings.Count(i => i.Id == LogId.WarningBindingNotUsed && i.Locations.FirstOrDefault().GetSource() == "To<Metronome>()").ShouldBe(1, result);
+        result.Success.ShouldBeTrue(result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe([TimeSpan.TicksPerSecond.ToString()], result);
     }
 #endif
     [Fact]

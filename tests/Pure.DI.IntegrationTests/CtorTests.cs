@@ -502,6 +502,57 @@ public class CtorTests
     }
 
     [Fact]
+    public async Task ShouldPreferOverloadResolutionPriorityOverRequiredParameterCount()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Runtime.CompilerServices;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency;
+                               class OtherDependency;
+
+                               class Service
+                               {
+                                   public Service(Dependency dependency, OtherDependency otherDependency) =>
+                                       Console.WriteLine("more-parameters");
+
+                                   [OverloadResolutionPriority(1)]
+                                   public Service(Dependency dependency) =>
+                                       Console.WriteLine("preferred");
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       _ = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["preferred"], result);
+    }
+
+    [Fact]
     public async Task ShouldPreferConstructorWithDefaultPriorityOverNegativePriority()
     {
         // Given
