@@ -34,6 +34,33 @@ sealed class Variator<T> : IVariator<T>
             return true;
         }
 
+        return TryAdvance(enumerators, enumerators, out options);
+    }
+
+    public bool TryGetNext(
+        IEnumerable<ISetOfOptions<T>> setsOfOptions,
+        IReadOnlyCollection<ISetOfOptions<T>> prioritizedSetsOfOptions,
+        out ImmutableArray<T> options)
+    {
+        var enumerators = setsOfOptions.ToList();
+        if (enumerators.Count == 0
+            || prioritizedSetsOfOptions.Count == 0
+            || enumerators.Any(i => !i.IsStarted))
+        {
+            options = default;
+            return false;
+        }
+
+        return TryAdvance(enumerators, prioritizedSetsOfOptions, out options);
+    }
+
+    private static bool TryAdvance(
+        IReadOnlyCollection<ISetOfOptions<T>> allSetsOfOptions,
+        IReadOnlyCollection<ISetOfOptions<T>> setsOfOptionsToAdvance,
+        out ImmutableArray<T> options)
+    {
+        var enumerators = setsOfOptionsToAdvance as IReadOnlyList<ISetOfOptions<T>>
+                          ?? setsOfOptionsToAdvance.ToList();
         for (var index = 0; index < enumerators.Count; index++)
         {
             var enumerator = enumerators[index];
@@ -50,7 +77,7 @@ sealed class Variator<T> : IVariator<T>
                     }
                 }
 
-                options = enumerators.Select(v => v.Current!).ToImmutableArray();
+                options = allSetsOfOptions.Select(v => v.Current!).ToImmutableArray();
                 return true;
             }
 

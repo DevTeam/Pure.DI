@@ -222,6 +222,67 @@ public class GraphTests
     }
 
     [Fact]
+    public async Task ShouldBacktrackOnlyBindingsOnUnresolvedDependencyPaths()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           namespace Sample
+                           {
+                               using System;
+                               using Pure.DI;
+
+                               internal abstract class MissingA {}
+                               internal abstract class MissingB {}
+
+                               internal class ServiceA
+                               {
+                                   public ServiceA(MissingA dependency) =>
+                                       Console.WriteLine("unresolved-a");
+
+                                   public ServiceA() =>
+                                       Console.WriteLine("fallback-a");
+                               }
+
+                               internal class ServiceB
+                               {
+                                   public ServiceB(MissingB dependency) =>
+                                       Console.WriteLine("unresolved-b");
+
+                                   public ServiceB() =>
+                                       Console.WriteLine("fallback-b");
+                               }
+
+                               internal class Root
+                               {
+                                   public Root(ServiceA serviceA, ServiceB serviceB) {}
+                               }
+
+                               internal partial class Composition
+                               {
+                                   void Setup() => DI.Setup()
+                                       .Root<Root>("Root");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() =>
+                                       _ = new Composition().Root;
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldContain("fallback-a");
+        result.StdOut.ShouldContain("fallback-b");
+        result.StdOut.ShouldNotContain("unresolved-a");
+        result.StdOut.ShouldNotContain("unresolved-b");
+        result.DependencyGraphs.ShouldHaveSingleItem().BuildAttempts.ShouldBeLessThanOrEqualTo(4);
+    }
+
+    [Fact]
     public async Task ShouldSupportBindToArg()
     {
         // Given

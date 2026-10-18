@@ -120,6 +120,43 @@ public class VariatorTests
     }
 
     [Fact]
+    public void ShouldAdvanceOnlyPrioritizedVariations()
+    {
+        // Given
+        var variator = new Variator<string>();
+        var first = new SetOfOptions<string>("1_a", "1_b");
+        var second = new SetOfOptions<string>("2_a", "2_b");
+        var third = new SetOfOptions<string>("3_a", "3_b");
+        var sets = new List<SetOfOptions<string>> { first, second, third };
+        variator.TryGetNext(sets, out _).ShouldBeTrue();
+
+        // When & Then
+        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second }, out var variants).ShouldBeTrue();
+        variants.ShouldBe(["1_a", "2_b", "3_a"]);
+
+        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second }, out _).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void ShouldCarryOnlyAcrossPrioritizedVariations()
+    {
+        // Given
+        var variator = new Variator<string>();
+        var first = new SetOfOptions<string>("1_a", "1_b");
+        var second = new SetOfOptions<string>("2_a", "2_b");
+        var third = new SetOfOptions<string>("3_a", "3_b");
+        var sets = new List<SetOfOptions<string>> { first, second, third };
+        variator.TryGetNext(sets, out _).ShouldBeTrue();
+
+        // When & Then
+        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second, third }, out var variants).ShouldBeTrue();
+        variants.ShouldBe(["1_a", "2_b", "3_a"]);
+
+        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second, third }, out variants).ShouldBeTrue();
+        variants.ShouldBe(["1_a", "2_a", "3_b"]);
+    }
+
+    [Fact]
     public void ShouldHandleFourVariations()
     {
         // Given

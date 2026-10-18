@@ -90,7 +90,9 @@ sealed class VariationalDependencyGraphBuilder(
         allNodes.Reverse();
         var setsOfOptions = new LinkedList<Options>(CreateOptions(allNodes));
         var maxIterations = globalProperties.MaxVariations;
+        var buildAttempts = 0;
         DependencyGraph? dependencyGraph = null;
+        var visitedStates = new HashSet<ImmutableArray<long>>(VariationStateComparer.Shared);
 
         var accumulators = setup.Accumulators
             .GroupBy(acc => acc.AccumulatorType, new SymbolTypeComparer(typeSymbolComparer))
@@ -101,7 +103,8 @@ sealed class VariationalDependencyGraphBuilder(
             ImmutableArray<IProcessingNode>.Empty,
             accumulators);
 
-        while (nodeVariator.TryGetNext(setsOfOptions, out var nodes))
+        var hasNodes = TryGetNextUnvisited(out var nodes);
+        while (hasNodes)
         {
             if (maxIterations-- <= 0)
             {
@@ -117,13 +120,14 @@ sealed class VariationalDependencyGraphBuilder(
             }
 
             cancellationToken.ThrowIfCancellationRequested();
+            buildAttempts++;
 
             buildCtx = buildCtx with { Nodes = nodes };
             var newNodes = graphBuilder.Build(buildCtx).ToList();
             var graph = buildCtx.Graph;
             if (graph is not null)
             {
-                dependencyGraph = new DependencyGraph(setup, graph);
+                dependencyGraph = new DependencyGraph(setup, graph) { BuildAttempts = buildAttempts };
             }
 
             if (dependencyGraph is { IsResolved: true })
@@ -144,19 +148,35 @@ sealed class VariationalDependencyGraphBuilder(
 
             if (newNodes.Count == 0)
             {
+                // An unresolved dependency can only be affected by the selected variants of its owner
+                // and the consumers on the path to a root. Try those variants before resuming the full
+                // Cartesian search. The exhaustive search below remains the correctness fallback.
+                var prioritizedSetsOfOptions = dependencyGraph is not null
+                    ? GetPrioritizedSetsOfOptions(dependencyGraph.Graph, setsOfOptions)
+                    : [];
+                if (prioritizedSetsOfOptions.Count > 0
+                    && TryGetNextPrioritizedUnvisited(prioritizedSetsOfOptions, out nodes))
+                {
+                    continue;
+                }
+
+                ResetOptions();
+                hasNodes = TryGetNextUnvisited(out nodes);
                 continue;
             }
 
-            foreach (var options in setsOfOptions)
-            {
-                options.Reset();
-            }
+            ResetOptions();
 
             var newProcessingNodes = dependencyNodePrioritizer.SortByPriority(newNodes).Select(CreateProcessingNode);
             foreach (var newOption in CreateOptions(newProcessingNodes))
             {
                 setsOfOptions.AddFirst(newOption);
             }
+
+            // A larger node catalog can make a previously rejected state resolvable, so states from
+            // the previous catalog revision cannot be used as negative results.
+            visitedStates.Clear();
+            hasNodes = TryGetNextUnvisited(out nodes);
 
             continue;
 
@@ -169,6 +189,44 @@ sealed class VariationalDependencyGraphBuilder(
         }
 
         return dependencyGraph;
+
+        bool TryGetNextUnvisited(out ImmutableArray<IProcessingNode> nextNodes)
+        {
+            while (nodeVariator.TryGetNext(setsOfOptions, out nextNodes))
+            {
+                if (visitedStates.Add(CreateVariationState(nextNodes)))
+                {
+                    return true;
+                }
+            }
+
+            nextNodes = default;
+            return false;
+        }
+
+        bool TryGetNextPrioritizedUnvisited(
+            IReadOnlyCollection<ISetOfOptions<IProcessingNode>> prioritizedSetsOfOptions,
+            out ImmutableArray<IProcessingNode> nextNodes)
+        {
+            while (nodeVariator.TryGetNext(setsOfOptions, prioritizedSetsOfOptions, out nextNodes))
+            {
+                if (visitedStates.Add(CreateVariationState(nextNodes)))
+                {
+                    return true;
+                }
+            }
+
+            nextNodes = default;
+            return false;
+        }
+
+        void ResetOptions()
+        {
+            foreach (var options in setsOfOptions)
+            {
+                options.Reset();
+            }
+        }
     }
 
     private void RegisterNode(MdSetup setup, DependencyNode node)
@@ -190,6 +248,62 @@ sealed class VariationalDependencyGraphBuilder(
         nodes.GroupBy(i => i.Node.Binding)
             .Select(i => new Options(i.ToList()));
 
+    private static IReadOnlyCollection<ISetOfOptions<IProcessingNode>> GetPrioritizedSetsOfOptions(
+        IGraph<DependencyNode, Dependency> graph,
+        IEnumerable<Options> setsOfOptions)
+    {
+        var optionsByBindingId = new Dictionary<int, Options>();
+        var orderedOptions = new List<(Options Options, int BindingId)>();
+        foreach (var options in setsOfOptions)
+        {
+            if (options is { IsStarted: true, Current: {} current })
+            {
+                var bindingId = current.Node.Binding.Id;
+                orderedOptions.Add((options, bindingId));
+                if (!optionsByBindingId.ContainsKey(bindingId))
+                {
+                    optionsByBindingId.Add(bindingId, options);
+                }
+            }
+        }
+        var prioritizedBindingIds = new HashSet<int>();
+        var visitedNodes = new HashSet<DependencyNode>();
+        var queue = new Queue<DependencyNode>(graph.Edges.Where(i => !i.IsResolved).Select(i => i.Target));
+        while (queue.Count > 0)
+        {
+            var node = queue.Dequeue();
+            if (!visitedNodes.Add(node))
+            {
+                continue;
+            }
+
+            var bindingId = node.Binding.Id;
+            if (optionsByBindingId.ContainsKey(bindingId))
+            {
+                prioritizedBindingIds.Add(bindingId);
+            }
+
+            if (!graph.TryGetOutEdges(node, out var consumers))
+            {
+                continue;
+            }
+
+            foreach (var consumer in consumers)
+            {
+                queue.Enqueue(consumer.Target);
+            }
+        }
+
+        // Keep the original mixed-radix order among the options that can affect the conflict.
+        return orderedOptions
+            .Where(i => prioritizedBindingIds.Contains(i.BindingId))
+            .Select(i => (ISetOfOptions<IProcessingNode>)i.Options)
+            .ToList();
+    }
+
+    private static ImmutableArray<long> CreateVariationState(IEnumerable<IProcessingNode> nodes) =>
+        nodes.Select(i => ((long)i.Node.Binding.Id << 32) | (uint)i.Node.Variation).ToImmutableArray();
+
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
     private sealed class SymbolTypeComparer(ITypeSymbolComparer typeSymbolComparer) : IEqualityComparer<ISymbol>
     {
@@ -200,5 +314,26 @@ sealed class VariationalDependencyGraphBuilder(
 
         public int GetHashCode(ISymbol obj) =>
             obj is ITypeSymbol type ? typeSymbolComparer.GetDependencyHashCode(type) : obj.GetHashCode();
+    }
+
+    private sealed class VariationStateComparer : IEqualityComparer<ImmutableArray<long>>
+    {
+        public static readonly VariationStateComparer Shared = new();
+
+        public bool Equals(ImmutableArray<long> x, ImmutableArray<long> y) => x.AsSpan().SequenceEqual(y.AsSpan());
+
+        public int GetHashCode(ImmutableArray<long> state)
+        {
+            unchecked
+            {
+                var hashCode = 0;
+                foreach (var item in state)
+                {
+                    hashCode = hashCode * 397 ^ item.GetHashCode();
+                }
+
+                return hashCode;
+            }
+        }
     }
 }

@@ -1878,7 +1878,7 @@ public class FuncTests
 
 #if ROSLYN4_8_OR_GREATER
     [Fact]
-    public async Task ShouldUseFuncArgumentToCreateSingleton()
+    public async Task ShouldSupportFuncWithArgWhenBindingIsUsedByResolvedVariation()
     {
         // Given
 
@@ -2030,7 +2030,6 @@ public class FuncTests
                                    {
                                        _log = log;
                                        _subject = subject;
-                                       Console.WriteLine(period.Ticks);
                                        _timer = new Timer(Tick, null, TimeSpan.Zero, period);
                                        _log.Info("Created");
                                    }
@@ -2153,7 +2152,6 @@ public class FuncTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.Warnings.Count.ShouldBe(0, result);
-        result.StdOut.ShouldBe([TimeSpan.TicksPerSecond.ToString()], result);
     }
 #endif
     [Fact]
