@@ -8,20 +8,15 @@ $d=Factory
 $sa=Simplified factory
 $sa=Injection on demand
 $sa=Overrides
-$h=Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
+$h=Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use - like the `Connect()` call here that opens a database connection.
 $h=A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
-$f=There are scenarios where manual control over the creation process is required, such as
-$f=- When additional initialization logic is needed
-$f=- When complex construction steps are required
-$f=- When specific object states need to be set during creation
-$f=
+$f=Fewer surprises come from keeping a factory to what a constructor cannot express: connection setup, registering a callback, setting a property that has no constructor parameter.
+$f=The factory runs every time the binding is resolved, so a transient factory means a connection opened per call; give it a lifetime (`As(Lifetime.Singleton)`) when the setup is expensive and meant to happen once.
 $f=>[!IMPORTANT]
 $f=>The method `Inject()` cannot be used outside of the binding setup.
 $r=Shouldly
-$f=Limitations: factory bindings introduce custom construction logic that must be maintained and tested.
-$f=Common pitfalls:
-$f=- Moving business decisions into DI factory code.
-$f=- Overusing `Inject()` where normal constructor binding is enough.
+$f=`ctx.Inject` is synchronous only: async initialization is not supported in a factory (`DIE020`), so move it behind an explicit async method on the service.
+$f=Prefer a constructor or a [simplified factory](simplified-factory.md) when the dependencies are all it needs; a factory that only calls `ctx.Inject` for each parameter duplicates a constructor by hand.
 $f=See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
 */
 

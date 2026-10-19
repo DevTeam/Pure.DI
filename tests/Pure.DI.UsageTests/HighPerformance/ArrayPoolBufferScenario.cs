@@ -8,6 +8,10 @@ $h=Use `ArrayPool<T>` when a hot path needs temporary buffers whose size is too 
 $h=In this example a CSV export endpoint creates a per-request `ExportBuffer`. The buffer owner receives the shared `ArrayPool<byte>` from Pure.DI, rents an array using application options, exposes only `Memory<byte>` to the exporter, and returns the array when the `Owned<IReportExporter>` operation scope is disposed.
 $f=This pattern is useful for serialization, compression, protocol framing, and batch export pipelines. Keep the owner lifetime short, clear sensitive buffers before returning them, and do not store the rented `Memory<T>` after the owner is disposed.
 $f=The important DI detail is ownership: bind or auto-bind the owner as the dependency that is tracked and disposed, not the raw array. The pool itself is a built-in BCL dependency; the owner is the application-specific object that defines rent size, cleanup, and return rules. `Owned<T>` keeps that cleanup tied to one root call instead of the whole composition.
+$f=>[!WARNING]
+$f=>A rented array is never freed by the GC in a useful way: forgetting the return keeps the pool growing until every new rent allocates a fresh array. The owner must be disposed on every exit path, including exceptions, which is why `Owned<T>` or a `using` is the right boundary.
+$f=
+$f=Prefer pooling only where a profiler showed buffer churn. For small fixed sizes a `stackalloc`-backed span is cheaper, and for a single short-lived copy a plain `new byte[]` is simpler. See [Span and ReadOnlySpan](span-and-readonlyspan.md) for stack-only values and [Object pool](object-pool.md) for pooled objects that are not arrays.
 $r=Shouldly
 */
 

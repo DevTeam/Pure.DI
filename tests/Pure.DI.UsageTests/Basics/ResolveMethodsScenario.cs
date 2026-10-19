@@ -14,7 +14,8 @@ $f=_Resolve_ methods are similar to calling composition roots, which are propert
 $f=- They provide access to an unlimited set of dependencies (_Service Locator_).
 $f=- Their use can potentially lead to runtime exceptions. For example, when the corresponding root has not been defined.
 $f=- They are awkward for some UI binding scenarios (e.g., MAUI/WPF/Avalonia).
-$f=Limitations: `Resolve` is dynamic access to the graph, so it weakens compile-time clarity compared to explicit roots.
+$f=Only types declared with `Root<T>()` are reachable this way, so `Resolve` never invents a graph: it looks up an existing root, and without a matching root or tag it throws `CannotResolveException`, which derives from `InvalidOperationException`.
+$f=The hint `Resolve = Off` removes these methods together with the anonymous roots they need; keep the hint on only where a type is chosen at runtime.
 $f=Common pitfalls:
 $f=- Using `Resolve` as the default access pattern across the codebase.
 $f=- Assuming runtime resolve calls are always safe when no matching root exists.

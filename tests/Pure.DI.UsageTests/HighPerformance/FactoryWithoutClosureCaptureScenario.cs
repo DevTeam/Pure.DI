@@ -7,6 +7,10 @@ $sa=Simplified factory
 $h=Factory delegates often appear in hot object creation paths. Keep them deterministic and allocation-friendly by taking dependencies as factory parameters instead of capturing outer variables. Pure.DI can see those parameters as dependencies and generate the code that supplies them.
 $h=The receipt formatter below needs a currency formatter and tax policy. Both are declared as lambda parameters, so the factory does not close over mutable setup-local state and the generated graph remains explicit.
 $f=This is most useful when a factory adds a small construction decision or validates dependencies before creating an object. If the factory needs runtime values, prefer root arguments or `Func<TArg, TResult>` instead of capturing variables from the setup method.
+$f=
+$f=A factory that closes over setup locals forces the generator to keep those values inside the composition, and a captured mutable local makes the resolved graph depend on when the binding was declared. Declaring them as parameters keeps the dependency list visible in one place and lets each of them keep its own lifetime.
+$f=Parameters are matched by type, so two parameters of the same type need tags. A factory that needs the context without parameters can still take `ctx` and use `ctx.Inject` for what it reads.
+$f=Prefer a plain `.To<T>()` binding when the type has an injectable constructor, and this parameter form only when you must run code to build the object. See [Factory](factory.md) for capturing variants and [Simplified factory](simplified-factory.md).
 $r=Shouldly
 */
 

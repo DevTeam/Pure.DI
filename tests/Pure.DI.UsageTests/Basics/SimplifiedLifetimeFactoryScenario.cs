@@ -5,9 +5,15 @@ $d=Simplified lifetime-specific factory
 $sa=Simplified factory
 $sa=Simplified lifetime-specific bindings
 $h=Lifetime-named shortcuts such as `Transient(...)` and `Singleton(...)` register a factory and its lifetime in a single call, replacing the longer `Bind().As(...).To(...)` chain.
-$h=Overloads accept a plain lambda (optionally with a tag, like `Transient(() => DateTime.Today, "today")`) or a lambda whose parameters are injected dependencies — parameters may carry attributes such as `[Tag]` — so you can initialize the instance before returning it, as `Singleton<FileLogger, DateTime, IFileLogger>` does when setting up the log file name.
+$h=Overloads accept a plain lambda (optionally with a tag, like `Transient(() => DateTime.Today, "today")`) or a lambda whose parameters are injected dependencies - parameters may carry attributes such as `[Tag]` - so you can initialize the instance before returning it, as `Singleton<FileLogger, DateTime, IFileLogger>` does when setting up the log file name.
+$h=The generic parameters are contract types first and the implementation last, which is what lets one call both bind `IFileLogger` and fix the lifetime of the object behind it.
 $f=>[!NOTE]
 $f=>Lifetime-specific factories combine the convenience of simplified syntax with explicit lifetime control for optimal performance and correctness.
+$f=
+$f=Because the lifetime is part of the call, a singleton factory is the concise equivalent of a lazy initializer: the lambda runs on first use, once per composition.
+$f=A transient factory runs per resolution, so initialization cost multiplies with the number of consumers - choose it only for cheap or stateful objects.
+$f=An instance created by such a factory is disposed by the composition when it implements `IDisposable` and the lifetime is singleton or scoped.
+$f=Prefer `Transient<T>()` or `Singleton<T>()` without a lambda when there is nothing to initialize, and the `Bind().As().To()` chain when the binding needs tags beyond the lifetime.
 $r=Shouldly
 */
 

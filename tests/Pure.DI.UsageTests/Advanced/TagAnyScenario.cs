@@ -4,8 +4,14 @@ $p=13
 $d=Tag Any
 $sa=Tags
 $h=`Tag.Any` creates a binding that matches any tag value, including default (null), allowing flexible injection scenarios where the tag value can be used within factory contexts. This is useful when you need to dynamically handle different tag values in a single binding.
+$h=Inside the factory, `ctx.Tag` gives the tag the consumer asked for, so one catch-all binding can create a family of tagged instances.
+$f=This is how one implementation serves several keyed consumers - queue per partition, client per environment - without repeating a `.Bind()` line per key.
+$f=Because the binding matches every tag, an injection you expected to be served by a default binding ends up here: read the generated code or the class diagram after adding a catch-all binding.
+$f=A `Tag.Any` binding does not replace an explicit one for the same contract when the consumer must keep a specific tag; keep explicit bindings for contracts that are part of a published API.
 $f=>[!IMPORTANT]
 $f=>`Tag.Any` provides maximum flexibility but requires careful handling within factories to properly interpret and use the tag value.
+$f=
+$f=Prefer distinct keys such as an enum or `Tag.Type` when the set of tags is known at compile time, because they keep the graph readable and let the generator validate every injection.
 $r=Shouldly
 */
 

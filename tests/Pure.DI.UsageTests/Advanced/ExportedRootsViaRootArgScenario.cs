@@ -16,6 +16,10 @@ $h=}
 $h=```
 $f=>[!IMPORTANT]
 $f=>At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
+$f=
+$f=Reach for it when several roots of the composition share one imported graph and that graph differs per call: the base composition instance arrives as a root argument, so each call can bring its own.
+$f=The composition itself stays parameterless, so a `Resolve`-based consumer or a factory delegate can still create it once and call roots later.
+$f=Root arguments make the root a method; if a consumer only needs the shared graph, prefer the composition argument form so the call site stays a property.
 $r=Shouldly
 */
 

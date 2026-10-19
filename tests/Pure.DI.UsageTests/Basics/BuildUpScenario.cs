@@ -6,9 +6,12 @@ $sa=Builder
 $sa=Method injection
 $sa=Property injection
 $h=This example shows the Build-Up pattern in dependency injection, where an existing object is injected with necessary dependencies through its properties, methods, or fields.
-$f=Key Concepts:
-$f=**Build-Up** - injecting dependencies into an already created object
-$f=**Dependency Attribute** - marker for identifying injectable members
+$h=Use it when the object is created by code you do not control and constructor injection is therefore impossible.
+$f=**Build-Up** - injecting dependencies into an already created object; **Dependency Attribute** - marker for identifying injectable members.
+$f=`ctx.BuildUp(instance)` inside a factory is the inline form: it fills the members of an object you just created, then you return it as the binding result.
+$f=Injection follows the ordinal of `[Dependency(ordinal: n)]`; members without the attribute are ignored, so a framework can keep its own state.
+$f=Nothing is disposed by the composition here: the instance was created by your factory, and its lifetime follows the binding lifetime you chose.
+$f=Prefer it for third-party or framework types; for your own services, a constructor that takes the dependencies is clearer and testable.
 $r=Shouldly
 */
 

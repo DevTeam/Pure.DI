@@ -6,6 +6,10 @@ $sa=Generics
 $sa=Custom generic argument
 $h=Defining generic type arguments using particular marker types like `TT` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance `IService<T1, T2, TList, TDictionary> where T2: struct where TList: IList<T1> where TDictionary: IDictionary<T1, T2> { }` and its binding to the some implementation `.Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>().To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like `TT, TTEnumerable, TTSet` and etc. for binding complex generic types.
 $f=It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
+$f=
+$f=Real graphs hit this as soon as a generic contract and its implementation disagree on parameter order, or when a service needs a collection shaped type. The markers make that mismatch visible in the binding instead of producing a type that compiles but resolves to the wrong thing.
+$f=Constraints are checked at compile time: a marker that violates a constraint (`TTS2` where `where T : class` is required) is a build error naming the binding, not a runtime failure.
+$f=Prefer this for contracts with two or more type parameters or with constrained collections; for a single parameter, the plain marker form from [Generics](generics.md) is easier to read. Use [Custom generic argument](custom-generic-argument.md) when a constraint needs a marker of your own.
 $r=Shouldly
 */
 

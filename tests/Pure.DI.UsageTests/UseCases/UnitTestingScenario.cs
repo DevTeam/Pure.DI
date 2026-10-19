@@ -9,6 +9,13 @@ $h=A key benefit of dependency injection is testability: to test a service, repl
 $h=To use a mocking library such as _Moq_, bind a configured `Mock<T>` as a singleton, map the contract to `mock.Object`, and expose the mock itself as a composition root — the test then reaches the mock through that root to arrange behavior and verify calls.
 $f=>[!TIP]
 $f=>If you prefer to avoid mocking libraries, bind a hand-written fake in the test setup instead: `.Bind<IClock>().To<FakeClock>()`.
+$f=
+$f=This is the shape a solution with several test projects ends up with: one internal composition holds the production bindings, and every test project derives from it and replaces only what it needs - a clock, an HTTP client, a file system.
+$f=The split is checked by the compiler: a test composition that cannot satisfy a binding fails to build instead of failing at run time, and the production composition is unaffected by test-only bindings.
+$f=>[!NOTE]
+$f=>An `Internal` setup generates code inside the defining assembly, so a test composition in another assembly cannot depend on it. Keep such setups in a shared project that both the application and the tests reference.
+$f=
+$f=Prefer `DependsOn` plus a narrow override over duplicating the setup in tests, and prefer a hand-written fake over a mocking library when the contract has more than a couple of members. See [Dependent compositions](dependent-compositions.md) and [Request overrides](request-overrides.md).
 $r=Shouldly;Moq
 */
 

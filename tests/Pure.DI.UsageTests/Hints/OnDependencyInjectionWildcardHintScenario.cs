@@ -4,8 +4,12 @@ $p=3
 $d=OnDependencyInjection wildcard hint
 $sa=OnDependencyInjection regular expression hint
 $h=Hints are used to fine-tune code generation. The `OnDependencyInjection` hint determines whether to generate partial `OnDependencyInjection` method to control of dependency injection.
+$h=The wildcard filter is the practical choice in a codebase with naming conventions, because a few patterns such as `*IUserRepository` and `*IUserService` cover the seams you want to observe without listing concrete types.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnDependencyInjection = On`.
 $f=The `OnDependencyInjectionContractTypeNameWildcard` hint helps identify the set of types that require injection control. You can use it to specify a wildcard to filter the full name of a type.
+$f=Each hint call adds one pattern to the filter, and a type matching any of them is passed through the hook, so patterns accumulate instead of replacing each other.
+$f=The hook is partial and private: its signature is generated, and an accidental mismatch in it does not compile, which keeps the instrumentation honest.
+$f=Prefer the wildcard over the regular expression when the rule is "every type whose name ends with Service", and prefer explicit patterns over `*`, which would wrap every injection in the graph.
 $f=For more hints, see [this](../README.md#setup-hints) page.
 $r=Shouldly
 */

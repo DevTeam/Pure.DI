@@ -4,10 +4,12 @@ $p=0
 $d=Constructor ordinal attribute
 $sa=Member ordinal attribute
 $sa=Dependency attribute
-$h=Applying this attribute disables automatic constructor selection. Only constructors marked with this attribute are considered, ordered by ordinal (ascending).
+$h=Applying this attribute disables automatic constructor selection. Only constructors marked with this attribute are considered, ordered by ordinal (ascending). It is the explicit way to say which constructor the graph must use when a type has several plausible ones.
 $f=The `Ordinal` attribute is part of the API, but you can define your own in any assembly or namespace.
 $f=A lower constructor ordinal takes precedence over the number of injection parameters and accessibility. If that constructor cannot be resolved, Pure.DI tries the next ordinal.
 $f=Constructors with the same ordinal use the regular secondary criteria: more injection parameters first, then `public` before `internal`. Use distinct ordinal values when the choice affects behavior.
+$f=>[!WARNING]
+$f=>Once any accessible constructor carries `Ordinal`, unmarked constructors are excluded from consideration, including a constructor added later for other code. That is a compile-time surprise rather than a run-time one, which is the point.
 $r=Shouldly
 */
 

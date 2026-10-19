@@ -10,7 +10,11 @@ $sa=Func with tag
 $sa=Injection on demand
 $sa=Lazy
 $h=_Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
-$f=Be careful, replication takes into account the lifetime of the object.
+$f=Be careful, replication takes into account the lifetime of the object. Here `TicketIdGenerator` is a `Singleton`, so the three tickets share one counter and receive ids `1`, `2` and `3`, while each `Ticket` itself is transient.
+$f=This is the standard way to hand a consumer the ability to create instances later — a queue terminal, a job factory, a pooled worker — without giving it the container. The delegate is generated code, so the call does not go through reflection.
+$f=A `Func<T>` around a `Singleton` returns the same instance on every call, which surprises code that expects fresh objects. Match the lifetime of the requested type to the intent: transient for replication, singleton when the factory is only needed to defer the first use.
+$f=>[!TIP]
+$f=>Use `Func<T>` for repeated creation and [`Lazy<T>`](lazy.md) when one deferred instance is enough.
 $r=Shouldly
 */
 

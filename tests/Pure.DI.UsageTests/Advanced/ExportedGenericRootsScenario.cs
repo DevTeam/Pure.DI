@@ -17,8 +17,14 @@ $h=        .Bind().To<MyGenericService<TT>>()
 $h=        .Root<IMyGenericService<TT>>("GetMyService", kind: RootKinds.Exported);
 $h=}
 $h=```
+$f=>[!WARNING]
+$f=>A generic exported root is a root whose type still contains the `TT` marker; each concrete instantiation on the consuming side generates its own member, so the contract must stay open for every argument the consumer will ask for.
 $f=>[!IMPORTANT]
 $f=>At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
+$f=
+$f=Use this when a library provides a service that must be closed over the consumer's own type - a serializer, a repository, a cache keyed by the model - and the library cannot know that type.
+$f=The instantiation happens in the importing compilation, so the bound implementation `MyGenericService<TT>` must be visible to the consumer and its constraints must accept the argument type.
+$f=Prefer a closed exported root when the set of types is known, because every open marker instantiation adds generated members to the consuming composition.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

@@ -7,16 +7,11 @@ $sa=Thread-safe overrides
 $h=When this occurs: you need to control how far override values propagate in a factory.
 $h=What it solves: keeps overrides local to a single injection level without affecting nested dependencies.
 $h=How it is solved in the example: uses Let to keep overrides local and verifies the scope.
-$f=
-$f=What it shows:
-$f=- Demonstrates deep vs one-level override behavior.
-$f=
-$f=Important points:
-$f=- Deep overrides propagate into nested dependency graphs.
-$f=- One-level overrides affect only the immediate injection.
-$f=
-$f=Useful when:
-$f=- You want to override a constructor parameter without affecting deeper object graphs.
+$h=`Override` applies to the whole subgraph resolved from the factory, while `Let` affects only the dependencies injected directly by it and does not propagate deeper.
+$f=Use `Override` for a value that must reach every level - a correlation id, a tenant, a request context - and `Let` when one constructor argument must differ but its own dependencies should keep their normal bindings.
+$f=Overrides are shared state of the resolution, so a factory that can run concurrently must wrap the override and the following `ctx.Inject` in `lock (ctx.Lock)` ([thread-safe overrides](thread-safe-overrides.md)).
+$f=Deep overrides propagate into nested dependency graphs, including deferred factories created inside them; one-level overrides affect only the immediate injection.
+$f=Prefer a tagged binding over an override when the different value is structural rather than per-call, because overrides live only for the duration of the factory invocation.
 $r=Shouldly
 */
 

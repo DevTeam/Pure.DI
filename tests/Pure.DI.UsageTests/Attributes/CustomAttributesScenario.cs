@@ -8,8 +8,14 @@ $h=- `TagAttribute`
 $h=- `OrdinalAttribute`
 $h=- `TypeAttribute`
 $h=You can also use combined attributes. Each registration method can take an optional argument index (default is 0) that specifies where to read _tag_, _ordinal_, or _type_ metadata.
+$h=Use this when a codebase must not reference Pure.DI types in its domain code, or when the built-in names clash with another framework's attributes.
 $f=>[!NOTE]
 $f=>Custom attributes provide extensibility for advanced scenarios where standard attributes don't meet specific requirements.
+$f=
+$f=The registration is what makes an attribute meaningful: without `.TagAttribute<T>()`, `.OrdinalAttribute<T>()` or `.TypeAttribute<T>()` the generator never reads it, and the members simply do not participate. Register the attributes that were actually declared in that assembly.
+$f=The registration is per composition, so a library that declares its own attributes also ships the registrations that make them work. An attribute that is registered in one composition but not in another produces different graphs from the same code.
+$f=>[!TIP]
+$f=>Prefer one attribute class that carries tag and ordinal together (see [custom universal attribute](custom-universal-attribute.md)) over three narrowly scoped ones when the same member often needs both.
 $r=Shouldly
 */
 

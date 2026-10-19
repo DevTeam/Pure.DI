@@ -7,6 +7,11 @@ $sa=Tags
 $h=A composition class can implement `IKeyedServiceProvider` from _Microsoft.Extensions.DependencyInjection_, exposing tagged composition roots as keyed services. The `ObjectResolveMethodName` and `ObjectResolveByTagMethodName` hints rename the generated `Resolve` methods to `GetService` and `GetRequiredKeyedService`, so binding tags such as `"PayPal"` and `"Online"` become the service keys.
 $f=>[!NOTE]
 $f=>This enables compatibility with Microsoft's DI container ecosystem when using keyed service resolution.
+$f=
+$f=The key is the root tag, and the tag on an injection site is the same string, so one vocabulary serves both the compile-time graph and run-time keyed lookup. `OnlineOrderService` receives the `"PayPal"` gateway inside the graph, and outside code asks for the same instance by key.
+$f=A root without a tag is reachable only through `GetService`, because keyed lookup requires a key. `GetKeyedService` here delegates to `GetRequiredKeyedService`, so a wrong key throws instead of returning `null`; return `null` instead if callers probe for optional services.
+$f=>[!TIP]
+$f=>Prefer tags on roots over string keys invented in the host: one name then appears in the composition, in the injection site and in the caller.
 $r=Shouldly;Microsoft.Extensions.DependencyInjection
 */
 

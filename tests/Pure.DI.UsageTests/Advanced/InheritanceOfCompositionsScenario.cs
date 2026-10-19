@@ -5,8 +5,12 @@ $d=Inheritance of compositions
 $sa=Dependent compositions
 $h=Common bindings can be shared between compositions through plain C# inheritance. Define them in a base class whose setup uses `DI.Setup(kind: Internal)` — the `Internal` composition kind marks the setup as reusable configuration that does not generate a composition class of its own.
 $h=A composition class that derives from it automatically picks up the inherited bindings and combines them with its own.
+$f=This is the in-project counterpart of `DependsOn`: when two compositions share both a setup and hand-written members, a base class keeps them together without naming each other.
+$f=The derived composition inherits the base class members as usual C# members, so protected state and helper methods of the base are usable in the derived setup.
 $f=>[!NOTE]
 $f=>Composition inheritance provides a way to share common bindings while still allowing each derived composition to add its own specific bindings.
+$f=
+$f=A binding of the base class that references instance members keeps working because the members are inherited; a base setup consumed through `DependsOn` from another class needs a setup context instead ([dependent compositions](dependent-compositions.md)).
 $r=Shouldly
 */
 

@@ -6,6 +6,10 @@ $sa=Bind generic contract attribute
 $h=Shows how a custom generic attribute can declare a contract type on an implementation.
 $f=>[!NOTE]
 $f=>Registering the custom generic attribute with `TypeAttribute<T>()` lets Pure.DI read the contract from the attribute type argument.
+$f=
+$f=A generic attribute is useful when the contract itself varies per member and you do not want to repeat `typeof(...)` in every declaration. The attribute type argument is the contract, so `[MyGenericType<IMessageWriter>]` and `[MyGenericType<IDiagnosticsSink>]` can sit on two members of the same type.
+$f=>[!WARNING]
+$f=>The attribute has to be registered with the same generic shape it is declared with, otherwise the generator does not see it and the member is silently not injected.
 $r=Shouldly
 */
 

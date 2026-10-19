@@ -5,7 +5,7 @@ $d=Generics
 $sa=Generic composition roots
 $sa=Complex generics
 $sa=Custom generic argument
-$h=Generic types are supported out of the box: a single binding like `Bind<IRepository<TT>>().To<Repository<TT>>()` covers `IRepository<User>`, `IRepository<Order>` and any other instantiation used in the object graph. Since Pure.DI is a source generator, each of them is turned into concrete, reflection-free code at compile time.
+$h=Generic types are supported out of the box: a single binding like `Bind<IRepository<TT>>().To<Repository<TT>>()` covers `IRepository<User>`, `IRepository<Order>` and any other instantiation used in the object graph. Since Pure.DI is a source generator, each of them is turned into concrete, reflection-free code at compile time. This is the normal way to bind repositories, serializers and per-entity handlers in a real project: one line covers every closed instantiation the graph meets.
 $h=>[!IMPORTANT]
 $h=>Instead of open generic types, as in classical DI container libraries, regular generic types with `marker` types as type parameters are used here. Such "marker" types allow to define dependency graph more precisely.
 $h=
@@ -52,6 +52,11 @@ $f=
 $f=[GenericTypeArgument]
 $f=internal interface TTEnumerator<out T>: IEnumerator<T> { }
 $f=```
+$f=Only the instantiations the graph actually uses are generated, so the cost stays proportional to the closed types you inject: adding `IRepository<Invoice>` needs no binding, and an unused `IRepository<Report>` produces no code at all.
+$f=>[!WARNING]
+$f=>Marker types are not real dependencies. Never inject `IRepository<TT>` outside a generic binding - the generator sees a closed type there and reports that it cannot resolve it.
+$f=
+$f=Prefer markers over a hand-written binding per closed type whenever the implementation follows the same type parameter. When one closed type needs another implementation, add an explicit binding for it; see [Complex generics](complex-generics.md) for reordered and nested type parameters.
 $r=Shouldly
 */
 

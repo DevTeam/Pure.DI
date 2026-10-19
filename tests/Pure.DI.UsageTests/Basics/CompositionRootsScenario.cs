@@ -8,33 +8,18 @@ $d=Composition roots
 $sa=Root binding
 $sa=Roots
 $sa=Composition root kinds
-$h=This example shows several ways to define composition roots as explicit entry points into the graph.
+$h=A composition root is the explicit entry point into the object graph: `Root<T>(name, tag)` generates a property or a method that creates `T` together with all of its dependencies, so application code never asks the container for a type.
+$h=Declare one root per real entry point - a window, a controller, a CLI command, a message handler - and keep everything else private to the composition, so the composition constructor and its roots are the whole public surface of the graph.
+$h=Unlike `Resolve<T>()`, a root is an ordinary member: it cannot fail with a missing-root exception, and the compiler knows its exact type, which keeps nullable analysis and refactoring honest.
+$h=In classic containers the graph is reached through `T Resolve<T>()` or `object GetService(Type type)`; here every root is generated at compile time, so entry points are explicit and discoverable in the generated code.
 $h=>[!TIP]
 $h=>There is no hard limit on roots, but prefer a small number. Ideally, an application has a single composition root.
-$h=
-$h=In classic DI containers, the composition is resolved dynamically via calls like `T Resolve<T>()` or `object GetService(Type type)`. In Pure.DI, each root generates a property or method at compile time, so roots are explicit and discoverable.
-$f=The name of the composition root is arbitrarily chosen depending on its purpose but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the `Root` property has the form:
-$f=```c#
-$f=public IService Root
-$f={
-$f=  get
-$f=  {
-$f=    return new Service(new Dependency());
-$f=  }
-$f=}
-$f=```
-$f=To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
-$f=```c#
-$f=// Resolve = Off
-$f=DI.Setup("Composition")
-$f=  .Bind<IDependency>().To<Dependency>()
-$f=  ...
-$f=```
-$f=This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
-$f=Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track.
-$f=Common pitfalls:
-$f=- Exposing internal services as roots instead of keeping them private.
-$f=- Depending on `Resolve` everywhere instead of explicit root members.
+$f=The root name becomes a member name, so it follows C# member naming rules; an invalid name is reported as `DIE004` and a duplicate one as `DIE005`.
+$f=A root declared without a name is anonymous: it is reachable only from `Resolve` methods, which suits diagnostics and tests rather than production call sites.
+$f=A root that consumes at least one root argument becomes a method, and only the arguments its own object graph uses appear in the signature.
+$f=`// Resolve = Off` before `Setup` drops the anonymous roots and the untyped API, so keep every entry point as a named root; this also shortens generation.
+$f=Prefer `RootBind<T>(name).To<TImpl>()` when a type is both a binding and a root, and `Roots<T>` when the implementations come from the assembly, as in plugin scenarios.
+$f=Limitations: too many public roots increase composition API surface and make architecture boundaries harder to track; exposing internal services as roots is the usual way this happens.
 $f=See also: [Resolve methods](resolve-methods.md), [Root arguments](root-arguments.md).
 */
 

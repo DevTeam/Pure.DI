@@ -8,6 +8,10 @@ $h=This is useful when building the object graph is costly and you don't want to
 $h=Add `RootArg<CancellationToken>("cancellationToken")` to pass a cancellation token that is used when resolving the root.
 $f=>[!NOTE]
 $f=>Async roots are useful when you need to perform asynchronous initialization or when your services require async creation.
+$f=
+$f=The root is a method returning `Task<T>`, so it is called like any other async API: `await composition.GetBackupServiceAsync(token)`.
+$f=The token is a normal root argument here, which is why such a composition keeps `Resolve = Off`: a dynamic resolve call cannot supply the token.
+$f=Prefer a synchronous root when the constructors are synchronous - an async root adds a state machine to an otherwise allocation-free path.
 $r=Shouldly
 */
 

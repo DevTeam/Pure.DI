@@ -5,8 +5,14 @@ $d=Tracing exceptions during composition disposal
 $sa=Tracing exceptions during Owned disposal
 $sa=Tracking disposable instances per a composition root
 $h=A generated composition catches exceptions thrown while disposing tracked singleton and scoped dependencies, invokes the `OnDisposeException` partial method, and continues disposing the remaining resources. Implement this method in the composition partial class to send failures to logging, tracing, or monitoring without wrapping every resource manually.
+$f=This is what you want at application shutdown: one failing client must not prevent the rest of the singletons - database connections, pools, writers - from being released.
+$f=The hook receives the concrete instance and the exception, so it can attach the type name, the resource identity and the message to the log or the telemetry of the host.
+$f=Disposal continues in reverse creation order after the hook returns; without an implementation the exception is still suppressed, so a composition silently continues unless you implement the hook.
+$f=The partial method exists only when the composition has something to dispose, and an async counterpart (`OnDisposeAsyncException`) is generated when the graph contains `IAsyncDisposable` resources.
 $f=>[!IMPORTANT]
 $f=>The exception is suppressed after `OnDisposeException` returns so that cleanup can continue. If the application must fail shutdown, the partial method can record the failure and then throw according to the application's shutdown policy.
+$f=
+$f=Prefer `OnDispose` ([custom dispose strategy](custom-dispose-strategy.md)) when the shutdown itself must be different, not just observed.
 $r=Shouldly
 */
 

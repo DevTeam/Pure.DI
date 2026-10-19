@@ -3,11 +3,16 @@ $v=true
 $p=21
 $d=Bind attribute groups
 $sa=Bind metadata merge
-$h=Shows how separate `BindAttribute` groups let one implementation participate in several independent bindings.
+$h=Shows how separate `BindAttribute` groups let one implementation participate in several independent bindings. Each group is a complete registration with its own contract, lifetime and tag, so one adapter can serve two pipelines that must not share state.
 $f=>[!NOTE]
 $f=>Attributes inside one square-bracket group are merged into one binding. To create several bindings for the same implementation type, place `Bind` attributes in separate square-bracket groups.
+$f=
 $f=This is useful when one adapter has several roles: for example, it can be part of a normal processing pipeline and also be exposed through a tagged operational pipeline with another lifetime or contract.
 $f=In this scenario, all bindings are declared with attributes, and the setup keeps only composition roots.
+$f=The lifetime belongs to the binding, not to the class: `PaymentAuditAdapter` is a `Singleton` payment processor and a `Transient` audit sink at the same time, which is why the checkout and the reporter receive different instances. That is the intended way to give one implementation two lifecycles.
+$f=Two groups for the same contract without distinct tags would turn `IEnumerable<T>` into two entries. Keep the tags different per group and assert the expected collection length in a test when a pipeline depends on it.
+$f=>[!WARNING]
+$f=>A lifetime written in one group does not apply to the other; if both pipelines must share an instance, move the shared registration into one group with several contracts instead.
 $r=Shouldly
 */
 

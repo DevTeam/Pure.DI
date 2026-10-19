@@ -4,8 +4,15 @@ $p=12
 $d=Tag Type
 $sa=Tags
 $h=`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
+$h=It lets a consumer ask for a concrete implementation by its type, and lets the composition expose several implementations of one contract without inventing string keys.
+$f=This is the usual way to keep two implementations of one contract apart - a primary gateway and an alternative one - and to root a specific implementation for tests or diagnostics.
+$f=The tag is the implementation type itself, so a consumer needs a reference to that type; moving the implementation to another assembly or renaming it changes every consumer that names it.
+$f=Combine it with the default tag, as `.Bind<IPaymentGateway>(Tag.Type, default)`, when an untagged injection should still resolve to that implementation.
+$f=A root can use the same tag, so `Root<IPaymentGateway>("PayPalRoot", typeof(PayPalGateway))` returns the instance of the same singleton binding.
 $f=>[!NOTE]
 $f=>`Tag.Type` provides a convenient way to reference implementation types in tags without explicitly using `typeof()`.
+$f=
+$f=Prefer an enum or a shared string constant when the tag is part of a contract consumed by other assemblies, where naming a concrete type is too tight a coupling.
 $r=Shouldly
 */
 

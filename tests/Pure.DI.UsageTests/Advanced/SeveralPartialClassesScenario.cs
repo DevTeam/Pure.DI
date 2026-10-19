@@ -4,8 +4,14 @@ $p=4
 $d=A few partial classes
 $sa=Partial class
 $h=The setting code for one Composition can be located in several methods and/or in several partial classes.
+$h=Each `DI.Setup()` call that does not name a composition adds to the composition of the enclosing partial class, so the parts merge regardless of which file or method they live in.
+$f=This is how a large composition stays readable: one part per layer - infrastructure, domain, public API - each in its own file, often owned by a different team.
 $f=>[!NOTE]
 $f=>Splitting composition setup across multiple partial classes can improve organization for large compositions but may reduce readability if overused.
+$f=
+$f=All parts share one set of roots and one set of bindings, so a later part can override a binding of an earlier one and `DIW000` reports the duplicate.
+$f=A part may leave `Resolve` enabled or disabled by hint, but a later part overrides the earlier hint, so keep hints in one place.
+$f=Prefer `DependsOn` with named `Internal` setups ([dependent compositions](dependent-compositions.md)) when the layers must be reusable by more than one composition.
 $r=Shouldly
 */
 

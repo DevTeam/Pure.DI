@@ -9,9 +9,14 @@ $sa=PerResolve
 $sa=Transient
 $h=The `PerBlock` lifetime reuses an instance inside a generated construction block. It is useful when several constructor parameters in the same object graph need the same expensive helper, but keeping that helper for the whole root (`PerResolve`) or composition (`Singleton`) would be too broad.
 $h=The order repository below receives the same database connection for both primary and secondary constructor paths within one block, then receives a fresh connection for the next root call. This reduces duplicate construction while keeping request-like operations isolated.
-$f=>[!NOTE]
-$f=>`PerBlock` provides a balance between `Transient` and `PerResolve`: fewer allocations inside a local block without turning the dependency into long-lived shared state.
+$f=`PerBlock` provides a balance between `Transient` and `PerResolve`: fewer allocations inside a local block without turning the dependency into long-lived shared state.
 $f=Use it for short-lived helpers, local adapters, and operation-level collaborators. Prefer `Scoped` or `PerResolve` when the reuse boundary must be visible at the application level.
+$f=
+$f=A typical real case is a generator, formatter or serializer that several parameters of the same object need once, while the next call must start from a clean state. The generated code creates the helper as a local variable in the root member, so nothing is stored on the composition and nothing has to be disposed.
+$f=>[!NOTE]
+$f=>The block is a generation detail, not an application boundary: two parameters share an instance only when the generator emits them into the same block. Do not build correctness on the exact number of blocks - use `Scoped` or `PerResolve` when the sharing rule must be predictable.
+$f=
+$f=Because the instance is a local, it is freed with the root call and cannot be captured by a `Func<T>` that escapes it. `DefaultLifetime(PerBlock)` is what most pipeline-style compositions use to avoid repeating `.As(PerBlock)` on every helper.
 $r=Shouldly
 */
 

@@ -9,6 +9,9 @@ $f=Higher integer values are preferred; unannotated constructors have priority `
 $f=A primary constructor participates with the same rules as an explicitly declared constructor. Use `[method: OverloadResolutionPriority(...)]` or `[method: Ordinal(...)]` to attach a constructor attribute to a class or positional record primary constructor.
 $f=When neither `OrdinalAttribute` nor an explicit `OverloadResolutionPriorityAttribute` is present, Pure.DI uses the primary constructor only as the final tie-breaker after the number of injections and constructor accessibility. This makes an otherwise equal choice deterministic without displacing a constructor designed for richer dependency injection.
 $f=`OrdinalAttribute` remains the explicit Pure.DI override. When any accessible constructor is marked with `Ordinal`, only marked constructors participate, and their ordinal order takes precedence over `OverloadResolutionPriorityAttribute`.
+$f=This matters most for library types you do not control: a package can add a modern overload with a higher priority, and the graph picks it up on the next build without a change on your side. Pin the choice with `Ordinal` when a library update must not alter which constructor runs.
+$f=>[!TIP]
+$f=>Use `OverloadResolutionPriority` in library code to express a general preference, and `Ordinal` in application code when one specific constructor has to win.
 $r=Shouldly
 */
 

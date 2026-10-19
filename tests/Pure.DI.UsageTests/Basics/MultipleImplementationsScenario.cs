@@ -9,7 +9,10 @@ $sa=Simplified lifetime-specific bindings
 $h=Use `To<T1, T2, ...>()` to bind several implementations to the same contract in one call. Each type becomes a separate binding with the configured lifetime and tags. Up to 64 implementation types are supported.
 $h=Use `Tag.Unique` when a collection should contain every implementation. Pure.DI assigns a distinct tag to each binding, so an array or `IEnumerable<T>` can collect them all.
 $f=You can use `Tag.Type` instead of `Tag.Unique` to give each binding the implementation type as its tag. For example, `EmailChannel` gets the tag `typeof(EmailChannel)`, which can also be used to resolve that implementation individually.
-$f=A regular shared tag follows the usual binding rules: later bindings for the same contract and tag override earlier ones. `Tag.Unique` keeps each implementation available to collection injection.
+$f=A regular shared tag follows the usual binding rules: later bindings for the same contract and tag override earlier ones, and the earlier one is reported as overridden. `Tag.Unique` keeps each implementation available to collection injection.
+$f=The lifetime applies to every type in the call, so `As(Lifetime.Singleton)` makes all three channels singletons of the same composition; bind them separately when their lifetimes differ.
+$f=The order of elements in the injected array or `IEnumerable<T>` follows the binding order, which makes a handler pipeline predictable.
+$f=Prefer `Tag.Unique` for plugin-style collections and explicit tags when the consumer must pick exactly one implementation.
 $f=See also: [Tag Type](tag-type.md), [Tag Unique](tag-unique.md), [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md).
 $r=Shouldly
 */

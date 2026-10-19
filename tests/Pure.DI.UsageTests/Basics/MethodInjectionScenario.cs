@@ -6,10 +6,10 @@ $sa=Property injection
 $sa=Field injection
 $sa=Dependency attribute
 $h=To use dependency injection for a method, simply add the _Dependency_ (or _Ordinal_) attribute to that method, specifying the sequence number that will be used to define the call to that method:
-$f=The key points are:
-$f=- The method must be available to be called from a composition class
-$f=- The `Dependency` (or `Ordinal`) attribute is used to mark the method for injection
-$f=- The DI automatically calls the method to inject dependencies
+$f=Method injection is how a type receives dependencies a constructor cannot take: initialization that must run after construction, or a value the type deliberately does not hold as state.
+$f=The method must be non-static and callable from the generated composition, and its parameters are resolved like constructor parameters, tags included; the ordinal fixes its place among other injected members.
+$f=Only methods marked with `Dependency` (or `Ordinal`) are called. The call happens inside the generated construction sequence, so a method that throws breaks resolution of the whole root.
+$f=Prefer constructor injection for required dependencies and reserve method injection for late or optional initialization, such as wiring an event handler.
 $r=Shouldly
 */
 

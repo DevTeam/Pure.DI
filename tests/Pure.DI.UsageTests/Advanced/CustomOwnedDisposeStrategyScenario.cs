@@ -5,8 +5,13 @@ $d=Custom dispose strategy for Owned<T>
 $sa=Tracing exceptions during Owned disposal
 $sa=Custom dispose strategy
 $h=`Owned<T>` calls `Dispose()` on every tracked resource when the owner is disposed. Some types — most notably WCF clients that implement `ICommunicationObject` — require a specific shutdown sequence (try `Close()`, fall back to `Abort()` on a timeout or when the channel is faulted). Implement the partial `OnDispose` / `OnDisposeAsync` hooks on the non-generic `Pure.DI.Owned` accumulator to perform the custom shutdown logic and set `skipDefaultDispose` to `true` to skip the default disposal call (or leave it `false` to let the owner dispose the instance as usual).
+$f=This is the per-operation counterpart of the composition hook: it fires when an `Owned<T>` is disposed, so a unit of work can close its own client instead of waiting for application shutdown.
 $f=>[!IMPORTANT]
 $f=>The hook belongs to the non-generic `Pure.DI.Owned` accumulator used internally by every `Owned<T>`, so its partial implementation must be declared in the `Pure.DI` namespace.
+$f=
+$f=One hook serves every owner in the compilation, so it cannot tell which operation owns the resource; record the attribution yourself if you need it in the log.
+$f=Set `skipDefaultDispose` only after you have released the instance; leaving it `false` lets the accumulator call `Dispose()` as usual.
+$f=Prefer the composition hook ([custom dispose strategy](custom-dispose-strategy.md)) for application-wide clients, and this one for per-transaction or per-message resources.
 $r=Shouldly
 */
 

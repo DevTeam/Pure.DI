@@ -6,6 +6,9 @@ $sa=Export attribute
 $h=The `[Export]` attribute works with generic types too: applied to a generic factory method with a `TT` marker, as in `[Export(typeof(IComments<TT>))]`, it makes a single method the source of `IComments<T>` for any requested `T`. This is handy when a factory class produces generic dependencies and you don't want to declare a separate binding for each closed type.
 $f=>[!NOTE]
 $f=>The Export attribute provides a declarative way to specify bindings directly on types, reducing the need for manual composition setup.
+$f=
+$f=The `TT` marker in the exported type is what makes one method serve every closed type: `IComments<Post>` and `IComments<Comment>` are both produced by the same factory call with the requested type argument, and the generated code is concrete for each of them.
+$f=The exported method is called once per binding creation, so the lifetime of the owning type decides whether the result is reused. A factory that must return a fresh instance per consumer should stay transient, as it is here.
 $r=Shouldly
 */
 

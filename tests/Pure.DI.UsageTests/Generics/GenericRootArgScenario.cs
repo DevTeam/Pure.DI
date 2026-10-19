@@ -8,6 +8,13 @@ $h=Sometimes a composition root needs an argument whose type depends on the root
 $h=The value passed to that method is injected into `Presenter<T>` through the method marked with the `[Dependency]` attribute.
 $f=>[!NOTE]
 $f=>Generic root arguments enable flexible type parameterization while maintaining compile-time type safety.
+$f=
+$f=Typical use is a presenter, a serializer or a handler whose payload type follows the root's own type argument: `GetPresenter<Invoice>(invoice)` builds a fully wired presenter for the object the caller already has.
+$f=The argument becomes part of the generated method signature, so the composition stays free of the request data and no placeholder binding is needed. Resolution still happens at compile time.
+$f=>[!WARNING]
+$f=>Root arguments are consumed once per resolution and are not shared with dependencies created later. A dependency that needs the same value must receive it through the same argument, not through a captured closure.
+$f=
+$f=Prefer a root argument for per-call data that belongs to the root, and constructor parameters for fixed configuration. See [Complex generic root arguments](complex-generic-root-arguments.md) when the argument type is generic itself.
 $r=Shouldly
 */
 

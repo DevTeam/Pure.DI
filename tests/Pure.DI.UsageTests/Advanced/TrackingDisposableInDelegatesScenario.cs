@@ -4,8 +4,13 @@ $p=101
 $d=Tracking disposable instances in delegates
 $sa=Tracking disposable instances per a composition root
 $h=When a service creates disposable dependencies dynamically, inject `Func<Owned<T>>` instead of `Func<T>`. Each factory call returns an `Owned<T>` that owns all disposables created for that particular graph, so disposing it cleans up exactly those instances — graphs produced by other factory calls remain alive.
+$f=A service that opens a unit of work per call - a transaction, a session, a temporary file - uses this shape: take an owner from the factory, release it when the unit ends.
+$f=The owner tracks the transients created for its graph, so closing one transaction cannot close the connection of another one.
+$f=The service that holds an owner must dispose it, otherwise the resource survives until the process ends; implementing `IDisposable` on the service makes the obligation explicit in its API.
 $f=>[!NOTE]
 $f=>Disposable tracking in delegates ensures proper cleanup even when instances are created dynamically through factory delegates.
+$f=
+$f=Prefer `Func<Owned<T>>` over `Func<T>` whenever the created graph contains an `IDisposable`, because only the owner knows which instances it is responsible for.
 $r=Shouldly
 */
 

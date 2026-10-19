@@ -4,21 +4,11 @@ $p=22
 $d=Builder with arguments
 $sa=Builder
 $h=This example shows how to use builders with custom arguments in dependency injection. It shows how to pass additional parameters during the build-up process.
-$f=Important Notes:
-$f=- The default builder method name is `BuildUp`
-$f=- The first argument to the builder method is always the instance to be built
-$f=- Additional arguments are passed in the order they are defined in the setup
-$f=- Root arguments can be used to provide custom values during build-up
-$f=
-$f=Use Cases:
-$f=- When additional parameters are required during object construction
-$f=- For scenarios where dependencies depend on runtime values
-$f=- When specific initialization data is needed
-$f=- For conditional injection based on provided arguments
-$f=
-$f=Best Practices
-$f=- Keep the number of builder arguments minimal
-$f=- Use meaningful names for root arguments
+$f=The builder signature is the instance first, then the root arguments in declaration order, so `Initialize(new Satellite(), id)` pairs `[Dependency]` members with values that are known only at that moment.
+$f=Root arguments reach the whole graph of the build-up, not just the injected member, so a service created during build-up can receive the same value.
+$f=The default builder method name is `BuildUp`; the first argument to the builder method is always the instance to be built.
+$f=An argument of a non-nullable reference type is null-checked in the generated method and throws `ArgumentNullException` before anything is injected.
+$f=Prefer few builder arguments with meaningful names: each one widens the builder signature and couples the host to the object's internals.
 $r=Shouldly
 */
 

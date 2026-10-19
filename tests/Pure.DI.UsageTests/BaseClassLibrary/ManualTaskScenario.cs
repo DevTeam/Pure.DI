@@ -4,8 +4,13 @@ $p=11
 $d=Manually started tasks
 $sa=Task
 $h=By default, tasks are started automatically when they are injected. But you can override this behavior as shown in the example below. It is also recommended to add a binding for <c>CancellationToken</c> to be able to cancel the execution of a task.
+$h=This is the pattern for a service that wants to start the work itself, for example at an exact moment during its own construction.
 $f=>[!IMPORTANT]
 $f=>The method `Inject()`cannot be used outside of the binding setup.
+$f=
+$f=Overriding `Task<TT>` replaces the default auto-start binding for every task in the composition, so the consumer decides when `Start` is called. Here `DashboardService` starts the task in its constructor and awaits it later in `LoadAsync`, which overlaps loading with the rest of the initialization.
+$f=An unstarted task that nobody starts never completes, and `await` on it waits forever: the responsibility moves to the consumer, and that is the trade-off of the override. Keep the override narrow — or use [task](task.md) with automatic start — when only one service needs manual control.
+$f=The `CancellationToken` root argument is what makes the task cancellable; without it the binding falls back to `CancellationToken.None` and the manual start cannot be interrupted.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

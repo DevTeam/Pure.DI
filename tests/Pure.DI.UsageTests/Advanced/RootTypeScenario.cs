@@ -5,7 +5,10 @@ $d=Root Type
 $sa=Root Name
 $h=`RootType` provides the type of the composition root being resolved. This property is useful for implementing root-specific behavior like different caching strategies per root type.
 $h=Use this when infrastructure dependencies must vary by root contract type.
+$f=This is how a shared cache or a client can be partitioned per entry point without extra configuration: the resolve that creates it knows which contract it serves.
+$f=A root that returns a tuple or a generic type reports that declared type, so prefer one root per contract when the partition must stay predictable.
 $f=Limitations: root-type-specific rules can become hidden policy; keep this logic centralized and observable.
+$f=Prefer `ctx.RootName` ([root name](root-name.md)) when two roots of the same contract must stay apart, because the type alone cannot tell them apart.
 $f=See also: [Composition roots](composition-roots.md), [Root Name](root-name.md).
 $r=Shouldly
 */

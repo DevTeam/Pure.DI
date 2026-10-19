@@ -5,7 +5,10 @@ $d=IsLockRequired
 $sa=Thread-safe overrides
 $h=`IsLockRequired` indicates whether a lock is required for thread-safe operations in the current context. This property is useful when you need to conditionally synchronize based on thread safety requirements.
 $h=Use this when custom factory logic must respect thread-safety semantics of generated code.
+$f=It answers the same question the generated code asks itself: with `Hint.ThreadSafe = On` a root that must create shared state takes the composition lock, with `Off` it does not, so a factory that follows `IsLockRequired` takes exactly the locks the composition would take.
+$f=The value differs per node - here the transient `Service` is built under a lock while the `Singleton` variant is not - so do not cache it outside the factory call.
 $f=Limitations: avoid adding business logic inside lock-aware factories; use it only for synchronization concerns.
+$f=Prefer an unconditional `lock (ctx.Lock)` ([factory with thread synchronization](factory-with-thread-synchronization.md)) when the factory must be safe regardless of the hint, and `Hint.ThreadSafe = Off` ([ThreadSafe hint](threadsafe-hint.md)) for single-threaded compositions.
 $f=See also: [ThreadSafe hint](threadsafe-hint.md), [Factory](factory.md).
 $r=Shouldly
 */

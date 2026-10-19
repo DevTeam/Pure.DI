@@ -6,21 +6,11 @@ $sa=Build up of an existing object
 $sa=Builder with arguments
 $sa=Builders
 $h=Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
-$f=Important Notes:
-$f=- The default builder method name is `BuildUp`
-$f=- The first argument to the builder method is always the instance to be built
-$f=
-$f=Advantages:
-$f=- Allows working with pre-existing objects
-$f=- Provides flexibility in dependency injection
-$f=- Supports partial injection of dependencies
-$f=- Can be used with legacy code
-$f=
-$f=Use Cases:
-$f=- When objects are created outside the DI
-$f=- For working with third-party libraries
-$f=- When migrating existing code to DI
-$f=- For complex object graphs where full construction is not feasible
+$f=Build-up is for objects someone else creates: a UI framework instantiating a window or a view model, a game engine spawning an entity, a deserializer that calls the parameterless constructor.
+$f=The generated method name is whatever you pass (`BuildUp` by default) and its first parameter is always the instance to be built, followed by the root arguments in the order they are declared.
+$f=Only members marked `[Dependency]` or `[Ordinal]` are injected, in ordinal order, so a plain auto-property is left untouched and the framework's own values are preserved.
+$f=The instance is mutated in place, which means the container takes no ownership: dispose and lifetime of that object stay with the caller.
+$f=Prefer constructor injection for objects the composition creates, and keep a builder for the boundary where an external framework owns the lifetime.
 $r=Shouldly
 */
 

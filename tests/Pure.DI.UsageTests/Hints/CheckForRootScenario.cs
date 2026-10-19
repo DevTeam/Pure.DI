@@ -4,7 +4,12 @@ $p=9
 $d=Check for a root
 $sa=Resolve hint
 $sa=Resolve methods
-$h=Sometimes you need to check if you can get the root of a composition using the `Resolve` method before calling it, this example will show you how to do it:
+$h=Sometimes you need to check if you can get the root of a composition using the `Resolve` method before calling it, this example will show you how to do it: the `OnNewRoot` hint generates a partial hook that fires while the composition is generated, once per root.
+$h=It fits hosts that receive a type name from configuration, a plugin manifest or a message header and must decide whether the composition can supply it before asking for an instance.
+$f=The hook is static and runs at code generation time, not at runtime: it fills a registry that your own code queries afterwards, so there is no reflection and no cost per call.
+$f=The parameters tell you everything needed to record a root: the contract type, which is the one `Resolve` accepts, the root name, the tag and the lifetime.
+$f=Only roots declared with `Root<T>(...)` reach the hook, so an anonymous root stays invisible - and a type that resolves through auto-binding but has no root is correctly reported as unresolvable.
+$f=Prefer this over try/catch around `Resolve`: an exception tells you nothing about which members are available, and a registry answers that once for the whole composition.
 $f=For more hints, see [this](../README.md#setup-hints) page.
 $r=Shouldly
 */

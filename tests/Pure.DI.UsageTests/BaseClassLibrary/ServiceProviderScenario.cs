@@ -12,6 +12,10 @@ $h=This example shows how to implement a custom `IServiceProvider` using a parti
 $f=Important Notes:
 $f=- Hint Overriding: The `ObjectResolveMethodName = GetService` hint overrides the default object `Resolve(Type type)` method name to implement `IServiceProvider` interface
 $f=- Roots: Only roots can be resolved. Use `Root(...)` or `RootBind()` calls for registration
+$f=A hand-written `IServiceProvider` is the smallest integration: no container is created, and `GetRequiredService` runs against the generated composition. The resolution by `Type` is a lookup in generated code, so an unregistered type is reported as a missing service at run time.
+$f=Because resolution goes through roots, a type that is injected internally but not declared as a root is not reachable through `IServiceProvider` even though the graph uses it. Declare a root for every service that outside code may ask for.
+$f=>[!TIP]
+$f=>Renaming `Resolve` through hints means `Hint.Resolve = Off` cannot be used in the same composition; keep resolve methods enabled wherever a `ServiceProvider`-shaped API is exposed.
 $r=Shouldly;Microsoft.Extensions.DependencyInjection
 */
 

@@ -7,6 +7,11 @@ $sa=Tags
 $h=A tag applied to a `Func<T>` dependency carries over to the instances it creates. Here `[Tag("postgres")] Func<IDbConnection>` resolves the binding registered with the `"postgres"` tag, and each call returns a new `NpgsqlConnection`, letting the pool create as many distinct connections as it needs.
 $f=>[!NOTE]
 $f=>Func with tags allows you to create instances with specific tags dynamically, useful for factory patterns with multiple implementations.
+$f=
+$f=This is what a pool needs: the consumer chooses the implementation by tag once and then creates as many instances as it wants. The tag on the parameter decides which binding the factory creates, so the pool never sees the composition.
+$f=The generated instances follow the lifetime of the tagged binding: a transient connection yields a new object per call, while a singleton would yield the same one every time and defeat the pool. Verify the expected count and type in a test, as this scenario does.
+$f=>[!TIP]
+$f=>Prefer a tagged `Func<T>` over injecting several tagged instances when the number of objects is decided at run time.
 $r=Shouldly
 */
 

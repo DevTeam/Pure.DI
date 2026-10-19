@@ -9,6 +9,13 @@ $sa=Builders
 $h=In Unity, `MonoBehaviour` instances are created by the engine, not by your code, so constructor injection is not an option. Pure.DI solves this with builders: the `Builders<MonoBehaviour>()` call generates a `BuildUp` method for every `MonoBehaviour` in the composition, which injects the members marked with `[Dependency]`. Here `Clock` calls `scope.BuildUp(this)` in `Awake()` to receive its `IClockService`, while regular (non-`MonoBehaviour`) dependencies like `ClockService` are wired up with ordinary bindings.
 $f=>[!NOTE]
 $f=>Call `BuildUp` in `Awake()` so that dependencies are ready before the first `Update()` runs.
+$f=
+$f=This is the minimum wiring a Unity project needs: one `Scope` component that owns the composition, `Builders<MonoBehaviour>()` to reach every component, and `BuildUp(this)` in each component's `Awake`. ScriptableObject assets such as the clock config are bound as ordinary dependencies.
+$f=The composition lives on a component, so it lives exactly as long as the object it is attached to, and `OnDestroy` is the place to dispose it. A component that is instantiated later must build itself up with the same `Scope`, not with a new one.
+$f=>[!WARNING]
+$f=>`BuildUp` only fills members marked with `[Dependency]`; it cannot run the constructor or fix a member that has no binding. A missing binding leaves a null field, and the first `Update` throws far from the cause.
+$f=
+$f=Prefer this for a single scene or a simple game; add scene-level boundaries with [Unity scene scopes](unity-scene-scopes.md) and runtime instancing with [Unity with prefabs](unity-with-prefabs.md).
 $r=Shouldly
 */
 

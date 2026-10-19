@@ -6,11 +6,13 @@ $p=28
 $p=HighPerformance:11
 $d=Static root
 $sa=Composition root kinds
-$h=Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type — `Composition.GlobalConfiguration` — without creating a composition object.
+$h=Passing `kind: RootKinds.Static` to `Root<T>(...)` makes the generated root a static member, so an instance can be obtained directly from the composition type - `Composition.GlobalConfiguration` - without creating a composition object.
 $h=This is useful for stateless entry-point services such as static configuration readers, validators, or one-shot command helpers where the composition itself does not carry state.
+$f=A static root creates the graph on every access unless its parts are transient, so a static root over a singleton is rejected: a static member has no instance to store the singleton in, and the lifetime validator reports it.
+$f=Because there is no composition instance, a static root cannot consume composition arguments; pass such values as static members or as root arguments of the method.
+$f=Avoid static roots for graphs that depend on scoped state, per-composition caches, or externally supplied constructor arguments - an instance composition keeps ownership and lifetime boundaries clearer.
 $f=>[!NOTE]
 $f=>Static roots keep the call site compact and avoid allocating a composition instance for graphs that do not need composition-level state.
-$f=Avoid static roots for graphs that depend on scoped state, per-composition caches, or externally supplied constructor arguments. In those cases, an instance composition keeps ownership and lifetime boundaries clearer.
 $r=Shouldly
 */
 

@@ -20,6 +20,13 @@ $f=
 $f=- Error handling
 $f=
 $f=- Providing resistance to failures, etc.
+$f=
+$f=This is the option for cross-cutting behavior over contracts you do not control - a third-party client, a generated API, a legacy interface - where writing a decorator per contract is not practical. The hook is a partial method on the composition, so the whole policy lives in one place.
+$f=The generated graph is unchanged: every dependency is built as usual and then passed through `OnDependencyInjection`. An interceptor therefore sees the real instance and can delegate to it, but it also runs on the hot path of every resolution.
+$f=>[!WARNING]
+$f=>Proxies are only created for reference types, and the interceptor must skip value types explicitly. Enable the hook for a whole graph and every interface gets a proxy, including infrastructure you never meant to wrap - narrow it with `OnDependencyInjectionContractTypeNameWildcard` as this example does.
+$f=
+$f=Prefer [Decorator](decorator.md) for your own contracts, and [Advanced interception](advanced-interception.md) when the proxy creation itself becomes the bottleneck.
 $r=Shouldly;Castle.DynamicProxy
 */
 

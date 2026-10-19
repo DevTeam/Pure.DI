@@ -6,9 +6,13 @@ $sa=Composition arguments
 $sa=Root arguments
 $sa=Func with arguments
 $sa=Thread-safe overrides
-$h=This example shows advanced dependency injection techniques using Pure.DI's override mechanism to customize dependency instantiation with runtime arguments and tagged parameters. The implementation creates multiple `IDependency` instances with values manipulated through explicit overrides.
-$f=>[!NOTE]
-$f=>Overrides provide fine-grained control over dependency resolution, allowing you to customize bindings at runtime or for specific scenarios.
+$h=This example shows how `ctx.Override(...)` customizes the values a constructor receives per call: a factory `Func<int, int, IWidget>` overrides the untagged `id`, the tagged `layer` and the `name`, then injects the widget and returns it.
+$h=An override is how a value that changes per invocation - a request id, a tenant, a computed label - reaches a type whose constructor also needs normal dependencies, without turning every parameter into a root argument or a service.
+$f=Overrides are scoped to the factory invocation that declares them; nothing is captured by the composition, so a singleton cannot be built from overridden values in a meaningful way.
+$f=An override is matched by value type and tag, so a tagged override (`ctx.Override(layerIndex, "layer")`) is required when two parameters share a type; an override that matches nothing is silently unused.
+$f=The factory itself is resolved once per `Func` use and then invoked per call, so keep the overrides close to the injection they affect for readability.
+$f=`FormatCode = On` is set here only to keep the generated code readable; it costs generation time and belongs to debugging, not to a release composition.
+$f=Prefer a root argument when the value is the same for a whole root, and `Override` when one factory call produces many differently configured instances.
 $r=Shouldly
 */
 

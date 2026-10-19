@@ -5,8 +5,13 @@ $d=Tracing exceptions during Owned disposal
 $sa=Tracing exceptions during composition disposal
 $sa=Tracking disposable instances per a composition root
 $h=`Owned<T>` catches exceptions thrown while disposing resources in its graph, invokes the `OnDisposeException` partial method on the generated `Pure.DI.Owned` accumulator, and continues disposing the remaining resources. Implement this hook to associate per-operation cleanup failures with application diagnostics.
+$f=Use it when each unit of work owns its own resources - a message, a request, a transaction - and a failure to close one of them should be reported against that unit instead of at shutdown.
+$f=A failing resource does not stop the owner from releasing the rest: after the hook returns, the event loop continues with the remaining resources of the same graph.
+$f=The events are collected per accumulator, so the partial `Owned<T>` extension in this example reads only the events of its own graph; keep that projection to avoid mixing units of work.
 $f=>[!IMPORTANT]
 $f=>The hook belongs to the non-generic `Pure.DI.Owned` accumulator used internally by every `Owned<T>`, so its partial implementation must be declared in the `Pure.DI` namespace. The partial `Owned<T>` extension exposes only the events collected by its own accumulator.
+$f=
+$f=Prefer the composition-level hook ([tracing exceptions during composition disposal](tracing-exceptions-during-composition-disposal.md)) for resources that live as long as the application.
 $r=Shouldly
 */
 

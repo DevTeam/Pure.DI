@@ -7,6 +7,9 @@ $sa=Constructor ordinal attribute
 $h=C# 14 partial constructors let a type declare its construction contract in one part and provide the body in another. Pure.DI sees the combined constructor symbol, resolves its parameters once, and invokes it like a regular constructor. This is useful when a source generator owns the defining declaration while application code supplies the implementation.
 $f=A partial constructor must have exactly one defining declaration ending with `;` and one implementing declaration with a body. Only the defining declaration participates in lookup, while constructor and parameter attributes from both parts are combined.
 $f=Place `this(...)` or `base(...)` constructor initializers on the implementing declaration. `OrdinalAttribute`, `TagAttribute`, and `OverloadResolutionPriorityAttribute` can be placed on either part and are observed through the combined Roslyn symbol.
+$f=This split is what lets a generator publish a construction contract while the hand-written part keeps the body, and the generator sees a private field assignment it cannot otherwise express. Both parts must live in the same assembly and be compiled together, so the pattern does not cross project boundaries.
+$f=>[!NOTE]
+$f=>Prefer an ordinary constructor when one file owns both parts; the partial form earns its complexity only when two sources must each contribute half of it.
 $r=Shouldly
 */
 

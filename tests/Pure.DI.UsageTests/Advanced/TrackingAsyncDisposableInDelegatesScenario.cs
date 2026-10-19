@@ -4,8 +4,13 @@ $p=105
 $d=Tracking async disposable instances in delegates
 $sa=Tracking async disposable instances per a composition root
 $h=When a service creates `IAsyncDisposable` dependencies dynamically, inject `Func<Owned<T>>` instead of `Func<T>`. Each factory call returns an `Owned<T>` that takes ownership of the dependency graph it just created, so the consumer decides exactly when to call `DisposeAsync()` — and disposing one instance does not affect graphs produced by other calls.
+$f=This is how a handler that serves many messages gets the lifetime it needs: one owner per message, so a failing or slow message releases its own connection without touching the others.
+$f=The consumer must dispose the owner, so a service that creates an owner in its constructor should also implement `IDisposable`/`IAsyncDisposable` and forward the call, as `QueryService` does here.
+$f=Disposing the same owner twice is safe: after the first call the tracked resources are released and the second call does nothing.
 $f=>[!NOTE]
 $f=>Async disposable tracking in delegates ensures proper async cleanup even when instances are created dynamically through factory delegates.
+$f=
+$f=Prefer a plain `Func<T>` when the created object does not need to be released per use, because ownership adds a disposal obligation to every caller.
 $r=Shouldly
 */
 

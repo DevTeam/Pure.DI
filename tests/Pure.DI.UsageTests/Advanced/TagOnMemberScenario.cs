@@ -5,8 +5,13 @@ $d=Tag on a member
 $sa=Tag on injection site
 $sa=Tag on a constructor argument
 $h=`Tag.OnMember<T>(memberName)` creates a tag that targets injection into a specific property or field of type `T`, so you can override which implementation goes into that member without touching the class definition — here `StripeGateway` is injected into the `Gateway` property of `CheckoutService` while `PayPalGateway` stays the default binding elsewhere. The wildcards `*` and `?` are supported.
+$f=Use it when a required or init-only property needs a different implementation than the constructor arguments of the same class, and the class belongs to someone else or should stay free of DI attributes.
+$f=Property injection happens after the constructor runs, so the property must be settable (`required`, `init` or a setter) for the tag to have an effect.
+$f=The rule is bound to the member name of that type; a renamed property stops matching and `DIW004` reports the unused injection site.
 $f=>[!WARNING]
 $f=>Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
+$f=
+$f=Prefer `[Tag("...")]` on the property when you own the class, and a constructor parameter when the value is required for the object to be valid.
 $r=Shouldly
 */
 

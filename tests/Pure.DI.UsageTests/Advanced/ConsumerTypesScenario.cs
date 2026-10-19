@@ -3,9 +3,13 @@ $v=true
 $p=26
 $d=Consumer types
 $sa=Consumer type
-$h=`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types and guarantees that it will contain at least one element. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
-$h=Use this when one dependency must adapt behavior based on the concrete consuming type.
+$h=`ConsumerTypes` is used to get the list of consumer types of a given dependency. It contains an array of types, ordered from the immediate consumer down to the composition type, and guarantees that it will contain at least one element; `ConsumerType` gives just the immediate consumer. The use of `ConsumerTypes` is demonstrated on the example of [Serilog library](https://serilog.net/):
+$h=Use this when one dependency must adapt behavior based on the concrete consuming type - a logger that names its `SourceContext`, a metric tagged with the caller, a tracing span.
+$f=This is how every consumer gets its own infrastructure identity without changing the consumers: the factory is rewritten per injection site, so each class receives a value built with its own type.
 $f=Limitations: consumer-aware configuration increases coupling to composition details; use it for infrastructure concerns (logging, tracing), not core domain behavior.
+$f=Under a `Singleton` lifetime only one instance exists, so the type names whichever consumer built it; keep such adapters `Transient` when each consumer needs its own value.
+$f=Every injection site adds its own generated factory code, so keep this to one small adapter binding instead of spreading consumer awareness through the graph.
+$f=Prefer an explicit `[Tag(...)]` or `ctx.RootName` when the grouping must follow an entry point rather than the injecting class.
 $f=See also: [Interception](interception.md), [Factory](factory.md).
 $r=Shouldly;Serilog.Core;Serilog.Events
 */

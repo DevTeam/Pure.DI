@@ -6,6 +6,13 @@ $sa=Consumer type
 $h=Serilog loggers are typically enriched with the type of the class that writes the log. The key here is a binding that calls `logger.ForContext(ctx.ConsumerType)`: `ConsumerType` is the type of the consumer of the given dependency, so every class receives a logger whose `SourceContext` is already set to that class. The root logger itself is passed in as a composition argument.
 $f=>[!NOTE]
 $f=>This example also turns on the `OnNewInstance` and `OnDependencyInjection` hints to log the creation and injection of composition objects. The regular-expression hints exclude the logger types themselves from these callbacks.
+$f=
+$f=Every library and service that wants a structured log needs a logger whose context names the class that writes: `ForContext(ctx.ConsumerType)` gives that without a manual `Log.ForContext<T>()` in each constructor, and without binding the logger per type.
+$f=The logger is passed in as a composition argument, so the composition does not own its configuration and shutdown; the host does. That also keeps tests free to pass a silent or in-memory logger.
+$f=>[!WARNING]
+$f=>A logger bound this way is created per consumer while the underlying `ILogger` is the argument - keep the argument binding shared and the context logger cheap. Note also that `ctx.ConsumerType` reports the type receiving the dependency, which is the enclosing class, not the class that declared the constructor parameter.
+$f=
+$f=Prefer this over `Log.ForContext<T>()` when the composition must stay testable. See [Consumer type](consumer-type.md) for the general contract and [Consumer types](consumer-types.md) for a broader example.
 $r=Serilog.Core;Serilog.Events
 */
 

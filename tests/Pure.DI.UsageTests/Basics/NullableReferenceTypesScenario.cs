@@ -12,6 +12,7 @@ $h=>[!NOTE]
 $h=>When a nullable reference type is used as a generic argument, the generic type must allow nullable arguments. For example, prefer `where T : class?` over `where T : class` for contracts such as `IBox<string?>`; otherwise the C# compiler reports a nullable constraint warning before Pure.DI analyzes the graph.
 $r=Shouldly
 $f=Limitations: nullable annotations describe compile-time contracts. They are not runtime validation rules and do not replace explicit domain validation.
+$f=A non-nullable reference root argument is checked in the generated root method and throws `ArgumentNullException` before the graph is built, while a nullable one is passed as `null` - the annotation alone decides which happens.
 $f=Common pitfalls:
 $f=- Using `T?` to hide a missing binding instead of modelling an optional value.
 $f=- Forgetting tags for nullable primitive values when several values of the same type exist.

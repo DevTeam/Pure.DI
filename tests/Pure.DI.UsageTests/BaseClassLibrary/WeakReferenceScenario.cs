@@ -5,6 +5,11 @@ $d=Weak Reference
 $h=Injecting `WeakReference<T>` lets a service hold a dependency without keeping it alive — useful for large, recreatable objects such as caches. Bind the underlying type as usual and request `WeakReference<T>`; the consumer then calls `TryGetTarget`, which returns `false` once the object has been garbage-collected.
 $f=>[!NOTE]
 $f=>`WeakReference<T>` is useful for caching scenarios where you want to allow garbage collection when memory is constrained.
+$f=
+$f=The injected reference does not keep the target alive, so the consumer has to handle `TryGetTarget` returning `false` every time and recreate the value — `Service.Cache` returns `null` for that case. That makes the consumer's own code the cache, not the composition.
+$f=A weak reference is only useful when something else holds the target strongly; if the dependency is transient and nobody else keeps it, it can be collected immediately after construction. Bind the target as `Singleton` (or hold it elsewhere) when the reference is expected to survive.
+$f=>[!TIP]
+$f=>Prefer a normal reference when the lifetime of the object is known, and reach for `WeakReference<T>` only for optional, recreatable and genuinely large data.
 $r=Shouldly
 */
 

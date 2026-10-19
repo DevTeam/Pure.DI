@@ -7,6 +7,10 @@ $h=High-performance code often relies on `ref struct` types such as `Span<T>`, w
 $h=Instead, inject them by `ref` through a method marked with `[Ordinal]`: here a `ref struct Data` wrapping the bound `int[]` is passed into `Initialize(ref Data data)` and consumed without extra allocations.
 $f=>[!NOTE]
 $f=>`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
+$f=
+$f=This is the pattern for parsers, serializers and buffer-processing services: the `ref` parameter lets a stack-only dependency live for the duration of one call and never escape to the heap.
+$f=A stack-only dependency cannot be used with a stored lifetime (singleton, scoped, per-block) or captured in a generated delegate; Pure.DI reports an error instead of producing code that would not compile.
+$f=Prefer method injection with `ref` or a `scoped` root argument for `Span<T>`/`ReadOnlySpan<T>`, and plain constructor injection for everything else.
 $r=Shouldly
 */
 

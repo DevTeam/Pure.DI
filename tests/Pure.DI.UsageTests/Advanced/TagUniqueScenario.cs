@@ -4,8 +4,12 @@ $p=14
 $d=Tag Unique
 $sa=Tags
 $h=`Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be injected in compositions as some kind of enumeration.
-$h=Use this to aggregate multiple implementations without exposing each one as a direct root.
+$h=Each `Tag.Unique` binding gets its own tag, so any number of implementations of one contract can coexist and be collected into `IEnumerable<T>`, an array or an `ImmutableArray<T>`.
+$f=Use this to aggregate several implementations without exposing each one as a direct root.
+$f=This is how satellites are registered in a real project - trace sources, loggers, processors, validators - and then injected as a collection into the one component that orchestrates them.
 $f=Limitations: unique-tag bindings are intentionally hidden from direct resolve; document this to avoid confusion in integration code.
+$f=A unique binding that nothing collects is reported as `DIW003`, which is a useful signal that an implementation was registered but never reached.
+$f=Prefer [Enumerable](enumerable.md) or `Tag.Type` when the consumer must address one specific implementation, because a unique tag cannot be named by the consumer at all.
 $f=See also: [Tags](tags.md), [Enumerable](enumerable.md).
 $r=Shouldly
 */

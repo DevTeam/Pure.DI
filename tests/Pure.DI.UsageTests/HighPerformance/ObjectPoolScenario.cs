@@ -8,6 +8,12 @@ $h=Object pools help when a service is expensive to allocate but can be reset an
 $h=Here a notification pipeline rents an `EmailTemplateRenderer` for every message. The renderer owns reusable buffers that are cleared before it goes back to the pool, so the hot path avoids repeatedly allocating the renderer and its internal state.
 $f=This pattern fits serializers, encoders, template renderers, parsers, and compression helpers. It is not a replacement for regular DI lifetimes: only pool objects that have a clear reset rule, are not used concurrently while leased, and do not keep request-specific references after `Reset()`.
 $f=The composition owns the pool as a singleton, while each root call creates a lightweight lease. That keeps reuse explicit and avoids leaking pooled instances outside the operation scope.
+$f=
+$f=The lease is what makes the boundary safe: rent when the operation starts, return when it ends, and never keep the pooled object longer than the operation. A pooled object that keeps a request payload after `Reset()` corrupts the next consumer in a way that no DI diagnostic can see.
+$f=>[!WARNING]
+$f=>Returning an instance twice corrupts the pool, so make the lease idempotent and get the pool from the composition rather than a static field. A pool is a short-lived optimization - measure before adding it.
+$f=
+$f=Prefer a `Transient` service when the object is cheap, and this pattern only when construction dominates your profile. For arrays see [ArrayPool buffer](arraypool-buffer.md); for objects the framework already pools, bind the framework's pool.
 $r=Shouldly
 */
 

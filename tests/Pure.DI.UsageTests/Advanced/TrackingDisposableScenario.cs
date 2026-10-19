@@ -6,8 +6,13 @@ $sa=Tracking disposable instances in delegates
 $sa=Tracking disposable instances with different lifetimes
 $sa=Disposable singleton
 $h=The special `Owned<T>` type lets you track and dispose of disposable instances per composition root rather than per composition. Declare a root as `Root<Owned<T>>`: each access returns an `Owned<T>` that owns every disposable created for that dependency graph, and calling its `Dispose()` cleans up exactly those instances without affecting other roots.
+$f=Use it where a long-lived composition serves independent units of work - a console command, a background job, a UI screen - and each unit should release its own `IDisposable` graph immediately.
+$f=Each access to the root builds a fresh graph and a fresh owner, so `Owned<T>` behaves like a scope you create and close explicitly rather than a lifetime you register.
+$f=The owner is a struct that holds the tracked resources; dispose it exactly once, and prefer the `using` statement so an exception during the unit of work still releases the graph.
 $f=>[!NOTE]
 $f=>Disposable tracking ensures proper cleanup of all disposable instances within a composition scope.
+$f=
+$f=Prefer [tracking disposable instances with different lifetimes](tracking-disposable-instances-with-different-lifetimes.md) when the graph mixes transient and shared resources, because the owner releases ownership of shared ones instead of disposing them.
 $r=Shouldly
 */
 

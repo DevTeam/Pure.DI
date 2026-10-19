@@ -9,6 +9,8 @@ $sa=Span and ReadOnlySpan
 $sa=Func
 $h=Pure.DI can generate the standard `Func<ReadOnlySpan<char>, T>` factory automatically. The runtime span argument is kept as a local value inside the generated delegate invocation, so no manual `ctx.Override(...)` call and no `lock (ctx.Lock)` block are required.
 $f=Use this default `Func` binding when the standard delegate shape is enough. Use a custom delegate factory with explicit `ctx.Override<T>(...)` only when you need a custom delegate type or additional factory logic.
+$f=This is the form to reach for when a hot path receives text as a span and must build an object from it without allocating an intermediate `string`: the span lives only inside the delegate call, and `Parser.Initialize` copies it once into a field.
+$f=Because the span never escapes the invocation, the generated code needs no shared override state and therefore no lock. That is what makes the default binding cheaper and safer than a hand-written factory.
 $r=Shouldly
 */
 

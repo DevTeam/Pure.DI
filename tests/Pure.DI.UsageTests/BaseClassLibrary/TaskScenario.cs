@@ -15,6 +15,10 @@ $h=
 $h=But you can always override them, as in the example below for <c>TaskScheduler.Current</c>.
 $f=>[!NOTE]
 $f=>`Task` injection provides automatic background execution with optional cancellation support for asynchronous operations.
+$f=
+$f=Injecting `Task<T>` lets a consumer start its work first and join the dependency later, so graph construction and dependency initialization overlap instead of adding up. `LoadDataCommand` awaits the task only after its own delay, by which time the data service may already be ready.
+$f=An injected task that nobody awaits and that throws leaves its exception unobserved; always await the task, or keep the error path inside the task itself. Pass `CancellationToken` from the root argument so cancellation reaches the started task.
+$f=`Hint.Resolve, "Off"` is safe here because every root has a `CancellationToken` root argument, and resolve methods cannot supply root arguments. Do not combine the two in one composition.
 $r=Shouldly
 */
 

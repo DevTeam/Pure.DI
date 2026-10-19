@@ -7,6 +7,13 @@ $sa=Unity Basics
 $h=Components created from prefabs at runtime also need their dependencies injected. Building on the basic Unity example, the `ClockManager` composition root instantiates the `ClockDigital` prefab with `Object.Instantiate` and immediately passes the new instance to `BuildUp`, which fills in its `[Dependency]` members. The `Builders<MonoBehaviour>()` call generates such a `BuildUp` method for every `MonoBehaviour` in the setup.
 $f=>[!NOTE]
 $f=>Call `BuildUp` right after `Object.Instantiate` so the component's dependencies are set before Unity starts calling its lifecycle methods such as `FixedUpdate()`.
+$f=
+$f=Spawned objects are the normal case in a real game: enemies, projectiles, UI popups and effects all come from prefabs at run time. Building them up with the scene's scope keeps them wired to the same session state as the objects that created them.
+$f=The prefab reference comes from a `ScriptableObject` asset, so the composition supplies the prefab and the manager instantiates it, which keeps asset references out of the code that wires dependencies.
+$f=>[!WARNING]
+$f=>`Object.Instantiate` copies serialized fields from the prefab but runs no composition code. A prefab component that is never built up has unset `[Dependency]` members, and every spawned copy repeats the mistake.
+$f=
+$f=Prefer a factory that both instantiates and builds up when spawning happens in many places, so nobody can forget the second step. See [Unity Basics](unity-basics.md) for the wiring and [Builders](builders.md) for the generated methods.
 $r=Shouldly
 */
 

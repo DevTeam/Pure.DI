@@ -4,9 +4,13 @@ $p=102
 $d=Tracking disposable instances with different lifetimes
 $sa=Tracking disposable instances per a composition root
 $h=`Owned<T>` tracking respects lifetimes. Disposing an `Owned<T>` immediately disposes the transient dependencies created for that graph, while for a `Singleton` dependency it only releases ownership — the shared instance stays alive for other consumers and is disposed only when the composition itself is disposed.
+$f=This is the realistic mix inside one unit of work: a connection created for the unit and a pool or client shared by the whole application, both injected through owners.
+$f=Disposing the owner releases the transient immediately and only releases the ownership of the shared instance; the shared instance is disposed by `composition.Dispose()`.
 $f=>[!NOTE]
 $f=>The tracking mechanism respects lifetime semantics, ensuring that transient instances are disposed immediately while singleton instances persist until composition disposal.
+$f=
 $f=The dependencies of a `Singleton` or `Scoped` instance belong to that shared instance: an `Owned<T>` does not dispose them, even when it happens to create the shared instance first.
+$f=Prefer separate `Tag`ged bindings, as here, to keep the two roles apart; a single untagged binding cannot express both lifetimes.
 $r=Shouldly
 */
 

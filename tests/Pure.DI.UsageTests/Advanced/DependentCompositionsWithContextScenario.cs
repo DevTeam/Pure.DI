@@ -7,15 +7,11 @@ $h=This scenario shows how to pass an explicit setup context when a dependent se
 $h=When this occurs: you need base setup state (e.g., Unity-initialized fields) inside a dependent composition.
 $h=What it solves: avoids missing instance members in dependent compositions and keeps state access explicit.
 $h=How it is solved in the example: uses DependsOn(setupName, kind, name) and passes the base setup instance into the dependent composition.
-$f=
-$f=What it shows:
-$f=- Explicit setup context injection for dependent compositions.
-$f=
-$f=Important points:
-$f=- The dependent composition receives the base setup instance via a constructor argument.
-$f=
-$f=Useful when:
-$f=- Base setup has instance members initialized externally (e.g., Unity).
+$h=The context is then available in the constructor, so the dependent composition keeps a normal parameterless setup method and still reads live values from the base instance.
+$f=Use this when the base setup holds state that lives outside the container - options read at start-up, a host object, or settings assigned after construction - and its bindings must see the current values.
+$f=The dependent composition receives the base setup instance via a constructor argument, and the instance is stored, so assign base state before you create the dependent composition.
+$f=Because the bindings call instance members, they read the value on every resolution instead of capturing it once.
+$f=Prefer `SetupContextKind.Members` ([members context](dependent-compositions-with-setup-context-members.md)) when nothing extra must be created, and plain `DependsOn(setupName)` when the base setup has no instance members - otherwise DIW007 reports the instance member that would be missing.
 $f=
 */
 

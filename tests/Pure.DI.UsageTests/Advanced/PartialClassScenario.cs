@@ -4,7 +4,14 @@ $p=3
 $d=Partial class
 $sa=A few partial classes
 $h=The composition class is generated as a partial class, so you can put the setup code in your own part of it and extend the generated code with hand-written members. Here the custom part adds a constructor accepting `storeName` and a `GenerateId()` method, and both are used directly inside factory bindings.
+$h=Members of your part are ordinary C# members of the composition, so factory bindings can read its fields, call its methods and take its constructor arguments.
+$f=This is where application-specific helpers belong: a clock, an id generator, a configured prefix - anything the graph needs but that should not become a registered service.
 $f=The partial class is also useful for specifying access modifiers to the generated class.
+$f=>[!TIP]
+$f=>Mark the setup method `[Conditional("DI")]` so the configuration call is left out of the compiled assembly; the generator still sees it, the runtime never calls it.
+$f=
+$f=A constructor argument of the composition has to be supplied at every creation site, so keep such state in `Arg<T>(...)` when it can change between instances.
+$f=Prefer `DependsOn` with an `Internal` setup ([dependent compositions](dependent-compositions.md)) when the extra bindings should be shared with other compositions instead of living in one class.
 $r=Shouldly
 */
 

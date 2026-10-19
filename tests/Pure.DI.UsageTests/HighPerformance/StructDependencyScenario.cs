@@ -7,6 +7,12 @@ $sa=Default Func with ReadOnlySpan
 $h=Small immutable value-type services are useful on hot paths where the dependency represents a policy, a formatter, or a calculator with no identity and no shared mutable state. Pure.DI can compose those values directly, so consumers receive a strongly typed value without runtime lookup.
 $h=This example uses a `readonly struct` shipping-price policy in a checkout quote calculator. The policy is cheap to copy, deterministic, and has no lifetime state, which makes it a good fit for value semantics.
 $f=Prefer this pattern for tiny stateless rules and calculations. Do not turn large mutable objects into structs just to avoid allocation; copying a large struct can be more expensive than allocating one object. Keep value-type services small, immutable, and obvious.
+$f=
+$f=A policy, a formatter, a converter or a validator with no dependencies and no identity is the case: it is injected as a value, copied by the consumer, and never tracked or disposed. That also removes it from every lifetime question, because there is nothing to share.
+$f=>[!NOTE]
+$f=>Lifetimes do not apply to value types in a useful way: a stored struct is copied into each consumer, so a struct that mutates internal state does not share that state. Mark such types `readonly` and return results instead of mutating.
+$f=
+$f=Prefer a `readonly struct` for a pure function of its inputs, and a class when the dependency has state, dependencies of its own, or is large. See [Struct dependency](struct-dependency.md) for the contract, and [Default Func with ReadOnlySpan](default-func-with-readonlyspan.md) when the dependency is called with stack-only data.
 $r=Shouldly
 */
 

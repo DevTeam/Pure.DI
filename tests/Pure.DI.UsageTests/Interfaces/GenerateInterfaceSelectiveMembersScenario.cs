@@ -2,11 +2,18 @@
 $v=true
 $p=6
 $d=Control generated interfaces by members
-$h=This example shows selective member inclusion and IgnoreInterface priority when generating interfaces.
+$h=This example shows selective member inclusion and IgnoreInterface priority when generating interfaces. A class can therefore expose a narrow reader contract and a separate writer contract over one implementation.
 $f=The example shows how to:
 $f=- Generate interface members selectively
 $f=- Keep class-level generation settings
 $f=- Exclude explicitly ignored members from all generated interfaces
+$f=
+$f=Interface segregation becomes cheap this way: the implementation stays one class, while consumers receive only the operations they need. It also documents intent member by member instead of forcing a split of the class.
+$f=A member can belong to several interfaces, and `[IgnoreInterface]` wins over any inclusion on the same member. Use it for members that must never leave the implementation, not for temporary exclusions.
+$f=>[!WARNING]
+$f=>Forgetting the attribute on a new public member means it is not part of any generated interface, and the consumer that needs it fails to compile. Add the attribute together with the member.
+$f=
+$f=Prefer this over several classes when the members share state; prefer [Generate several interfaces from one class](generate-several-interfaces-from-one-class.md) when whole groups are stable.
 $r=Shouldly
 */
 

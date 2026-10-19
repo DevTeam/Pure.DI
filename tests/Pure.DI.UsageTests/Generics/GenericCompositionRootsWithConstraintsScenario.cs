@@ -10,6 +10,13 @@ $h=>[!IMPORTANT]
 $h=>`Resolve` methods cannot be used to resolve generic composition roots.
 $f=>[!IMPORTANT]
 $f=>The method `Inject()` cannot be used outside of the binding setup.
+$f=
+$f=This is how a library exposes a typed entry point without generating a root per type: `GetProcessor<Stream, double>()` reads like a factory, while every dependency was resolved at compile time. A plugin host or an ETL pipeline picks the stream and the options type at the call site.
+$f=A tagged root that fixes one type argument gives you a narrow, friendly API on top of the same bindings, which keeps callers away from type arguments they do not care about.
+$f=>[!WARNING]
+$f=>The root's generic parameters come from its marker types, so a marker with a constraint (`TTS` for `struct`) becomes a constraint on the generated method. A call that violates it fails to compile, which is the intended feedback.
+$f=
+$f=Prefer a generic root when the caller knows the closed types; prefer separate non-generic roots when the set of types is fixed and the API should not expose generics at all. See [Generic async composition roots with constraints](generic-async-composition-roots-with-constraints.md) when construction must be asynchronous.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

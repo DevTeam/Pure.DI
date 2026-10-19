@@ -6,6 +6,13 @@ $sa=Generics
 $h=Serialization can be hidden behind injectable functions instead of scattering `JsonSerializer` calls across the code. A shared `JsonSerializerOptions` instance is bound as a singleton, and two generic bindings tagged `JSON` expose `Func<string, TT?>` and `Func<TT, string>` delegates that deserialize and serialize any type using those options. `SettingsService` then just injects these functions to load and save its `Settings`, keeping it decoupled from the serializer.
 $f=>[!TIP]
 $f=>Binding delegates with generic type markers like `TT` produces a serialize/deserialize function for every type where it is injected — no per-type bindings are needed.
+$f=
+$f=This is how application code stores settings, caches payloads or talks to a queue without depending on a particular serializer package. The options object is a singleton, so the serializer's metadata cache is built once and reused for every type.
+$f=The delegates are resolved per consumer, so the serializer never becomes a static and a test can replace one delegate without replacing a whole serialization stack.
+$f=>[!WARNING]
+$f=>A `JsonSerializerOptions` instance must not be modified after it has been used for serialization - the serializer caches metadata per instance. Configure it completely inside the binding, as here.
+$f=
+$f=Prefer injectable delegates over a static `JsonSerializer` call when the format may change or must be faked in tests. The same shape works for any library that needs configuration - compare [AutoMapper](automapper.md) for mapping and [Serilog](serilog.md) for logging.
 $r=Shouldly
 */
 

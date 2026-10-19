@@ -5,8 +5,14 @@ $d=Custom dispose strategy
 $sa=Tracking disposable instances per a composition root
 $sa=Custom dispose strategy for Owned<T>
 $h=The composition calls `Dispose()` on tracked singleton and scoped instances. Some types — most notably WCF clients that implement `ICommunicationObject` — require a specific shutdown sequence (try `Close()`, fall back to `Abort()` on a timeout or when the channel is faulted). Implement the partial `OnDispose` / `OnDisposeAsync` methods on the composition, perform the custom shutdown logic and return `true` to skip the default disposal call (or `false` to let the composition dispose the instance as usual).
+$f=Reach for it when the composition owns long-lived clients whose shutdown is more than `Dispose()`: message-broker or channel clients that must close gracefully and abort on failure, connection pools, native handles.
+$f=The hook runs once per tracked instance while the composition is disposed, in reverse creation order, and it answers for every disposable in the graph: switch on the concrete type, handle the types you know and return `false` for the rest.
+$f=Implement both `OnDispose` and `OnDisposeAsync` when the graph has both kinds of resources: the synchronous path calls `OnDispose`, the asynchronous path calls `OnDisposeAsync`.
+$f=An exception thrown by the hook is caught like one from `Dispose()`, passed to `OnDisposeException`, and cleanup continues with the remaining resources.
 $f=>[!IMPORTANT]
 $f=>`OnDispose` and `OnDisposeAsync` are partial methods. They are not invoked when not implemented, so there is zero overhead for compositions that do not need a custom disposal strategy.
+$f=
+$f=Prefer the per-owner hook ([`Owned<T>`](custom-dispose-strategy-for-ownedt.md)) when ownership is per operation rather than per composition.
 $r=Shouldly
 */
 

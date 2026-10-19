@@ -3,9 +3,15 @@ $v=true
 $p=1
 $d=Root with name template
 $sa=Composition roots
-$h=Instead of a fixed root name, `Root<T>()` accepts a name template where the `{type}` placeholder is replaced with the dependency's type name. This is handy when you declare many roots and want them to follow a consistent naming convention: the template `"My{type}"` here produces a root property named `MyApiClient`.
+$h=Instead of a fixed root name, `Root<T>()` accepts a name template where the `{type}` placeholder is replaced with the dependency's type name; `{TYPE}` gives the fully qualified name and `{tag}` the first root tag. This is handy when you declare many roots and want them to follow a consistent naming convention: the template `"My{type}"` here produces a root property named `MyApiClient`.
+$h=The result is made a valid C# identifier, so a generic type name is usable in a template.
+$f=Use it with `Roots<T>("Root{type}")` ([roots with filter](roots-with-filter.md)) when the same convention must cover many types, so adding a type does not mean adding a hand-written root.
+$f=The generated name is part of the public API: changing the template renames members for every consumer, so treat it like any other breaking change.
+$f=Two templates that resolve to the same name are reported as `DIE005`.
 $f=>[!NOTE]
 $f=>Name templates provide flexibility in root naming but should be used consistently to maintain code readability.
+$f=
+$f=Prefer an explicit name when the root is part of a contract consumed by other code, and a template for the mechanically generated set.
 $r=Shouldly
 */
 

@@ -8,9 +8,16 @@ $d=Scoped
 $sa=Scope
 $sa=Auto scoped
 $sa=Async disposable scope
-$h=The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope.
+$h=The `Scoped` lifetime ensures that there will be a single instance of the dependency for each scope. A scope is a composition instance created from a parent composition: singletons stay shared with the parent, scoped instances are created per scope and disposed together with it.
 $f=>[!NOTE]
 $f=>`Scoped` lifetime is essential for request-based or session-based scenarios where instances should be shared within a scope but isolated between scopes.
+$f=
+$f=This is the lifetime for a per-request unit of work in a server: one `DbContext`, one correlation context, one telemetry activity shared by every service that takes part in that request, and never by two requests at once.
+$f=The boundary is explicit - you create a child composition and dispose it when the request ends. Nothing recreates a scoped instance in the middle of a request, so a long-lived object must not hold a reference to a scoped one after the scope is disposed.
+$f=>[!WARNING]
+$f=>A singleton that depends on a scoped service captures the first scope's instance and then hands it to every later request. Keep singleton constructors free of scoped and transient dependencies that carry request state.
+$f=
+$f=Prefer `Transient` when the state does not have to be shared within the request, and `Singleton` when one instance must serve all scopes. For session-like graphs created on demand, see [Scope](scope.md) and [Scope setup method](scope-setup-method.md).
 $r=Shouldly
 */
 

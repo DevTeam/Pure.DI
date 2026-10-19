@@ -9,6 +9,13 @@ $h=`DefaultLifetime(...)` sets the lifetime applied to every subsequent binding 
 $h=Here `DefaultLifetime(Singleton)` makes both the gateway and the assistant singletons, so the two gateway references inside the assistant resolve to the same instance.
 $f=>[!NOTE]
 $f=>Default lifetime reduces configuration verbosity when a particular lifetime is predominant in your composition.
+$f=
+$f=Use it when a whole layer shares one lifetime - a generator or a compiler pipeline whose helpers are all per-block, or an application whose services are all transient - so the intent is stated once instead of on every line.
+$f=The setting applies to the bindings that follow it, so a misplaced `DefaultLifetime` silently changes every later binding in the chain. It also hides the lifetime from the binding itself, which makes reviewing a large composition harder.
+$f=>[!WARNING]
+$f=>Do not set a broad `DefaultLifetime(Singleton)` in an application composition. It turns every service that appears later into shared state, which is exactly the lifetime that needs an explicit decision per type.
+$f=
+$f=Prefer it for internal helper bindings, and explicit `.As(...)` or lifetime-specific methods for anything with identity or state. See [Default lifetime for a type](default-lifetime-for-a-type.md) to scope the rule to one contract.
 $r=Shouldly
 */
 

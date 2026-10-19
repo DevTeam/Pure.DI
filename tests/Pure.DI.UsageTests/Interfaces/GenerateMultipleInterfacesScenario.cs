@@ -2,11 +2,18 @@
 $v=true
 $p=5
 $d=Generate several interfaces from one class
-$h=This example shows how one implementation can generate multiple interfaces with shared and selective members.
+$h=This example shows how one implementation can generate multiple interfaces with shared and selective members. The class declares `[GenerateInterface]` twice, each member names the interface it belongs to, and members listed for both end up in both contracts.
 $f=The example shows how to:
 $f=- Generate multiple interfaces from one class
 $f=- Select members per interface using member attributes
 $f=- Reuse one member in several generated interfaces
+$f=
+$f=A gateway is the usual case: one class talks to a service, while consumers get a read contract and a write contract and the composition decides who receives which. The same instance can be injected for both if the lifetimes allow it.
+$f=Each interface is generated separately, so the members must be attributed explicitly - the class-level attribute names the interfaces but does not add members to them.
+$f=>[!NOTE]
+$f=>Both interfaces are bound to the same implementation, so two consumers that depend on different contracts still share one object when its lifetime is not transient. Give it `Singleton` or `Scoped` when the state must be shared.
+$f=
+$f=Prefer this when the split is by capability and the implementation is genuinely one unit. When the two sides have different dependencies or lifetimes, split the classes instead.
 $r=Shouldly
 */
 

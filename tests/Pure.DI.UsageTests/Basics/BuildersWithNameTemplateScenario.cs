@@ -4,7 +4,11 @@ $p=24
 $d=Builders with a name template
 $sa=Builders
 $h=Sometimes you need to build up an existing composition root and inject all of its dependencies, in which case the `Builder` method will be useful, as in the example below:
+$f=`Builders<T>` with a name template gives every implementation its own method name, so a host reads `composition.InstallWebcam(webcam)` instead of a generic `BuildUp` call.
+$f=The `{type}` placeholder is replaced with the implementation type name, so `"Install{type}"` produces `InstallWebcam` and `InstallThermostat`.
+$f=A method is also generated for `T` itself (`InstallIDevice`), which accepts an instance whose runtime type is not known at the call site.
 $f=The default builder method name is `BuildUp`. The first argument to this method will always be the instance to be built.
+$f=Prefer an explicit `Builder<T>` when only one type is built up; name templates are for hosts that treat every implementation alike.
 $r=Shouldly
 */
 

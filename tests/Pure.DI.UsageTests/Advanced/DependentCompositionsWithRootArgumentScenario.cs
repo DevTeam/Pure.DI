@@ -7,15 +7,11 @@ $h=This scenario shows how to pass an explicit setup context as a root argument.
 $h=When this occurs: you need external state from the base setup but cannot use a constructor (e.g., Unity MonoBehaviour).
 $h=What it solves: keeps the dependent composition safe while avoiding constructor arguments.
 $h=How it is solved in the example: uses DependsOn(..., SetupContextKind.RootArgument, name) and passes the base setup instance to the root method.
-$f=
-$f=What it shows:
-$f=- Passing setup context into a root method.
-$f=
-$f=Important points:
-$f=- The composition itself can still be created with a parameterless constructor.
-$f=
-$f=Useful when:
-$f=- The host (like Unity) creates the composition instance.
+$h=The context is a parameter of the generated root, so one composition instance can serve several calls with different base state.
+$f=Use this when the base state is only known at the moment of a resolution, for example when a long-lived host creates a short-lived scope per screen or per request.
+$f=The composition itself can still be created with a parameterless constructor, so a host that instantiates it by convention keeps working.
+$f=The parameter appears on every root of that composition that needs the base setup, which makes the call site explicit about what it passes.
+$f=Prefer `SetupContextKind.Argument` ([setup context](dependent-compositions-with-setup-context.md)) when the state is fixed for the composition lifetime, so callers of the roots do not have to thread the context through.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

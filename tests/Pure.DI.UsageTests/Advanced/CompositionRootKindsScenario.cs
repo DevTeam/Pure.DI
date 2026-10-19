@@ -6,8 +6,13 @@ $sa=Composition roots
 $sa=Static root
 $h=By default, a composition root is a public instance property, but the `kind` argument of `Root<T>(...)` lets you change that. Combine `RootKinds` flags to generate the root as a method instead of a property, adjust its visibility (`Public`, `Internal`, `Private`), or make it `Static` or `Partial`.
 $h=A private partial root is useful when you want to wrap the generated code in your own hand-written member, as the `PaymentService` property does here.
-$f=>[!NOTE]
-$f=>Composition roots can be customized with different kinds to control accessibility and lifetime, enabling flexible API design patterns.
+$h=The kinds combine with `|`, so one composition can expose the same contract through several roots of different shapes.
+$f=Use kinds at the boundary of a library or an application: keep the public API to `Public | Property` roots, mark roots that only tests or internals need as `Internal`, and hide a root behind `Private | Partial` when a hand-written member must add validation, caching or a friendlier signature - that is what the `PaymentService` property does here.
+$f=A root becomes a method on its own as soon as it declares root arguments or generic type arguments, so `Method` is needed only for a parameterless method.
+$f=A `Partial` root is declared by the generator only: you must supply the matching partial member, otherwise the composition does not compile.
+$f=A `Static` root cannot reach instance members of the composition and gets its own per-resolve lock instead of the instance-wide one, so keep static roots free of composition state.
+$f=Two roots that would produce the same member name are reported as `DIE005`; keep names and name templates distinct when you combine kinds.
+$f=Prefer the default `Public | Property` spelling unless a consumer needs otherwise, and add `Light` for cheap, frequently resolved roots ([Light roots](light-roots.md)).
 $r=Shouldly
 */
 

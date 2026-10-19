@@ -3,9 +3,14 @@ $v=true
 $p=16
 $d=Overriding the BCL binding
 $sa=Default BCL bindings
-$h=At any time, the default binding to the BCL type can be changed to your own:
+$h=At any time, the default binding to the BCL type can be changed to your own: a hand-written binding for a collection type replaces the one the generator creates from the individual bindings.
 $f=>[!NOTE]
 $f=>Overriding BCL bindings allows you to provide custom implementations for standard types, enabling specialized behavior for your application.
+$f=
+$f=A collection binding wins because it is more specific than the generated collection: the array here is built by the factory, so it decides the order, the length and even repeating one sender twice. That is how a pipeline gets an explicit sequence that individual bindings cannot express.
+$f=The override hides every individual binding of the same contract from that collection. If both are needed, keep the explicit array binding for the ordered pipeline and use a tagged collection parameter for the discovered set.
+$f=>[!TIP]
+$f=>Prefer overriding a BCL collection only when order or duplication must be fixed by hand; otherwise let the generator collect the bindings, so adding one cannot be forgotten.
 $r=Shouldly
 */
 

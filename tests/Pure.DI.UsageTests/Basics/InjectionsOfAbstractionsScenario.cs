@@ -8,15 +8,13 @@ $d=Injections of abstractions
 $sa=Auto-bindings
 $sa=Composition roots
 $h=This is the recommended model for production code: depend on abstractions and bind them to implementations in composition.
-$h=It keeps business code independent from infrastructure details and makes replacements predictable.
-$f=The binding chain maps abstractions to concrete types so the generator can build a fully concrete object graph. This keeps consumers decoupled and allows swapping implementations. A single implementation can satisfy multiple abstractions.
+$h=It keeps business code independent from infrastructure details, makes replacements predictable, and gives one place where a lifetime or a decorator is changed for the whole application.
+$f=The binding chain maps abstractions to concrete types so the generator can build a fully concrete object graph; a single implementation can satisfy several abstractions at once.
+$f=The compiler enforces the contract: binding an implementation that does not implement the abstraction is `DIE011`, and an abstraction that nothing satisfies is a graph error, not a runtime surprise.
 $f=>[!TIP]
-$f=>If a binding is missing, injection still works when the consumer requests a concrete type (not an abstraction).
+$f=>A consumer that requests a concrete type still resolves without a binding, so a leak of a concrete type into business code stays invisible - the abstractions above are what make the graph explicit.
 $f=
-$f=Limitations: explicit bindings add configuration lines, but the trade-off is clearer architecture and safer evolution.
-$f=Common pitfalls:
-$f=- Mixing abstraction-first and concrete-only styles in one module without clear boundaries.
-$f=- Forgetting to bind alternate implementations for tagged use cases.
+$f=Prefer this style over [auto-bindings](auto-bindings.md); add tags only when the same abstraction really has several implementations.
 $f=See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 */
 

@@ -10,17 +10,13 @@ $sa=Simplified binding
 $h=Pure.DI can create non-abstract types without explicit bindings, which makes quick prototypes and small demos concise.
 $h=![](auto-binding.gif)
 $h=The generator still validates the graph at compile time and produces regular C# object creation code.
-$f=Auto-bindings are convenient for utilities and sample code where dependency choices are obvious.
-$f=In larger applications they can hide architectural intent, because consumers start depending on concrete classes.
-$f=If you need interchangeable implementations and explicit lifetime control, prefer bindings of abstractions to implementations.
+$f=Auto-bindings fit tools, samples and small internal utilities where the concrete class is the design choice.
+$f=The catch is architectural: a consumer that asks for a class cannot be swapped for another implementation without editing that consumer, and its lifetime becomes transient unless you bind it explicitly.
 $f=>[!WARNING]
 $f=>This approach is not recommended if you follow the dependency inversion principle or need precise lifetime control.
 $f=
 $f=Prefer injecting abstractions (for example, interfaces) and map them to implementations as in most [other examples](injections-of-abstractions.md).
-$f=Limitations: auto-bindings scale poorly when several implementations, decorators, or strict lifetime rules are required.
-$f=Common pitfalls:
-$f=- Relying on concrete classes in domain code instead of abstractions.
-$f=- Losing explicit control over lifetime choices during refactoring.
+$f=Limitations: auto-bindings scale poorly when several implementations, decorators, or strict lifetime rules are required; `Hint(Hint.DisableAutoBinding, "On")` makes the omission an error instead of a silent default.
 $f=See also: [Injections of abstractions](injections-of-abstractions.md), [Simplified binding](simplified-binding.md).
 */
 

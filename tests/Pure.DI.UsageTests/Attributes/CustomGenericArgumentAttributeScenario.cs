@@ -6,6 +6,9 @@ $sa=Custom generic argument
 $h=Besides the built-in `TT` marker types, you can define your own generic type argument markers. Register a custom attribute with `GenericTypeArgumentAttribute<T>()`, apply it to a marker type like `TMy`, and use that marker in bindings: a single `Bind<IRepository<TMy>>().To<Repository<TMy>>()` then resolves `IRepository<T>` for any `T`, such as `IRepository<Post>` and `IRepository<Comment>`.
 $f=>[!NOTE]
 $f=>Custom generic argument attributes are useful when you need to pass metadata specific to generic type parameters during binding resolution.
+$f=
+$f=A custom marker pays off when the built-in `TT`, `TT1` and so on do not express intent: a marker named for a role, such as a key type, makes a binding read as a domain statement instead of a generic one. Both sides of the binding must use the same marker so the generator can substitute the requested type.
+$f=The marker is a compile-time placeholder and never appears in the generated code, which uses the concrete type arguments of each instantiation.
 $r=Shouldly
 */
 

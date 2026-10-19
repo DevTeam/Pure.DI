@@ -5,10 +5,13 @@ $d=Builders
 $sa=Builder
 $sa=Builders with a name template
 $h=Sometimes you need builders for all types derived from `T` that are known at compile time.
+$h=This is the build-up counterpart of `Roots<T>`: every implementation available in the compilation becomes a separate builder, which suits plugin-style hosts that receive entities from outside.
 $f=Important Notes:
 $f=- The default builder method name is `BuildUp`
 $f=- The first argument to the builder method is always the instance to be built
 $f=- `Builders<T>` also generates `TryBuildUp` for safe build-up when the runtime subtype may be unknown
+$f=- `filter: "*Bot"` narrows the set by type name and is matched at compile time, so an implementation with a non-matching name silently gets no builder
+$f=The strict builders throw `ArgumentException` for an unknown runtime subtype, while `TryBuildUp` returns `false`; use the `Try` form when only the runtime type is known.
 $r=Shouldly
 */
 

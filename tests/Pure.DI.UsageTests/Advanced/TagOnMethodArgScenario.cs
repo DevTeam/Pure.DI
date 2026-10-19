@@ -5,8 +5,13 @@ $d=Tag on a method argument
 $sa=Tag on injection site
 $sa=Tag on a constructor argument
 $h=`Tag.OnMethodArg<T>(methodName, argName)` creates a tag that targets a specific parameter of an injection method (one marked with the `[Dependency]` attribute) in type `T`, so a particular implementation can be supplied to just that argument without adding `[Tag(...)]` attributes to the consuming class. The wildcards `*` and `?` are supported.
+$f=This is the way to specialize one parameter of an initialization method, for example a different sensor for calibration than the sensor the station was constructed with.
+$f=The method must be marked `[Dependency]`, and the tag is matched by method name and parameter name, so renaming either one turns the rule into an unused injection site reported as `DIW004`.
+$f=Method injection runs after construction, so the state it sets is not available to the constructor and other dependencies created before the method call.
 $f=>[!WARNING]
 $f=>Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
+$f=
+$f=Prefer `[Tag("...")]` on the parameter when you own the method, and constructor injection when the value is needed during construction.
 $r=Shouldly
 */
 

@@ -4,8 +4,13 @@ $p=4
 $d=OnCannotResolve regular expression hint
 $sa=OnCannotResolve wildcard hint
 $h=Hints are used to fine-tune code generation. The `OnCannotResolve` hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
+$h=This is the escape hatch for values the container cannot know: connection strings, secrets and options that come from a configuration file at startup, resolved once per request type instead of being threaded through every signature.
 $h=In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnCannotResolveContractTypeNameRegularExpression = string`.
 $f=The `OnCannotResolveContractTypeNameRegularExpression` hint helps define the set of types that require manual dependency resolution. You can use it to specify a regular expression to filter the full type name.
+$f=The hook is a fallback of last resort: it is called only when no binding, argument or auto-binding satisfies the request, so an explicit `Bind` or `Arg` always wins and migrating away from the hook is incremental.
+$f=Whatever the method returns becomes the injected value, so it must handle every type the filter admits - returning `default` for a struct hides mistakes, and throwing there surfaces the failure at the first resolution with a clear message.
+$f=The regular expression is matched against the full type name, so anchoring it (`(.*Configuration|string)$`) keeps the hook from catching types you meant to bind.
+$f=Prefer composition or root arguments for values that really are inputs, and keep this hook for cross-cutting defaults; the graph becomes easier to read when the values are visible in the setup.
 $f=For more hints, see [this](../README.md#setup-hints) page.
 $r=Shouldly
 */

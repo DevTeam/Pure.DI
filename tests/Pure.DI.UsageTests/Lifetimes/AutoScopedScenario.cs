@@ -4,9 +4,16 @@ $p=7
 $d=Auto scoped
 $sa=Scope
 $sa=Scoped
-$h=You can use the following example to automatically create a session when creating instances of a particular type:
+$h=You can use the following example to automatically create a session when creating instances of a particular type. The factory binding receives the parent composition, creates a child composition from it and returns a root of that child, so every call produces a separate scope with its own scoped instances.
 $f=>[!IMPORTANT]
 $f=>The method `Inject()`cannot be used outside of the binding setup.
+$f=
+$f=This is how an application gets per-operation scope without teaching callers about compositions: they ask for a session, a job, a test case, and receive an object whose scoped services were created fresh for that call. A desktop UI or a worker loop that starts independent units of work is the usual place for it.
+$f=The factory runs on every call, so the child composition is created per unit of work. Nothing disposes it automatically: if the scoped services hold resources, the created root must be disposable and the caller must release it, otherwise the child composition and its scoped instances stay reachable.
+$f=>[!WARNING]
+$f=>Keep the factory small - create the scope and return a root from it. Work done inside the factory runs before the caller receives the object, and exceptions there leave a half-built scope behind.
+$f=
+$f=Prefer [Scope setup method](scope-setup-method.md) when the application already has a place that starts and ends the boundary, and `Scoped` with an explicit scope when the boundary must be shared by several objects.
 $r=Shouldly
 */
 

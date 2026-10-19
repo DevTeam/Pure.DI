@@ -8,6 +8,13 @@ $h=When scoped services hold resources that need asynchronous cleanup — networ
 $h=A scope is a class derived from the composition (here `Session`): each session gets its own `Scoped` instances, and disposing the session asynchronously disposes everything created within it.
 $f=>[!NOTE]
 $f=>Async disposable scope is essential for scenarios requiring proper async cleanup of scoped resources.
+$f=
+$f=A per-request session that holds a network stream, a database session or an open file is exactly this case: the scope ends when the request ends, and the release must await the network.
+$f=Each session is a child composition, so scoped instances are unique per session and singletons stay shared with the parent. Disposing a session releases only what that session created.
+$f=>[!WARNING]
+$f=>A session that is dropped without `DisposeAsync` keeps its scoped resources alive until the GC runs finalizers. In a request pipeline, tie the release to the same place that ends the request, not to a background cleanup.
+$f=
+$f=Prefer `await using` inside an `async` method so the dispose happens on every exit path, including exceptions. When the scoped resources are synchronous, the plain [Scope](scope.md) variant avoids the extra state machine.
 $r=Shouldly
 */
 

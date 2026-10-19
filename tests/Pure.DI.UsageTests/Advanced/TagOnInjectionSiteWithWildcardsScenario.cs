@@ -4,8 +4,13 @@ $p=16
 $d=Tag on injection site with wildcards
 $sa=Tag on injection site
 $h=`Tag.On("...")` accepts injection-site paths of the form `Namespace.Type:memberOrArgName`, and those paths may contain the wildcards `*` (any characters) and `?` (a single character). This lets one binding cover several injection sites at once — for example, `"*SmartHomeSystem:zone?"` matches both the `zone1` and `zone2` constructor parameters.
+$f=This is how one rule covers a family of injection sites: every zone parameter of a system, every sensor argument of a group of controls, without repeating the binding.
+$f=`?` matches exactly one character and `*` matches any run of them, so `zone?` covers `zone1` and `zone2` but not `zone10`; use `zone*` when the suffix can be longer.
+$f=A broad pattern can match more than you intended, and the generator will not warn about extra matches; check the generated code or the class diagram after widening a wildcard.
 $f=>[!WARNING]
 $f=>Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
+$f=
+$f=Prefer separate named tags or a shared enum when the sites belong to different responsibilities, because a wildcard hides which class actually needed the rule.
 $r=Shouldly
 */
 

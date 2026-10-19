@@ -15,7 +15,14 @@ $h=            .Root<IMyService>("MyService", "Some tag", RootKinds.Exported);
 $h=}
 $h=```
 $h=Use this when a library exposes ready-made composition roots that must be reused in another composition.
+$f=>[!WARNING]
+$f=>A tag on an exported root becomes the tag of the injected binding, so the consuming side must request the same tag to receive it instead of its own default binding.
+$f=>[!IMPORTANT]
+$f=>At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
+$f=
+$f=Reach for it when a library exports more than one implementation of the same contract: the tag is what keeps the exported registrations apart on the consuming side.
 $f=Limitations: Exported roots create an integration contract between assemblies; tag names and root contracts should be versioned carefully.
+$f=Keep tags as constants shared by both assemblies, because a renamed string tag turns the import into a silent fallback to another binding.
 $f=See also: [Tags](tags.md), [Exported roots](exported-roots.md).
 */
 

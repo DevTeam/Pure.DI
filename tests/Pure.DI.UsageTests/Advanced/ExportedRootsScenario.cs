@@ -15,8 +15,15 @@ $h=            .Bind().To<MyService>()
 $h=            .Root<IMyService>("MyService", kind: RootKinds.Exported);
 $h=}
 $h=```
+$f=>[!WARNING]
+$f=>Only roots marked `RootKinds.Exported` are offered to other assemblies, and only the type of such a root becomes bindable there; make the exported member's type the contract you are willing to support.
 $f=>[!IMPORTANT]
 $f=>At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
+$f=
+$f=In a real project this is how a library ships a ready-made graph: the library composes its own internals, exports the few contracts that make sense outside, and the application binds the library composition type once instead of re-declaring its bindings.
+$f=The application still owns the liftetime of the imported graph: here the library composition is bound as a `Singleton`, so one instance backs every root that uses it.
+$f=The exported root keeps its own name and tag, so an import never collides with a local root of the same contract.
+$f=Prefer `.DependsOn("Namespace.Composition")` ([dependent compositions](dependent-compositions.md)) inside one project, and exported roots only across an assembly boundary.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

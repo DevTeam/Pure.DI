@@ -3,16 +3,12 @@ $v=true
 $p=18
 $d=Default values
 $sa=Required properties or fields
-$h=This example shows how to use default values in dependency injection when explicit injection is not possible.
-$f=The key points are:
-$f=- Default constructor arguments can be used for simple values
-$f=- The DI will use these defaults if no explicit bindings are provided
-$f=
-$f=This example shows how to handle default values in a dependency injection scenario:
-$f=- **Constructor Default Argument**: The `SecuritySystem` class has a constructor with a default value for the name parameter. If no value is provided, "Home Guard" will be used.
-$f=- **Required Property with Default**: The `Sensor` property is marked as required but has a default instantiation. This ensures that:
-$f=  - The property must be set
-$f=  - If no explicit injection occurs, a default value will be used
+$h=When an injection cannot be satisfied, Pure.DI falls back to the C# default the consumer declared: a constructor parameter default such as `systemName = "Home Guard"`, or a property initializer behind `required`.
+$h=This is how an optional dependency and a sensible default value coexist without a separate configuration flag.
+$f=The fallback applies only where the consumer declared a default; when no binding and no default exist, the graph fails at compile time (`DIE000`), so a default is not a way to ignore a missing binding.
+$f=An explicit binding always wins over the declared default, which makes the class usable both as a self-contained entity and as a composed service.
+$f=A `required` property with an initializer is assigned by the generated code when a binding exists; the initializer is what the language requires for construction without the member.
+$f=Prefer an explicit nullable dependency when absence is a real state, and defaults for configuration-like values such as a name or a timeout.
 $r=Shouldly
 */
 

@@ -4,7 +4,7 @@ $p=5
 $d=Array
 $sa=Enumerable
 $sa=Span and ReadOnlySpan
-$h=Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
+$h=Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected. It is the way to get "every handler of this contract" without registering a composite by hand.
 $f=In addition to arrays, other collection types are also supported, such as:
 $f=- System.Memory<T>
 $f=- System.ReadOnlyMemory<T>
@@ -30,6 +30,10 @@ $f=- System.Collections.Immutable.IImmutableQueue<T>
 $f=- System.Collections.Immutable.ImmutableQueue<T>
 $f=- System.Collections.Immutable.IImmutableStack<T>
 $f=And of course this list can easily be supplemented on its own.
+$f=The array contains every binding of `ISensor`, tagged or not, in the order the bindings are declared; here the untagged `TemperatureSensor` comes before the tagged `WindSensor`. An array is created eagerly, so all elements exist as soon as the consumer is created.
+$f=Adding a binding for the same contract changes the length of every injected array of that contract, which is why a test that asserts the count or the order is worth keeping. A consumer that must not see a particular implementation needs a separate contract or a tag on the collection parameter.
+$f=>[!TIP]
+$f=>Prefer `IEnumerable<T>` when the consumer may not need every element, and an array or `ImmutableArray<T>` when it reads them repeatedly.
 $r=Shouldly
 */
 

@@ -4,9 +4,16 @@ $p=12
 $d=Async disposable singleton
 $sa=Disposable singleton
 $sa=Async disposable scope
-$h=If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner:
+$h=If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner. The composition keeps both contracts: a synchronous `Dispose` still works, but it blocks on each asynchronous release.
 $f=>[!NOTE]
 $f=>Async disposable singleton ensures proper async cleanup of all singleton resources when the composition is disposed.
+$f=
+$f=Audit writers, message producers, flush-on-exit telemetry and connection pools are the usual owners of this contract: their release performs real I/O and must not block a shutdown thread.
+$f=>[!IMPORTANT]
+$f=>Use `await using` or `await DisposeAsync()`. Calling `Dispose()` only blocks: for an async-only resource the generated code waits on `DisposeAsync().GetAwaiter().GetResult()`, which inside a synchronization context can deadlock and on a shutdown thread turns every async release into a blocking call.
+$f=
+$f=Disposal order is reverse to creation and each failure is reported separately through the `OnDisposeException` or `OnDisposeAsyncException` partial method, so one broken resource does not prevent the others from being released. Override them to log, otherwise the failure is silent.
+$f=Prefer this whenever a singleton holds I/O; when the resource closes synchronously, [Disposable singleton](disposable-singleton.md) is enough and simpler.
 $r=Shouldly
 */
 
