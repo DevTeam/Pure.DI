@@ -1,6 +1,7 @@
 #### Generate an interface from a class
 
-This example shows how a concrete service can generate a matching interface and be consumed through Pure.DI.
+This example shows how a concrete service can generate a matching interface and be consumed through Pure.DI. Consumers depend on the generated contract while the class keeps its implementation, so the rest of the graph never sees the concrete type.
+Use it when a class is the only implementation and you still want the graph to depend on an abstraction - a seam for tests and for a later replacement, without writing the interface by hand.
 
 
 ```c#
@@ -66,6 +67,11 @@ The example shows how to:
 - Generate an interface from a class
 - Bind the generated contract in Pure.DI
 - Resolve a consumer that depends on the interface
+
+Declare the interface as `partial` and annotate the class with `[GenerateInterface]`: the generator fills the interface with the public members of the class and adds the interface to its base list. The binding `.Bind().To<EmailSender>()` then serves `IEmailSender` without an extra registration.
+The interface is regenerated from the class, so a renamed or removed public member changes the contract on the next build. That is the point - the contract cannot drift - but it also means the interface is a poor boundary for an assembly that others compile against.
+>[!NOTE]
+>The generated interface lives next to the class in the same assembly and namespace unless you move it. Prefer [Customize the generated interface](customize-the-generated-interface.md) when the contract must sit in a separate namespace.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -101,6 +101,10 @@ dotnet run
 >[!NOTE]
 >Func with arguments provides flexibility for scenarios where you need to pass runtime parameters during instance creation.
 
+Arguments are matched by type, not by position, so `Func<int, string, IPerson>` fills `int id` and `string name` wherever they are declared; the static `IClock` still comes from the graph. Keep the delegate signature aligned with the types the constructor needs.
+Two constructor parameters of the same type cannot be distinguished by arguments, because both would receive the same value. Introduce a distinct type, a tag or a named argument when that happens.
+The factory captures the composition, so it must not outlive it; a factory stored in a static field keeps the whole graph alive. Pass values that are stable for the lifetime of the created object rather than adding a parameter for every value you can resolve.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

@@ -1,6 +1,7 @@
 #### Build up of an existing object
 
 This example shows the Build-Up pattern in dependency injection, where an existing object is injected with necessary dependencies through its properties, methods, or fields.
+Use it when the object is created by code you do not control and constructor injection is therefore impossible.
 
 
 ```c#
@@ -80,9 +81,11 @@ dotnet run
 
 </details>
 
-Key Concepts:
-**Build-Up** - injecting dependencies into an already created object
-**Dependency Attribute** - marker for identifying injectable members
+**Build-Up** - injecting dependencies into an already created object; **Dependency Attribute** - marker for identifying injectable members.
+`ctx.BuildUp(instance)` inside a factory is the inline form: it fills the members of an object you just created, then you return it as the binding result.
+Injection follows the ordinal of `[Dependency(ordinal: n)]`; members without the attribute are ignored, so a framework can keep its own state.
+Nothing is disposed by the composition here: the instance was created by your factory, and its lifetime follows the binding lifetime you chose.
+Prefer it for third-party or framework types; for your own services, a constructor that takes the dependencies is clearer and testable.
 
 <details>
 <summary>The following partial class will be generated</summary>

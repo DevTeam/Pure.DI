@@ -116,6 +116,13 @@ dotnet run
 >[!NOTE]
 >Call `BuildUp` in `Awake()` so that dependencies are ready before the first `Update()` runs.
 
+This is the minimum wiring a Unity project needs: one `Scope` component that owns the composition, `Builders<MonoBehaviour>()` to reach every component, and `BuildUp(this)` in each component's `Awake`. ScriptableObject assets such as the clock config are bound as ordinary dependencies.
+The composition lives on a component, so it lives exactly as long as the object it is attached to, and `OnDestroy` is the place to dispose it. A component that is instantiated later must build itself up with the same `Scope`, not with a new one.
+>[!WARNING]
+>`BuildUp` only fills members marked with `[Dependency]`; it cannot run the constructor or fix a member that has no binding. A missing binding leaves a null field, and the first `Update` throws far from the cause.
+
+Prefer this for a single scene or a simple game; add scene-level boundaries with [Unity scene scopes](unity-scene-scopes.md) and runtime instancing with [Unity with prefabs](unity-with-prefabs.md).
+
 <details>
 <summary>The following partial class will be generated</summary>
 

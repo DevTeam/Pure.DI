@@ -1,7 +1,7 @@
 #### Roots with filter
 
 `Roots<T>(name, filter)` creates a composition root for every implementation of `T` whose type name matches a wildcard filter, with `{type}` in the name template replaced by each type's name.
-Filtering matters when some implementations should not be exposed: here `filter: "*Email*"` picks up `EmailService` but skips `SmsService`, whose `string apiKey` dependency has no binding and therefore cannot be resolved.
+Filtering is how a plugin host exposes only the implementations it can actually build: here `filter: "*Email*"` picks up `EmailService` and skips `SmsService`, whose `string apiKey` dependency has no binding and therefore cannot be resolved.
 
 
 ```c#
@@ -55,8 +55,10 @@ dotnet run
 
 </details>
 
->[!NOTE]
->Filtering roots provides fine-grained control over which implementations are exposed, useful for conditional feature activation.
+Without a filter, an implementation that the graph cannot satisfy fails the compilation; the filter is therefore a statement about which implementations are in scope, not a cosmetic option.
+The filter is a case-sensitive wildcard over the type name and is evaluated at compile time; a filter that matches nothing is reported as `DIE016`.
+Every generated root is an ordinary property or method, so name the template with a recognizable prefix (`My{type}`) to keep generated members distinct from hand-written ones.
+Prefer `Roots<T>` when implementations are discovered from the assembly; use explicit `Root<T>` calls when the set is small and stable.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -1,6 +1,6 @@
 #### Control generated interfaces by members
 
-This example shows selective member inclusion and IgnoreInterface priority when generating interfaces.
+This example shows selective member inclusion and IgnoreInterface priority when generating interfaces. A class can therefore expose a narrow reader contract and a separate writer contract over one implementation.
 
 
 ```c#
@@ -75,6 +75,13 @@ The example shows how to:
 - Generate interface members selectively
 - Keep class-level generation settings
 - Exclude explicitly ignored members from all generated interfaces
+
+Interface segregation becomes cheap this way: the implementation stays one class, while consumers receive only the operations they need. It also documents intent member by member instead of forcing a split of the class.
+A member can belong to several interfaces, and `[IgnoreInterface]` wins over any inclusion on the same member. Use it for members that must never leave the implementation, not for temporary exclusions.
+>[!WARNING]
+>Forgetting the attribute on a new public member means it is not part of any generated interface, and the consumer that needs it fails to compile. Add the attribute together with the member.
+
+Prefer this over several classes when the members share state; prefer [Generate several interfaces from one class](generate-several-interfaces-from-one-class.md) when whole groups are stable.
 
 <details>
 <summary>The following partial class will be generated</summary>

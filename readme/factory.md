@@ -1,6 +1,6 @@
 #### Factory
 
-Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use — like the `Connect()` call here that opens a database connection.
+Constructor injection covers most cases, but sometimes an instance needs extra work before it is ready to use - like the `Connect()` call here that opens a database connection.
 A factory binding `To<T>(ctx => ...)` puts that creation logic under your control: call `ctx.Inject(out var dependency)` to have the container provide dependencies, run any setup code, then return the finished instance.
 
 
@@ -76,17 +76,12 @@ dotnet run
 
 </details>
 
-There are scenarios where manual control over the creation process is required, such as
-- When additional initialization logic is needed
-- When complex construction steps are required
-- When specific object states need to be set during creation
-
+Fewer surprises come from keeping a factory to what a constructor cannot express: connection setup, registering a callback, setting a property that has no constructor parameter.
+The factory runs every time the binding is resolved, so a transient factory means a connection opened per call; give it a lifetime (`As(Lifetime.Singleton)`) when the setup is expensive and meant to happen once.
 >[!IMPORTANT]
 >The method `Inject()` cannot be used outside of the binding setup.
-Limitations: factory bindings introduce custom construction logic that must be maintained and tested.
-Common pitfalls:
-- Moving business decisions into DI factory code.
-- Overusing `Inject()` where normal constructor binding is enough.
+`ctx.Inject` is synchronous only: async initialization is not supported in a factory (`DIE020`), so move it behind an explicit async method on the service.
+Prefer a constructor or a [simplified factory](simplified-factory.md) when the dependencies are all it needs; a factory that only calls `ctx.Inject` for each parameter duplicates a constructor by hand.
 See also: [Simplified factory](simplified-factory.md), [Injection on demand](injection-on-demand.md).
 
 <details>

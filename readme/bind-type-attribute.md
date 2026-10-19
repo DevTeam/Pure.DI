@@ -1,6 +1,6 @@
 #### Bind type attribute
 
-Shows how the `Type` attribute can declare a contract directly on an implementation type.
+Shows how the `Type` attribute can declare a contract directly on an implementation type. It is the attribute counterpart of `.Bind<IContract>().To<T>()`, and the implementation names the abstraction it serves.
 
 
 ```c#
@@ -52,6 +52,11 @@ dotnet run
 
 >[!NOTE]
 >When a registered type attribute is applied to a class or struct, Pure.DI treats it as binding metadata for that implementation.
+
+`Type` without a lifetime leaves the binding transient, which is the right default for a stateless writer that is created per root. Add `Lifetime(...)` or `Bind(...)` in the same group when the implementation must be shared.
+Only the declared contract is registered: the graph can inject `IMessageWriter` but not the concrete `ConsoleMessageWriter` unless another binding exposes it. That keeps the graph surface equal to the abstractions the application really consumes.
+>[!TIP]
+>Reach for `Type` when an implementation assembly should own its contract, and keep the setup for choices that one application makes differently.
 
 <details>
 <summary>The following partial class will be generated</summary>

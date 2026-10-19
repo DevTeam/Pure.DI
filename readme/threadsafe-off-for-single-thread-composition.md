@@ -74,6 +74,12 @@ dotnet run
 
 Use this only when the composition instance is not shared across threads. If delegates, factories, or roots can be invoked concurrently, keep thread safety enabled or synchronize the critical factory section yourself with `ctx.Lock`.
 
+The legitimate cases are narrow and easy to check by eye: a command-line run, a single-threaded setup phase before workers start, a benchmark harness, and unit tests that create their own composition per test. The generated code drops the lock around cached singletons, which is measurable only when those singletons are resolved in a tight loop.
+>[!WARNING]
+>A composition created on one thread but reached from a `Task`, a timer callback or a UI dispatcher is not single-threaded. The failure mode is a torn or duplicated singleton that appears under load, not at startup.
+
+Prefer the default thread-safe generation for anything that lives longer than one call stack. If only one factory needs protection, keep `ThreadSafe` on and guard that factory with `ctx.Lock` - see [Factory with thread synchronization](factory-with-thread-synchronization.md) and [ThreadSafe hint](threadsafe-hint.md).
+
 <details>
 <summary>The following partial class will be generated</summary>
 

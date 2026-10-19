@@ -62,6 +62,13 @@ dotnet run
 
 Here an instance of the `TextWidget` type, labeled `"base"`, is injected in the decorator `BoxWidget`. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
 
+This is the default way to add behavior to a contract in a real project - caching, retries, validation, redaction, metrics - because the decorator is a plain class: it is resolved, tested and profiled like any other, and the composition shows the whole chain in one place.
+A chain grows by adding one more binding and one more tag, and the outermost untagged binding is what consumers receive. Keep the tags stable: renaming a tag silently binds the decorator to a different implementation.
+>[!NOTE]
+>The decorator inherits the lifetime of its binding, and it captures the inner instance. A singleton decorator around a transient inner instance freezes that single inner instance for the composition's whole life.
+
+Prefer a decorator whenever the behavior can be written as a normal implementation of the contract. See [Interception](interception.md) when the behavior must be applied to types you do not own or cannot wrap by hand.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

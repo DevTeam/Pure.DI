@@ -1,6 +1,7 @@
 #### Property injection
 
 To use dependency injection on a property, make sure the property is writable and simply add the _Ordinal_ attribute to that property, specifying the ordinal that will be used to determine the injection order:
+Property injection is usually for optional dependencies: the type works without the property, and the composition fills it when a binding exists.
 
 
 ```c#
@@ -64,10 +65,10 @@ dotnet run
 
 </details>
 
-The key points are:
-- The property must be writable
-- The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection
-- The DI automatically injects the dependency when resolving the object graph
+The property must have a setter and must not be static; an `init` setter is enough only while the composition creates the object itself, not when build-up runs later.
+The `Dependency` (or `Ordinal`) attribute is used to mark the property for injection, and the integer fixes the order among other injected members.
+A nullable property (`ILogger?`) documents that `null` is acceptable; a non-nullable one is resolved or the graph fails, so the nullability annotation decides what happens when no binding exists.
+Prefer constructor injection for required dependencies, and a `required` property when the type must be immutable after construction.
 
 <details>
 <summary>The following partial class will be generated</summary>

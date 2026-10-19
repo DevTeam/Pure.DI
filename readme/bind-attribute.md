@@ -1,6 +1,6 @@
 #### Bind attribute
 
-Shows how to declare a binding directly on an implementation type with the built-in `BindAttribute`.
+Shows how to declare a binding directly on an implementation type with the built-in `BindAttribute`. The implementation carries its contract, lifetime and tag, and the setup only lists composition roots, so adding a service does not mean editing the composition.
 
 
 ```c#
@@ -60,6 +60,11 @@ dotnet run
 
 >[!NOTE]
 >`BindAttribute` is registered by default and can provide the contract type, lifetime, and tag. Attributes inside the same square-bracket group form one binding; separate `Bind` groups create separate bindings.
+
+The lifetime in the attribute is the same metadata as `.As(Singleton)`, so a reader of `ConsoleMessageWriter` sees that the whole composition shares one instance, and the root assertion in this scenario confirms it. Attribute metadata is read by the generator at compile time and costs nothing at run time.
+Because the contract is given as `typeof(IMessageWriter)`, a mistyped contract is a compilation error, and a contract that no binding satisfies is reported while the code is compiled rather than when it runs.
+>[!TIP]
+>Prefer the setup API for bindings that only one application needs, and attribute bindings for implementations whose DI role is stable across every consumer.
 
 <details>
 <summary>The following partial class will be generated</summary>

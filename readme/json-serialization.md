@@ -113,6 +113,13 @@ dotnet run
 >[!TIP]
 >Binding delegates with generic type markers like `TT` produces a serialize/deserialize function for every type where it is injected — no per-type bindings are needed.
 
+This is how application code stores settings, caches payloads or talks to a queue without depending on a particular serializer package. The options object is a singleton, so the serializer's metadata cache is built once and reused for every type.
+The delegates are resolved per consumer, so the serializer never becomes a static and a test can replace one delegate without replacing a whole serialization stack.
+>[!WARNING]
+>A `JsonSerializerOptions` instance must not be modified after it has been used for serialization - the serializer caches metadata per instance. Configure it completely inside the binding, as here.
+
+Prefer injectable delegates over a static `JsonSerializer` call when the format may change or must be faked in tests. The same shape works for any library that needs configuration - compare [AutoMapper](automapper.md) for mapping and [Serilog](serilog.md) for logging.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

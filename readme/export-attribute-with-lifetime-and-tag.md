@@ -78,6 +78,9 @@ dotnet run
 >[!NOTE]
 >Specifying lifetime and tag in the Export attribute allows for fine-grained control over instance creation and binding resolution.
 
+Because the exported value is tagged, it does not compete with an untagged `IGpu` binding, and a consumer has to ask for it explicitly through `[Tag("HighPerformance")]`. That keeps an expensive or optional capability from becoming the default by accident.
+The tag on `Export` and the tag on the injection site must match exactly; a mismatch leaves the contract unresolved at compile time. With `Lifetime.Singleton` on the export, every consumer shares the one property value the adapter already holds.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

@@ -170,6 +170,13 @@ dotnet run
 >[!NOTE]
 >Call `BuildUp` right after `Object.Instantiate` so the component's dependencies are set before Unity starts calling its lifecycle methods such as `FixedUpdate()`.
 
+Spawned objects are the normal case in a real game: enemies, projectiles, UI popups and effects all come from prefabs at run time. Building them up with the scene's scope keeps them wired to the same session state as the objects that created them.
+The prefab reference comes from a `ScriptableObject` asset, so the composition supplies the prefab and the manager instantiates it, which keeps asset references out of the code that wires dependencies.
+>[!WARNING]
+>`Object.Instantiate` copies serialized fields from the prefab but runs no composition code. A prefab component that is never built up has unset `[Dependency]` members, and every spawned copy repeats the mistake.
+
+Prefer a factory that both instantiates and builds up when spawning happens in many places, so nobody can forget the second step. See [Unity Basics](unity-basics.md) for the wiring and [Builders](builders.md) for the generated methods.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

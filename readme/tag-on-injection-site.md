@@ -104,8 +104,13 @@ dotnet run
 
 </details>
 
+Reach for it when a type you do not own needs a specific implementation at one place - a repository per consumer, a client per feature - and adding an attribute is not an option.
+The path is built from the namespace, the type name and the member or argument name, so renaming any of them breaks the match silently; `DIW004` reports an injection site that never matched.
+A path without a namespace prefix relies on the wildcard, so prefer a fully qualified or wildcarded path that cannot match an unrelated type in another namespace.
 >[!WARNING]
 >Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
+
+Prefer `[Tag("...")]` when you own the consumed type: the compiler checks the tag next to the code, and a rename cannot detach it.
 
 <details>
 <summary>The following partial class will be generated</summary>

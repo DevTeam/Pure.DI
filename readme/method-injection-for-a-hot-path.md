@@ -77,6 +77,12 @@ dotnet run
 
 This is a good shape for parsers, routers, protocol decoders, validation pipelines, and other code that reads request data immediately. Keep the method side-effect small and do not store `Span<T>`/`ReadOnlySpan<T>` in the created object; Pure.DI reports diagnostics when stack-only values are routed to storage-like injection sites.
 
+The practical gain is that the per-call input never becomes a field, so the object needs no allocation per request and no cache unfriendly copy. Method injection also keeps the constructor free of values that are not available when the graph is built.
+>[!NOTE]
+>Injection methods run in `[Ordinal]` order, so give the input-consuming method a number that puts it after any method it depends on. A parameterless combination of order rules silently changes behavior when methods are added.
+
+Prefer a root argument with method injection for per-call stack-only data, and a `Func<TArg, TResult>` only when the consumer must create several instances. See [Root arguments](root-arguments.md) when the value is a normal object rather than a span.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

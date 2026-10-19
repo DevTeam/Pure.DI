@@ -1,7 +1,7 @@
 #### Tag Unique
 
 `Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be injected in compositions as some kind of enumeration.
-Use this to aggregate multiple implementations without exposing each one as a direct root.
+Each `Tag.Unique` binding gets its own tag, so any number of implementations of one contract can coexist and be collected into `IEnumerable<T>`, an array or an `ImmutableArray<T>`.
 
 
 ```c#
@@ -67,7 +67,11 @@ dotnet run
 
 </details>
 
+Use this to aggregate several implementations without exposing each one as a direct root.
+This is how satellites are registered in a real project - trace sources, loggers, processors, validators - and then injected as a collection into the one component that orchestrates them.
 Limitations: unique-tag bindings are intentionally hidden from direct resolve; document this to avoid confusion in integration code.
+A unique binding that nothing collects is reported as `DIW003`, which is a useful signal that an implementation was registered but never reached.
+Prefer [Enumerable](enumerable.md) or `Tag.Type` when the consumer must address one specific implementation, because a unique tag cannot be named by the consumer at all.
 See also: [Tags](tags.md), [Enumerable](enumerable.md).
 
 <details>

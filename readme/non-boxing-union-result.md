@@ -94,6 +94,13 @@ dotnet run
 
 >[!NOTE]
 >The `Value` property is mandatory for a custom union and necessarily boxes value-type cases when it is read. Use the strongly typed `TryGetValue` members on performance-sensitive paths; reserve `Value` for diagnostics and general-purpose inspection.
+
+A result that is either a cached value or a miss is the common case for this: the outcome is a small value type, and the losing branch must not cost an allocation. The composition binds one case and the consumer pattern-matches, so the happy path stays a struct in a register.
+Reading `HasValue` or `Value` on a union whose case was never set is valid but tells you nothing about which case was intended, so initialize every path that produces the result. The generator chooses the binding by the declared case type, which means renaming or retagging a case changes which binding is selected.
+>[!WARNING]
+>This scenario needs the preview language version and .NET 11 Preview 5 or later for the union runtime types. In a project that must build on a stable SDK, keep a small explicit result struct instead.
+
+Prefer a union when the set of outcomes is closed and small; prefer a nullable value or a plain struct when there is only one success shape. See [Union types](union-types.md) for the general case.
 This scenario requires the preview language version and .NET 11 Preview 5 or later, where the union runtime types are available.
 
 <details>

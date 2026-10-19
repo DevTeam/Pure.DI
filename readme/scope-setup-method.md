@@ -1,6 +1,7 @@
 #### Scope setup method
 
 The `ScopeMethodName` hint sets the name of a generated static method that binds a new composition instance to a parent scope. This example calls the generated `Composition.SetupScope(...)` method directly to create per-request scopes without defining a wrapper class: scoped instances are unique per scope and are disposed together with it, while singletons remain shared with the parent composition.
+It is the lowest-ceremony way to get a scope: the generated method takes the parent composition and the scope instance, links them, and returns the scope.
 
 
 ```c#
@@ -126,6 +127,11 @@ dotnet run
 ```
 
 </details>
+
+This is what a framework integration looks like in practice: the host owns the request boundary and creates a scope per unit of work, while the composition only exposes the scoped bindings. The scope object itself stays disposable, so `using` around it is enough to release the scoped instances.
+The method is generated only when the hint is set, and its name is yours - keep it the same across compositions so the call site reads the same everywhere.
+>[!NOTE]
+>The lifetime rules are the same as for a hand-written scope: singletons are shared with the parent, scoped instances belong to the child, and transient instances are created on each access. Choose this over [Scope](scope.md) when no wrapper class is needed, and over [Auto scoped](auto-scoped.md) when the caller decides where the boundary starts.
 
 
 

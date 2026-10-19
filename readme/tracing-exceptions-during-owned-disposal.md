@@ -115,8 +115,13 @@ dotnet run
 
 </details>
 
+Use it when each unit of work owns its own resources - a message, a request, a transaction - and a failure to close one of them should be reported against that unit instead of at shutdown.
+A failing resource does not stop the owner from releasing the rest: after the hook returns, the event loop continues with the remaining resources of the same graph.
+The events are collected per accumulator, so the partial `Owned<T>` extension in this example reads only the events of its own graph; keep that projection to avoid mixing units of work.
 >[!IMPORTANT]
 >The hook belongs to the non-generic `Pure.DI.Owned` accumulator used internally by every `Owned<T>`, so its partial implementation must be declared in the `Pure.DI` namespace. The partial `Owned<T>` extension exposes only the events collected by its own accumulator.
+
+Prefer the composition-level hook ([tracing exceptions during composition disposal](tracing-exceptions-during-composition-disposal.md)) for resources that live as long as the application.
 
 <details>
 <summary>The following partial class will be generated</summary>

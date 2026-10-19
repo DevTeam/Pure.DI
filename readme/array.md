@@ -1,6 +1,6 @@
 #### Array
 
-Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
+Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected. It is the way to get "every handler of this contract" without registering a composite by hand.
 
 
 ```c#
@@ -93,6 +93,10 @@ In addition to arrays, other collection types are also supported, such as:
 - System.Collections.Immutable.ImmutableQueue<T>
 - System.Collections.Immutable.IImmutableStack<T>
 And of course this list can easily be supplemented on its own.
+The array contains every binding of `ISensor`, tagged or not, in the order the bindings are declared; here the untagged `TemperatureSensor` comes before the tagged `WindSensor`. An array is created eagerly, so all elements exist as soon as the consumer is created.
+Adding a binding for the same contract changes the length of every injected array of that contract, which is why a test that asserts the count or the order is worth keeping. A consumer that must not see a particular implementation needs a separate contract or a tag on the collection parameter.
+>[!TIP]
+>Prefer `IEnumerable<T>` when the consumer may not need every element, and an array or `ImmutableArray<T>` when it reads them repeatedly.
 
 <details>
 <summary>The following partial class will be generated</summary>

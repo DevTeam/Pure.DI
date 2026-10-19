@@ -84,6 +84,10 @@ dotnet run
 Important Notes:
 - Hint Overriding: The `ObjectResolveMethodName = GetService` hint overrides the default object `Resolve(Type type)` method name to implement `IServiceProvider` interface
 - Roots: Only roots can be resolved. Use `Root(...)` or `RootBind()` calls for registration
+A hand-written `IServiceProvider` is the smallest integration: no container is created, and `GetRequiredService` runs against the generated composition. The resolution by `Type` is a lookup in generated code, so an unregistered type is reported as a missing service at run time.
+Because resolution goes through roots, a type that is injected internally but not declared as a root is not reachable through `IServiceProvider` even though the graph uses it. Declare a root for every service that outside code may ask for.
+>[!TIP]
+>Renaming `Resolve` through hints means `Hint.Resolve = Off` cannot be used in the same composition; keep resolve methods enabled wherever a `ServiceProvider`-shaped API is exposed.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -97,6 +97,7 @@ dotnet run
 </details>
 
 Limitations: nullable annotations describe compile-time contracts. They are not runtime validation rules and do not replace explicit domain validation.
+A non-nullable reference root argument is checked in the generated root method and throws `ArgumentNullException` before the graph is built, while a nullable one is passed as `null` - the annotation alone decides which happens.
 Common pitfalls:
 - Using `T?` to hide a missing binding instead of modelling an optional value.
 - Forgetting tags for nullable primitive values when several values of the same type exist.

@@ -156,6 +156,13 @@ dotnet run
 >[!NOTE]
 >In a real Unity project the scene objects are created by Unity. The sample uses constructors only to simulate serialized references in a test.
 
+A loaded scene is the natural boundary for a game: the session state of the level is shared by every component in that scene and must not leak into the next level, while services such as the clock or the save system belong to the whole application.
+The scene scope is created with the generated `SetupScope` and disposed when the scene unloads, so scoped instances are released with it and singletons survive across scene changes. The application-level scope must outlive every scene scope it parents.
+>[!WARNING]
+>A component that keeps a reference to a scoped service after its scene is unloaded holds a disposed object. Use the scope for per-scene state and keep only singleton services on objects that cross scenes.
+
+Prefer this over a single global scope as soon as levels or menus are loaded repeatedly. See [Unity Basics](unity-basics.md) for the minimal wiring and [Scope](scope.md) for the underlying boundary.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

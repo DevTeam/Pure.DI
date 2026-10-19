@@ -1,6 +1,6 @@
 #### Build up of an existing generic object
 
-In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object.
+In other words, injecting the necessary dependencies via methods, properties, or fields into an existing object. `ctx.BuildUp(context)` fills an instance created inside a factory binding, so an object whose constructor cannot express its dependencies still joins the graph.
 
 
 ```c#
@@ -90,6 +90,13 @@ dotnet run
 
 >[!NOTE]
 >Generic build-up allows you to inject dependencies into existing generic objects after their creation.
+
+Use it for generic types that a framework constructs - view models, request contexts, entities returned by an object mapper - while the dependencies they declare still come from the composition.
+The call runs inside the binding, so the effort is paid on every resolution of that binding, not once. Dependencies injected this way are not owned by the composition, which means an `IDisposable` member stays the caller's responsibility.
+>[!NOTE]
+>A `[Dependency]` member with no matching binding keeps its initial value instead of failing the build, so a missing injection shows up as a null or default value at run time.
+
+Prefer constructor injection for types the composition creates, and use build-up where the framework owns instantiation. See [Build up of an existing object](build-up-of-an-existing-object.md) for the non-generic case and [Generic builder](generic-builder.md) to expose build-up as a public method.
 
 <details>
 <summary>The following partial class will be generated</summary>

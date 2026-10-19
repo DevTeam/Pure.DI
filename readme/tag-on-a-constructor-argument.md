@@ -78,8 +78,13 @@ dotnet run
 
 </details>
 
+Reach for it when a type from another library, or a type you do not own, needs a different implementation for one of its dependencies - a file stream for the source and a network stream for the target in this example.
+The tag is matched against the constructor parameter name and the declaring type, so renaming the parameter or moving it to another type silently turns the binding into an unused one: `DIW004` reports that the injection site was never matched.
+Generic consumer types work the same way: `Tag.OnConstructorArg<StreamProcessor<TT>>("stream")` applies to every closed instantiation of the processor.
 >[!WARNING]
 >Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
+
+Prefer `[Tag("...")]` on the parameter when you own the type, because the compiler then checks the tag next to the code it affects.
 
 <details>
 <summary>The following partial class will be generated</summary>

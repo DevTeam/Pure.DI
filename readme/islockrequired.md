@@ -79,7 +79,10 @@ dotnet run
 
 </details>
 
+It answers the same question the generated code asks itself: with `Hint.ThreadSafe = On` a root that must create shared state takes the composition lock, with `Off` it does not, so a factory that follows `IsLockRequired` takes exactly the locks the composition would take.
+The value differs per node - here the transient `Service` is built under a lock while the `Singleton` variant is not - so do not cache it outside the factory call.
 Limitations: avoid adding business logic inside lock-aware factories; use it only for synchronization concerns.
+Prefer an unconditional `lock (ctx.Lock)` ([factory with thread synchronization](factory-with-thread-synchronization.md)) when the factory must be safe regardless of the hint, and `Hint.ThreadSafe = Off` ([ThreadSafe hint](threadsafe-hint.md)) for single-threaded compositions.
 See also: [ThreadSafe hint](threadsafe-hint.md), [Factory](factory.md).
 
 <details>

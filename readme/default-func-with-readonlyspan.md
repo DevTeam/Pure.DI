@@ -60,6 +60,8 @@ dotnet run
 </details>
 
 Use this default `Func` binding when the standard delegate shape is enough. Use a custom delegate factory with explicit `ctx.Override<T>(...)` only when you need a custom delegate type or additional factory logic.
+This is the form to reach for when a hot path receives text as a span and must build an object from it without allocating an intermediate `string`: the span lives only inside the delegate call, and `Parser.Initialize` copies it once into a field.
+Because the span never escapes the invocation, the generated code needs no shared override state and therefore no lock. That is what makes the default binding cheaper and safer than a hand-written factory.
 
 <details>
 <summary>The following partial class will be generated</summary>

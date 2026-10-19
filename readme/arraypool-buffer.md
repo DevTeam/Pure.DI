@@ -109,6 +109,10 @@ dotnet run
 
 This pattern is useful for serialization, compression, protocol framing, and batch export pipelines. Keep the owner lifetime short, clear sensitive buffers before returning them, and do not store the rented `Memory<T>` after the owner is disposed.
 The important DI detail is ownership: bind or auto-bind the owner as the dependency that is tracked and disposed, not the raw array. The pool itself is a built-in BCL dependency; the owner is the application-specific object that defines rent size, cleanup, and return rules. `Owned<T>` keeps that cleanup tied to one root call instead of the whole composition.
+>[!WARNING]
+>A rented array is never freed by the GC in a useful way: forgetting the return keeps the pool growing until every new rent allocates a fresh array. The owner must be disposed on every exit path, including exceptions, which is why `Owned<T>` or a `using` is the right boundary.
+
+Prefer pooling only where a profiler showed buffer churn. For small fixed sizes a `stackalloc`-backed span is cheaper, and for a single short-lived copy a plain `new byte[]` is simpler. See [Span and ReadOnlySpan](span-and-readonlyspan.md) for stack-only values and [Object pool](object-pool.md) for pooled objects that are not arrays.
 
 <details>
 <summary>The following partial class will be generated</summary>

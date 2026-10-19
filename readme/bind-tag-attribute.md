@@ -1,6 +1,6 @@
 #### Bind tag attribute
 
-Shows how tags can be declared directly on implementation types, including several tags for one implementation.
+Shows how tags can be declared directly on implementation types, including several tags for one implementation. The tag becomes part of the binding, so a consumer can request the implementation through `[Tag(...)]` without the setup naming it.
 
 
 ```c#
@@ -59,6 +59,11 @@ dotnet run
 
 >[!NOTE]
 >A tag attribute on an implementation type becomes a binding tag. Several tag attributes in the same square-bracket binding group are merged into one binding, so the same implementation can be resolved by any of those tags.
+
+Several tags on one group are aliases for one instance: resolving by any of them returns the same binding and, with a singleton lifetime, the same object. That is useful when a legacy tag and a new tag must both keep working during a migration.
+Tags declared in separate groups create separate bindings rather than aliases, which changes collection injection. Keep aliases in one group and split only for genuinely different registrations.
+>[!TIP]
+>Prefer an enum or a [smart tag](smart-tags.md) over string literals once more than a couple of tags exist.
 
 <details>
 <summary>The following partial class will be generated</summary>

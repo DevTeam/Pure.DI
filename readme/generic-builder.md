@@ -88,6 +88,13 @@ dotnet run
 >[!NOTE]
 >Generic builders enable flexible object initialization while maintaining type safety across different generic types.
 
+This is the shape used when an external framework owns creation - a UI view model instantiated by a page, a message materialized by a serializer, an entity loaded by an ORM - and only the dependencies can be supplied afterwards. The build-up method is generated for the exact closed types you pass to it.
+Member and method injection run in a fixed order defined by the builder, and a member with no matching binding stays at its default value instead of failing, so verify the properties you rely on.
+>[!NOTE]
+>`BuildUp` mutates the instance and returns it, which means the injected dependencies are not tracked by the composition: disposal stays with whoever owns the object.
+
+Prefer constructor injection for objects the composition creates itself, and builders only for objects born outside it. See [Generic builders](generic-builders.md) when several implementations need the same treatment.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

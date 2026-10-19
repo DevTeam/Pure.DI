@@ -1,6 +1,7 @@
 #### ToString hint
 
 Hints are used to fine-tune code generation. The `ToString` hint determines if the `ToString()` method should be generated. This method provides a text-based class diagram in the format [_mermaid_](https://mermaid.js.org/). To see this diagram, just call the `ToString` method and copy the text to [this site](https://mermaid.live/). An example class diagram can be seen below.
+It answers the question a new team member asks first - what does this composition actually build - without reading the setup or the generated code.
 In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// ToString = On`.
 
 
@@ -52,6 +53,9 @@ dotnet run
 </details>
 
 Developers who start using DI technology often complain that they stop seeing the structure of the application because it is difficult to understand how it is built. To make life easier, you can add the `ToString` hint by telling the generator to create a `ToString()` method.
+The diagram is produced from the same graph that generates the code, so it shows the bindings, tags and lifetimes that are really in effect rather than the ones you think you configured.
+The generated method adds code to the composition, so switch the hint on in compositions you study and off in ones you ship, unless the diagram is a deliberate diagnostic feature.
+Prefer this over reverse-engineering generated sources when reviewing a graph; for a written explanation of lifetimes and disposal, read the generated members themselves.
 For more hints, see [this](../README.md#setup-hints) page.
 
 <details>

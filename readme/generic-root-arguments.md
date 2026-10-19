@@ -69,6 +69,13 @@ dotnet run
 >[!NOTE]
 >Generic root arguments enable flexible type parameterization while maintaining compile-time type safety.
 
+Typical use is a presenter, a serializer or a handler whose payload type follows the root's own type argument: `GetPresenter<Invoice>(invoice)` builds a fully wired presenter for the object the caller already has.
+The argument becomes part of the generated method signature, so the composition stays free of the request data and no placeholder binding is needed. Resolution still happens at compile time.
+>[!WARNING]
+>Root arguments are consumed once per resolution and are not shared with dependencies created later. A dependency that needs the same value must receive it through the same argument, not through a captured closure.
+
+Prefer a root argument for per-call data that belongs to the root, and constructor parameters for fixed configuration. See [Complex generic root arguments](complex-generic-root-arguments.md) when the argument type is generic itself.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

@@ -1,7 +1,7 @@
 #### Smart tags
 
 Large object graphs often need many tags. String tags are error-prone and easy to mistype. Prefer `Enum` values as tags, and _Pure.DI_ helps make this safe.
-Smart tags improve refactoring safety by moving tag usage into compiler-checked symbols.
+Tag values that cannot be known at compile time become generated constants, so the tag set lives in one place and renaming a constant is a compile-time-safe operation.
 
 When the compiler cannot determine a tag value, _Pure.DI_ generates a constant inside `Pure.DI.Tag`. For the example below, the generated constants would look like this:
 
@@ -107,7 +107,9 @@ dotnet run
 
 >[!NOTE]
 >Smart tags provide compile-time safety for tag values, reducing runtime errors and improving code maintainability.
-Limitations: smart tags reduce typo risk, but tag policy still needs clear naming and ownership conventions.
+The constants are generated from the members you reference (`Email`, `Sms`), so adding a tag means referencing it once; a tag that is never bound or injected is simply an unused constant.
+Because the tags are `const string` with the member name as the value, `Sms` and `"Sms"` are the same tag at runtime - a mixed codebase still resolves, which also means a typo in a literal is still not caught.
+Prefer `Enum` tags when the set is owned by one assembly that both binds and consumes; prefer smart tags when the names are shared across assemblies or come from strings you cannot type-check.
 Common pitfalls:
 - Mixing string literals and smart tags in the same area without a migration plan.
 - Treating generated tag constants as domain concepts instead of DI composition details.

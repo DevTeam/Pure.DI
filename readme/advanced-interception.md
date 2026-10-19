@@ -151,7 +151,14 @@ dotnet run
 
 >[!NOTE]
 >Advanced interception provides high-performance proxy generation for scenarios where runtime interception overhead must be minimized.
+
 Use this only when decorators are not expressive enough or when an existing interception ecosystem is required. For simple cross-cutting behavior, decorators are easier to read and cheaper to reason about.
+
+The realistic case is an application that must log every call on a latency-sensitive path, or that already depends on an interceptor library and cannot express the behavior as a decorator. Compiling the proxy constructor once per service type removes the repeated reflection that dominates the naive hook.
+>[!WARNING]
+>The proxy still sits between caller and target on every call, so a method that runs in nanoseconds stays dominated by the interception. Measure before adopting this, and exclude value-type dependencies - the hook already returns them untouched because they cannot be proxied.
+
+The `OnDependencyInjection` hook runs for every injected dependency, so proxy the contracts you care about with `OnDependencyInjectionContractTypeNameWildcard` instead of wrapping the whole graph. Prefer [Decorator](decorator.md) when you can wrap at compile time, and [Interception](interception.md) when the plain proxy generator is fast enough.
 
 <details>
 <summary>The following partial class will be generated</summary>

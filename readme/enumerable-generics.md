@@ -1,6 +1,6 @@
 #### Enumerable generics
 
-Shows how generic middleware pipelines collect all matching implementations.
+Shows how generic middleware pipelines collect all matching implementations. The same declaration serves every closed type, so a pipeline for `int` and a pipeline for `string` are both assembled from the registered generic middleware.
 
 
 ```c#
@@ -88,6 +88,11 @@ dotnet run
 
 >[!NOTE]
 >Generic enumerable injections are useful for implementing middleware patterns where multiple handlers need to be invoked in sequence.
+
+The middleware order is the binding declaration order, so `LoggingMiddleware<T>` always runs before `MetricsMiddleware<T>` for any `T`. That is what makes a cross-cutting pipeline predictable without a runtime sort.
+Each closed pipeline is generated separately, so the graph covers only the type arguments that some root actually asks for; adding a root for a new type is enough. A middleware that registers itself with a tag joins the same collection as the untagged one.
+>[!TIP]
+>Prefer `IEnumerable<IMiddleware<T>>` when the pipeline may stop early, and materialize into an `ImmutableArray<T>` when the collection is read more than once.
 
 <details>
 <summary>The following partial class will be generated</summary>

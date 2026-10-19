@@ -95,9 +95,14 @@ dotnet run
 
 </details>
 
->[!NOTE]
->`PerBlock` provides a balance between `Transient` and `PerResolve`: fewer allocations inside a local block without turning the dependency into long-lived shared state.
+`PerBlock` provides a balance between `Transient` and `PerResolve`: fewer allocations inside a local block without turning the dependency into long-lived shared state.
 Use it for short-lived helpers, local adapters, and operation-level collaborators. Prefer `Scoped` or `PerResolve` when the reuse boundary must be visible at the application level.
+
+A typical real case is a generator, formatter or serializer that several parameters of the same object need once, while the next call must start from a clean state. The generated code creates the helper as a local variable in the root member, so nothing is stored on the composition and nothing has to be disposed.
+>[!NOTE]
+>The block is a generation detail, not an application boundary: two parameters share an instance only when the generator emits them into the same block. Do not build correctness on the exact number of blocks - use `Scoped` or `PerResolve` when the sharing rule must be predictable.
+
+Because the instance is a local, it is freed with the root call and cannot be captured by a `Func<T>` that escapes it. `DefaultLifetime(PerBlock)` is what most pipeline-style compositions use to avoid repeating `.As(PerBlock)` on every helper.
 
 <details>
 <summary>The following partial class will be generated</summary>

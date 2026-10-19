@@ -1,6 +1,7 @@
 #### Root binding
 
-In general, it is recommended to define one composition root for the entire application. But Sometimes you need to have multiple roots. To simplify the definition of composition roots, a "hybrid" API method `RootBind<T>(string rootName)` was added. It lets you define a binding and at the same time the root of the composition. You can it in order to reduce repetitions. The registration `composition.RootBind<IDependency>().To<Dependency>()` is an equivalent to `composition.Bind<IDependency>().To<Dependency>().Root<IDependency>()`.
+`RootBind<T>(rootName)` is a shorthand that declares a binding and a composition root in one call, for the case where a type is both the entry point and something other services depend on.
+It removes the repetition in `Bind<IDependency>().To<Dependency>().Root<IDependency>()`, which matters in compositions that expose several entry points.
 
 
 ```c#
@@ -58,8 +59,10 @@ dotnet run
 
 </details>
 
->[!NOTE]
->`RootBind` reduces boilerplate when you need both a binding and a root for the same type.
+The call returns a binding builder, so `.To<TImpl>()`, `.As(Lifetime.Singleton)` and tags are chained exactly as on `Bind<T>()`.
+The root name is a member name on the composition, so it must be a valid identifier and unique among roots (`DIE004`, `DIE005`).
+The root exposes the contract, not the implementation: keep `RootBind<IOrderService>` so the caller sees the abstraction and can be given a decorator later.
+Prefer the explicit `Bind(...).Root(...)` pair when the binding and the root deliberately differ in type or tag; `RootBind` is for the identical case only.
 
 <details>
 <summary>The following partial class will be generated</summary>

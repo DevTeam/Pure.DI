@@ -4,6 +4,7 @@ This scenario shows how to copy referenced members and implement custom property
 When this occurs: you need base setup properties with logic, but the dependent composition must remain parameterless.
 What it solves: keeps Unity-friendly composition while letting the user implement property logic.
 How it is solved in the example: uses DependsOn(..., SetupContextKind.Members) and implements partial get_ methods.
+The property itself is declared by the generator as a partial member, so the dependent composition decides what the getter does while the base setup keeps its own body.
 
 
 ```c#
@@ -115,23 +116,11 @@ dotnet run
 
 </details>
 
-What it shows:
-- Custom property logic via partial accessor methods.
-- Properties with simple field-backed accessors (no logic).
-
-Important points:
-- Accessor logic is not copied; the user provides partial implementations.
-- Simple property accessors (field-backed) can be used without partial methods.
-
-Example demonstrates:
- 1. BaseComposition provides connection string and max connections properties
- 2. ConnectionString has simple field-backed accessor (no logic)
- 3. MaxConnections has custom getter logic via partial method
- 4. Dependent Composition implements custom accessor logic for MaxConnections
-
-Useful when:
-- Properties include custom logic and are referenced by bindings in a dependent setup.
-- Some properties are simple field-backed while others have custom logic.
+BaseComposition provides a connection string with a plain field-backed accessor and a max connections property with logic; the dependent composition implements `get__MaxConnections` and leaves `ConnectionString` alone.
+This is the escape hatch for a host that builds the composition from a default constructor but where some configuration needs normalization - clamping, defaults, unit conversion - before it reaches a service.
+Accessor logic is not copied; the user provides partial implementations, and a property whose accessor is not overridden keeps the copied member.
+Simple property accessors (field-backed) can be used without partial methods.
+Prefer copying values through `SetupContextKind.Argument` when the accessor only needs to read another object: partial accessors are per composition and are easy to forget when the base property changes.
 
 
 <details>

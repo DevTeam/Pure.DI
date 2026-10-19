@@ -88,6 +88,8 @@ When manual `ctx.Override<T>(...)` or `ctx.Let<T>(...)` calls are used in factor
 The generated default `Func<ReadOnlySpan<char>, T>` binding does not use shared override state and does not require a manual `lock`; use it when the standard `Func` shape is enough.
 Generic interfaces are allowed when the implementation is heap-safe, for example `class Parser<T> : IParser<T>`. Pure.DI reports `DIE048` only when the implementation itself is stack-only, such as `ref struct Parser<T> : IParser<T>`.
 Pure.DI reports errors when `Span<T>`, `ReadOnlySpan<T>`, or custom `ref struct` values are injected into fields, properties, stored lifetimes, delegate captures, or stack-only interface conversions.
+For an allocation-sensitive core — parsing, serialization, numeric pipelines — this is the difference between one array per root and none at all, because a `Span<T>` of a value type is built on the stack at the point of use. The value reaches a method or constructor and is gone before the next allocation.
+Constructor injection of a stack-only value into a heap type is allowed only for compatibility and warns; method injection expresses the same intent without the warning. Prefer method injection for new code when the span is used only during initialization.
 
 <details>
 <summary>The following partial class will be generated</summary>

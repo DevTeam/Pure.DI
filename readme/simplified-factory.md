@@ -1,6 +1,7 @@
 #### Simplified factory
 
 This example shows a simplified manual factory. Each lambda parameter represents an injected dependency, and starting with C# 10 you can add `Tag(...)` to specify a tagged dependency.
+The lambda replaces the whole `ctx.Inject` boilerplate of a factory binding: dependencies arrive as parameters, so the body only holds the initialization logic.
 
 
 ```c#
@@ -86,8 +87,10 @@ dotnet run
 
 The example creates a service that depends on a logger initialized with a date-based file name.
 This style keeps the setup concise while still allowing explicit initialization logic.
-The `Tag` attribute enables named dependencies for more complex setups.
+The `Tag` attribute enables named dependencies for more complex setups; without it, the parameter takes the untagged binding, and an ambiguous pair of same-type parameters fails the compilation.
 Limitations: compact lambda factories stay readable only while initialization logic remains small.
+The lambda runs each time the binding is resolved, so the same initialization happens per instance under a transient lifetime; make the binding a singleton when the setup must happen once.
+Prefer it to `To(ctx => ...)` when the factory needs dependencies but no overrides, and prefer a plain constructor when there is nothing to initialize.
 Common pitfalls:
 - Putting heavy imperative setup code into short lambda factories.
 - Forgetting explicit tags when several same-type dependencies exist.

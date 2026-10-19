@@ -1,6 +1,6 @@
 #### Transient
 
-The `Transient` lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
+The `Transient` lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted. A transient service may still capture singleton dependencies: what is recreated is the service itself, not everything it uses.
 
 
 ```c#
@@ -82,6 +82,12 @@ The `Transient` lifetime is the safest and is used by default. Yes, its widespre
 
 >[!IMPORTANT]
 >The following very important rule, in my opinion, will help in the last point. Now, when a constructor is used to implement dependencies, it should not be loaded with other tasks. Accordingly, constructors should be free of all logic except for checking arguments and saving them for later use. Following this rule, even the largest compositions of objects will be built quickly.
+
+This is the lifetime a real project starts with. A service that holds its dependencies and no per-instance state is cheap to create and cannot be broken by sharing, so adding `Singleton` or `Scoped` later is a deliberate decision about identity, not a performance tweak.
+>[!WARNING]
+>A transient captured by a singleton stops being transient: the singleton keeps that single instance for its whole life. The constructors of singletons, not the `.As(...)` calls, decide the real lifetimes in a graph.
+
+The composition does not own transient instances, so an `IDisposable` part of the graph belongs to the caller of the root. When the composition should release it, declare the root as `Owned<T>` - see [Tracking disposable instances per a composition root](tracking-disposable-instances-per-a-composition-root.md).
 
 <details>
 <summary>The following partial class will be generated</summary>

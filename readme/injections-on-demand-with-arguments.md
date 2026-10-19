@@ -79,11 +79,14 @@ dotnet run
 
 </details>
 
+`Func<TArg, TService>` keeps the request typed: the caller passes `101`, and the generated delegate builds `Sensor` with its own dependencies from the composition.
+Each invocation follows the binding lifetime, so arguments are ignored by a singleton: a `Func<int, ISensor>` over a singleton returns the first instance whatever the id.
 Delayed dependency instantiation:
 - Injection of dependencies requiring runtime parameters
 - Creation of distinct instances with different configurations
 - Type-safe resolution of dependencies with constructor arguments
 Limitations: runtime arguments improve flexibility but can increase coupling between call sites and construction signatures.
+Use it when a value identifies the instance to create - an entity id, a partition key, a tenant - rather than when it configures the service once, which is a composition argument.
 Common pitfalls:
 - Passing infrastructure concerns as runtime arguments instead of normal dependencies.
 - Duplicating argument validation logic across consumers.

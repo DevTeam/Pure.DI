@@ -120,6 +120,9 @@ dotnet run
 >[!NOTE]
 >This enables scoped service resolution compatible with _Microsoft.Extensions.DependencyInjection's_ scoping model.
 
+The scope here is a new composition created from the current one, so `Scoped` bindings get one instance per scope while `Singleton` bindings keep pointing at the parent instance. That matches the request-per-scope model a web host expects, and it is why a `Scoped` disposable like `Session` is disposed with its scope.
+A scoped instance must not be captured by a longer-lived one, or it keeps living after its scope ends; Pure.DI reports lifetime mismatch at compile time where it can see it. Keep `Singleton` dependencies of a `Scoped` type limited to types that are themselves `Singleton` or `Scoped`.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

@@ -99,7 +99,10 @@ dotnet run
 
 </details>
 
+This is how a shared cache or a client can be partitioned per entry point without extra configuration: the resolve that creates it knows which contract it serves.
+A root that returns a tuple or a generic type reports that declared type, so prefer one root per contract when the partition must stay predictable.
 Limitations: root-type-specific rules can become hidden policy; keep this logic centralized and observable.
+Prefer `ctx.RootName` ([root name](root-name.md)) when two roots of the same contract must stay apart, because the type alone cannot tell them apart.
 See also: [Composition roots](composition-roots.md), [Root Name](root-name.md).
 
 <details>

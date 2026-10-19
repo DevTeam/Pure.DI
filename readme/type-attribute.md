@@ -1,6 +1,6 @@
 #### Type attribute
 
-Use the `Type` attribute to force a specific injected type, overriding the inferred type from the parameter or member.
+Use the `Type` attribute to force a specific injected type, overriding the inferred type from the parameter or member. It fits when one class takes two dependencies of the same interface and each parameter must receive a different implementation, which the composition cannot tell apart by type alone.
 
 
 ```c#
@@ -71,7 +71,11 @@ dotnet run
 
 </details>
 
+Because `[Type(typeof(...))]` names the implementation at the injection site, a type can say "this parameter needs a sender by e-mail, not just any sender" without adding a tag to the setup. Keep it for cases where the concrete type really is part of the contract, such as an adapter that must talk to one specific transport.
+The attribute overrides type inference, so the setup stops deciding which implementation arrives here: binding `IMessageSender` differently will not affect these parameters. It also couples the consumer to the implementation type, which erodes the abstraction if it spreads beyond a few intentional places.
 The `Type` attribute is part of the API, but you can define your own in any assembly or namespace.
+>[!TIP]
+>Prefer [tags](tag-attribute.md) when the choice should stay in the composition, and use `[Type]` when the consumer itself must pin one implementation.
 
 <details>
 <summary>The following partial class will be generated</summary>

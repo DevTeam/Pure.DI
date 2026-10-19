@@ -85,7 +85,10 @@ dotnet run
 
 </details>
 
+In a real project this turns the root you expose - a screen, a command, an endpoint - into the identity of its infrastructure: every logger, metric and trace created while resolving that root carries the same name.
+The name is that of the root member; a root declared with a name template reports the generated name, and an anonymous root reports the name of its type instead of the generated member name.
 Limitations: root-name-dependent behavior couples logic to API naming; avoid it in domain services.
+Prefer `ctx.ConsumerType` ([consumer types](consumer-types.md)) when the grouping must follow the injecting class, and `ctx.RootType` when it must follow the contract.
 See also: [Composition roots](composition-roots.md), [Root Type](root-type.md).
 
 <details>

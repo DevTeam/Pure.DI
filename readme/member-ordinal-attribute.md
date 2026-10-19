@@ -1,6 +1,6 @@
 #### Member ordinal attribute
 
-When applied to a field, property, method, or method parameter, the member participates in DI, ordered by ordinal (ascending).
+When applied to a field, property, method, or method parameter, the member participates in DI, ordered by ordinal (ascending). The ordinal makes the injection sequence explicit, so a member can rely on what an earlier one already assigned.
 
 
 ```c#
@@ -91,6 +91,9 @@ The `Ordinal` attribute is part of the API, but you can define your own in any a
 For an injection method, `Ordinal` can be placed on the method or its parameters. A method-level ordinal takes precedence; otherwise, the lowest parameter ordinal determines the method's execution order.
 Required fields and required or selected `init` properties are assigned in the object initializer before regular member injection. Within regular member injection, lower ordinals run first; equal ordinals are ordered by field, property, and method, then by declaration order within each kind.
 For equal ordinals and the same member kind, members declared on a derived type run before members inherited from its base types. Equal ordinals are valid and do not produce a diagnostic. Negative ordinal values are also supported.
+In this scenario the order is the behavior: `Id` is assigned first, then `FirstName` appends it, then the injection method `SetBirthday` appends the date. A method with an ordinal is called like any other injected member, which is how a type can receive a value through a method instead of a setter.
+>[!TIP]
+>Prefer constructor injection for required dependencies and use ordinals when a type must be built up after creation, as in [build-up of an existing object](build-up-of-an-existing-object.md).
 
 <details>
 <summary>The following partial class will be generated</summary>

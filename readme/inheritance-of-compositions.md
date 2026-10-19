@@ -74,8 +74,12 @@ dotnet run
 
 </details>
 
+This is the in-project counterpart of `DependsOn`: when two compositions share both a setup and hand-written members, a base class keeps them together without naming each other.
+The derived composition inherits the base class members as usual C# members, so protected state and helper methods of the base are usable in the derived setup.
 >[!NOTE]
 >Composition inheritance provides a way to share common bindings while still allowing each derived composition to add its own specific bindings.
+
+A binding of the base class that references instance members keeps working because the members are inherited; a base setup consumed through `DependsOn` from another class needs a setup context instead ([dependent compositions](dependent-compositions.md)).
 
 <details>
 <summary>The following partial class will be generated</summary>

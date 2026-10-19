@@ -78,6 +78,11 @@ dotnet run
 >[!NOTE]
 >IAsyncEnumerable<T> provides efficient lazy enumeration for scenarios where you need to process many instances without loading them all into memory at once.
 
+Each element is created when the consumer reaches it, so a health check that fails early can stop the loop and the later checks are never constructed. The order follows the binding declaration order, exactly as with `IEnumerable<T>`, and here the consumer collects the results into a list of its own.
+The sequence itself carries no cancellation token: pass the token to the consumer's method and stop the `await foreach`, as `GetChecksAsync` does by returning a materialized list. Do not keep the enumerable in a field and enumerate it from several threads.
+>[!TIP]
+>Prefer `IAsyncEnumerable<T>` only when element creation or consumption really awaits work; for plain handlers `IEnumerable<T>` is cheaper and easier to test.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

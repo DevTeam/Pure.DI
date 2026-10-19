@@ -78,6 +78,13 @@ dotnet run
 >[!NOTE]
 >Custom generic arguments provide flexibility for complex generic scenarios beyond standard marker types.
 
+A project with several generic subsystems benefits from markers that say what they mean: a repository marker, a key marker, an id marker. It also lets a marker satisfy a constraint the built-in ones cannot, such as `struct` or a specific interface.
+The registration is per composition: `.GenericTypeArgument<MyTT>()` must appear in every setup that uses `MyTT` in a binding, otherwise the type is treated as a regular type argument and resolution fails.
+>[!NOTE]
+>The marker itself is never instantiated. Declare it abstract or as an interface so nothing can accidentally depend on a real implementation of it.
+
+Prefer the built-in `TT`, `TT1` and `TTS` for one-off bindings, and a named marker when the same type parameter is used in several bindings or must carry a constraint. See [Custom generic argument attribute](custom-generic-argument-attribute.md) to declare the marker without registering it in the setup.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

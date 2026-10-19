@@ -64,6 +64,11 @@ dotnet run
 >[!IMPORTANT]
 >At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
 
+Use this when the graph the library exports needs values only the application can supply at start-up - a configuration object, an `args` array, a host - instead of being fully self-contained.
+The composition argument is created by the caller and passed to the constructor, so the imported roots read it exactly like a normal `.Arg<T>(...)` of the importing composition.
+An argument is available to every root of the composition, so bind it once here rather than adding a root argument to each imported member.
+Prefer [exported roots via root argument](exported-roots-via-root-arg.md) when the value is only known per call, and a plain `Bind().To(...)` when the value is a constant.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

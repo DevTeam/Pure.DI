@@ -1,6 +1,7 @@
 #### OnNewInstance regular expression hint
 
 Hints are used to fine-tune code generation. The `OnNewInstance` hint determines whether to generate partial `OnNewInstance` method.
+The hook fires when an instance is created, so it measures construction rather than injection: it is where startup timing, instance counting and "who built this object" logging belong.
 In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnNewInstance = On`.
 
 
@@ -81,6 +82,10 @@ dotnet run
 </details>
 
 The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
+With `(Singleton|PerBlock)` only those two lifetimes are reported here, which is exactly what you want when the question is "how often is my shared state created".
+The value is passed by `ref`, so the hook may replace the instance before it is stored or injected - and it runs before disposal ownership is transferred to the composition.
+A singleton is created once per composition, so two resolutions of `OrderProcessor` report one `GlobalCache` and two processors: the count itself is the documentation of the lifetimes.
+Prefer this hook for measurements and nothing else in release builds; the filter keeps the instrumentation off the hot transient path where it would distort what you measure.
 For more hints, see [this](../README.md#setup-hints) page.
 
 <details>

@@ -117,6 +117,12 @@ This shape is useful for socket protocols, telemetry ingestion, binary file head
 Unlike regular `Span<T>` collection injection, this path does not build a collection from element bindings. Pure.DI detects an implicit span conversion from an existing root argument and reuses that value. Ordinary small value-type span collections continue to use the generator's `stackalloc` optimization.
 The conversion matrix follows the [official C# 14 first-class Span types specification](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-14.0/first-class-span-types).
 
+This is the shape of a socket or broker consumer that already owns the buffer: framing, header validation and checksum computation all work over the received array, and only the decoded fields are kept. The composition contributes the registry and the handler, not the payload.
+>[!WARNING]
+>The handler must finish reading the span before it returns. Anything that stores the span, or returns a `Memory<byte>` view of it, produces an object that outlives the frame it points at - usually with a wrong result much later rather than an error at the call site.
+
+Prefer this over copying into a new array when the caller can keep the buffer alive for the duration of the call. When the parsing steps are many and shared, move them into a testable dependency; see [Method injection for a hot path](method-injection-for-a-hot-path.md).
+
 <details>
 <summary>The following partial class will be generated</summary>
 

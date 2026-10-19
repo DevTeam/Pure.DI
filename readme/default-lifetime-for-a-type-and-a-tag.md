@@ -1,6 +1,7 @@
 #### Default lifetime for a type and a tag
 
 For example, if a certain lifetime is used more often than others, you can make it the default lifetime for a certain type:
+`DefaultLifetime<T>(lifetime, tag)` narrows the rule further: only registrations of `T` with that tag inherit it, so a shared live source and a per-session buffered source can be bound to the same contract and still get different lifetimes.
 
 
 ```c#
@@ -104,6 +105,11 @@ dotnet run
 
 >[!NOTE]
 >Default lifetime configuration reduces boilerplate when the same lifetime is consistently used for specific types.
+
+This is the form to use when one contract has several implementations with different intended lifetimes - a live device that must be shared and a buffered source that belongs to one session. The tag keeps the two rules apart, and neither binding has to repeat `.As(...)`.
+The tag must match exactly the tag on the binding and on the injection site, including enum tags and `Tag.Type`. A typo produces a separate binding with the default lifetime rather than an error, so check the generated composition when a shared instance turns out to be transient.
+>[!NOTE]
+>Prefer this over the untagged [Default lifetime for a type](default-lifetime-for-a-type.md) as soon as one contract is bound more than once.
 
 <details>
 <summary>The following partial class will be generated</summary>

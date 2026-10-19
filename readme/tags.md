@@ -1,7 +1,7 @@
 #### Tags
 
-Tags let you control dependency selection when multiple implementations exist:
-This is practical for scenarios like public/internal API clients, multiple payment providers, or environment-specific integrations.
+Tags let you control dependency selection when multiple implementations exist: the consumer asks for `IApiClient` with a tag and gets exactly the binding declared for that tag.
+This is practical for public/internal API clients, multiple payment providers, or environment-specific integrations.
 
 
 ```c#
@@ -83,6 +83,8 @@ dotnet run
 
 </details>
 
+The tag is part of the binding identity, so a binding without a tag and one with a tag are two different bindings that never override each other.
+The `default` tag is what an untagged consumer receives; here `Bind<IApiClient>("Public", default)` makes the public client the default one, so adding a tagged binding does not change existing behavior.
 The example shows how to:
 - Define multiple bindings for the same interface
 - Use tags to differentiate between implementations
@@ -91,6 +93,7 @@ The example shows how to:
 
 The tag can be a constant, a type, a [smart tag](smart-tags.md), or a value of an `Enum` type. The _default_ and _null_ tags are also supported.
 Limitations: extensive tag usage can become hard to navigate if naming conventions are inconsistent.
+Prefer `Enum` values or smart tags to bare string literals, because a mistyped literal quietly creates a new binding that nothing requests.
 Common pitfalls:
 - Using many ad-hoc string tags without central conventions.
 - Forgetting to define a `default` tag path for untagged consumers.

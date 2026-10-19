@@ -64,6 +64,10 @@ dotnet run
 >[!NOTE]
 >Async roots are useful when you need to perform asynchronous initialization or when your services require async creation.
 
+The root is a method returning `Task<T>`, so it is called like any other async API: `await composition.GetBackupServiceAsync(token)`.
+The token is a normal root argument here, which is why such a composition keeps `Resolve = Off`: a dynamic resolve call cannot supply the token.
+Prefer a synchronous root when the constructors are synchronous - an async root adds a state machine to an otherwise allocation-free path.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

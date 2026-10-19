@@ -5,6 +5,7 @@ The `Setup` method has an additional argument `kind`, which defines the type of 
 - `CompositionKind.Internal` - the composition class will not be created, but that composition can be used to create other compositions by calling the `DependsOn` method with its name
 - `CompositionKind.Global` - the composition class will also not be created, but that composition will automatically be used to create other compositions
 Use dependent compositions to split large object graphs into reusable setup layers.
+An `Internal` setup is the right choice for a reusable layer that must not expose a composition class of its own; `Global` is for settings that every composition in the project should inherit, such as hints.
 
 
 ```c#
@@ -74,7 +75,11 @@ dotnet run
 
 </details>
 
+This is how a multi-project solution keeps one setup per assembly: each library declares an `Internal` setup, the executable composes them with `.DependsOn("Namespace.Composition")` and exposes named roots.
+Setups are matched by name, so use `nameof(Composition)` rather than a string literal to keep `DependsOn` refactor-safe.
+A dependent setup contributes its bindings and roots, not its generated members: the composition that declares `DependsOn` owns the generated class and its roots.
 Limitations: too many setup layers can make graph ownership unclear; keep boundaries explicit and naming consistent.
+Prefer plain class inheritance ([Inheritance of compositions](inheritance-of-compositions.md)) when the layers are in one project and share hand-written members; use `DependsOn` across assemblies and projects.
 
 <details>
 <summary>The following partial class will be generated</summary>

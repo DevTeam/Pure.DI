@@ -66,7 +66,10 @@ dotnet run
 </details>
 
 You can use `Tag.Type` instead of `Tag.Unique` to give each binding the implementation type as its tag. For example, `EmailChannel` gets the tag `typeof(EmailChannel)`, which can also be used to resolve that implementation individually.
-A regular shared tag follows the usual binding rules: later bindings for the same contract and tag override earlier ones. `Tag.Unique` keeps each implementation available to collection injection.
+A regular shared tag follows the usual binding rules: later bindings for the same contract and tag override earlier ones, and the earlier one is reported as overridden. `Tag.Unique` keeps each implementation available to collection injection.
+The lifetime applies to every type in the call, so `As(Lifetime.Singleton)` makes all three channels singletons of the same composition; bind them separately when their lifetimes differ.
+The order of elements in the injected array or `IEnumerable<T>` follows the binding order, which makes a handler pipeline predictable.
+Prefer `Tag.Unique` for plugin-style collections and explicit tags when the consumer must pick exactly one implementation.
 See also: [Tag Type](tag-type.md), [Tag Unique](tag-unique.md), [Simplified lifetime-specific bindings](simplified-lifetime-specific-bindings.md).
 
 <details>

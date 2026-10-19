@@ -64,6 +64,12 @@ dotnet run
 Use `ValueTask<T>` for roots that are awaited frequently and usually complete synchronously. Keep the usual `ValueTask<T>` rules: await it once, do not store it for later, and use `Task<T>` when the result is naturally shared or awaited multiple times.
 Pure.DI still generates regular strongly typed code; the performance benefit comes from choosing an allocation-friendly asynchronous shape at the root boundary.
 
+Use it for a root that is read on a request path and is backed by an in-memory snapshot, a cached configuration, or any value that is already there. The call then completes synchronously and no `Task` object is needed.
+>[!WARNING]
+>A single `ValueTask<T>` instance must be awaited once. Do not store it in a field, await it twice, or hand it to two consumers; for a shared result, await it once and pass the value.
+
+Prefer `ValueTask<T>` for a root that usually completes synchronously and `Task<T>` when the work is genuinely asynchronous or the result is awaited in several places. See [ValueTask](valuetask.md) for the general guidance and [Async root](async-root.md) for a `Task`-based root.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

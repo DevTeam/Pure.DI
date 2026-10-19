@@ -1,7 +1,8 @@
 #### Accumulators
 
-Accumulators allow you to accumulate instances of certain types and lifetimes.
-Use this when you need an aggregated view of created dependencies (for diagnostics, telemetry, or registries).
+Accumulators allow you to accumulate instances of certain types and lifetimes: `Accumulate<T, TAccumulator>(...)` adds every created `T` whose lifetime is in the list to a `TAccumulator` that needs only a parameterless constructor and an `Add(T)` method.
+Use this when you need an aggregated view of created dependencies (for diagnostics, telemetry, or registries) instead of a single injected instance, and when the registry should not be threaded through constructors by hand.
+The accumulator is an ordinary dependency of the composition, so a root returns it like any other service.
 
 
 ```c#
@@ -87,8 +88,11 @@ dotnet run
 
 </details>
 
-Limitations: accumulation order depends on object creation order in the graph, so do not treat it as a stable business ordering.
+In a real project this is the shape of a start-up snapshot: collect the telemetry sources, plug-ins, handlers or validators the graph actually built, then hand the collected list to a diagnostics page or a health check.
+Limitations: accumulation order depends on object creation order in the graph, so do not treat it as a stable business ordering; sort or key the result before you expose it.
 The dependencies of a `Singleton` or `Scoped` instance belong to that shared instance, so `Transient`, `PerBlock` and `PerResolve` accumulators do not collect them.
+The accumulator itself is a `PerBlock` dependency: it is built for the root access that asks for it and describes the objects created in that access, so request it from the same root as the objects you want to observe.
+Prefer [Enumerable](enumerable.md) when you only need every implementation injected as a collection, and a `Singleton` collector service when the view must outlive a single root access.
 See also: [Enumerable](enumerable.md), [Lifetimes](transient.md).
 
 <details>

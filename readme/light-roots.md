@@ -1,6 +1,7 @@
 #### Light roots
 
 Light roots optimize code generation by avoiding the creation of separate composition objects for each root. Instead, they share a common lightweight composition and use delegates to create instances. This is particularly useful for simple, frequently resolved roots where the overhead of generating separate compositions outweighs the benefits. Anonymous roots (roots without explicit names) are lightweight by default.
+`Root<T>("Name", kind: Light)` marks a named root as light; the `Hint.LightweightAnonymousRoot` hint, on by default, does the same for every unnamed root of a non-generic type.
 
 
 ```c#
@@ -104,8 +105,15 @@ dotnet run
 
 </details>
 
+Reach for it on the edges of a composition that are called often and build shallow graphs - a logger, a cache, a metrics sink, a per-call factory - where the generated member should stay a thin delegate call.
+All light roots share one generated helper class that holds their `Func<T>` delegates, so the composition class does not grow a dedicated builder per root.
+A generic root is not light: the `Light` flag is dropped when the root type has generic arguments, and the root builds its own code as usual.
+`Light` changes only how the root member is generated, not the lifetimes or the bindings of the graph it creates.
+Anonymous roots are resolved through `Resolve<T>()`; with `Hint.Resolve = Off` they are not reachable at all, so keep named roots when `Resolve` is disabled.
 >[!NOTE]
 >Light roots are ideal for simple services, factories, or utilities that don't require complex dependency graphs. They reduce generated code size and improve compilation time.
+
+Prefer a regular root when the graph behind it is large or when it must expose a stable named member, because the delegate indirection only pays off for cheap graphs.
 
 <details>
 <summary>The following partial class will be generated</summary>

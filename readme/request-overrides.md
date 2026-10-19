@@ -133,6 +133,13 @@ Important points:
 Useful when:
 - You handle multi-tenant requests and need system services to run under a system context.
 
+A real case is a request handled by a long-lived pipeline: the workflow runs as the tenant and user who sent it, while the repository it reaches works under a system identity with different permissions.
+Overrides are applied inside a factory and affect only what that factory resolves, which is why the inner factory can narrow the context without touching the outer one. Each factory call is a separate resolution, so nothing from the previous request survives.
+>[!WARNING]
+>The nearest override wins and the last override at the same level wins. Two factories whose graphs overlap silently produce a context the reader does not expect, so keep each override in one small factory.
+
+Prefer `Scoped` bindings with an explicit scope when the boundary is a real application concept - see [Scoped](scoped.md). Use overrides for the narrow case where only one subgraph needs a different value.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

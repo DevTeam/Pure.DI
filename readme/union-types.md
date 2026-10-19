@@ -1,6 +1,8 @@
 #### Union types
 
 A union types C# feature allows declaring a union type such as `union PaymentGateway(StripeGateway, BankGateway);`. Each case type is implicitly convertible to the union, and Pure.DI uses this conversion to treat a case implementation as an implementation of the union DI contract. Unlike an interface contract, the case types do not have to share any common abstraction — they may even be third-party SDK types you cannot change. The checkout service below depends only on the `PaymentGateway` union and pattern matches over its cases, while the composition decides which gateway is used and builds the whole dependency graph of the selected case.
+Reach for a union when several unrelated types play one role at a seam you own - payment providers, storage backends, message sinks from different vendors - and the consumer handles each case explicitly instead of calling a shared method.
+Because the conversion happens in generated, statically typed code, the compiler still checks every case, and the lifetime of the chosen binding stays visible to Pure.DI's lifetime validation.
 
 
 ```c#

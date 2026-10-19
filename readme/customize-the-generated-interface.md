@@ -1,6 +1,6 @@
 #### Customize the generated interface
 
-This example shows how to place a generated contract in a dedicated Contracts namespace.
+This example shows how to place a generated contract in a dedicated Contracts namespace. `namespaceName` and `interfaceName` turn the generated interface into a named, reviewable part of the public surface instead of an artifact next to the class.
 
 
 ```c#
@@ -59,6 +59,10 @@ The example shows how to:
 - Generate an interface into a custom namespace
 - Rename the generated interface
 - Keep the contract separate from implementation details
+
+This is the form to use when the class lives in an implementation namespace and consumers live elsewhere: the contract gets a stable name and namespace, and the class can move without touching a single consumer.
+Both names are strings on the attribute, so a rename is not checked by the compiler - keep the `nameof(...)` form shown here so a renamed interface is a compile error rather than a second, unrelated interface.
+Prefer this over the plain `[GenerateInterface]` form as soon as the contract crosses a namespace or a project boundary; the default placement is convenient only inside one feature folder.
 
 <details>
 <summary>The following partial class will be generated</summary>

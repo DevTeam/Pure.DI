@@ -71,6 +71,8 @@ dotnet run
 
 </details>
 
+`Func<T>` works for any registered contract: the consumer does not know the container, and the generator still validates the rest of the graph at compile time.
+The delegate follows the lifetime of the binding it closes over: a transient `IEnemy` gives a fresh instance per call, a singleton gives the same one every time, so a per-call instance must be a transient binding.
 Key elements:
 - `Enemy` is bound to the `IEnemy` interface, and `GameLevel` is bound to `IGameLevel`.
 - The `GameLevel` constructor accepts `Func<IEnemy>`, enabling deferred creation of entities.
@@ -78,6 +80,7 @@ Key elements:
 
 This approach lets factories control lifetime and instantiation timing. Pure.DI resolves a new `IEnemy` each time the factory is invoked.
 Limitations: factory delegate calls can create many objects, so lifetime choices still matter for performance and state.
+A delegate created per resolution allocates a closure; when the hot path is allocation-sensitive, prefer `Func<T>` only for services that really must create instances during execution.
 Common pitfalls:
 - Assuming `Func<T>` always returns new instances regardless of configured lifetime.
 - Hiding expensive work behind repeated on-demand calls.

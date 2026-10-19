@@ -65,6 +65,11 @@ dotnet run
 >[!NOTE]
 >`WeakReference<T>` is useful for caching scenarios where you want to allow garbage collection when memory is constrained.
 
+The injected reference does not keep the target alive, so the consumer has to handle `TryGetTarget` returning `false` every time and recreate the value — `Service.Cache` returns `null` for that case. That makes the consumer's own code the cache, not the composition.
+A weak reference is only useful when something else holds the target strongly; if the dependency is transient and nobody else keeps it, it can be collected immediately after construction. Bind the target as `Singleton` (or hold it elsewhere) when the reference is expected to survive.
+>[!TIP]
+>Prefer a normal reference when the lifetime of the object is known, and reach for `WeakReference<T>` only for optional, recreatable and genuinely large data.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

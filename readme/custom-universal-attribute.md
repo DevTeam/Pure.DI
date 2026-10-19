@@ -1,6 +1,6 @@
 #### Custom universal attribute
 
-A combined attribute can supply _tag_, _ordinal_, and _type_ metadata. Each registration method can take an optional argument index (default is 0) that specifies where to read the metadata.
+A combined attribute can supply _tag_, _ordinal_, and _type_ metadata. Each registration method can take an optional argument index (default is 0) that specifies where to read the metadata. One attribute type then covers every metadata kind a codebase needs.
 
 
 ```c#
@@ -75,6 +75,11 @@ dotnet run
 
 >[!NOTE]
 >Universal attributes reduce the number of attributes needed by combining multiple metadata types into a single attribute.
+
+`InjectAttribute<T>(tag, ordinal)` shows the shape: the type argument is the contract, argument `0` is read as the tag, and argument `1` as the ordinal. `Inject<string>("NikName")` therefore injects a tagged `string`, while `Inject<int>(ordinal: 1)` has no tag and only an order.
+Every registration method receives its own argument index, so the same attribute can expose different parameters to different metadata kinds. Keep the indices stable: changing an index silently changes what every use of that attribute means.
+>[!TIP]
+>This is the most compact form of [custom attributes](custom-attributes.md) and the one to copy when a project wants a single `Inject` attribute with optional tag and ordinal.
 
 <details>
 <summary>The following partial class will be generated</summary>

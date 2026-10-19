@@ -1,6 +1,7 @@
 #### Builders
 
 Sometimes you need builders for all types derived from `T` that are known at compile time.
+This is the build-up counterpart of `Roots<T>`: every implementation available in the compilation becomes a separate builder, which suits plugin-style hosts that receive entities from outside.
 
 
 ```c#
@@ -109,6 +110,8 @@ Important Notes:
 - The default builder method name is `BuildUp`
 - The first argument to the builder method is always the instance to be built
 - `Builders<T>` also generates `TryBuildUp` for safe build-up when the runtime subtype may be unknown
+- `filter: "*Bot"` narrows the set by type name and is matched at compile time, so an implementation with a non-matching name silently gets no builder
+The strict builders throw `ArgumentException` for an unknown runtime subtype, while `TryBuildUp` returns `false`; use the `Try` form when only the runtime type is known.
 
 <details>
 <summary>The following partial class will be generated</summary>

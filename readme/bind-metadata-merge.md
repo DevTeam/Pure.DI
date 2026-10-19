@@ -1,6 +1,6 @@
 #### Bind metadata merge
 
-Shows how binding metadata attributes on one implementation type are combined into one binding.
+Shows how binding metadata attributes on one implementation type are combined into one binding. Contracts and tags placed in the same square-bracket group describe a single registration, which keeps a small shared adapter short and explicit.
 
 
 ```c#
@@ -57,6 +57,11 @@ dotnet run
 
 >[!NOTE]
 >Attributes inside the same square-bracket group form one binding. Contracts and tags are merged, but lifetime must be specified at most once in the group. Separate `Bind` attribute groups create separate bindings.
+
+Because contracts and tags are merged, `ConsoleChannel` is reachable as an `IMessageWriter` by the `"console"` and `"default"` tags and as an `IDiagnosticsSink` by `"console"`, and every route returns the same instance because of `Lifetime(Singleton)`. That is the usual shape for one infrastructure sink shared by several abstractions.
+A second lifetime in the same group is a compilation error rather than a silent winner, which keeps the intent readable. If you need two instances of the same class, split the attributes into separate groups instead of trying to merge them.
+>[!TIP]
+>Keep the shared registrations in one group and split only when the instances really must be different.
 
 <details>
 <summary>The following partial class will be generated</summary>

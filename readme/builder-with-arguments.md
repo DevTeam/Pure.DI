@@ -70,21 +70,11 @@ dotnet run
 
 </details>
 
-Important Notes:
-- The default builder method name is `BuildUp`
-- The first argument to the builder method is always the instance to be built
-- Additional arguments are passed in the order they are defined in the setup
-- Root arguments can be used to provide custom values during build-up
-
-Use Cases:
-- When additional parameters are required during object construction
-- For scenarios where dependencies depend on runtime values
-- When specific initialization data is needed
-- For conditional injection based on provided arguments
-
-Best Practices
-- Keep the number of builder arguments minimal
-- Use meaningful names for root arguments
+The builder signature is the instance first, then the root arguments in declaration order, so `Initialize(new Satellite(), id)` pairs `[Dependency]` members with values that are known only at that moment.
+Root arguments reach the whole graph of the build-up, not just the injected member, so a service created during build-up can receive the same value.
+The default builder method name is `BuildUp`; the first argument to the builder method is always the instance to be built.
+An argument of a non-nullable reference type is null-checked in the generated method and throws `ArgumentNullException` before anything is injected.
+Prefer few builder arguments with meaningful names: each one widens the builder signature and couples the host to the object's internals.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -94,6 +94,10 @@ dotnet run
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
+Real graphs hit this as soon as a generic contract and its implementation disagree on parameter order, or when a service needs a collection shaped type. The markers make that mismatch visible in the binding instead of producing a type that compiles but resolves to the wrong thing.
+Constraints are checked at compile time: a marker that violates a constraint (`TTS2` where `where T : class` is required) is a build error naming the binding, not a runtime failure.
+Prefer this for contracts with two or more type parameters or with constrained collections; for a single parameter, the plain marker form from [Generics](generics.md) is easier to read. Use [Custom generic argument](custom-generic-argument.md) when a constraint needs a marker of your own.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

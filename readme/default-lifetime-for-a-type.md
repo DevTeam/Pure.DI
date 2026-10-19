@@ -1,6 +1,7 @@
 #### Default lifetime for a type
 
 For example, if a certain lifetime is used more often than others, you can make it the default lifetime for a certain type:
+`DefaultLifetime<T>(...)` applies to bindings of the contract `T` only, so the rest of the composition keeps the ordinary defaults. Here the station-wide clock is a singleton while the controller that uses it stays transient.
 
 
 ```c#
@@ -108,6 +109,10 @@ dotnet run
 
 >[!NOTE]
 >Setting default lifetime for types simplifies configuration when the same lifetime is consistently applied.
+
+This is the safer variant of a default lifetime, because it follows a contract rather than a position in the setup chain. Infrastructure contracts - a clock, a configuration reader, a telemetry sink - are the natural candidates for a `Singleton` rule stated once for the whole project.
+The rule is keyed by contract, not by implementation: every binding of `T` that does not set a lifetime explicity inherits it. Two implementations of the same contract therefore share the rule, which is usually what is wanted but must be checked when a transient implementation is registered later.
+Prefer `DefaultLifetime<T>(lifetime, tag)` (see [Default lifetime for a type and a tag](default-lifetime-for-a-type-and-a-tag.md)) when only one tagged registration should be shared.
 
 <details>
 <summary>The following partial class will be generated</summary>

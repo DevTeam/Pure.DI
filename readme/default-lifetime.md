@@ -96,6 +96,13 @@ dotnet run
 >[!NOTE]
 >Default lifetime reduces configuration verbosity when a particular lifetime is predominant in your composition.
 
+Use it when a whole layer shares one lifetime - a generator or a compiler pipeline whose helpers are all per-block, or an application whose services are all transient - so the intent is stated once instead of on every line.
+The setting applies to the bindings that follow it, so a misplaced `DefaultLifetime` silently changes every later binding in the chain. It also hides the lifetime from the binding itself, which makes reviewing a large composition harder.
+>[!WARNING]
+>Do not set a broad `DefaultLifetime(Singleton)` in an application composition. It turns every service that appears later into shared state, which is exactly the lifetime that needs an explicit decision per type.
+
+Prefer it for internal helper bindings, and explicit `.As(...)` or lifetime-specific methods for anything with identity or state. See [Default lifetime for a type](default-lifetime-for-a-type.md) to scope the rule to one contract.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

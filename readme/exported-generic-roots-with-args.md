@@ -64,8 +64,14 @@ dotnet run
 
 </details>
 
+>[!WARNING]
+>The root arguments an exported root declares become parameters of the generated member on the consuming side, so the consumer's call must supply them for every instantiation.
 >[!IMPORTANT]
 >At this point, a composition from another assembly or another project can be used for this purpose. Compositions from the current project cannot be used in this way due to limitations of the source code generators.
+
+This is the usual shape of a library service that needs both the caller's type and a per-call value, for example a store scoped to one tenant id plus the model it manages.
+Because the value is a root argument rather than a composition argument, each call can pass a different id while the imported graph stays shared.
+Prefer [exported generic roots](exported-generic-roots.md) when the library can pick the value itself, and a composition argument when it is fixed for the whole application.
 
 
 

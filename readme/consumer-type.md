@@ -1,6 +1,7 @@
 #### Consumer type
 
 `ConsumerType` is used to get the consumer type of the given dependency. The use of `ConsumerType` is demonstrated on the example of [Serilog library](https://serilog.net/):
+Idiomatic consumers use it for context-aware logging, metrics and auditing, where every component reports under its own name instead of one global category.
 
 
 ```c#
@@ -95,6 +96,10 @@ dotnet run
 
 >[!NOTE]
 >ConsumerType is useful for creating context-aware loggers or when you need to know which type is consuming a dependency.
+
+It is available only inside a factory binding (`ctx.ConsumerType`), where it is known statically, so the value costs nothing at runtime.
+The same trick applies to `ActivitySource`, `Meter` and `ILogger<T>`-style abstractions: one binding produces a per-consumer instance.
+Each call produces a distinct wrapper, so bind this factory as transient; wrapping a singleton logger factory is free, while wrapping an expensive object per consumer is not.
 
 <details>
 <summary>The following partial class will be generated</summary>

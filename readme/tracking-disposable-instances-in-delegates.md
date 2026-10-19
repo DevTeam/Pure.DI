@@ -94,8 +94,13 @@ dotnet run
 
 </details>
 
+A service that opens a unit of work per call - a transaction, a session, a temporary file - uses this shape: take an owner from the factory, release it when the unit ends.
+The owner tracks the transients created for its graph, so closing one transaction cannot close the connection of another one.
+The service that holds an owner must dispose it, otherwise the resource survives until the process ends; implementing `IDisposable` on the service makes the obligation explicit in its API.
 >[!NOTE]
 >Disposable tracking in delegates ensures proper cleanup even when instances are created dynamically through factory delegates.
+
+Prefer `Func<Owned<T>>` over `Func<T>` whenever the created graph contains an `IDisposable`, because only the owner knows which instances it is responsible for.
 
 <details>
 <summary>The following partial class will be generated</summary>

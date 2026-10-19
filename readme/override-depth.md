@@ -3,6 +3,7 @@
 When this occurs: you need to control how far override values propagate in a factory.
 What it solves: keeps overrides local to a single injection level without affecting nested dependencies.
 How it is solved in the example: uses Let to keep overrides local and verifies the scope.
+`Override` applies to the whole subgraph resolved from the factory, while `Let` affects only the dependencies injected directly by it and does not propagate deeper.
 
 
 ```c#
@@ -80,15 +81,10 @@ dotnet run
 
 </details>
 
-What it shows:
-- Demonstrates deep vs one-level override behavior.
-
-Important points:
-- Deep overrides propagate into nested dependency graphs.
-- One-level overrides affect only the immediate injection.
-
-Useful when:
-- You want to override a constructor parameter without affecting deeper object graphs.
+Use `Override` for a value that must reach every level - a correlation id, a tenant, a request context - and `Let` when one constructor argument must differ but its own dependencies should keep their normal bindings.
+Overrides are shared state of the resolution, so a factory that can run concurrently must wrap the override and the following `ctx.Inject` in `lock (ctx.Lock)` ([thread-safe overrides](thread-safe-overrides.md)).
+Deep overrides propagate into nested dependency graphs, including deferred factories created inside them; one-level overrides affect only the immediate injection.
+Prefer a tagged binding over an override when the different value is structural rather than per-call, because overrides live only for the duration of the factory invocation.
 
 <details>
 <summary>The following partial class will be generated</summary>

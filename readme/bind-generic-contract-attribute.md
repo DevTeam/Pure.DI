@@ -1,6 +1,6 @@
 #### Bind generic contract attribute
 
-Shows how the built-in `BindAttribute` can declare a generic contract with the `TT` marker on a generic implementation.
+Shows how the built-in `BindAttribute` can declare a generic contract with the `TT` marker on a generic implementation. One attribute on `CardboardBox<TT>` then satisfies every closed instantiation the graph asks for.
 
 
 ```c#
@@ -61,6 +61,9 @@ dotnet run
 
 >[!NOTE]
 >`typeof(IBox<TT>)` is a marker-based generic contract. It is different from the open generic `typeof(IBox<>)`: Pure.DI uses `TT` to construct the matching implementation type, such as `CardboardBox<TT>`.
+
+Because the marker follows the requested type argument, `IBox<int>` and `IBox<string>` are both built from the same declaration, and the generated code is concrete for each of them. There is no open-generic registration to look up at run time.
+The contract has to be declared with the marker, not with `<>`, or the generator cannot match the implementation's own type parameters. Keep the number and order of markers aligned between contract and implementation.
 
 <details>
 <summary>The following partial class will be generated</summary>

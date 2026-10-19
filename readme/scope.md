@@ -1,6 +1,7 @@
 #### Scope
 
 The `Scoped` lifetime ensures a single instance of a dependency within a scope — a typical example is a single `DbContext`, unit of work, or request context per web request. This example wraps scope creation in a `Scope` class: each scope gets its own `RequestContext`, all services resolved within that scope share it, and disposing the scope disposes all scoped instances it created.
+The wrapper is what makes the boundary usable from application code: consumers ask for `NewScope`, use `Checkout` inside a `using` block, and never see the composition instance that implements the scope.
 
 
 ```c#
@@ -140,6 +141,10 @@ dotnet run
 
 >[!NOTE]
 >A scope is just another composition instance bound to its parent, so singletons remain shared across scopes while scoped instances are unique per scope.
+
+Use a wrapper like this when the boundary is a domain concept the rest of the code already has - a message handler, a test fixture, a background job iteration - and you do not want the composition type to leak into it.
+The wrapper owns the child composition, so it must dispose it: an undisposed scope keeps its scoped instances and everything they hold alive until the GC collects them. Concurrent scopes are independent, which is why this is the natural shape for parallel request handling.
+Prefer the generated `SetupScope` call from [Scope setup method](scope-setup-method.md) when no wrapper is needed, and [Auto scoped](auto-scoped.md) when the scope should be created behind a factory.
 
 <details>
 <summary>The following partial class will be generated</summary>

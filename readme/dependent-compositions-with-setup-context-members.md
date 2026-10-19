@@ -4,6 +4,7 @@ This scenario shows how to copy referenced members from a base setup into the de
 When this occurs: you want to reuse base setup state without passing a separate context instance.
 What it solves: lets dependent compositions access base setup members directly (Unity-friendly, no constructor args).
 How it is solved in the example: uses DependsOn(..., SetupContextKind.Members) and sets members on the composition instance. The name parameter is optional; methods are declared partial and implemented by the user.
+The composition stays parameterless, so a host that instantiates it by convention - a UI framework, a test fixture - can still configure it through properties.
 
 
 ```c#
@@ -144,25 +145,11 @@ dotnet run
 
 </details>
 
-What it shows:
-- Setup context members copied into the dependent composition.
-- Realistic scenario: configuring database connection and logging for a data service.
-
-Important points:
-- The composition remains parameterless and can be configured via its own members.
-
-Example demonstrates:
-  1. BaseComposition provides database connection settings, default timeout, and a protected diagnostics field
-  2. Dependent Composition adds logging level and max retries configuration
-  3. DataService uses all settings including the protected field for conditional output
-  4. Protected field 'EnableDiagnostics' from BaseComposition is accessible in Composition via DependsOn
-  5. Composition's constructor sets EnableDiagnostics to true to enable detailed status
-
+BaseComposition provides database connection settings, default timeout, and a protected diagnostics field; Composition adds a logging level and a max retry count; DataService reads all of them, including the protected field copied by the context.
+Use this when a base setup's state is assigned after construction: the copied members become properties of the dependent composition, so the object initializer in the test is the normal way to supply configuration.
+Members are copied by declaration, so the dependent composition needs a partial declaration of every referenced method that the base implements itself - here `GetDefaultTimeout`.
 Note: SetupContextKind.Members copies both public and protected members to the dependent composition.
-
-Useful when:
-- Base setup has instance members initialized by the host or framework.
-- You need to extend configuration with additional settings in derived compositions.
+Prefer `SetupContextKind.Argument` ([setup context](dependent-compositions-with-setup-context.md)) when the base instance must stay the single owner of the state, because copied members are independent values on the dependent composition.
 
 
 <details>

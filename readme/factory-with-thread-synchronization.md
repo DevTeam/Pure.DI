@@ -1,6 +1,7 @@
 #### Factory with thread synchronization
 
 In some cases, initialization of objects requires synchronization of the overall composition flow. This scenario demonstrates how to use factories with thread synchronization to ensure proper initialization order.
+`ctx.Lock` is the object the generated code already uses for its own synchronization, so a custom factory locks the same object instead of introducing a second lock that could deadlock against it.
 
 
 ```c#
@@ -78,8 +79,12 @@ dotnet run
 
 </details>
 
+This is for a service that must connect once during construction - a broker connection, a cache warm-up, a first handshake - while other threads may resolve the same graph at the same time.
+The lock covers the injection and the initialization together, so no other resolve of the same composition can observe the object half-initialized.
 >[!NOTE]
 >Thread synchronization in factories should be used carefully as it may impact performance. Only use when necessary for correct initialization behavior.
+
+Prefer `ctx.IsLockRequired` ([IsLockRequired](islockrequired.md)) when the lock should be taken only in thread-safe compositions, and `Hint.ThreadSafe = Off` ([ThreadSafe hint](threadsafe-hint.md)) for a composition that is known to be single-threaded.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -73,6 +73,13 @@ dotnet run
 >[!NOTE]
 >Generic roots enable exposing multiple generic implementations without explicitly registering each one.
 
+This is how an exporter, a validator or a notification channel layer exposes its implementations once: the set is known at compile time, each implementation gets a method, and callers choose by name instead of by tag or type.
+The generated methods are templated from the implementations visible at the call site, so a new implementation changes the public API without any setup edit. That is convenient inside an application and risky in a published library.
+>[!WARNING]
+>The name template must keep names unique. Two implementations with the same simple name in different namespaces produce colliding methods, so qualify or rename them.
+
+Prefer `Roots<T>()` when the set of implementations is stable and all of them should be resolvable; use explicit `Root` calls when only some implementations should be public. See [Roots](roots.md) for the non-generic form and its filters.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

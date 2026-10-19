@@ -1,6 +1,7 @@
 #### Check for a root
 
-Sometimes you need to check if you can get the root of a composition using the `Resolve` method before calling it, this example will show you how to do it:
+Sometimes you need to check if you can get the root of a composition using the `Resolve` method before calling it, this example will show you how to do it: the `OnNewRoot` hint generates a partial hook that fires while the composition is generated, once per root.
+It fits hosts that receive a type name from configuration, a plugin manifest or a message header and must decide whether the composition can supply it before asking for an instance.
 
 
 ```c#
@@ -97,6 +98,10 @@ dotnet run
 
 </details>
 
+The hook is static and runs at code generation time, not at runtime: it fills a registry that your own code queries afterwards, so there is no reflection and no cost per call.
+The parameters tell you everything needed to record a root: the contract type, which is the one `Resolve` accepts, the root name, the tag and the lifetime.
+Only roots declared with `Root<T>(...)` reach the hook, so an anonymous root stays invisible - and a type that resolves through auto-binding but has no root is correctly reported as unresolvable.
+Prefer this over try/catch around `Resolve`: an exception tells you nothing about which members are available, and a registry answers that once for the whole composition.
 For more hints, see [this](../README.md#setup-hints) page.
 
 <details>

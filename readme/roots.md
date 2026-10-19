@@ -1,6 +1,7 @@
 #### Roots
 
-Sometimes you need roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called.
+Sometimes you need roots for all types inherited from <see cref="T"/> available at compile time at the point where the method is called; each implementation becomes its own property, named from the `{type}` template.
+This is the entry point of a plugin-style host: windows, commands, handlers or modules are declared as implementations of one interface and the composition exposes them all without a manual list.
 
 
 ```c#
@@ -54,6 +55,10 @@ dotnet run
 
 </details>
 
+The set is fixed at compile time by the types in the compilation, so a plugin loaded from a directory at runtime needs `Resolve` or a factory instead.
+Each root builds a complete graph of its own, and a singleton shared by several roots stays one instance because it lives in the composition, not in the root.
+An implementation without a binding for one of its dependencies fails the compilation, which is why `Roots` is usually paired with a filter.
+Prefer `Roots<T>` for the plugin boundary and explicit `Root<T>` calls for the application's own entry points, so the public surface stays readable.
 >[!NOTE]
 >This feature is useful for plugin-style architectures where you need to expose all implementations of a base type or interface.
 

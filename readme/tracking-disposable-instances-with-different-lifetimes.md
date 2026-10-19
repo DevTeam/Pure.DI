@@ -132,9 +132,13 @@ dotnet run
 
 </details>
 
+This is the realistic mix inside one unit of work: a connection created for the unit and a pool or client shared by the whole application, both injected through owners.
+Disposing the owner releases the transient immediately and only releases the ownership of the shared instance; the shared instance is disposed by `composition.Dispose()`.
 >[!NOTE]
 >The tracking mechanism respects lifetime semantics, ensuring that transient instances are disposed immediately while singleton instances persist until composition disposal.
+
 The dependencies of a `Singleton` or `Scoped` instance belong to that shared instance: an `Owned<T>` does not dispose them, even when it happens to create the shared instance first.
+Prefer separate `Tag`ged bindings, as here, to keep the two roles apart; a single untagged binding cannot express both lifetimes.
 
 <details>
 <summary>The following partial class will be generated</summary>

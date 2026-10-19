@@ -105,8 +105,13 @@ dotnet run
 
 </details>
 
+This is the per-operation counterpart of the composition hook: it fires when an `Owned<T>` is disposed, so a unit of work can close its own client instead of waiting for application shutdown.
 >[!IMPORTANT]
 >The hook belongs to the non-generic `Pure.DI.Owned` accumulator used internally by every `Owned<T>`, so its partial implementation must be declared in the `Pure.DI` namespace.
+
+One hook serves every owner in the compilation, so it cannot tell which operation owns the resource; record the attribution yourself if you need it in the log.
+Set `skipDefaultDispose` only after you have released the instance; leaving it `false` lets the accumulator call `Dispose()` as usual.
+Prefer the composition hook ([custom dispose strategy](custom-dispose-strategy.md)) for application-wide clients, and this one for per-transaction or per-message resources.
 
 <details>
 <summary>The following partial class will be generated</summary>

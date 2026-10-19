@@ -117,6 +117,13 @@ dotnet run
 >[!NOTE]
 >Async disposable scope is essential for scenarios requiring proper async cleanup of scoped resources.
 
+A per-request session that holds a network stream, a database session or an open file is exactly this case: the scope ends when the request ends, and the release must await the network.
+Each session is a child composition, so scoped instances are unique per session and singletons stay shared with the parent. Disposing a session releases only what that session created.
+>[!WARNING]
+>A session that is dropped without `DisposeAsync` keeps its scoped resources alive until the GC runs finalizers. In a request pipeline, tie the release to the same place that ends the request, not to a background cleanup.
+
+Prefer `await using` inside an `async` method so the dispose happens on every exit path, including exceptions. When the scoped resources are synchronous, the plain [Scope](scope.md) variant avoids the extra state machine.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

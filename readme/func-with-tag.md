@@ -74,6 +74,11 @@ dotnet run
 >[!NOTE]
 >Func with tags allows you to create instances with specific tags dynamically, useful for factory patterns with multiple implementations.
 
+This is what a pool needs: the consumer chooses the implementation by tag once and then creates as many instances as it wants. The tag on the parameter decides which binding the factory creates, so the pool never sees the composition.
+The generated instances follow the lifetime of the tagged binding: a transient connection yields a new object per call, while a singleton would yield the same one every time and defeat the pool. Verify the expected count and type in a test, as this scenario does.
+>[!TIP]
+>Prefer a tagged `Func<T>` over injecting several tagged instances when the number of objects is decided at run time.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

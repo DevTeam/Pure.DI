@@ -101,6 +101,13 @@ dotnet run
 >[!TIP]
 >If you prefer to avoid mocking libraries, bind a hand-written fake in the test setup instead: `.Bind<IClock>().To<FakeClock>()`.
 
+This is the shape a solution with several test projects ends up with: one internal composition holds the production bindings, and every test project derives from it and replaces only what it needs - a clock, an HTTP client, a file system.
+The split is checked by the compiler: a test composition that cannot satisfy a binding fails to build instead of failing at run time, and the production composition is unaffected by test-only bindings.
+>[!NOTE]
+>An `Internal` setup generates code inside the defining assembly, so a test composition in another assembly cannot depend on it. Keep such setups in a shared project that both the application and the tests reference.
+
+Prefer `DependsOn` plus a narrow override over duplicating the setup in tests, and prefer a hand-written fake over a mocking library when the contract has more than a couple of members. See [Dependent compositions](dependent-compositions.md) and [Request overrides](request-overrides.md).
+
 <details>
 <summary>The following partial class will be generated</summary>
 

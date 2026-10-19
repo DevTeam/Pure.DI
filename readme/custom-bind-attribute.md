@@ -74,6 +74,9 @@ dotnet run
 >[!NOTE]
 >Implementation-level binding attributes are useful when the implementation assembly should describe its DI role while keeping the composition concise. Custom attributes participate in the same merge rules as the built-in `Bind`, `Type`, `Tag`, and `Lifetime` attributes: attributes in one square-bracket group form one binding, while separate `Bind` groups create separate bindings.
 
+Because the attribute arguments are mapped by position in the setup, one custom attribute can carry contract, lifetime and tag together, and the class declaration stays readable. The registration tells the generator which argument holds what.
+Positional mapping is brittle when the attribute constructor changes: reordering parameters changes what every existing use means. Keep the constructor order stable or register explicit indices.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

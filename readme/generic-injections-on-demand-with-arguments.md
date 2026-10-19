@@ -78,6 +78,13 @@ dotnet run
 >[!NOTE]
 >Generic factories with arguments allow passing runtime parameters while maintaining type safety.
 
+This is how a sensor registry, a document loader or a connection pool hands out per-item instances while the item identifiers come from the caller. The consumer owns the list, the composition owns everything the items depend on.
+Each call resolves the graph from scratch, so an instance created this way is not shared with earlier ones even if the type would otherwise be a singleton in other bindings. Keep the factory's arguments stable - they are matched to constructor parameters by type and tag.
+>[!NOTE]
+>Arguments of the same type on one constructor compete for a single factory argument. Tag the parameters when two runtime values share a type.
+
+Prefer a plain `Func<T>` factory when no per-instance data is needed (see [Generic injections on demand](generic-injections-on-demand.md)), and root arguments when the value is needed once per root call.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

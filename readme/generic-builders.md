@@ -106,6 +106,13 @@ dotnet run
 >[!NOTE]
 >Generic builders provide compile-time type safety while allowing flexible object graph construction.
 
+This is the pragmatic middle ground for a message pipeline: many message shapes, each created by deserialization or by an API layer, and all of them needing the same tracker or context injected. One declaration replaces a builder per message type.
+The builders are generated for the implementations visible at compile time at the call site, and each overload is chosen by the static type of the argument. Passing a variable declared as `IMessage<TId, TContent>` resolves the interface overload, so the concrete type may not receive its own injections.
+>[!WARNING]
+>Every implementation gets an overload, so the generated API grows with the number of implementing types. Keep the call on an assembly where that set is stable, otherwise public surface changes with unrelated code.
+
+Prefer a single [Generic builder](generic-builder.md) when only one type needs building, and explicit `BuildUp` roots when the set of types is small and you want the API to stay fixed.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

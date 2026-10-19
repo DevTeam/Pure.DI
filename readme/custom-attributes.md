@@ -5,6 +5,7 @@ To use custom attributes, derive from `System.Attribute` and register them with 
 - `OrdinalAttribute`
 - `TypeAttribute`
 You can also use combined attributes. Each registration method can take an optional argument index (default is 0) that specifies where to read _tag_, _ordinal_, or _type_ metadata.
+Use this when a codebase must not reference Pure.DI types in its domain code, or when the built-in names clash with another framework's attributes.
 
 
 ```c#
@@ -98,6 +99,11 @@ dotnet run
 
 >[!NOTE]
 >Custom attributes provide extensibility for advanced scenarios where standard attributes don't meet specific requirements.
+
+The registration is what makes an attribute meaningful: without `.TagAttribute<T>()`, `.OrdinalAttribute<T>()` or `.TypeAttribute<T>()` the generator never reads it, and the members simply do not participate. Register the attributes that were actually declared in that assembly.
+The registration is per composition, so a library that declares its own attributes also ships the registrations that make them work. An attribute that is registered in one composition but not in another produces different graphs from the same code.
+>[!TIP]
+>Prefer one attribute class that carries tag and ordinal together (see [custom universal attribute](custom-universal-attribute.md)) over three narrowly scoped ones when the same member often needs both.
 
 <details>
 <summary>The following partial class will be generated</summary>

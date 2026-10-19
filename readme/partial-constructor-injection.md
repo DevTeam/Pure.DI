@@ -84,6 +84,9 @@ dotnet run
 
 A partial constructor must have exactly one defining declaration ending with `;` and one implementing declaration with a body. Only the defining declaration participates in lookup, while constructor and parameter attributes from both parts are combined.
 Place `this(...)` or `base(...)` constructor initializers on the implementing declaration. `OrdinalAttribute`, `TagAttribute`, and `OverloadResolutionPriorityAttribute` can be placed on either part and are observed through the combined Roslyn symbol.
+This split is what lets a generator publish a construction contract while the hand-written part keeps the body, and the generator sees a private field assignment it cannot otherwise express. Both parts must live in the same assembly and be compiled together, so the pattern does not cross project boundaries.
+>[!NOTE]
+>Prefer an ordinary constructor when one file owns both parts; the partial form earns its complexity only when two sources must each contribute half of it.
 
 <details>
 <summary>The following partial class will be generated</summary>

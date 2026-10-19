@@ -1,6 +1,6 @@
 #### Export attribute
 
-`ExportAttribute` lets you bind properties, fields, or methods declared on the bound type.
+`ExportAttribute` lets you bind properties, fields, or methods declared on the bound type. The member becomes the source of a dependency, so a subsystem that already owns its collaborators can publish them to the graph instead of having the composition rebuild them.
 
 
 ```c#
@@ -86,6 +86,10 @@ dotnet run
 </details>
 
 It applies to instance or static members, including members that return generic types.
+This is how a class that constructs its own internals once — a device provider, a plugin, a configuration holder — hands them over without exposing setters. `PhotoService` receives the exported `IGps` and a `Func<ICamera>`, the latter built from the same exported property.
+An exported member is only read when the binding is created: with a `Singleton` owner the exported value is captured once, with a transient owner it is read again for every instance. The member type has to be resolvable as a contract in the graph.
+>[!NOTE]
+>Combining `Export` with lifetime and tags, as in [export attribute with lifetime and tag](export-attribute-with-lifetime-and-tag.md), is the usual way to publish one instance to many consumers.
 
 <details>
 <summary>The following partial class will be generated</summary>

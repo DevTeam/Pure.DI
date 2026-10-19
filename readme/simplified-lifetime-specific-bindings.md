@@ -1,7 +1,7 @@
 #### Simplified lifetime-specific bindings
 
-You can use the `Transient<>()`, `Singleton<>()`, `PerResolve<>()`, etc. methods. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
-This keeps lifetime configuration concise while preserving explicit lifetime semantics.
+`Transient<>()`, `Singleton<>()`, `PerBlock<>()`, `PerResolve<>()` and `Scoped<>()` combine the binding and the lifetime in one call: the implementation type is bound to itself, and - when it is a concrete type - to every abstract type it directly implements.
+This is the shortest form for services with one natural abstraction, and it keeps the lifetime visible at the call site instead of hiding it at the end of a long chain.
 
 
 ```c#
@@ -139,7 +139,7 @@ For class `OrderManager`, the `PerBlock<OrderManager>()` binding will be equival
 | no  | `IEnumerable<string>` | special type                                      |
 | no  | `ManagerBase`         | non-abstract                                      |
 | no  | `IManager`            | is not directly implemented by class OrderManager |
-Limitations: lifetime-specific shortcuts still rely on inferred contracts, so review inferred bindings carefully.
+Limitations: lifetime-specific shortcuts still rely on inferred contracts, so review inferred bindings carefully - a `Singleton<Service>()` also makes every directly implemented abstraction a singleton.
 Common pitfalls:
 - Applying singleton shortcuts to stateful services without thread-safety guarantees.
 - Assuming shortcut APIs bypass special-type exclusion rules.

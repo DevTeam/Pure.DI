@@ -1,6 +1,6 @@
 #### Default BCL bindings
 
-Pure.DI provides default bindings for commonly used .NET BCL types, so they can be injected without extra setup code.
+Pure.DI provides default bindings for commonly used .NET BCL types, so they can be injected without extra setup code. Ambient values such as `CultureInfo.CurrentCulture`, `TimeProvider.System` and `StringComparer.Ordinal` have an obvious default, and asking for one in a constructor is enough.
 
 
 ```c#
@@ -86,6 +86,11 @@ dotnet run
 
 >[!NOTE]
 >Default BCL bindings can still be overridden in the composition when an application needs a different policy.
+
+This is what makes time, culture and randomness injectable without a wrapper interface of your own: a test can override `TimeProvider` or `CultureInfo` in one place and every consumer sees the substitute. The defaults read the ambient value, so production behavior stays what the platform provides.
+An override has to be declared explicitly; a default binding is still a binding, so two origins for the same type compete and the last applicable one wins. Keep overrides visible near the roots instead of scattering them.
+>[!TIP]
+>Prefer depending on `TimeProvider` and `CultureInfo` rather than `DateTime.Now` or `CultureInfo.CurrentCulture` directly; the defaults make the same code testable.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -78,6 +78,11 @@ dotnet run
 >[!NOTE]
 >This enables integration with _Microsoft.Extensions.DependencyInjection_, allowing you to leverage both DI systems together.
 
+`ServiceProviderFactory<Composition>` is what a web host or a Blazor application consumes: the composition builds a real `IServiceCollection`, so registration is owned by the compile-time graph while the host resolves services at run time. This is the supported way to plug Pure.DI into framework code that requires `IServiceCollection`.
+Each root becomes a registration, and a tagged root becomes a keyed registration, which is how `GetRequiredKeyedService("LivingRoom")` returns the same instance the thermostat holds. Test both paths when a root's tag changes, because the tag is the service key.
+>[!IMPORTANT]
+>A composition used as a service provider factory must keep its resolve methods enabled; `Hint.Resolve = Off` removes the methods the generated registrations call.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

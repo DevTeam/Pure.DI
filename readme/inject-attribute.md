@@ -5,6 +5,7 @@ If you want attributes without defining your own, add this package:
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI.Abstractions)](https://www.nuget.org/packages/Pure.DI.Abstractions)
 
 It provides `Inject` and `Inject<T>` for constructors, methods, properties, and fields, letting you configure injection metadata.
+`Inject<T>(tag, ordinal)` is the tagged form: the type argument names the contract to inject, so a member declared as `object` can still request a `Uri` with a tag. Use this package when you want injection attributes without owning a custom one, and define your own only when the name `Inject` clashes with another framework.
 
 
 ```c#
@@ -72,6 +73,9 @@ dotnet run
 This package should also be included in a project:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
+The type argument is what selects the contract, so `Inject<Uri>` on an `object` member is resolved as a `Uri` and not as `object`. The declared member type still has to accept the injected value at run time.
+>[!NOTE]
+>These attributes are metadata only: the composition still owns every binding and lifetime, and Pure.DI validates the resulting graph at compile time.
 
 <details>
 <summary>The following partial class will be generated</summary>

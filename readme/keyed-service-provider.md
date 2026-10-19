@@ -100,6 +100,11 @@ dotnet run
 >[!NOTE]
 >This enables compatibility with Microsoft's DI container ecosystem when using keyed service resolution.
 
+The key is the root tag, and the tag on an injection site is the same string, so one vocabulary serves both the compile-time graph and run-time keyed lookup. `OnlineOrderService` receives the `"PayPal"` gateway inside the graph, and outside code asks for the same instance by key.
+A root without a tag is reachable only through `GetService`, because keyed lookup requires a key. `GetKeyedService` here delegates to `GetRequiredKeyedService`, so a wrong key throws instead of returning `null`; return `null` instead if callers probe for optional services.
+>[!TIP]
+>Prefer tags on roots over string keys invented in the host: one name then appears in the composition, in the injection site and in the caller.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

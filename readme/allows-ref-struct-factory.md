@@ -77,6 +77,7 @@ This manual factory pattern keeps `ReadOnlySpan<T>` and other stack-only values 
 When the standard delegate shape is enough, prefer the generated default `Func<ReadOnlySpan<char>, T>` binding. It uses local values in the generated delegate invocation and does not require a manual `lock`.
 The fluent contract API accepts ref-like type arguments in `Bind<T>()`, `RootBind<T>()`, `Root<T>()`, and `DefaultLifetime<T>()`. The `Transient<T>()`, `PerResolve<T>()`, and `PerBlock<T>()` shortcuts support ref-like implementations and factory results because generated instances remain local to root execution.
 `Singleton<T>()` and `Scoped<T>()` keep their implementation and factory-result type heap-safe. Their parameterized factory overloads accept ref-like dependency types so Pure.DI can apply its stored-lifetime validation and report `DIE046` instead of failing earlier with the C# generic-argument diagnostic `CS9244`.
+This is the escape hatch for a hot path that must parse without allocating a `string` per call: the span stays inside one delegate invocation, and the factory validation happens at compile time. When the only stack-only value is a `ReadOnlySpan<char>` argument, the generated default binding is shorter and needs no lock.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -102,7 +102,9 @@ dotnet run
 </details>
 
 When using root arguments, compilation warnings are emitted if `Resolve` methods are generated because these methods cannot create such roots. Disable `Resolve` via `Hint(Hint.Resolve, "Off")`, or ignore the warnings and accept the risks.
-Limitations: roots with root arguments become methods and are incompatible with generated `Resolve` methods.
+The argument is bound for the whole graph of that root, so any consumer that asks for `int port` gets the value passed to `CreateApplication`, including services deep in the graph.
+A root argument and a composition argument with the same type and tag collide; give each concept its own name or tag, and use tags when several values share one type.
+Validating a root argument (`null` checks, ranges) belongs to the caller or the root method body, not to the composition.
 Common pitfalls:
 - Reusing ambiguous argument names for different concepts.
 - Forgetting to disable or avoid `Resolve` usage in these setups.

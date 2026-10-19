@@ -1,6 +1,7 @@
 #### OnDependencyInjection regular expression hint
 
 Hints are used to fine-tune code generation. The `OnDependencyInjection` hint determines whether to generate partial `OnDependencyInjection` method to control of dependency injection.
+The generated method wraps the moment a value enters a consumer, which makes it the place for cross-cutting work that belongs to every injection: validation, logging, metrics, or swapping a value for a decorated one.
 In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnDependencyInjection = On`.
 
 
@@ -90,6 +91,10 @@ dotnet run
 </details>
 
 The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
+The hook receives the value and returns the value to inject, so returning a different instance replaces the dependency transparently and returning `value` keeps it unchanged.
+It is called once per injection site in the object graph, not once per resolution step, and the `in` parameter avoids copying a struct dependency.
+The filter here is `(.*Gateway|int)$`, so `PaymentService` itself is not logged even though it is created inside the same graph - the hook follows what is injected, not what is constructed.
+Prefer this hook for observation and policy on the injection path; for measuring construction, use `OnNewInstance`, and for diagnostics only, keep the code behind `#if DEBUG`.
 For more hints, see [this](../README.md#setup-hints) page.
 
 <details>

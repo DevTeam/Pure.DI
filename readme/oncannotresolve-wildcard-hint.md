@@ -1,6 +1,7 @@
 #### OnCannotResolve wildcard hint
 
 Hints are used to fine-tune code generation. The `OnCannotResolve` hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
+The wildcard form of the filter is easier to review than a regular expression when the admitted types share a name suffix, as in this example, where only `string` values are supplied by the hook.
 In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnCannotResolveContractTypeNameWildcard = string`.
 
 
@@ -86,6 +87,9 @@ dotnet run
 </details>
 
 The `OnCannotResolveContractTypeNameWildcard` hint helps define the set of types that require manual dependency resolution. You can use it to specify a wildcard to filter the full type name.
+Several wildcard hints can be declared, and each one adds to the set; a type outside the set keeps failing at compile time instead of reaching the hook.
+The hook is called at resolution time, not at generation time, so a value read here can change between two compositions built from the same code.
+Prefer the wildcard when the admitted types are obvious from their names, the regular expression when the rule is structural, and explicit bindings when the value is a real input.
 For more hints, see [this](../README.md#setup-hints) page.
 
 <details>

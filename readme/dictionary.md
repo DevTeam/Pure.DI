@@ -88,6 +88,12 @@ dotnet run
 >[!NOTE]
 >Dictionary injection is useful when you need to access dependencies by keys, such as named or tagged implementations like notification channels.
 
+The dictionary is built from the `KeyValuePair<TKey, TValue>` bindings, not from the channel bindings themselves, so the key is whatever the factory puts into the pair. That makes the key a compile-time constant you choose instead of a tag string a consumer has to repeat.
+`Tag.Unique` marks each pair as a separate entry; without it two pairs of the same pair type would compete as bindings. Add a pair by adding one binding, and the dictionary in every consumer gains the key.
+Two pairs with the same `TKey` value collide when the dictionary is built, so keep keys unique by construction — an enum makes a duplicate visible at the declaration site.
+>[!TIP]
+>Prefer a dictionary when the consumer selects by key at run time, and plain collection injection when it must always run all of them.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

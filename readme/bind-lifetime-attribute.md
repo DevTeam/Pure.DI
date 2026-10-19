@@ -1,6 +1,6 @@
 #### Bind lifetime attribute
 
-Shows how the `Lifetime` attribute can declare the lifetime of an implementation binding.
+Shows how the `Lifetime` attribute can declare the lifetime of an implementation binding. The lifetime travels with the implementation, next to the contract it was bound to.
 
 
 ```c#
@@ -52,6 +52,9 @@ dotnet run
 
 >[!NOTE]
 >A lifetime attribute on an implementation type is equivalent to applying `.As(...)` to the generated binding. Lifetime metadata can be specified only once inside one square-bracket binding group; repeated lifetime metadata in the same group is a compilation error.
+
+This is the attribute form of `.As(Singleton)`, so it decides how long the instance lives for the whole composition, not per injection site. Readers of the implementation see the lifetime without opening the setup.
+A lifetime on the class applies to every binding declared in that group. When one implementation needs two lifecycles, split the registrations into separate groups instead of trying to override the attribute from the setup.
 
 <details>
 <summary>The following partial class will be generated</summary>

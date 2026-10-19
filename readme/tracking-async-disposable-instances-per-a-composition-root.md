@@ -95,8 +95,13 @@ dotnet run
 
 </details>
 
+A per-request scope in a server is exactly this: create the owner, serve the request, `await DisposeAsync()` in a `finally`, and the connection is returned even when the request fails.
+Only resources created while resolving this root belong to it, so two owners retrieved from the same composition never share a transient connection.
+Dispose the owner asynchronously when the graph contains `IAsyncDisposable` resources; the synchronous `Dispose()` on such a graph is blocked waiting for it, so prefer `DisposeAsync()` where the framework allows it.
 >[!NOTE]
 >Async disposable tracking ensures proper async cleanup of all disposable instances within a composition scope.
+
+Prefer the composition itself for resources that must live until shutdown, and [tracking disposable instances in delegates](tracking-disposable-instances-in-delegates.md) when the owners are created on demand inside a service.
 
 <details>
 <summary>The following partial class will be generated</summary>

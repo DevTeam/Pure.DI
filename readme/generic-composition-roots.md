@@ -78,6 +78,13 @@ dotnet run
 >[!IMPORTANT]
 >The method `Inject()` cannot be used outside of the binding setup.
 
+A command handler layer is the classic case: the same handler contract with one type parameter per command, one generated method per registration, and no reflection at run time. Tags separate alternative handlers for the same contract.
+A generic root is always a method, so it cannot be resolved through `Resolve` or exposed as a property. Code that needs a fixed type should use a non-generic root instead of closing the generic one by hand.
+>[!NOTE]
+>Every closed type used at a call site becomes its own generated method body. Wide generic roots over large graphs grow the generated file, so keep the graph behind the root focused.
+
+Prefer generic roots when the caller - not the composition - decides the type argument. See [Generic composition roots with constraints](generic-composition-roots-with-constraints.md) when the type parameter must satisfy a constraint.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

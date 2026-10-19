@@ -1,7 +1,8 @@
 #### Simplified lifetime-specific factory
 
 Lifetime-named shortcuts such as `Transient(...)` and `Singleton(...)` register a factory and its lifetime in a single call, replacing the longer `Bind().As(...).To(...)` chain.
-Overloads accept a plain lambda (optionally with a tag, like `Transient(() => DateTime.Today, "today")`) or a lambda whose parameters are injected dependencies — parameters may carry attributes such as `[Tag]` — so you can initialize the instance before returning it, as `Singleton<FileLogger, DateTime, IFileLogger>` does when setting up the log file name.
+Overloads accept a plain lambda (optionally with a tag, like `Transient(() => DateTime.Today, "today")`) or a lambda whose parameters are injected dependencies - parameters may carry attributes such as `[Tag]` - so you can initialize the instance before returning it, as `Singleton<FileLogger, DateTime, IFileLogger>` does when setting up the log file name.
+The generic parameters are contract types first and the implementation last, which is what lets one call both bind `IFileLogger` and fix the lifetime of the object behind it.
 
 
 ```c#
@@ -90,6 +91,11 @@ dotnet run
 
 >[!NOTE]
 >Lifetime-specific factories combine the convenience of simplified syntax with explicit lifetime control for optimal performance and correctness.
+
+Because the lifetime is part of the call, a singleton factory is the concise equivalent of a lazy initializer: the lambda runs on first use, once per composition.
+A transient factory runs per resolution, so initialization cost multiplies with the number of consumers - choose it only for cheap or stateful objects.
+An instance created by such a factory is disposed by the composition when it implements `IDisposable` and the lifetime is singleton or scoped.
+Prefer `Transient<T>()` or `Singleton<T>()` without a lambda when there is nothing to initialize, and the `Bind().As().To()` chain when the binding needs tags beyond the lifetime.
 
 <details>
 <summary>The following partial class will be generated</summary>

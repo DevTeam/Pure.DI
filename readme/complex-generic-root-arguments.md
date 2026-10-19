@@ -84,6 +84,13 @@ dotnet run
 >[!NOTE]
 >Complex generic scenarios require careful attention to type constraints and argument order for correct resolution.
 
+Configuration objects that are generic over the payload - options, descriptors, envelopes - are passed this way without giving the composition a dependency on the caller's data.
+The argument type is written in terms of the root's type parameter, so the generated method signature connects them and the compiler checks the match. A mismatched argument type is a compile error at the call site.
+>[!NOTE]
+>The binding must be able to consume the argument: here `Source<T>` asks for `SourceConfig<T>` through `[Dependency]`. Without a matching injection site the argument stays unused and the graph still resolves.
+
+Prefer this when the config type is generic and belongs to the call; use a plain root argument for a fixed config type, or a constructor dependency when the value is stable for the whole composition.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

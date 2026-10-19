@@ -148,8 +148,14 @@ dotnet run
 
 </details>
 
+Reach for it when the composition owns long-lived clients whose shutdown is more than `Dispose()`: message-broker or channel clients that must close gracefully and abort on failure, connection pools, native handles.
+The hook runs once per tracked instance while the composition is disposed, in reverse creation order, and it answers for every disposable in the graph: switch on the concrete type, handle the types you know and return `false` for the rest.
+Implement both `OnDispose` and `OnDisposeAsync` when the graph has both kinds of resources: the synchronous path calls `OnDispose`, the asynchronous path calls `OnDisposeAsync`.
+An exception thrown by the hook is caught like one from `Dispose()`, passed to `OnDisposeException`, and cleanup continues with the remaining resources.
 >[!IMPORTANT]
 >`OnDispose` and `OnDisposeAsync` are partial methods. They are not invoked when not implemented, so there is zero overhead for compositions that do not need a custom disposal strategy.
+
+Prefer the per-owner hook ([`Owned<T>`](custom-dispose-strategy-for-ownedt.md)) when ownership is per operation rather than per composition.
 
 <details>
 <summary>The following partial class will be generated</summary>

@@ -1,6 +1,6 @@
 #### PerResolve
 
-The `PerResolve` lifetime ensures that there will be one instance of the dependency for each composition root instance.
+The `PerResolve` lifetime ensures that there will be one instance of the dependency for each composition root instance. Every access to a root starts a new resolution, so two accesses get two instances, while several injection sites inside one resolution get the same one.
 
 
 ```c#
@@ -100,6 +100,13 @@ dotnet run
 
 >[!NOTE]
 >`PerResolve` lifetime is useful when you want to share a dependency instance within a single composition root resolution.
+
+Reach for it when one operation needs a consistent collaborator - a pricing session, a request-scoped counter, a set of rules evaluated once - but that collaborator must not outlive the operation or be shared between operations.
+The scope is the root access itself, so a `PerResolve` instance is not disposed by the composition and is not visible to code that resolved the graph earlier. If the reuse boundary must be something the application can name and end, use `Scoped`; if it must live as long as the composition, use `Singleton`.
+>[!WARNING]
+>The scenario deliberately shows the common mistake: a `Singleton` tuple requests the `PerResolve` dependency, so it captures the instance created during the first resolution and keeps it forever. Inspect every singleton for `PerResolve`, `Scoped` and `Transient` dependencies before shipping.
+
+See [PerBlock](perblock.md) when reuse should stay inside one construction block instead of the whole root.
 
 <details>
 <summary>The following partial class will be generated</summary>

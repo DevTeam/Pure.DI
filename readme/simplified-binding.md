@@ -1,7 +1,7 @@
 #### Simplified binding
 
 You can call `Bind()` without type parameters to infer contracts from the implementation type.
-This reduces boilerplate while preserving compile-time graph validation.
+This reduces boilerplate while preserving compile-time graph validation, and it is the form used most often in small compositions where a class has exactly one natural abstraction.
 
 
 ```c#
@@ -121,7 +121,9 @@ For class `OrderManager`, `Bind().To<OrderManager>()` is equivalent to `Bind<IOr
 | ❌ | `IEnumerable<string>` | special type                                      |
 | ❌ | `ManagerBase`         | non-abstract                                      |
 | ❌ | `IManager`            | is not directly implemented by class OrderManager |
-Limitations: inferred bindings include only directly implemented abstractions and exclude special types.
+Limitations: inferred bindings include only directly implemented abstractions and exclude special types, so a deliberate constraint on the public surface is impossible with this form.
+Because the same implementation type is bound under several contracts, one lifetime applies to all of them: a singleton `OrderManager` is a singleton whether it is requested as `OrderManager`, `IOrderRepository` or `IOrderNotification`.
+When you need a specific subset of contracts, or a distinct lifetime per contract, list them explicitly with `Bind<IOrderRepository, IOrderNotification>()`, which also documents the intent at the call site.
 Common pitfalls:
 - Expecting inherited interfaces to be included automatically.
 - Forgetting that special framework types are intentionally excluded.

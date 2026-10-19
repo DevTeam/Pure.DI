@@ -1,6 +1,7 @@
 #### Required properties or fields
 
 This example shows how the `required` modifier can be used to automatically inject dependencies into properties and fields. When a property or field is marked with `required`, the DI will automatically inject the dependency without additional effort.
+It suits immutable entities and records that must be fully initialized before use: the language already guarantees that every `required` member is set, and Pure.DI supplies the values.
 
 
 ```c#
@@ -74,7 +75,10 @@ dotnet run
 
 </details>
 
-This approach simplifies dependency injection by eliminating the need to manually configure bindings for required dependencies, making the code more concise and easier to maintain.
+No `[Dependency]` attribute is needed, but a `required` member without a matching binding is a graph error, not a silent `null`.
+`required` members are injected after the attributed ones: they take the highest ordinal unless you give them an explicit `[Ordinal]`.
+An `init` setter works because the generated code assigns the member during initialization; a `required` field follows the same rule and must not be `readonly`.
+Prefer `required` for mandatory dependencies of immutable types, `[Dependency]` for optional ones, and constructor injection when the type is not a record or DTO.
 
 <details>
 <summary>The following partial class will be generated</summary>

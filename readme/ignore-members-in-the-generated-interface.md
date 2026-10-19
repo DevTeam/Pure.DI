@@ -1,6 +1,6 @@
 #### Ignore members in the generated interface
 
-This example shows how to exclude internal-only members from a generated interface.
+This example shows how to exclude internal-only members from a generated interface. `[IgnoreInterface]` on `GetAccessToken` keeps the token lookup inside the class while the endpoint stays part of the contract consumers depend on.
 
 
 ```c#
@@ -64,6 +64,13 @@ The example shows how to:
 - Mark members with IgnoreInterface
 - Keep only the intended contract surface
 - Use the generated interface in Pure.DI
+
+This is how a client exposes what callers may do and hides how it authenticates: the contract stays small, the implementation keeps its helpers, and no consumer can call an operation that was meant to stay internal.
+The exclusion is driven by an attribute, not by accessibility, so a public method can be absent from the contract while still being callable on the concrete type. That is intended for a class consumed through the interface, not for one used directly in many places.
+>[!WARNING]
+>A member marked `[IgnoreInterface]` silently disappears from the contract that an existing consumer may already use. Removing the attribute is a source-breaking change for such consumers, so treat it as an API change.
+
+Prefer this when only one or two members must stay private to the implementation; use [Control generated interfaces by members](control-generated-interfaces-by-members.md) when the inclusion is the exception and exclusion the rule.
 
 <details>
 <summary>The following partial class will be generated</summary>

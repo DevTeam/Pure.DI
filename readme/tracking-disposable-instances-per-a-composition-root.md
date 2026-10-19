@@ -90,8 +90,13 @@ dotnet run
 
 </details>
 
+Use it where a long-lived composition serves independent units of work - a console command, a background job, a UI screen - and each unit should release its own `IDisposable` graph immediately.
+Each access to the root builds a fresh graph and a fresh owner, so `Owned<T>` behaves like a scope you create and close explicitly rather than a lifetime you register.
+The owner is a struct that holds the tracked resources; dispose it exactly once, and prefer the `using` statement so an exception during the unit of work still releases the graph.
 >[!NOTE]
 >Disposable tracking ensures proper cleanup of all disposable instances within a composition scope.
+
+Prefer [tracking disposable instances with different lifetimes](tracking-disposable-instances-with-different-lifetimes.md) when the graph mixes transient and shared resources, because the owner releases ownership of shared ones instead of disposing them.
 
 <details>
 <summary>The following partial class will be generated</summary>

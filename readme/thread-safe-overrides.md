@@ -132,9 +132,15 @@ dotnet run
 
 </details>
 
+This is the shape of a batch job that turns a range of inputs into handlers in parallel: each call must see its own values, and the shared services - the time provider, the token - must still be injected once.
+The lock must cover the overrides and the `ctx.Inject` that consumes them, because overrides are shared state of the resolution; splitting them lets another thread mix its values into this graph.
+A value that is the same for every call does not need an override: inject it with `ctx.Inject` before the lock, as the processing token is injected here.
+Without the lock the graph usually still compiles and may pass a single-threaded test, then fail under load with values from another call - the failure appears in the data, not in an exception.
 The same rule applies to stack-only values such as `Span<T>`, `ReadOnlySpan<T>`, and generic `T` with `where T : allows ref struct`. Pure.DI reports `DIW013` when such values are overridden in a factory delegate without `lock (ctx.Lock)` while thread safety is enabled.
 >[!IMPORTANT]
 >Thread-safe overrides are essential when composition instances are shared across multiple threads or when parallel resolution is required.
+
+Prefer `Func<...>` factory bindings with arguments when you can, because the generated delegate synchronizes the overrides for you.
 
 <details>
 <summary>The following partial class will be generated</summary>

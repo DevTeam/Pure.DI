@@ -1,6 +1,7 @@
 #### Field injection
 
 To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
+Fields are the escape hatch of Pure.DI: reach for them only where a constructor cannot express the dependency, for example in a base class of a framework you cannot change.
 
 
 ```c#
@@ -67,10 +68,10 @@ dotnet run
 
 </details>
 
-The key points are:
-- The field must be writable
-- The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection
-- The DI automatically injects the dependency when resolving the object graph
+The field must be writable and non-static; a `readonly` field cannot be injected, and an inaccessible one is reported as no matching member rather than silently skipped.
+The `Dependency` (or `Ordinal`) attribute is used to mark the field for injection, and the integer argument fixes the order relative to other injected members.
+Injection happens right after construction, so any constructor code that reads the field sees `null`; do not use field injection for state the constructor needs.
+Prefer constructor injection, and use a `required` property when the dependency is mandatory and the type is immutable.
 
 <details>
 <summary>The following partial class will be generated</summary>

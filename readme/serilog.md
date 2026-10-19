@@ -101,6 +101,13 @@ dotnet run
 >[!NOTE]
 >This example also turns on the `OnNewInstance` and `OnDependencyInjection` hints to log the creation and injection of composition objects. The regular-expression hints exclude the logger types themselves from these callbacks.
 
+Every library and service that wants a structured log needs a logger whose context names the class that writes: `ForContext(ctx.ConsumerType)` gives that without a manual `Log.ForContext<T>()` in each constructor, and without binding the logger per type.
+The logger is passed in as a composition argument, so the composition does not own its configuration and shutdown; the host does. That also keeps tests free to pass a silent or in-memory logger.
+>[!WARNING]
+>A logger bound this way is created per consumer while the underlying `ILogger` is the argument - keep the argument binding shared and the context logger cheap. Note also that `ctx.ConsumerType` reports the type receiving the dependency, which is the enclosing class, not the class that declared the constructor parameter.
+
+Prefer this over `Log.ForContext<T>()` when the composition must stay testable. See [Consumer type](consumer-type.md) for the general contract and [Consumer types](consumer-types.md) for a broader example.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

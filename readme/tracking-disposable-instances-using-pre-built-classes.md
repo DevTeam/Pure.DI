@@ -139,6 +139,10 @@ dotnet run
 
 </details>
 
+Use it when a library must own disposables but the application already has `Pure.DI.Abstractions` as a package boundary, so the library does not need the generator itself.
+`Own<T>` is the package's ownership wrapper: it carries the same release-the-transient / release-only-the-shared-instance semantics as `Owned<T>`.
+Consumers still need the `Pure.DI` package, because the abstraction only describes the contract that `Func<Own<IDbConnection>>` requires.
+A shared instance is disposed by the composition, so keep that lifetime at the boundary of the application; otherwise the last consumer releases state other parts of the application still use.
 This package should also be included in a project:
 
 [![NuGet](https://img.shields.io/nuget/v/Pure.DI)](https://www.nuget.org/packages/Pure.DI)

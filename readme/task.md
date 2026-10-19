@@ -95,6 +95,10 @@ dotnet run
 >[!NOTE]
 >`Task` injection provides automatic background execution with optional cancellation support for asynchronous operations.
 
+Injecting `Task<T>` lets a consumer start its work first and join the dependency later, so graph construction and dependency initialization overlap instead of adding up. `LoadDataCommand` awaits the task only after its own delay, by which time the data service may already be ready.
+An injected task that nobody awaits and that throws leaves its exception unobserved; always await the task, or keep the error path inside the task itself. Pass `CancellationToken` from the root argument so cancellation reaches the started task.
+`Hint.Resolve, "Off"` is safe here because every root has a `CancellationToken` root argument, and resolve methods cannot supply root arguments. Do not combine the two in one composition.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

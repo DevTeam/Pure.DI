@@ -174,6 +174,13 @@ dotnet run
 >[!NOTE]
 >Since the `IMapper` binding is a singleton, the mapping configuration is created and compiled only once and then reused for all mappings.
 
+Mapping libraries are the typical case of an object graph the composition did not build: the target is created by the mapper, so `[Inject]` members would stay null without a build-up step. This pattern closes that gap for every mapped pair without a wrapper per type.
+The `Func<TT1, TT2>` binding is what consumers ask for by type: a service injects `Func<Student, Person>` and knows nothing about AutoMapper. Build-up runs on every mapping, so a mapped object must not hold per-map state that the formatter expects to persist.
+>[!WARNING]
+>`ctx.BuildUp` cannot create what `[Inject]` needs when the target's member type has no binding - the member stays null, as `Person.Formatter` would without `IPersonFormatter`. A null-safe consumer hides that until someone needs the value.
+
+Prefer an explicit mapping method in a class you own when the mapping needs dependencies; use injectable delegates when the third-party mapper must stay in charge. See [Build up of an existing object](build-up-of-an-existing-object.md).
+
 <details>
 <summary>The following partial class will be generated</summary>
 

@@ -69,8 +69,13 @@ dotnet run
 
 </details>
 
+Use it when a required or init-only property needs a different implementation than the constructor arguments of the same class, and the class belongs to someone else or should stay free of DI attributes.
+Property injection happens after the constructor runs, so the property must be settable (`required`, `init` or a setter) for the tag to have an effect.
+The rule is bound to the member name of that type; a renamed property stops matching and `DIW004` reports the unused injection site.
 >[!WARNING]
 >Each potentially injectable argument, property, or field contains an additional tag. This tag can be used to specify what can be injected there. This will only work if the binding type and the tag match. So while this approach can be useful for specifying what to enter, it can be more expensive to maintain and less reliable, so it is recommended to use attributes like `[Tag(...)]` instead.
+
+Prefer `[Tag("...")]` on the property when you own the class, and a constructor parameter when the value is required for the object to be valid.
 
 <details>
 <summary>The following partial class will be generated</summary>

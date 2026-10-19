@@ -1,6 +1,7 @@
 #### OnNewInstance wildcard hint
 
 Hints are used to fine-tune code generation. The `OnNewInstance` hint determines whether to generate partial `OnNewInstance` method.
+Filtering by implementation name is the version that survives refactoring of lifetimes: the question becomes "track every repository and service", not "track every singleton", so the instrumentation stays correct when a binding changes its lifetime.
 In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// OnNewInstance = On`.
 
 
@@ -101,6 +102,9 @@ dotnet run
 </details>
 
 The `OnNewInstanceImplementationTypeNameWildcard` hint helps you define a set of implementation types that require instance creation control. You can use it to specify a wildcard to filter bindings by implementation name.
+The filter matches the implementation type, not the contract, so a class bound under two interfaces is reported once per construction, and an unmatched type such as `ConsoleLogger` is silently skipped.
+The value is passed by `ref` for every matched construction, including the ones made inside a factory and the singletons created on first access.
+Prefer name-based wildcards when you are investigating a layer of the code, and lifetime-based filters when you are investigating a regression in shared state.
 For more hints, see [this](../README.md#setup-hints) page.
 
 <details>

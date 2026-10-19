@@ -1,6 +1,6 @@
 #### Singleton
 
-The `Singleton` lifetime ensures that there will be a single instance of the dependency for each composition.
+The `Singleton` lifetime ensures that there will be a single instance of the dependency for each composition. Use it when consumers must share identity or state: a cache, a connection pool, a dispatcher, a run registry, or an accounting store. A stateless service does not need it, because a transient instance can capture the same singleton dependencies without becoming shared itself.
 
 
 ```c#
@@ -112,6 +112,12 @@ Some articles advise using objects with a `Singleton` lifetime as often as possi
 - _Singleton_ can retain dependency references longer than their expected lifetime, this is especially significant for objects that hold "non-renewable" resources, such as the operating system Handler.
 
 - Sometimes additional logic is required to dispose of _Singleton_.
+
+In a real project this is the lifetime of infrastructure that outlives a request: a client over a connection pool, an in-memory cache of parsed data, or a dispatcher every consumer must reach. The instance belongs to the composition, so it lives exactly as long as that composition object, and it is the composition that disposes it (see [Disposable singleton](disposable-singleton.md)), not whichever consumer receives it first.
+>[!WARNING]
+>A singleton keeps every dependency it captured for its own lifetime. If a singleton receives a transient, scoped or per-resolve dependency, that dependency silently becomes shared as well and is never recreated per request. Check each constructor parameter of a type before giving it a `Singleton` lifetime.
+
+Sharing also moves the thread-safety burden onto this instance and onto everything it uses. Keep the `ThreadSafe` hint on for a composition whose roots or deferred factories are reached from several threads, and synchronize the singleton's own mutable state. When neither identity nor shared state is required, prefer [Transient](transient.md).
 
 <details>
 <summary>The following partial class will be generated</summary>

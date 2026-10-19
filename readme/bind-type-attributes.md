@@ -1,6 +1,6 @@
 #### Bind type attributes
 
-Shows how several `Type` attributes can expose one implementation through several contracts.
+Shows how several `Type` attributes can expose one implementation through several contracts. The implementation declares every abstraction it implements once, and each abstraction can be injected on its own.
 
 
 ```c#
@@ -56,6 +56,11 @@ dotnet run
 
 >[!NOTE]
 >Multiple type attributes in the same square-bracket binding group are merged into one binding with several contracts.
+
+This is the attribute spelling of `.Bind<IOne>().Bind<ITwo>().To<T>()`, and it removes repeated chains from the setup. The composition only keeps roots for the contracts that outside code consumes.
+Because the contracts share one group, adding a contract changes the same binding and the same instance is reused across the abstractions. A separate group would create a second binding of the same type, so a collection would receive two entries where one was intended.
+>[!TIP]
+>Prefer this when the implementation assembly owns its contracts, and the setup API when the choice belongs to one application.
 
 <details>
 <summary>The following partial class will be generated</summary>

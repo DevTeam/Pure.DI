@@ -1,6 +1,6 @@
 #### Generate interfaces with generics
 
-This example shows how generic members, nullable annotations, and events are preserved in a reporting scenario.
+This example shows how generic members, nullable annotations, and events are preserved in a reporting scenario. The generated interface mirrors the member signatures, including the `where` constraint on `Format<T>`, so callers keep full type information through the abstraction.
 
 
 ```c#
@@ -78,6 +78,13 @@ The example shows how to:
 - Generate an interface for generic members
 - Preserve nullable annotations
 - Preserve events and generic constraints
+
+A formatter, a serializer or a repository with generic methods is a natural fit: the contract can be generated from the class without losing the constraints that make the methods usable.
+Nullability is part of the generated signature, so `string?` in the class stays `string?` in the contract and a consumer that ignores it gets the usual warnings instead of a silent null.
+>[!NOTE]
+>Events are declared in the interface, so a consumer can subscribe through the abstraction. The class must still raise them; the generator does not add any plumbing.
+
+Prefer this for generic member signatures that are painful to repeat by hand, and mark members that should stay internal with `[IgnoreInterface]` as `Hidden` does here.
 
 <details>
 <summary>The following partial class will be generated</summary>

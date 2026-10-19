@@ -1,7 +1,7 @@
 #### ThreadSafe hint
 
 Hints are used to fine-tune code generation. The `ThreadSafe` hint determines whether object composition will be created in a thread-safe manner. This hint is `On` by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
-In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// ThreadSafe = Off`.
+Turning it off is a statement about how the composition is used: it is right for a graph built once during single-threaded startup, for build and CLI tools, and for tests, and wrong for any composition shared by threads while singletons are still being created.
 
 
 ```c#
@@ -54,6 +54,11 @@ dotnet run
 
 </details>
 
+In addition, setup hints can be comments before the `Setup` method in the form `hint = value`, for example: `// ThreadSafe = Off`.
+With the hint on, the generated code synchronizes the creation of stored instances, so two threads asking for a singleton for the first time get one instance instead of two.
+With the hint off, the lock disappears from generated code and nothing warns you later: a singleton created under two threads can be built twice, and fields are written without synchronization.
+A factory that mutates shared state from `ctx.Override` needs its own synchronization when this hint is off - Pure.DI runs the code unsynchronized exactly as written.
+Prefer the default `On` for anything a UI or a server resolves at runtime, and switch it off only where the composition is created and fully resolved on one thread before the threads start.
 For more hints, see [this](../README.md#setup-hints) page.
 
 <details>

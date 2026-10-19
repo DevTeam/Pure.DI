@@ -105,8 +105,13 @@ dotnet run
 
 </details>
 
+This is how a handler that serves many messages gets the lifetime it needs: one owner per message, so a failing or slow message releases its own connection without touching the others.
+The consumer must dispose the owner, so a service that creates an owner in its constructor should also implement `IDisposable`/`IAsyncDisposable` and forward the call, as `QueryService` does here.
+Disposing the same owner twice is safe: after the first call the tracked resources are released and the second call does nothing.
 >[!NOTE]
 >Async disposable tracking in delegates ensures proper async cleanup even when instances are created dynamically through factory delegates.
+
+Prefer a plain `Func<T>` when the created object does not need to be released per use, because ownership adds a disposal obligation to every caller.
 
 <details>
 <summary>The following partial class will be generated</summary>

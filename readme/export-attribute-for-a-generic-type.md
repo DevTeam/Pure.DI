@@ -82,6 +82,9 @@ dotnet run
 >[!NOTE]
 >The Export attribute provides a declarative way to specify bindings directly on types, reducing the need for manual composition setup.
 
+The `TT` marker in the exported type is what makes one method serve every closed type: `IComments<Post>` and `IComments<Comment>` are both produced by the same factory call with the requested type argument, and the generated code is concrete for each of them.
+The exported method is called once per binding creation, so the lifetime of the owning type decides whether the result is reused. A factory that must return a fresh instance per consumer should stay transient, as it is here.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

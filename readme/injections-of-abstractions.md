@@ -1,7 +1,7 @@
 #### Injections of abstractions
 
 This is the recommended model for production code: depend on abstractions and bind them to implementations in composition.
-It keeps business code independent from infrastructure details and makes replacements predictable.
+It keeps business code independent from infrastructure details, makes replacements predictable, and gives one place where a lifetime or a decorator is changed for the whole application.
 
 
 ```c#
@@ -79,14 +79,12 @@ dotnet run
 
 </details>
 
-The binding chain maps abstractions to concrete types so the generator can build a fully concrete object graph. This keeps consumers decoupled and allows swapping implementations. A single implementation can satisfy multiple abstractions.
+The binding chain maps abstractions to concrete types so the generator can build a fully concrete object graph; a single implementation can satisfy several abstractions at once.
+The compiler enforces the contract: binding an implementation that does not implement the abstraction is `DIE011`, and an abstraction that nothing satisfies is a graph error, not a runtime surprise.
 >[!TIP]
->If a binding is missing, injection still works when the consumer requests a concrete type (not an abstraction).
+>A consumer that requests a concrete type still resolves without a binding, so a leak of a concrete type into business code stays invisible - the abstractions above are what make the graph explicit.
 
-Limitations: explicit bindings add configuration lines, but the trade-off is clearer architecture and safer evolution.
-Common pitfalls:
-- Mixing abstraction-first and concrete-only styles in one module without clear boundaries.
-- Forgetting to bind alternate implementations for tagged use cases.
+Prefer this style over [auto-bindings](auto-bindings.md); add tags only when the same abstraction really has several implementations.
 See also: [Auto-bindings](auto-bindings.md), [Tags](tags.md).
 
 <details>

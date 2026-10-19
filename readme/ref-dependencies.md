@@ -69,6 +69,10 @@ dotnet run
 >[!NOTE]
 >`ref` injection through an `[Ordinal]` method lets dependencies use stack-only types like `Span<T>` and avoids copying large structs.
 
+This is the pattern for parsers, serializers and buffer-processing services: the `ref` parameter lets a stack-only dependency live for the duration of one call and never escape to the heap.
+A stack-only dependency cannot be used with a stored lifetime (singleton, scoped, per-block) or captured in a generated delegate; Pure.DI reports an error instead of producing code that would not compile.
+Prefer method injection with `ref` or a `scoped` root argument for `Span<T>`/`ReadOnlySpan<T>`, and plain constructor injection for everything else.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

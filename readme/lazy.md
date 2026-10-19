@@ -65,6 +65,11 @@ dotnet run
 >[!NOTE]
 >Lazy<T> is useful for expensive-to-create objects or when the instance may never be needed, improving application startup performance.
 
+The deferred part is the creation, not the graph: `Lazy<T>` is built from the `Func<T>` binding, and the underlying binding's lifetime still applies. A `Singleton` behind `Lazy` is created once on first access and kept; a transient behind `Lazy` is also created once, because `Lazy` caches its value.
+Nothing is created until `Value` is read, so a root can be resolved on a path where the expensive dependency is never needed. Reading `Value` from several threads is safe by the `Lazy` contract itself, but it happens on the thread that first reads it.
+>[!TIP]
+>Prefer `Func<T>` instead when every call must produce a separate instance.
+
 <details>
 <summary>The following partial class will be generated</summary>
 

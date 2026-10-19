@@ -1,6 +1,6 @@
 #### Tag attribute
 
-Tags let you choose among multiple implementations of the same contract.
+Tags let you choose among multiple implementations of the same contract. `[Tag(...)]` places that choice at the injection site, so the consuming type states which implementation it needs while the composition still owns the bindings. Use it when one class legitimately depends on two implementations of the same interface, as `PageRenderer` does with a fast and a quality renderer.
 
 
 ```c#
@@ -71,7 +71,11 @@ dotnet run
 
 </details>
 
+This is the usual way to keep an implementation choice next to the consumer when the consumer's code is yours: the setup binds each implementation once with its tag, and every injection site picks one of them. A codebase with many tags usually replaces string literals with an enum or a [smart tag](smart-tags.md), so a mistyped tag cannot compile.
+A tag that matches no binding leaves the contract unresolved, and Pure.DI reports that at compile time instead of failing at run time. The tag is part of the injection-site contract, so renaming one touches the setup and every consumer in the same change.
 A tag can be a constant, a type, a [smart tag](smart-tags.md), or an enum value. The `Tag` attribute is part of the API, but you can define your own in any assembly or namespace.
+>[!TIP]
+>Prefer enum values or smart tags once a graph has more than a couple of string tags, and reserve `[Tag("...")]` for small graphs where the literal is obvious.
 
 <details>
 <summary>The following partial class will be generated</summary>

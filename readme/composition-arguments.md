@@ -1,7 +1,7 @@
 #### Composition arguments
 
-Use composition arguments when you need to pass state into the composition. Define them with `Arg<T>(string argName)` (optionally with tags) and use them like any other dependency. Only arguments that are used in the object graph become constructor parameters.
-This is a clean way to inject external runtime state without global static variables.
+Use composition arguments when the whole graph needs a value from the outside: configuration, a clock, an HTTP client, credentials. Declare them with `Arg<T>(argName)` (optionally with a tag) and use them like any other dependency; only arguments that the object graph actually uses become constructor parameters.
+This is the clean way to pass external runtime state without global statics, and it keeps the composition itself testable because the same setup works with different values.
 >[!NOTE]
 >Actually, composition arguments work like normal bindings. The difference is that they bind to the values of the arguments. These values will be injected wherever they are required.
 
@@ -102,7 +102,9 @@ dotnet run
 
 >[!NOTE]
 >Composition arguments provide a way to inject runtime values into the composition, making your DI configuration more flexible.
-Limitations: too many composition arguments can bloat composition constructors and blur configuration boundaries.
+The argument name is validated as an identifier (`DIE006`) and becomes a named parameter of the composition constructor, so callers read `new Composition(connectionString: ...)` rather than a positional list.
+The value is fixed for the lifetime of that composition instance: everything resolved from it shares the same instance, so it behaves like an external immutable value and not like mutable state.
+Prefer a root argument when only one entry point needs the value; a composition argument that no graph uses is easy to leave behind after a refactor.
 Common pitfalls:
 - Using untagged primitive arguments where several values of the same type exist.
 - Treating composition arguments as mutable runtime state holders.
