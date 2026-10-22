@@ -155,8 +155,6 @@ classDiagram
 	Guid --|> IComparable
 	Guid --|> IComparableᐸGuidᐳ
 	Guid --|> IEquatableᐸGuidᐳ
-	Guid --|> IFormattable
-	Guid --|> IParsableᐸGuidᐳ
 	Guid --|> ISpanFormattable
 	Guid --|> ISpanParsableᐸGuidᐳ
 	Guid --|> IUtf8SpanFormattable
@@ -205,12 +203,6 @@ classDiagram
 			<<interface>>
 		}
 		class IEquatableᐸGuidᐳ {
-			<<interface>>
-		}
-		class IFormattable {
-			<<interface>>
-		}
-		class IParsableᐸGuidᐳ {
 			<<interface>>
 		}
 		class ISpanFormattable {

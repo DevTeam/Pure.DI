@@ -123,7 +123,6 @@ Class diagram:
 ---
 classDiagram
 	Uri --|> IEquatableᐸUriᐳ
-	Uri --|> IFormattable
 	Uri --|> ISpanFormattable
 	Uri --|> ISerializable
 	Person --|> IPerson
@@ -148,9 +147,6 @@ classDiagram
 	}
 	namespace System {
 		class IEquatableᐸUriᐳ {
-			<<interface>>
-		}
-		class IFormattable {
 			<<interface>>
 		}
 		class Int32 {

@@ -160,7 +160,6 @@ Class diagram:
 classDiagram
 	OrderManager --|> IOrderRepository
 	OrderManager --|> IOrderNotification
-	OrderManager --|> IEnumerableᐸStringᐳ
 	Shop --|> IShop
 	Composition ..> Shop : IShop MyShop
 	Shop o-- "PerBlock" OrderManager : OrderManager
@@ -187,11 +186,6 @@ classDiagram
 		class Shop {
 				<<class>>
 			+Shop(OrderManager manager, IOrderRepository repository, IOrderNotification notification)
-		}
-	}
-	namespace System.Collections.Generic {
-		class IEnumerableᐸStringᐳ {
-			<<interface>>
 		}
 	}
 ```
