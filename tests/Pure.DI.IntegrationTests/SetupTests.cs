@@ -3537,6 +3537,72 @@ public class SetupTests
     }
 
     [Fact]
+    public async Task ShouldPreferBindingOfSetupThatOverridesInTransitiveDependsOn()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IGreeting { string Text { get; } }
+                               
+                               sealed class Greeting: IGreeting
+                               {
+                                   public Greeting(string text) => Text = text;
+                           
+                                   public string Text { get; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupBase()
+                                   {
+                                       DI.Setup("Base", CompositionKind.Internal)
+                                           .Bind<IGreeting>().To(_ => new Greeting("base"));
+                                   }
+
+                                   private static void SetupMid()
+                                   {
+                                       DI.Setup("Mid", CompositionKind.Internal)
+                                           .DependsOn("Base")
+                                           .Bind<IGreeting>().To(_ => new Greeting("mid"));
+                                   }
+                           
+                                   private static void SetupDirect()
+                                   {
+                                       DI.Setup(nameof(Direct))
+                                           .DependsOn("Base", "Mid")
+                                           .Root<IGreeting>("Greeting");
+                                   }
+                           
+                                   private static void SetupNested()
+                                   {
+                                       DI.Setup(nameof(Nested))
+                                           .DependsOn("Mid")
+                                           .Root<IGreeting>("Greeting");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       Console.WriteLine($"Direct: {new Direct().Greeting.Text}");
+                                       Console.WriteLine($"Nested: {new Nested().Greeting.Text}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.StdOut.ShouldBe(["Direct: mid", "Nested: mid"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportSetupWithBindingToTaggedImplementation()
     {
         // Given

@@ -142,11 +142,15 @@ sealed class MetadataBuilder(
                     continue;
                 }
 
-                yield return new SetupDependency(dependsOnSetup, item.ContextArgName, item.ContextArgSource, item.ContextArgKind, dependsOn);
+                // Setups are merged in order, so a later setup overrides the bindings of an earlier one.
+                // A setup is applied after the setups it depends on, so that it overrides their bindings,
+                // and the order of the DependsOn items is preserved among independent setups.
                 foreach (var result in ResolveDependencies(dependsOnSetup, map, processed))
                 {
                     yield return result;
                 }
+
+                yield return new SetupDependency(dependsOnSetup, item.ContextArgName, item.ContextArgSource, item.ContextArgKind, dependsOn);
             }
         }
     }
