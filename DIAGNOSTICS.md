@@ -88,6 +88,7 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - Fix: Bind the correct implementation or change the contract to match.
 - See: [injections-of-abstractions](readme/injections-of-abstractions.md).
 - Examples: `Bind<IService>().To<Service>()` where `Service` does not implement `IService`.
+- Note: Contract check follows C# type identity, so tuple types that differ only in element names are compatible: `Bind<(string Street, string City)>().To(_ => ("Main St", "Springfield"))` is valid.
 
 ### DIE012
 - Description: Attribute argument position is invalid.

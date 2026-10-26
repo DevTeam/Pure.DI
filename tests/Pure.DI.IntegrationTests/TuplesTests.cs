@@ -70,6 +70,54 @@ public class TuplesTests
         result.StdOut.ShouldBe(["(Sample.Service, Point { X = 7, Y = 9 }, Sample.Dependency)"], result);
     }
     [Fact]
+    public async Task ShouldBindUnnamedTupleLiteralToNamedTupleContract()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Service
+                               {
+                                   public Service((string Street, string City) address) => Address = address;
+
+                                   public (string Street, string City) Address { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<(string Street, string City)>().To(_ => ("Main St", "Springfield"))
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Service>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Address.Street);
+                                       Console.WriteLine(root.Address.City);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Main St", "Springfield"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportTuples()
     {
         // Given

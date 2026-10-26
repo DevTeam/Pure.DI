@@ -225,6 +225,7 @@ sealed class MetadataValidator(
             var notSupportedContracts = binding.Contracts
                 .Where(contract => contract.ContractType != null
                                    && !supportedContracts.Contains(contract.ContractType)
+                                   && !IsIdentityConversion(compilation, implementationType, contract.ContractType)
                                    && !types.IsImplicitUnionConversion(compilation, implementationType, contract.ContractType))
                 .Select(i => i.ContractType!)
                 .ToList();
@@ -263,4 +264,10 @@ sealed class MetadataValidator(
 
         return isValid;
     }
+
+    // C# treats tuple types that differ only in element names as identical, so a factory
+    // returning an unnamed tuple literal implements a named tuple contract such as
+    // (string Street, string City). Symbol equality alone does not see that identity.
+    private static bool IsIdentityConversion(Compilation compilation, ITypeSymbol implementationType, ITypeSymbol contractType) =>
+        compilation.ClassifyConversion(implementationType, contractType).IsIdentity;
 }
