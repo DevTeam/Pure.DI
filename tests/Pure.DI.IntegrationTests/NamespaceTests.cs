@@ -437,6 +437,60 @@ public class NamespaceTests
         result.StdOut.ShouldBe([$"Initialize 1 {PathSeparator}"], result);
     }
     [Fact]
+    public async Task ShouldDeduplicateUsingAliasesDeclaredInSeveralFiles()
+    {
+        // Given
+
+        // When
+        var result = await new[]
+        {
+            """
+            using Pure.DI;
+            using Text = System.String;
+
+            partial class Composition
+            {
+                private static void SetupName() => DI.Setup(nameof(Composition))
+                    .Bind<Text>().To(_ => (Text)"widget");
+            }
+            """,
+            """
+            using Pure.DI;
+            using Text = System.String;
+
+            partial class Composition
+            {
+                private static void SetupCount() => DI.Setup(nameof(Composition))
+                    .Bind<int>().To(_ => ((Text)"123").Length)
+                    .Bind<Service>().To<Service>()
+                    .Root<Service>("Service");
+            }
+            """,
+            """
+            using System;
+
+            public sealed class Service(string name, int count)
+            {
+                public string Describe() => $"{name} x{count}";
+            }
+
+            public class Program
+            {
+                public static void Main()
+                {
+                    var composition = new Composition();
+                    Console.WriteLine(composition.Service.Describe());
+                }
+            }
+            """
+        }.RunAsync(new Options(LanguageVersion.CSharp12));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["widget x3"], result);
+    }
+
+    [Fact]
     public async Task ShouldSupportGlobalNamespace()
     {
         // Given

@@ -23,7 +23,7 @@ sealed class UsingDeclarationsBuilder : IBuilder<CompositionCode, CompositionCod
             code.AppendLine($"using static {staticUsingDirective};");
         }
 
-        foreach (var alias in composition.Setup.UsingDirectives.SelectMany(i => i.Aliases))
+        foreach (var alias in composition.Setup.UsingDirectives.SelectMany(i => i.Aliases).Distinct())
         {
             code.AppendLine($"using {alias.name}={alias.type};");
         }
