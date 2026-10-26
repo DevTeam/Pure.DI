@@ -11,6 +11,7 @@ static class CodeExtensions
         tag switch
         {
             string => $"\"{tag}\"",
+            bool val => val ? "true" : "false",
             double val => $"{val.ToString(CultureInfo.InvariantCulture)}D",
             float val => $"{val.ToString(CultureInfo.InvariantCulture)}F",
             decimal val => $"{val.ToString(CultureInfo.InvariantCulture)}M",

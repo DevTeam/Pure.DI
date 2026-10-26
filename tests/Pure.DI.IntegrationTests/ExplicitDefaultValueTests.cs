@@ -72,6 +72,64 @@ public class ExplicitDefaultValueTests
     }
 
     [Fact]
+    public async Task ShouldUseCtorWhenItHasBoolDefaultValue()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService
+                               {
+                                   bool Verbose { get; }
+                                   bool Strict { get; }
+                               }
+                           
+                               class Service : IService
+                               {
+                                   public bool Verbose { get; }
+                                   public bool Strict { get; }
+                           
+                                   public Service(bool verbose = true, bool strict = false)
+                                   {
+                                       Verbose = verbose;
+                                       Strict = strict;
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To<Service>()
+                                           .Root<IService>("Root");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Verbose);
+                                       Console.WriteLine(root.Strict);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "False"], result);
+    }
+
+    [Fact]
     public async Task ShouldUseCtorWhenItHasDefaultValueFromOtherAssembly()
     {
         // Given
