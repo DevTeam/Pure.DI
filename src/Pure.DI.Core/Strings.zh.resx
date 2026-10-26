@@ -368,6 +368,9 @@
     <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
         <value>注入方法可能会解析为具有更高 OverloadResolutionPriority 的其他重载。请为目标注入方法设置最高优先级，或使用唯一的方法名。</value>
     </data>
+    <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
+        <value>Singleton 或 Scoped 依赖项由委托参数创建。实例只创建一次，并保留第一次调用的值。</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成已中断。</value>
     </data>

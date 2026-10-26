@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 using Core;
 
@@ -2150,8 +2150,11 @@ public class FuncTests
                            }
                            """.RunAsync(new Options(LanguageVersion.Latest));
         // Then
-        result.Success.ShouldBeTrue(result);
-        result.Warnings.Count.ShouldBe(0, result);
+        // The singleton Metronome takes its period from the Func<TimeSpan, ...> argument.
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings[0].Id.ShouldBe(LogId.WarningStoredLifetimeFromDelegateArgument);
     }
 #endif
     [Fact]
@@ -3564,5 +3567,256 @@ public class FuncTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["FirstCycle SecondCycle"], result);
+    }
+
+    [Theory]
+    [InlineData("Lifetime.Singleton")]
+    [InlineData("Lifetime.Scoped")]
+    public async Task ShouldShowWarningWhenStoredLifetimeIsBuiltFromDelegateArgument(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   public Dependency(string value) => Value = value;
+
+                                   public string Value { get; }
+                               }
+
+                               class Service
+                               {
+                                   public Service(Dependency dependency) => Dependency = dependency;
+
+                                   public Dependency Dependency { get; }
+                               }
+
+                               class Root
+                               {
+                                   public Root(Func<string, Service> factory) => Factory = factory;
+
+                                   public Func<string, Service> Factory { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().As({{lifetime}}).To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Root>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var first = composition.Root.Factory("first-call").Dependency.Value;
+                                       var second = composition.Root.Factory("second-call").Dependency.Value;
+                                       Console.WriteLine($"{first} {second}");
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(1, result);
+        result.Warnings[0].Id.ShouldBe(LogId.WarningStoredLifetimeFromDelegateArgument);
+
+        // The stored lifetime keeps the value of the first call.
+        result.StdOut.ShouldBe(["first-call first-call"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotShowWarningWhenStoredLifetimeIsBuiltFromBoundValue()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   public Dependency(string value) => Value = value;
+
+                                   public string Value { get; }
+                               }
+
+                               class Service
+                               {
+                                   public Service(Dependency dependency) => Dependency = dependency;
+
+                                   public Dependency Dependency { get; }
+                               }
+
+                               class Root
+                               {
+                                   public Root(Func<int, Service> factory) => Factory = factory;
+
+                                   public Func<int, Service> Factory { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<string>().To(_ => "default")
+                                           .Bind<Dependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<Service>().To<Service>()
+                                           .Root<Root>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Factory(1).Dependency.Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["default"], result);
+    }
+
+    [Theory]
+    [InlineData("Lifetime.PerResolve")]
+    [InlineData("Lifetime.Transient")]
+    public async Task ShouldNotShowWarningWhenLifetimeIsNotStored(string lifetime)
+    {
+        // Given
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               class Dependency
+                               {
+                                   public Dependency(string value) => Value = value;
+
+                                   public string Value { get; }
+                               }
+
+                               class Root
+                               {
+                                   public Root(Func<string, Dependency> factory) => Factory = factory;
+
+                                   public Func<string, Dependency> Factory { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<Dependency>().As({{lifetime}}).To<Dependency>()
+                                           .Root<Root>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Factory("value").Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["value"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotShowWarningWhenStoredLifetimeIsOverriddenExplicitly()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService
+                               {
+                                   string Value { get; }
+                               }
+
+                               class Service: IService
+                               {
+                                   public Service(string value) => Value = value;
+
+                                   public string Value { get; }
+                               }
+
+                               class Root
+                               {
+                                   public Root(IService service) => Service = service;
+
+                                   public IService Service { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IService>().As(Lifetime.Singleton).To<Service>()
+                                           .Bind<Root>().To(ctx =>
+                                           {
+                                               // An explicit override is documented behavior, not a delegate argument.
+                                               ctx.Override("manual");
+                                               ctx.Inject<IService>(out var service);
+                                               return new Root(service);
+                                           })
+                                           .Root<Root>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Service.Value);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["manual"], result);
     }
 }

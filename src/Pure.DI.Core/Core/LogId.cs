@@ -135,6 +135,8 @@ static class LogId
     public const string WarningStackOnlyOverrideRequiresLock = "DIW013";
     // Injection method may resolve to an overload with a higher overload resolution priority.
     public const string WarningInjectionMethodOverloadResolutionPriority = "DIW014";
+    // A singleton or scoped dependency is built from a delegate argument.
+    public const string WarningStoredLifetimeFromDelegateArgument = "DIW015";
 
     // Info
     // Generation was interrupted.

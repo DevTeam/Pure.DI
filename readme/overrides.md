@@ -130,7 +130,7 @@ dotnet run
 
 </details>
 
-Overrides are scoped to the factory invocation that declares them; nothing is captured by the composition, so a singleton cannot be built from overridden values in a meaningful way.
+Overrides are scoped to the factory invocation that declares them; nothing is captured by the composition, so a singleton cannot be built from overridden values in a meaningful way. The same holds for the arguments of a generated `Func<..., T>` delegate, which are applied as deep overrides: Pure.DI reports `DIW015` when such an argument reaches a `Singleton` or `Scoped` dependency, because that instance is created once and keeps the value of the first call.
 An override is matched by value type and tag, so a tagged override (`ctx.Override(layerIndex, "layer")`) is required when two parameters share a type; an override that matches nothing is silently unused.
 The factory itself is resolved once per `Func` use and then invoked per call, so keep the overrides close to the injection they affect for readability.
 `FormatCode = On` is set here only to keep the generated code readable; it costs generation time and belongs to debugging, not to a release composition.

@@ -368,6 +368,9 @@
     <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
         <value>Une méthode d’injection peut être résolue vers une autre surcharge ayant une valeur OverloadResolutionPriority plus élevée. Attribuez la priorité la plus élevée à la méthode d’injection voulue ou utilisez un nom de méthode unique.</value>
     </data>
+    <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
+        <value>Une dépendance Singleton ou Scoped est créée à partir d’un argument du délégué. L’instance est créée une seule fois et conserve la valeur du premier appel.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>La génération a été interrompue.</value>
     </data>

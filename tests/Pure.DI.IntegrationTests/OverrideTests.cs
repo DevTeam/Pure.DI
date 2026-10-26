@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 using Core;
 
@@ -3720,12 +3720,12 @@ public class OverrideTests
     }
 
     [Theory]
-    [InlineData(Lifetime.Singleton, "33")]
-    [InlineData(Lifetime.Scoped, "33")]
-    [InlineData(Lifetime.PerResolve, "33")]
-    [InlineData(Lifetime.PerBlock, "99")]
-    [InlineData(Lifetime.Transient, "99")]
-    internal async Task ShouldNotOverrideTopLevelDependencies(Lifetime lifetime, string secondId)
+    [InlineData(Lifetime.Singleton, "33", true)]
+    [InlineData(Lifetime.Scoped, "33", true)]
+    [InlineData(Lifetime.PerResolve, "33", false)]
+    [InlineData(Lifetime.PerBlock, "99", false)]
+    [InlineData(Lifetime.Transient, "99", false)]
+    internal async Task ShouldNotOverrideTopLevelDependencies(Lifetime lifetime, string secondId, bool hasStoredLifetimeWarning)
     {
         // Given
 
@@ -3801,7 +3801,9 @@ public class OverrideTests
                            """.Replace("#lifetime#", lifetime.ToString()).RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        // A stored lifetime keeps the value of the first call, so Pure.DI reports it.
+        result.Warnings.Count(i => i.Id == LogId.WarningStoredLifetimeFromDelegateArgument).ShouldBe(hasStoredLifetimeWarning ? 1 : 0, result);
+        result.Success.ShouldBe(!hasStoredLifetimeWarning, result);
         result.StdOut.ShouldBe(["2", "33", secondId], result);
     }
 

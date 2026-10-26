@@ -389,6 +389,9 @@
     <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
         <value>Метод инъекции может разрешиться в другую перегрузку с более высоким OverloadResolutionPriority. Назначьте целевому методу инъекции наивысший приоритет или используйте уникальное имя метода.</value>
     </data>
+    <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
+        <value>Singleton- или Scoped-зависимость создаётся из аргумента делегата. Экземпляр создаётся один раз и сохраняет значение первого вызова.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Генерация была прервана.</value>
     </data>

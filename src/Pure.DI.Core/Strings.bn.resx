@@ -368,6 +368,9 @@
     <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
         <value>একটি ইনজেকশন মেথড উচ্চতর OverloadResolutionPriority-সহ অন্য ওভারলোডে সমাধান হতে পারে। নির্দিষ্ট ইনজেকশন মেথডকে সর্বোচ্চ অগ্রাধিকার দিন অথবা একটি অনন্য মেথড নাম ব্যবহার করুন।</value>
     </data>
+    <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
+        <value>একটি Singleton বা Scoped নির্ভরতা ডেলিগেট আর্গুমেন্ট থেকে তৈরি হয়। ইনস্ট্যান্সটি একবারই তৈরি হয় এবং প্রথম কলের মান ধরে রাখে।</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>জেনারেশন বাধাপ্রাপ্ত হয়েছে।</value>
     </data>

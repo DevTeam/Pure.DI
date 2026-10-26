@@ -368,6 +368,9 @@
     <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
         <value>מתודת הזרקה עשויה להיפתר לעומס־יתר אחר עם OverloadResolutionPriority גבוה יותר. תן למתודת ההזרקה הרצויה את העדיפות הגבוהה ביותר או השתמש בשם מתודה ייחודי.</value>
     </data>
+    <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
+        <value>תלות Singleton או Scoped נוצרת מארגומנט של הנציג. המופע נוצר פעם אחת ושומר את הערך של הקריאה הראשונה.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>היצירה הופסקה.</value>
     </data>

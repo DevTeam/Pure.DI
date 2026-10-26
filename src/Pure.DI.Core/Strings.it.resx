@@ -368,6 +368,9 @@
     <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
         <value>Un metodo di injection può essere risolto in un altro overload con OverloadResolutionPriority maggiore. Assegnare la priorità più alta al metodo di injection desiderato oppure usare un nome di metodo univoco.</value>
     </data>
+    <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
+        <value>Una dipendenza Singleton o Scoped viene creata da un argomento del delegato. L'istanza viene creata una sola volta e mantiene il valore della prima chiamata.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>La generazione è stata interrotta.</value>
     </data>

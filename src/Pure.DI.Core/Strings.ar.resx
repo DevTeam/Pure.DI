@@ -368,6 +368,9 @@
     <data name="Description_WarningInjectionMethodOverloadResolutionPriority" xml:space="preserve">
         <value>قد يتم ربط أسلوب الحقن بتحميل زائد آخر ذي OverloadResolutionPriority أعلى. امنح أسلوب الحقن المقصود أعلى أولوية أو استخدم اسم أسلوب فريدًا.</value>
     </data>
+    <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
+        <value>يتم إنشاء تبعية Singleton أو Scoped من وسيط المندوب. يتم إنشاء المثيل مرة واحدة ويحتفظ بقيمة الاستدعاء الأول.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>تمت مقاطعة التوليد.</value>
     </data>

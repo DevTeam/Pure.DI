@@ -460,6 +460,13 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - See: [overload-resolution-priority](readme/overload-resolution-priority.md), [member-ordinal-attribute](readme/member-ordinal-attribute.md).
 - Examples: `[Ordinal] void Initialize(SpecialDependency dependency)` conflicts with `[OverloadResolutionPriority(1)] void Initialize(Dependency dependency)` when `SpecialDependency` derives from `Dependency`.
 
+### DIW015
+- Description: A singleton or scoped dependency is built from a delegate argument.
+- Problem: An argument of a generated `Func<..., T>` delegate is applied as a deep override, so it rewrites the whole dependency subgraph of `T`. A `Singleton` or `Scoped` dependency inside that subgraph is created once, therefore it silently stores the value of the first call and ignores the arguments of later calls. The outcome also depends on the shape of the graph: when the same dependency is additionally reachable outside the delegate, it is created outside and the value is ignored entirely.
+- Fix: Do not pass per-call values through a `Func<...>` argument into a dependency with a stored lifetime. Use `Transient`/`PerResolve` for dependencies that vary per call, pass the value to the code that consumes it, or resolve it from a root argument when it is constant for the whole root.
+- See: [overrides](readme/overrides.md), [singleton](readme/singleton.md), [scoped](readme/scoped.md).
+- Examples: `class Dependency(string value)` bound `As(Lifetime.Singleton)` and reached through `Func<string, Service>`.
+
 ## Info
 
 ### DII000

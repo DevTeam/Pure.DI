@@ -1014,6 +1014,15 @@ namespace Pure.DI {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to A singleton or scoped dependency is built from a delegate argument. The instance is created once and keeps the value of the first call..
+        /// </summary>
+        internal static string Description_WarningStoredLifetimeFromDelegateArgument {
+            get {
+                return ResourceManager.GetString("Description_WarningStoredLifetimeFromDelegateArgument", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;..
         /// </summary>
         internal static string Description_ErrorStackOnlyDependencyWithStoredLifetime {

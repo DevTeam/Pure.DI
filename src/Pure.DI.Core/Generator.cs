@@ -93,7 +93,7 @@ public sealed partial class Generator
             .Bind<IEqualityComparer<Injection>, IInjectionComparer>().As(Lifetime.PerBlock).To<InjectionComparer>()
 
             // Validators
-            .PerBlock<MetadataValidator, DependsOnInstanceMemberValidator, DependencyGraphValidator, CyclicDependenciesValidator, RootValidator, TagOnSitesValidator, BindingsValidator, LifetimesValidator, RefSafetyValidator, OverloadResolutionPriorityValidator>(Type)
+            .PerBlock<MetadataValidator, DependsOnInstanceMemberValidator, DependencyGraphValidator, CyclicDependenciesValidator, RootValidator, TagOnSitesValidator, BindingsValidator, LifetimesValidator, RefSafetyValidator, OverloadResolutionPriorityValidator, DelegateArgumentOverrideValidator>(Type)
 
             // Comments
             .PerBlock<ClassCommenter, ParameterizedConstructorCommenter, RootMethodsCommenter>(Type)
