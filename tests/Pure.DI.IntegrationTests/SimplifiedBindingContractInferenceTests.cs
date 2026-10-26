@@ -51,6 +51,84 @@ public class SimplifiedBindingContractInferenceTests
         result.StdOut.ShouldBe(["MetadataRouter"], result);
     }
 
+    [Fact]
+    public async Task ShouldRequireAnExplicitContractForAnInterfaceInheritedFromAnotherInterface()
+    {
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using IBaseContract = Pure.DI.IntegrationTests.SimplifiedBindingContractInferenceTests.IMetadataBaseContract;
+                           using Repository = Pure.DI.IntegrationTests.SimplifiedBindingContractInferenceTests.MetadataRepository;
+
+                           namespace Sample;
+
+                           partial class Composition
+                           {
+                               void Setup() => DI.Setup()
+                                   .Singleton<Repository>()
+                                   .Root<IBaseContract>("Root");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition().Root.GetType().Name);
+                           }
+                           """
+            .RunAsync(new Options(
+                LanguageVersion.Preview,
+                MetadataReferences: [MetadataReference.CreateFromFile(typeof(SimplifiedBindingContractInferenceTests).Assembly.Location)]));
+
+        // Then
+        // A simplified binding infers only the interfaces the implementation declares
+        // itself, so IMetadataBaseContract, reachable through IMetadataDerivedContract,
+        // is not a contract and has to be listed explicitly. Roslyn reports such an
+        // interface in Interfaces for a type loaded from another assembly, and the
+        // filter introduced in 2.5.6 keeps that case identical to a source type.
+        result.Errors.Select(i => i.Id).ShouldBe([LogId.ErrorUnableToResolve], result);
+        result.Errors.Select(i => i.Message).ShouldContain(message =>
+            message.Contains(nameof(IMetadataBaseContract), StringComparison.Ordinal), result);
+    }
+
+    [Fact]
+    public async Task ShouldResolveAnInheritedInterfaceWhenListedExplicitly()
+    {
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using IBaseContract = Pure.DI.IntegrationTests.SimplifiedBindingContractInferenceTests.IMetadataBaseContract;
+                           using IDerivedContract = Pure.DI.IntegrationTests.SimplifiedBindingContractInferenceTests.IMetadataDerivedContract;
+                           using Repository = Pure.DI.IntegrationTests.SimplifiedBindingContractInferenceTests.MetadataRepository;
+
+                           namespace Sample;
+
+                           partial class Composition
+                           {
+                               void Setup() => DI.Setup()
+                                   .Bind<IBaseContract, IDerivedContract, Repository>()
+                                   .As(Lifetime.Singleton)
+                                   .To<Repository>()
+                                   .Root<IBaseContract>("Root");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition().Root.GetType().Name);
+                           }
+                           """
+            .RunAsync(new Options(
+                LanguageVersion.Preview,
+                MetadataReferences: [MetadataReference.CreateFromFile(typeof(SimplifiedBindingContractInferenceTests).Assembly.Location)]));
+
+        // Then
+        result.Errors.ShouldBeEmpty(result);
+        result.Warnings.ShouldBeEmpty(result);
+        result.StdOut.ShouldBe(["MetadataRepository"], result);
+    }
+
     public static TheoryData<string> Bindings => new()
     {
         {
