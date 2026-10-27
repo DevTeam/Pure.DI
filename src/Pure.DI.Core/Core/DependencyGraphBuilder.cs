@@ -134,6 +134,11 @@ sealed class DependencyGraphBuilder(
                     continue;
                 }
 
+                if (TryAddCollectionWithoutConsumer(node, injection, position))
+                {
+                    continue;
+                }
+
                 if (!processedInjection.Add(injection))
                 {
                     continue;
@@ -295,7 +300,8 @@ sealed class DependencyGraphBuilder(
                                         lifetime,
                                         typeConstructor,
                                         ++maxBindingId,
-                                        constructKind);
+                                        constructKind,
+                                        selectElement: (binding, contract) => SelectElement(binding, contract, constructType, injection.Locations));
 
                                     foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, constructBinding))
                                     {
@@ -330,7 +336,8 @@ sealed class DependencyGraphBuilder(
                             Lifetime.Transient,
                             typeConstructor,
                             ++maxBindingId,
-                            MdConstructKind.Array);
+                            MdConstructKind.Array,
+                            selectElement: (binding, contract) => SelectElement(binding, contract, arrayType.ElementType, injection.Locations));
 
                         foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, arrayBinding))
                         {
@@ -549,6 +556,179 @@ sealed class DependencyGraphBuilder(
 
         bool IsInjectionHandled(IProcessingNode processingNode, Injection injection, int? position) =>
             handledInjections.TryGetValue(processingNode, out var injections) && injections.Contains((injection, position));
+
+        // A binding that injects a collection of its own contract gets its own collection without itself,
+        // otherwise the element slot resolved to the consumer would make the collection contain the consumer.
+        bool TryAddCollectionWithoutConsumer(IProcessingNode processingNode, Injection injection, int? position)
+        {
+            if (IsInjectionHandled(processingNode, injection, position))
+            {
+                return true;
+            }
+
+            if (!TryGetCollectionConstruct(injection.Type, out var elementType, out var constructKind)
+                || HasCollectionBinding(injection))
+            {
+                return false;
+            }
+
+            var consumer = processingNode.Node;
+            var typeConstructor = typeConstructorFactory();
+            if (!bindingsFactory.GetElementContracts(setup, consumer, elementType, typeConstructor)
+                    .Any(element => SelectElement(element.Binding, element.Contract, elementType, injection.Locations) is {} contract && IsConsumerElement(contract)))
+            {
+                return false;
+            }
+
+            var collectionBinding = bindingsFactory.CreateConstructBinding(
+                setup,
+                consumer,
+                injection,
+                elementType,
+                constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient,
+                typeConstructor,
+                ++maxBindingId,
+                constructKind,
+                selectElement: (binding, contract) =>
+                    SelectElement(binding, contract, elementType, injection.Locations) is {} selectedContract && !IsConsumerElement(selectedContract)
+                        ? selectedContract
+                        : null);
+
+            foreach (var newNode in nodesFactory.CreateNodes(setup, typeConstructor, collectionBinding))
+            {
+                if (!edgesMap.TryGetValue(processingNode, out var edges))
+                {
+                    edges = [];
+                    edgesMap.Add(processingNode, edges);
+                }
+
+                MarkHandledInjection(processingNode, injection, position);
+                var contextTag = GetContextTag(injection, newNode);
+                var newInjection = injection with { Tag = contextTag ?? injection.Tag };
+                edges.Add(new Dependency(true, newNode, newInjection, consumer, position));
+                queue.Enqueue(CreateNewProcessingNode(newInjection.Tag, newNode));
+                break;
+            }
+
+            return IsInjectionHandled(processingNode, injection, position);
+
+            bool IsConsumerElement(MdContract contract)
+            {
+                var elementInjection = new Injection(InjectionKind.Contract, RefKind.None, elementType, contract.Tags.FirstOrDefault().Value, injection.Locations);
+                return TryResolveElement(elementInjection, out var elementNode, out var elementNodeType)
+                       && IsSameBindingLineage(elementNode.Binding, consumer.Binding)
+                       && types.TypeEquals(elementNodeType, consumer.Type);
+            }
+        }
+
+        // An element is resolved by the first tag of its contract, and a binding loses a tag to a later binding with the same tag.
+        // So the element takes the first tag that still resolves to its binding, and a binding that lost all its tags is not an element.
+        MdContract? SelectElement(MdBinding binding, MdContract contract, ITypeSymbol elementType, ImmutableArray<Location> locations)
+        {
+            var tags = contract.Tags.IsDefaultOrEmpty ? ImmutableArray.Create(new MdTag(0, null)) : contract.Tags;
+            foreach (var tag in tags)
+            {
+                if (tag.Value is MdTagOnSites || ReferenceEquals(tag.Value, MdTag.ContextTag) || ReferenceEquals(tag.Value, MdTag.AnyTag))
+                {
+                    return contract;
+                }
+
+                var elementInjection = new Injection(InjectionKind.Contract, RefKind.None, elementType, tag.Value, locations);
+                if (!TryResolveElement(elementInjection, out var elementNode, out _))
+                {
+                    return contract;
+                }
+
+                if (!IsSameBindingLineage(elementNode.Binding, binding))
+                {
+                    continue;
+                }
+
+                return contract.Tags.IsDefaultOrEmpty || tags[0] == tag
+                    ? contract
+                    : contract with { Tags = contract.Tags.Remove(tag).Insert(0, tag).Select((i, position) => i with { Position = position }).ToImmutableArray() };
+            }
+
+            return null;
+        }
+
+        bool TryGetCollectionConstruct(ITypeSymbol type, [NotNullWhen(true)] out ITypeSymbol? elementType, out MdConstructKind constructKind)
+        {
+            switch (type)
+            {
+                case IArrayTypeSymbol arrayType:
+                    elementType = arrayType.ElementType;
+                    constructKind = MdConstructKind.Array;
+                    return true;
+
+                case INamedTypeSymbol { TypeArguments: [{} typeArgument] } namedType when !marker.IsMarkerBased(setup, namedType):
+                    elementType = typeArgument;
+                    constructKind = GetConstructKind(namedType);
+                    return constructKind is not MdConstructKind.None;
+
+                default:
+                    elementType = null;
+                    constructKind = MdConstructKind.None;
+                    return false;
+            }
+        }
+
+        // An explicit binding of the collection type wins over the collection constructed from the bindings of its elements.
+        bool HasCollectionBinding(Injection injection)
+        {
+            if (TryGetSourceNode(map, injection, out var sourceNode))
+            {
+                return sourceNode.Construct is not { Source.Kind: MdConstructKind.Array or MdConstructKind.Enumerable or MdConstructKind.AsyncEnumerable or MdConstructKind.Span };
+            }
+
+            return injection.Type is INamedTypeSymbol { IsGenericType: true } && TryGetGenericSourceNode(injection, out _, out _);
+        }
+
+        bool TryResolveElement(Injection elementInjection, [NotNullWhen(true)] out DependencyNode? elementNode, [NotNullWhen(true)] out ITypeSymbol? elementNodeType)
+        {
+            if (TryGetSourceNode(map, elementInjection, out elementNode))
+            {
+                elementNodeType = elementNode.Type;
+                return true;
+            }
+
+            if (elementInjection.Type is INamedTypeSymbol { IsGenericType: true }
+                && TryGetGenericSourceNode(elementInjection, out elementNode, out var genericTypeConstructor))
+            {
+                elementNodeType = genericTypeConstructor.Construct(setup, elementNode.Type);
+                return true;
+            }
+
+            elementNodeType = null;
+            return false;
+        }
+
+        // Mirrors the lookup of a generic binding for an injection that has no exact match in the map.
+        bool TryGetGenericSourceNode(Injection genericInjection, [NotNullWhen(true)] out DependencyNode? genericNode, [NotNullWhen(true)] out ITypeConstructor? genericTypeConstructor)
+        {
+            foreach (var item in map.OrderByDescending(i => i.Value.Binding.Id))
+            {
+                if (item.Key.Type is not INamedTypeSymbol { IsGenericType: true }
+                    || !Injection.EqualTags(genericInjection.Tag, item.Key.Tag))
+                {
+                    continue;
+                }
+
+                var typeConstructor = typeConstructorFactory();
+                if (!typeConstructor.TryBind(setup, item.Key.Type, genericInjection.Type))
+                {
+                    continue;
+                }
+
+                genericNode = item.Value;
+                genericTypeConstructor = typeConstructor;
+                return true;
+            }
+
+            genericNode = null;
+            genericTypeConstructor = null;
+            return false;
+        }
 
         bool TryGetSourceNode(IDictionary<Injection, DependencyNode> sourceMap, Injection injection, [NotNullWhen(true)] out DependencyNode? sourceNode)
         {
@@ -888,6 +1068,15 @@ sealed class DependencyGraphBuilder(
 
     private IProcessingNode CreateNewProcessingNode(object? contextTag, DependencyNode dependencyNode) =>
         processingNodeBuilder.Build(new ProcessingNodeContext(dependencyNode, contextTag));
+
+    // MdBinding equality compares only Id, while a generic or override clone gets a new Id and keeps the source one in OriginalIds.
+    private static bool IsSameBindingLineage(MdBinding binding, MdBinding otherBinding) =>
+        GetBindingLineage(binding).Intersect(GetBindingLineage(otherBinding)).Any();
+
+    private static IEnumerable<int> GetBindingLineage(MdBinding binding) =>
+        binding.OriginalIds.IsDefault
+            ? [binding.Id]
+            : binding.OriginalIds.Prepend(binding.Id);
 
     private static object? GetContextTag(Injection injection, DependencyNode node) =>
         node.Factory is { Source.HasContextTag: true } ? injection.Tag : null;

@@ -93,8 +93,8 @@ In addition to arrays, other collection types are also supported, such as:
 - System.Collections.Immutable.ImmutableQueue<T>
 - System.Collections.Immutable.IImmutableStack<T>
 And of course this list can easily be supplemented on its own.
-The array contains every binding of `ISensor`, tagged or not, in the order the bindings are declared; here the untagged `TemperatureSensor` comes before the tagged `WindSensor`. An array is created eagerly, so all elements exist as soon as the consumer is created.
-Adding a binding for the same contract changes the length of every injected array of that contract, which is why a test that asserts the count or the order is worth keeping. A consumer that must not see a particular implementation needs a separate contract or a tag on the collection parameter.
+The array contains one element for each distinct tag of `ISensor`, including no tag, in the order the bindings are declared; here the untagged `TemperatureSensor` comes before the tagged `WindSensor`. When several bindings share a tag, or none of them has a tag, the last declared one overrides the others and only it is included; use `Tag.Unique` to keep every one of them. An array is created eagerly, so all elements exist as soon as the consumer is created.
+Adding a binding for the same contract changes the length of every injected array of that contract, which is why a test that asserts the count or the order is worth keeping. A consumer that must not see a particular implementation needs a separate contract or a tag on the collection parameter. A binding never receives itself: a composite that implements `ISensor` and injects `ISensor[]` gets the other bindings of `ISensor`.
 >[!TIP]
 >Prefer `IEnumerable<T>` when the consumer may not need every element, and an array or `ImmutableArray<T>` when it reads them repeatedly.
 

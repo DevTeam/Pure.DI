@@ -160,26 +160,29 @@ class BindingsFactory(
         object? tag = null,
         bool hasExplicitDefaultValue = false,
         object? explicitDefaultValue = null,
-        object? state = null)
+        object? state = null,
+        Func<MdBinding, MdContract, MdContract?>? selectElement = null)
     {
         var dependencyContracts = new List<MdContract>();
         var contracts = new HashSet<Injection>(injectionComparer);
         var originalIds = new HashSet<int>();
         if (constructKind is MdConstructKind.Array or MdConstructKind.AsyncEnumerable or MdConstructKind.Enumerable or MdConstructKind.Span)
         {
-            foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
+            foreach (var (nestedBinding, contract) in GetElements(setup, targetNode, elementType, typeConstructor, true))
             {
-                var matchedContracts = GetMatchedMdContracts(setup, elementType, nestedBinding, typeConstructor).ToList();
-                if (matchedContracts.Count == 0)
+                var elementContract = contract;
+                if (selectElement is not null)
                 {
-                    continue;
+                    if (selectElement(nestedBinding, contract) is not {} selectedContract)
+                    {
+                        continue;
+                    }
+
+                    elementContract = selectedContract;
                 }
 
-                var tags = matchedContracts.First().Tags
-                    .Concat(nestedBinding.Tags)
-                    .Select((i, position) => i with { Position = position })
-                    .ToImmutableArray();
-
+                // The element is resolved by its first tag, so only that tag is taken when the element was selected by its tags.
+                var tags = selectElement is not null ? elementContract.Tags.Take(1).ToImmutableArray() : elementContract.Tags;
                 var isDuplicate = false;
                 if (constructKind is MdConstructKind.Enumerable or MdConstructKind.Array or MdConstructKind.Span or MdConstructKind.AsyncEnumerable)
                 {
@@ -198,7 +201,7 @@ class BindingsFactory(
                 }
 
                 originalIds.Add(nestedBinding.Id);
-                dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, ContractKind.Implicit, tags));
+                dependencyContracts.Add(elementContract);
             }
         }
 
@@ -265,6 +268,37 @@ class BindingsFactory(
                 null),
             TypeConstructor: typeConstructor,
             OriginalIds: ImmutableArray.Create(sourceNode.Binding.Id));
+    }
+
+    public IEnumerable<(MdBinding Binding, MdContract Contract)> GetElementContracts(
+        MdSetup setup,
+        DependencyNode targetNode,
+        ITypeSymbol elementType,
+        ITypeConstructor typeConstructor) =>
+        GetElements(setup, targetNode, elementType, typeConstructor, false);
+
+    private IEnumerable<(MdBinding Binding, MdContract Contract)> GetElements(
+        MdSetup setup,
+        DependencyNode targetNode,
+        ITypeSymbol elementType,
+        ITypeConstructor typeConstructor,
+        bool excludeTarget)
+    {
+        foreach (var nestedBinding in setup.Bindings.Where(i => !excludeTarget || i != targetNode.Binding))
+        {
+            using var matchedContracts = GetMatchedMdContracts(setup, elementType, nestedBinding, typeConstructor).GetEnumerator();
+            if (!matchedContracts.MoveNext())
+            {
+                continue;
+            }
+
+            var tags = matchedContracts.Current.Tags
+                .Concat(nestedBinding.Tags)
+                .Select((i, position) => i with { Position = position })
+                .ToImmutableArray();
+
+            yield return (nestedBinding, new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, ContractKind.Implicit, tags));
+        }
     }
 
     private IEnumerable<MdContract> GetMatchedMdContracts(MdSetup setup, ITypeSymbol elementType, MdBinding nestedBinding, ITypeConstructor typeConstructor)

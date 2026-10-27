@@ -23,6 +23,8 @@ sealed class Service(IClock clock) : IService
 
 Use `Bind<TContract>().To<TImplementation>()` for an abstraction. Concrete types can be auto-bound, but explicit abstraction bindings make implementation choices clear. `Bind().To<T>()` can infer the implementation and directly implemented abstractions; it excludes special framework types and inherited interfaces.
 
+Injecting `T[]`, `IEnumerable<T>` or another collection of `T` gives one element per distinct tag of `T`; bindings with the same tag, or without a tag, override each other, so use `Tag.Unique` for implementations that must all be included. A binding is never an element of its own collection, so a composite that implements `T` and injects `IEnumerable<T>` gets the other bindings of `T`.
+
 Use tags when one contract has multiple implementations. A consumer can request a tagged dependency with `[Tag("name")]`, and a root can specify the tag. Use `Arg<T>("name")` for values supplied to the composition constructor and `RootArg<T>("name")` for values supplied when calling a root. Factory bindings use `To<T>(ctx => ...)` or the simplified lambda form when construction requires setup work.
 
 Prefer a small set of named roots. `Resolve<T>()` accesses declared roots; it is not a replacement for missing bindings or an unrestricted runtime container.

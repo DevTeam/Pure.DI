@@ -40,7 +40,14 @@ interface IBindingsFactory
         object? tag = null,
         bool hasExplicitDefaultValue = false,
         object? explicitDefaultValue = null,
-        object? state = null);
+        object? state = null,
+        Func<MdBinding, MdContract, MdContract?>? selectElement = null);
+
+    IEnumerable<(MdBinding Binding, MdContract Contract)> GetElementContracts(
+        MdSetup setup,
+        DependencyNode targetNode,
+        ITypeSymbol elementType,
+        ITypeConstructor typeConstructor);
 
     MdBinding CreateImplicitConversionBinding(
         MdSetup setup,
