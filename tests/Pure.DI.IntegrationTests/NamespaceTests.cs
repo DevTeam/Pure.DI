@@ -469,9 +469,18 @@ public class NamespaceTests
             """
             using System;
 
-            public sealed class Service(string name, int count)
+            public sealed class Service
             {
-                public string Describe() => $"{name} x{count}";
+                private readonly string _name;
+                private readonly int _count;
+
+                public Service(string name, int count)
+                {
+                    _name = name;
+                    _count = count;
+                }
+
+                public string Describe() => $"{_name} x{_count}";
             }
 
             public class Program
@@ -483,7 +492,7 @@ public class NamespaceTests
                 }
             }
             """
-        }.RunAsync(new Options(LanguageVersion.CSharp12));
+        }.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

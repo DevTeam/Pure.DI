@@ -17,6 +17,14 @@ sealed class MetadataWalker(
 {
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private readonly List<UsingDirectiveSyntax> _usingDirectives = [];
+
+    // An alias must not target a special type keyword like 'string': 'using Text=string;' is
+    // available only since C# 12, while the generated code must compile for any language version.
+    private static readonly SymbolDisplayFormat AliasTargetFormat = SymbolDisplayFormat.CSharpErrorMessageFormat
+        .WithMiscellaneousOptions(
+            SymbolDisplayFormat.CSharpErrorMessageFormat.MiscellaneousOptions
+            & ~SymbolDisplayMiscellaneousOptions.UseSpecialTypes);
+
     private bool _isMetadata;
     private SemanticModel? _semanticModel;
 
@@ -60,7 +68,9 @@ sealed class MetadataWalker(
         var aliases = new List<(string, string)>();
         foreach (var usingDirective in _usingDirectives)
         {
-            if (_semanticModel?.GetSymbolInfo(usingDirective.Name!).Symbol?.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat) is not {} name)
+            var alias = usingDirective.Alias;
+            var format = alias is null ? SymbolDisplayFormat.CSharpErrorMessageFormat : AliasTargetFormat;
+            if (_semanticModel?.GetSymbolInfo(usingDirective.Name!).Symbol?.ToDisplayString(format) is not {} name)
             {
                 continue;
             }
@@ -71,7 +81,7 @@ sealed class MetadataWalker(
                 continue;
             }
 
-            if (usingDirective.Alias is {} alias)
+            if (alias is not null)
             {
                 aliases.Add((alias.Name.ToString(), name));
                 continue;
