@@ -2,15 +2,18 @@ namespace Pure.DI.Core.Code;
 
 using static Lifetime;
 
-class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators): ILocalFunctions
+class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafety refSafety): ILocalFunctions
 {
     internal const int MinBodyCost = 4;
     internal const int MinUseSites = 2;
+    // The size of the code a transient instance may repeat across its use sites before it gets a local function.
+    private const int MaxRepeatedTransientCost = 32;
 
     public bool UseFor(CodeContext ctx)
     {
         var node = ctx.VarInjection.Var.AbstractNode;
-        if (!nodeTools.IsBlock(node))
+        var isBlock = nodeTools.IsBlock(node);
+        if (!isBlock && !IsTransientCandidate(ctx))
         {
             return false;
         }
@@ -42,12 +45,33 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators): ILocalFu
             return false;
         }
 
+        var mode = ctx.RootContext.Graph.Source.Hints.LocalFunctions;
+        if (!isBlock)
+        {
+            return mode switch
+            {
+                LocalFunctionsMode.On => true,
+                LocalFunctionsMode.Off => false,
+                _ => useSites.TransientCost.TryGetValue(bindingId, out var transientCost)
+                     && IsTransientCostTooHigh(count, transientCost)
+            };
+        }
+
         // A factory anywhere up the dependency chain may contain branching (if/else, switch),
         // which breaks the inline "first use initializes; later uses reuse" assumption.
         // Always wrap in a local function so every use site re-checks init.
         if (useSites.FactoryDownstream.Contains(bindingId))
         {
             return true;
+        }
+
+        switch (mode)
+        {
+            case LocalFunctionsMode.On:
+                return true;
+
+            case LocalFunctionsMode.Off:
+                return false;
         }
 
         if (useSites.InlineCost.TryGetValue(bindingId, out var inlineCost))
@@ -74,11 +98,22 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators): ILocalFu
     // so each set of accumulators gets a local function of its own.
     public string GetKey(CodeContext ctx)
     {
-        var bindingId = ctx.VarInjection.Var.AbstractNode.BindingId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var (var, injection) = ctx.VarInjection;
+        var key = var.AbstractNode.BindingId.ToString(System.Globalization.CultureInfo.InvariantCulture);
         var nodeAccumulators = GetAccumulators(ctx);
-        return nodeAccumulators.Count == 0
-            ? bindingId
-            : $"{bindingId}:{string.Join(",", nodeAccumulators.Select(i => i.VarInjection.Var.Name))}";
+        if (nodeAccumulators.Count != 0)
+        {
+            key = $"{key}:{string.Join(",", nodeAccumulators.Select(i => i.VarInjection.Var.Name))}";
+        }
+
+        // A transient instance is created by the code of each injection, which can depend on the tag of this injection.
+        if (!nodeTools.IsBlock(var.AbstractNode))
+        {
+            var tag = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? ctx.ContextTag : injection.Tag;
+            key = $"{key}#{tag}";
+        }
+
+        return key;
     }
 
     // A shared instance does not feed the per-resolve accumulators, see RootCodeBuilder.
@@ -94,6 +129,23 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators): ILocalFu
         return nodeTools.IsSharedInstance(node.Node, graph) && !accumulators.GetBoundaryAccumulators(graph, node).Any()
             ? ctx.Accumulators.Where(i => i.Lifetime is Singleton or Scoped).ToList()
             : ctx.Accumulators;
+    }
+
+    // A transient instance is created anew at each use site, so a local function that returns it
+    // is called at each of them. Repeating a small piece of code is cheaper than a call.
+    internal static bool IsTransientCostTooHigh(int useSiteCount, int cost) =>
+        useSiteCount >= MinUseSites
+        && (long)(useSiteCount - 1) * cost >= MaxRepeatedTransientCost;
+
+    // Only an instance created by its constructor is returned by a local function. A ref-like value
+    // cannot be returned this way in general, and a PerBlock dependency would be created anew on each call.
+    private bool IsTransientCandidate(CodeContext ctx)
+    {
+        var var = ctx.VarInjection.Var;
+        return var.AbstractNode is { ActualLifetime: Transient, Arg: null, Node.Implementation: not null }
+               && var.HasCycle != true
+               && !refSafety.IsMaybeRefLike(var.InstanceType)
+               && !ctx.RootContext.UseSites.PerBlockDependents.Contains(var.AbstractNode.BindingId);
     }
 
     private static bool IsOverrideConsumer(CodeContext ctx) =>

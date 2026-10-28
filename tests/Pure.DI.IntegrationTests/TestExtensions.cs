@@ -15,6 +15,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.Loader;
 using Core;
@@ -175,6 +176,7 @@ public static class TestExtensions
         compilation = compilation
             .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray());
 
+        DumpGeneratedCode(sourceList, runOptions, generatedSources);
         generatedSources.AddRange(generatedApiSources);
         var generatedCode = string.Join(Environment.NewLine, generatedSources.Select(i => i.SourceText));
 
@@ -262,6 +264,35 @@ public static class TestExtensions
             warnings,
             dependencyGraphObserver.Values,
             generatedCode));
+    }
+
+    // When the PUREDI_DUMP_DIR environment variable names a directory, the code generated for each test
+    // is written there, so the generated code of two versions of the generator can be compared file by file.
+    // A file is named after a hash of the test sources and options, which does not depend on line endings,
+    // and the commit hashes in the generated code are replaced, so only the changes of the generator remain.
+    private static void DumpGeneratedCode(IReadOnlyCollection<string> sources, Options options, IEnumerable<Source> generatedSources)
+    {
+        var dumpDirectory = Environment.GetEnvironmentVariable("PUREDI_DUMP_DIR");
+        if (string.IsNullOrWhiteSpace(dumpDirectory))
+        {
+            return;
+        }
+
+        var key = string.Join("\n---\n", sources).Replace("\r", "")
+                  + options.LanguageVersion
+                  + options.NullableContextOptions
+                  + string.Join(",", options.PreprocessorSymbols.IsDefault ? [] : options.PreprocessorSymbols);
+        var fileName = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(key)))[..16] + ".cs";
+        var code = Regex.Replace(string.Join(Environment.NewLine, generatedSources.Select(i => i.SourceText)), "[0-9a-f]{40}", "HASH");
+        try
+        {
+            Directory.CreateDirectory(dumpDirectory);
+            File.WriteAllText(Path.Combine(dumpDirectory, fileName), code);
+        }
+        catch (IOException)
+        {
+            // Tests with the same sources run in parallel and write the same code.
+        }
     }
 
     private static SyntaxUpdate CreateUpdate(SyntaxTree syntaxTree, Compilation compilation)

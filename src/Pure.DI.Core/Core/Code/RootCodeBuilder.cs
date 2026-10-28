@@ -38,6 +38,13 @@ sealed class RootCodeBuilder(
             yield break;
         }
 
+        if (hasLocalFunction && !nodeTools.IsBlock(var.AbstractNode))
+        {
+            // A transient instance is created by each call of its local function.
+            var.CodeExpression = $"{localFunctionName}()";
+            yield break;
+        }
+
         if (hasLocalFunction)
         {
             if (parentCtx.IsFactory)
@@ -255,7 +262,30 @@ sealed class RootCodeBuilder(
             }
         }
 
-        if (isLocalFunction)
+        if (isLocalFunction && !isBlock)
+        {
+            // A transient instance is returned by a local function. The JIT can still inline it,
+            // so the instances it creates can stay on the stack when they do not escape.
+            var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, currentTag);
+            var localFunction = new Lines();
+            if (compilations.GetLanguageVersion(varCtx.RootContext.Graph.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
+            {
+                buildTools.AddAggressiveInlining(localFunction);
+            }
+
+            localFunctionName = uniqueNameProvider.GetUniqueName($"Create{baseName}{Names.Salt}");
+            localFunction.AppendLine($"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, var.InstanceType)} {localFunctionName}()");
+            using (localFunction.CreateBlock())
+            {
+                localFunction.AppendLines(lines);
+                localFunction.AppendLine($"return {var.CodeExpression};");
+            }
+
+            localFunctionScope.Add(localFunctionKey, localFunctionName, localFunction);
+            lines = new Lines();
+            var.CodeExpression = $"{localFunctionName}()";
+        }
+        else if (isLocalFunction)
         {
             var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, currentTag);
             var localFunction = new Lines();

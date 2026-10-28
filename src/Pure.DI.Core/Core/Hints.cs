@@ -93,6 +93,9 @@ sealed class Hints : ConcurrentDictionary<Hint, LinkedList<string>>, IHints
 
     public string ScopeMethodName => GetValueOrDefault(Hint.ScopeMethodName, "");
 
+    public LocalFunctionsMode LocalFunctions =>
+        GetEnumHint(Hint.LocalFunctions, LocalFunctionsMode.Auto);
+
     private bool IsEnabled(Hint hint, SettingState defaultValue) =>
         GetEnumHint(hint, defaultValue) == SettingState.On;
 

@@ -54,7 +54,124 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             counts,
             factoryDownstream,
             GetOverrideConsumers(graph, root),
-            GetInlineCosts(graph, root, counts, factoryDownstream));
+            GetInlineCosts(graph, root, counts, factoryDownstream),
+            GetTransientCosts(graph, root, counts),
+            GetPerBlockDependents(graph, root));
+    }
+
+    // A transient instance is created anew at each use site, so its code, together with the code
+    // of the transient dependencies created with it, is repeated at each of them.
+    private Dictionary<int, int> GetTransientCosts(
+        DependencyGraph graph,
+        DependencyNode root,
+        IReadOnlyDictionary<int, int> useSiteCount)
+    {
+        var costs = new Dictionary<int, int>();
+        VisitDependenciesFirst(graph, root, (node, dependencies) =>
+        {
+            var cost = IsTransientCandidate(node) ? nodeTools.EstimateBodyCost(node, false) : 1;
+            if (!nodeTools.IsBlock(node))
+            {
+                foreach (var dep in dependencies)
+                {
+                    cost = Math.Min(cost + GetDependencyCost(dep), MaxInlineCost);
+                }
+            }
+
+            costs[node.BindingId] = cost;
+        });
+
+        return costs;
+
+        int GetDependencyCost(DependencyNode dep)
+        {
+            if (dep.Arg is not null || nodeTools.IsBlock(dep))
+            {
+                return 1;
+            }
+
+            // A dependency that is still being estimated is part of a cycle.
+            if (!costs.TryGetValue(dep.BindingId, out var depCost))
+            {
+                return 1;
+            }
+
+            var hasLocalFunction = IsTransientCandidate(dep)
+                                   && useSiteCount.TryGetValue(dep.BindingId, out var count)
+                                   && LocalFunctions.IsTransientCostTooHigh(count, depCost);
+            return hasLocalFunction ? 1 : depCost;
+        }
+    }
+
+    // A PerBlock instance is shared by the code of one block, so a local function that creates it anew
+    // on each call would change it. The code inside a lambda is a block of its own.
+    private HashSet<int> GetPerBlockDependents(DependencyGraph graph, DependencyNode root)
+    {
+        var dependents = new HashSet<int>();
+        VisitDependenciesFirst(graph, root, (node, dependencies) =>
+        {
+            if (nodeTools.IsLazy(node, graph))
+            {
+                return;
+            }
+
+            if (dependencies.Any(dep => dep.ActualLifetime is Lifetime.PerBlock || dependents.Contains(dep.BindingId)))
+            {
+                dependents.Add(node.BindingId);
+            }
+        });
+
+        return dependents;
+    }
+
+    private static bool IsTransientCandidate(DependencyNode node) =>
+        node is { Implementation: not null, Arg: null, ActualLifetime: Lifetime.Transient };
+
+    // Visits each node after its dependencies; a dependency that closes a cycle is visited after its consumer.
+    private static void VisitDependenciesFirst(
+        DependencyGraph graph,
+        DependencyNode root,
+        Action<DependencyNode, IReadOnlyCollection<DependencyNode>> visit)
+    {
+        var visited = new HashSet<int>();
+        var inProgress = new HashSet<int>();
+        var stack = new Stack<(DependencyNode Node, bool IsExpanded)>();
+        stack.Push((root, false));
+        while (stack.Count > 0)
+        {
+            var (node, isExpanded) = stack.Pop();
+            if (visited.Contains(node.BindingId))
+            {
+                continue;
+            }
+
+            var dependencies = graph.Graph.TryGetInEdges(node, out var inEdges)
+                ? inEdges.Select(i => i.Source).ToList()
+                : [];
+
+            if (!isExpanded)
+            {
+                if (!inProgress.Add(node.BindingId))
+                {
+                    continue;
+                }
+
+                stack.Push((node, true));
+                foreach (var dep in dependencies)
+                {
+                    if (!visited.Contains(dep.BindingId) && !inProgress.Contains(dep.BindingId))
+                    {
+                        stack.Push((dep, false));
+                    }
+                }
+
+                continue;
+            }
+
+            visit(node, dependencies);
+            visited.Add(node.BindingId);
+            inProgress.Remove(node.BindingId);
+        }
     }
 
     // A node created in place repeats the code of every dependency created in place with it,
@@ -72,41 +189,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         var isThreadSafe = graph.Source.Hints.IsThreadSafeEnabled;
         var costs = new Dictionary<int, int>();
         var ownCosts = new Dictionary<int, int>();
-        var inProgress = new HashSet<int>();
-        var stack = new Stack<(DependencyNode Node, bool IsExpanded)>();
-        stack.Push((root, false));
-        while (stack.Count > 0)
+        VisitDependenciesFirst(graph, root, (node, dependencies) =>
         {
-            var (node, isExpanded) = stack.Pop();
-            if (costs.ContainsKey(node.BindingId))
-            {
-                continue;
-            }
-
-            graph.Graph.TryGetInEdges(node, out var inEdges);
-            if (!isExpanded)
-            {
-                if (!inProgress.Add(node.BindingId))
-                {
-                    continue;
-                }
-
-                stack.Push((node, true));
-                if (inEdges is not null)
-                {
-                    foreach (var edge in inEdges)
-                    {
-                        var dep = edge.Source;
-                        if (!costs.ContainsKey(dep.BindingId) && !inProgress.Contains(dep.BindingId))
-                        {
-                            stack.Push((dep, false));
-                        }
-                    }
-                }
-
-                continue;
-            }
-
             // Only a node that is created once per scope is worth wrapping in a local function,
             // the code of other nodes is counted through the dependencies they create in place.
             var ownCost = nodeTools.IsBlock(node)
@@ -114,18 +198,14 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 : 0;
 
             var cost = ownCost;
-            if (inEdges is not null)
+            foreach (var dep in dependencies)
             {
-                foreach (var edge in inEdges)
-                {
-                    cost = Math.Min(cost + GetDependencyCost(edge.Source), MaxInlineCost);
-                }
+                cost = Math.Min(cost + GetDependencyCost(dep), MaxInlineCost);
             }
 
             costs[node.BindingId] = cost;
             ownCosts[node.BindingId] = ownCost;
-            inProgress.Remove(node.BindingId);
-        }
+        });
 
         return costs;
 

@@ -1381,6 +1381,7 @@ DI.Setup("Composition")
 | [LightweightAnonymousRoot](#lightweightanonymousroot-hint)                                                                           | _On_ or _Off_                              |            | _On_      |
 | [SystemThreadingLock](#systemthreadinglock-hint)                                                                                     | _On_ or _Off_                              |            | _On_      |
 | [ScopeMethodName](#scopemethodname-hint)                                                                                             | Method name                                |            |           |
+| [LocalFunctions](#localfunctions-hint)                                                                                               | _Auto_, _On_ or _Off_                      |            | _Auto_    |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -2057,6 +2058,23 @@ Sets the scope factory name to be used for creating scopes.
 DI.Setup("Composition")
     .Hint(Hint.ScopeMethodName, "CreateScope")
     .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>();
+```
+
+### LocalFunctions Hint
+
+Controls when the code that creates an instance used in several places of a composition root is moved to a local function instead of being repeated at each place. A shared instance gets an `Ensure...Exists()` local function that creates it once, and a transient instance gets a `Create...()` local function that creates a new instance on each call. Without them, a graph where instances share dependencies (a diamond) is written out once per dependency path, so the generated code can grow exponentially with the depth of the graph.
+
+- _Auto_ (default) moves the code when repeating it would make the generated code large. Small graphs keep the code in place.
+- _On_ moves the code whenever it is possible and the instance is used in several places.
+- _Off_ keeps the code in place, except where a local function is required for correctness. A deep diamond of dependencies can then produce a very large composition.
+
+These transient instances are always created in place: one whose code creates a _PerBlock_ instance in place, one of a ref-like type, and one created by a factory.
+
+```c#
+// LocalFunctions = Off
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    .Root<IService>("MyService");
 ```
 
 </details>

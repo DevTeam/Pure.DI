@@ -1257,6 +1257,25 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         ScopeMethodName,
+
+        /// <summary>
+        /// Controls when the code that creates an instance used in several places of a composition root is moved to a local function instead of being repeated at each place. <c>Auto</c> moves it when the repeated code would be large, <c>On</c> moves it whenever possible, and <c>Off</c> moves it only when it is required for correctness. Default: <c>Auto</c>.
+        /// <example>
+        /// <code>
+        /// // LocalFunctions = Off
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        ///
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.LocalFunctions, "Off")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        LocalFunctions,
     }
 
     /// <summary>
