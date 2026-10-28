@@ -40,6 +40,7 @@ class RootBuilder(
             rootContext.LocalFunctionScope);
 
         accumulators.BuildAccumulators(ctx);
+        rootContext.LocalFunctionScope.AddVisibleAccumulators(rootAccumulators);
         var body = new Lines();
         ctx = ctx with { Lines = body };
         BuildCode(ctx);

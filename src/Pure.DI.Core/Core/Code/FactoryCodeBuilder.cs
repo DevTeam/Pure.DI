@@ -348,9 +348,14 @@ sealed class FactoryCodeBuilder(
                     if (hasOverrides)
                     {
                         BuildOverrides(ctx, factory, localVariableRenamingRewriter, resolver.Overrides, lines);
-                        // An overridden value is visible to the injections that follow it, so the local functions
-                        // that read it are declared next to each injection.
-                        injectionCtx = ctx with { LocalFunctionScope = new LocalFunctionScope() };
+                    }
+
+                    // An overridden value is visible to the injections that follow it, and the accumulators
+                    // of a lambda are declared inside it, so the local functions that refer to them are declared
+                    // next to each injection.
+                    if (hasOverrides || isLazy)
+                    {
+                        injectionCtx = ctx with { LocalFunctionScope = new LocalFunctionScope(ctx.Accumulators) };
                     }
 
                     yield return variablesCodeBuilderFactory().Build(injectionCtx.CreateChild(argument));
@@ -391,7 +396,11 @@ sealed class FactoryCodeBuilder(
                     if (hasOverrides)
                     {
                         BuildOverrides(ctx, factory, localVariableRenamingRewriter, initializer.Overrides, lines);
-                        initCtx = ctx with { LocalFunctionScope = new LocalFunctionScope() };
+                    }
+
+                    if (hasOverrides || isLazy)
+                    {
+                        initCtx = ctx with { LocalFunctionScope = new LocalFunctionScope(ctx.Accumulators) };
                     }
 
                     var initializersWalker = initializersWalkerFactory(

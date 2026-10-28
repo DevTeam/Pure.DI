@@ -26,7 +26,8 @@ sealed class RootCodeBuilder(
     {
         var (var, injection) = parentCtx.VarInjection;
         var localFunctionScope = localFunctions.GetScope(parentCtx);
-        var hasLocalFunction = localFunctionScope.TryGetName(var, out var localFunctionName);
+        var localFunctionKey = localFunctions.GetKey(parentCtx);
+        var hasLocalFunction = localFunctionScope.TryGetName(localFunctionKey, out var localFunctionName);
         if (var.IsCreated)
         {
             if (parentCtx.IsFactory && hasLocalFunction)
@@ -152,12 +153,19 @@ sealed class RootCodeBuilder(
         LocalFunctionScope? accumulatorsScope = null;
         if (isLazy || isAccumulatorBoundary)
         {
-            // The local functions of the nodes created under these accumulators are not shared with other code.
-            accumulatorsScope = new LocalFunctionScope();
             var inheritedAccumulators = ctx.Accumulators
                 .Where(i => !accumulatorBindingIds.Contains(i.VarInjection.Var.AbstractNode.BindingId))
                 .ToImmutableArray();
             var createdAccumulators = accumulators.CreateAccumulators(varCtx.RootContext.Graph, var.AbstractNode, acc, varsMap).ToImmutableArray();
+            // The local functions of the nodes created under these accumulators are not shared with other code.
+            // They are declared after this node, which declares its accumulators in its own code,
+            // unless the accumulators are declared inside a lambda or inside the check of a single instance.
+            accumulatorsScope = new LocalFunctionScope(inheritedAccumulators);
+            if (!isLazy && !isBlock)
+            {
+                accumulatorsScope.AddVisibleAccumulators(createdAccumulators);
+            }
+
             ctx = ctx with
             {
                 Accumulators = inheritedAccumulators.AddRange(createdAccumulators),
@@ -263,7 +271,7 @@ sealed class RootCodeBuilder(
                 localFunction.AppendLines(lines);
             }
 
-            localFunctionScope.Add(var, localFunctionName, localFunction);
+            localFunctionScope.Add(localFunctionKey, localFunctionName, localFunction);
             lines = new Lines();
             lines.AppendLine($"{localFunctionName}();");
         }

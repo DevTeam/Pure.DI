@@ -60,36 +60,107 @@ public class DependencyDiamondTests
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.S0(")).ShouldBeLessThan(Count, result);
     }
 
-    [Fact]
-    public async Task ShouldAddDisposableOfDiamondToOwnedOnce()
+    [Theory]
+    [InlineData(
+        "Owned<S20>",
+        """
+        var owned = composition.Root;
+        Console.WriteLine(owned.Value.S0.Label);
+        owned.Dispose();
+        Console.WriteLine(S0.Disposed);
+        """,
+        "ok,1")]
+    [InlineData(
+        "Func<Owned<S20>>",
+        """
+        var first = composition.Root();
+        var second = composition.Root();
+        Console.WriteLine(ReferenceEquals(first.Value.S0, second.Value.S0));
+        first.Dispose();
+        Console.WriteLine(S0.Disposed);
+        second.Dispose();
+        Console.WriteLine(S0.Disposed);
+        """,
+        "False,1,2")]
+    [InlineData(
+        "Top",
+        """
+        var top = composition.Root;
+        top.First.Dispose();
+        Console.WriteLine(S0.Disposed);
+        top.Second.Dispose();
+        Console.WriteLine(S0.Disposed);
+        """,
+        "1,1")]
+    public async Task ShouldAddDisposableOfDiamondToItsOwned(string rootType, string main, string output)
     {
         // Given
 
         // When
         var result = await CreateSetup(
-                8,
+                Count,
                 "PerResolve",
                 "",
-                "Owned<S7>",
+                rootType,
+                main,
+                "public S0() => Label = \"ok\"; public static int Disposed; public void Dispose() => Disposed++;",
+                ": IDisposable",
                 """
-                var owned = composition.Root;
-                Console.WriteLine(owned.Value.S0.Label);
-                owned.Dispose();
+                sealed class Top
+                {
+                    public Top(Owned<S20> first, Owned<S19> second)
+                    {
+                        First = first;
+                        Second = second;
+                    }
+
+                    public Owned<S20> First { get; }
+
+                    public Owned<S19> Second { get; }
+                }
+                """)
+            .RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        // The local functions add to the accumulators of the Owned they are declared under.
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(output.Split(',').ToImmutableArray(), result);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.S0(")).ShouldBeLessThan(Count, result);
+    }
+
+    [Fact]
+    public async Task ShouldPassArgumentToDisposableDiamondUnderOwned()
+    {
+        // Given
+
+        // When
+        var result = await CreateSetup(
+                Count,
+                "PerResolve",
+                "",
+                "Func<string, Owned<S20>>",
+                """
+                var first = composition.Root("x");
+                var second = composition.Root("y");
+                Console.WriteLine(first.Value.S0.Label + " " + second.Value.S0.Label);
+                first.Dispose();
+                second.Dispose();
                 Console.WriteLine(S0.Disposed);
                 """,
-                "public S0() => Label = \"ok\"; public static int Disposed; public void Dispose() => Disposed++;",
+                "public S0(string label) => Label = label; public static int Disposed; public void Dispose() => Disposed++;",
                 ": IDisposable")
             .RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
-        // A local function would be shared with the code that has no Owned to collect the instance.
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["ok", "1"], result);
+        result.StdOut.ShouldBe(["x y", "2"], result);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.S0(")).ShouldBeLessThan(Count, result);
     }
 
-    private static string CreateSetup(int count, string lifetime, string hint, string rootType, string main, string s0, string s0Base = "")
+    private static string CreateSetup(int count, string lifetime, string hint, string rootType, string main, string s0, string s0Base = "", string extraClasses = "")
     {
-        var classes = new StringBuilder();
+        var classes = new StringBuilder(extraClasses);
+        classes.AppendLine();
         var bindings = new StringBuilder();
         classes.AppendLine($"sealed class S0 {s0Base} {{ {s0} public string Label {{ get; }} }}");
         classes.AppendLine("sealed class S1 { public S1(S0 s0) => S0 = s0; public S0 S0 { get; } }");

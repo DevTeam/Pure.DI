@@ -15,10 +15,11 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators): ILocalFu
             return false;
         }
 
-        // A local function is shared by every use site in its scope, so it cannot add to
-        // the accumulator of one particular resolve, and it cannot inject an accumulator directly.
+        // A local function that adds to accumulators or injects one refers to their variables,
+        // so they must be declared before the place of its scope.
         var nodeAccumulators = GetAccumulators(ctx);
         if (nodeAccumulators.Count != 0
+            && !nodeAccumulators.All(ctx.LocalFunctionScope.CanSee)
             && (nodeAccumulators.Any(i => !i.IsEmpty)
                 || accumulators.InjectsAccumulator(
                     ctx.RootContext.Graph,
@@ -67,6 +68,18 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators): ILocalFu
         IsOverrideConsumer(ctx) || GetAccumulators(ctx).Count != 0
             ? ctx.LocalFunctionScope
             : ctx.RootContext.LocalFunctionScope;
+
+    // An instance can be created under different accumulators in the same scope,
+    // for example, inside a shared instance that does not feed the per-resolve ones,
+    // so each set of accumulators gets a local function of its own.
+    public string GetKey(CodeContext ctx)
+    {
+        var bindingId = ctx.VarInjection.Var.AbstractNode.BindingId.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var nodeAccumulators = GetAccumulators(ctx);
+        return nodeAccumulators.Count == 0
+            ? bindingId
+            : $"{bindingId}:{string.Join(",", nodeAccumulators.Select(i => i.VarInjection.Var.Name))}";
+    }
 
     // A shared instance does not feed the per-resolve accumulators, see RootCodeBuilder.
     private IReadOnlyCollection<Accumulator> GetAccumulators(CodeContext ctx)
