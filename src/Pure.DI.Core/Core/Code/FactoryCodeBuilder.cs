@@ -345,10 +345,11 @@ sealed class FactoryCodeBuilder(
                     resolversIdx++;
 
                     var injectionCtx = ctx;
-                    if (hasOverrides && !resolver.Overrides.IsDefaultOrEmpty)
+                    if (hasOverrides)
                     {
                         BuildOverrides(ctx, factory, localVariableRenamingRewriter, resolver.Overrides, lines);
-                        // The local functions that read the overridden values are declared next to them.
+                        // An overridden value is visible to the injections that follow it, so the local functions
+                        // that read it are declared next to each injection.
                         injectionCtx = ctx with { LocalFunctionScope = new LocalFunctionScope() };
                     }
 
@@ -387,7 +388,7 @@ sealed class FactoryCodeBuilder(
                     initsIdx++;
                         
                     var initCtx = ctx;
-                    if (hasOverrides && !initializer.Overrides.IsDefaultOrEmpty)
+                    if (hasOverrides)
                     {
                         BuildOverrides(ctx, factory, localVariableRenamingRewriter, initializer.Overrides, lines);
                         initCtx = ctx with { LocalFunctionScope = new LocalFunctionScope() };

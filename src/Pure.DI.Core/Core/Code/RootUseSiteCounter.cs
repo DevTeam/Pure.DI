@@ -1,7 +1,10 @@
 namespace Pure.DI.Core.Code;
 
-sealed class RootUseSiteCounter : IRootUseSiteCounter
+sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 {
+    // Bounds the estimate for a graph whose number of paths grows exponentially.
+    private const int MaxInlineCost = 1 << 20;
+
     public RootUseSiteAnalysis Analyze(DependencyGraph graph, DependencyNode root)
     {
         // Edge convention in Pure.DI: Source is the dependency, Target is the consumer.
@@ -47,7 +50,102 @@ sealed class RootUseSiteCounter : IRootUseSiteCounter
             }
         }
 
-        return new RootUseSiteAnalysis(counts, factoryDownstream, GetOverrideConsumers(graph, root));
+        return new RootUseSiteAnalysis(
+            counts,
+            factoryDownstream,
+            GetOverrideConsumers(graph, root),
+            GetInlineCosts(graph, root, counts, factoryDownstream));
+    }
+
+    // A node created in place repeats the code of every dependency created in place with it,
+    // and this code is repeated at each of its use sites. Without a local function, a diamond
+    // of such nodes is written out once per dependency path, so the cost of a node includes
+    // the cost of each shared dependency that gets no local function, and a single call for one that does.
+    // A dependency with a single use site is written out once, so only what it passes on from
+    // its own dependencies is added.
+    private Dictionary<int, int> GetInlineCosts(
+        DependencyGraph graph,
+        DependencyNode root,
+        IReadOnlyDictionary<int, int> useSiteCount,
+        HashSet<int> factoryDownstream)
+    {
+        var isThreadSafe = graph.Source.Hints.IsThreadSafeEnabled;
+        var costs = new Dictionary<int, int>();
+        var ownCosts = new Dictionary<int, int>();
+        var inProgress = new HashSet<int>();
+        var stack = new Stack<(DependencyNode Node, bool IsExpanded)>();
+        stack.Push((root, false));
+        while (stack.Count > 0)
+        {
+            var (node, isExpanded) = stack.Pop();
+            if (costs.ContainsKey(node.BindingId))
+            {
+                continue;
+            }
+
+            graph.Graph.TryGetInEdges(node, out var inEdges);
+            if (!isExpanded)
+            {
+                if (!inProgress.Add(node.BindingId))
+                {
+                    continue;
+                }
+
+                stack.Push((node, true));
+                if (inEdges is not null)
+                {
+                    foreach (var edge in inEdges)
+                    {
+                        var dep = edge.Source;
+                        if (!costs.ContainsKey(dep.BindingId) && !inProgress.Contains(dep.BindingId))
+                        {
+                            stack.Push((dep, false));
+                        }
+                    }
+                }
+
+                continue;
+            }
+
+            // Only a node that is created once per scope is worth wrapping in a local function,
+            // the code of other nodes is counted through the dependencies they create in place.
+            var ownCost = nodeTools.IsBlock(node)
+                ? nodeTools.EstimateBodyCost(node, isThreadSafe && node.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped)
+                : 0;
+
+            var cost = ownCost;
+            if (inEdges is not null)
+            {
+                foreach (var edge in inEdges)
+                {
+                    cost = Math.Min(cost + GetDependencyCost(edge.Source), MaxInlineCost);
+                }
+            }
+
+            costs[node.BindingId] = cost;
+            ownCosts[node.BindingId] = ownCost;
+            inProgress.Remove(node.BindingId);
+        }
+
+        return costs;
+
+        int GetDependencyCost(DependencyNode dep)
+        {
+            // A dependency that is still being estimated is part of a cycle.
+            if (!costs.TryGetValue(dep.BindingId, out var depCost))
+            {
+                return 1;
+            }
+
+            if (!useSiteCount.TryGetValue(dep.BindingId, out var count) || count < LocalFunctions.MinUseSites)
+            {
+                return depCost - ownCosts[dep.BindingId];
+            }
+
+            var hasLocalFunction = nodeTools.IsBlock(dep)
+                                   && (factoryDownstream.Contains(dep.BindingId) || depCost >= LocalFunctions.MinBodyCost);
+            return hasLocalFunction ? 1 : depCost;
+        }
     }
 
     // Binding ids of the nodes whose dependencies reach an overridden value (ctx.Override or ctx.Let),

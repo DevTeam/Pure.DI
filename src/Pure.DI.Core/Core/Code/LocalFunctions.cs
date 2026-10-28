@@ -2,22 +2,28 @@ namespace Pure.DI.Core.Code;
 
 using static Lifetime;
 
-class LocalFunctions(INodeTools nodeTools): ILocalFunctions
+class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators): ILocalFunctions
 {
-    private const int MinBodyCost = 4;
-    private const int MinUseSites = 2;
+    internal const int MinBodyCost = 4;
+    internal const int MinUseSites = 2;
 
     public bool UseFor(CodeContext ctx)
     {
-        // A local function is shared by every use site in its scope, so it cannot add to
-        // the accumulator of one particular resolve.
-        if (ctx.Accumulators.Length != 0)
+        var node = ctx.VarInjection.Var.AbstractNode;
+        if (!nodeTools.IsBlock(node))
         {
             return false;
         }
 
-        var node = ctx.VarInjection.Var.AbstractNode;
-        if (!nodeTools.IsBlock(node))
+        // A local function is shared by every use site in its scope, so it cannot add to
+        // the accumulator of one particular resolve, and it cannot inject an accumulator directly.
+        var nodeAccumulators = GetAccumulators(ctx);
+        if (nodeAccumulators.Count != 0
+            && (nodeAccumulators.Any(i => !i.IsEmpty)
+                || accumulators.InjectsAccumulator(
+                    ctx.RootContext.Graph,
+                    node,
+                    nodeAccumulators.Select(i => i.VarInjection.Var.AbstractNode.BindingId).ToImmutableHashSet())))
         {
             return false;
         }
@@ -43,6 +49,11 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
             return true;
         }
 
+        if (useSites.InlineCost.TryGetValue(bindingId, out var inlineCost))
+        {
+            return inlineCost >= MinBodyCost;
+        }
+
         var isLockRequired = ctx.RootContext.IsThreadSafeEnabled
                              && node.ActualLifetime is Singleton or Scoped;
         return nodeTools.EstimateBodyCost(node, isLockRequired) >= MinBodyCost;
@@ -50,8 +61,27 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
 
     // A local function of the root cannot see a value overridden inside a lambda,
     // so a node that reads such a value gets the scope of the injection that overrides it.
+    // A node created under accumulators gets the scope of the code that declares them,
+    // so its local function is not called where other accumulators collect the instances.
     public LocalFunctionScope GetScope(CodeContext ctx) =>
-        IsOverrideConsumer(ctx) ? ctx.LocalFunctionScope : ctx.RootContext.LocalFunctionScope;
+        IsOverrideConsumer(ctx) || GetAccumulators(ctx).Count != 0
+            ? ctx.LocalFunctionScope
+            : ctx.RootContext.LocalFunctionScope;
+
+    // A shared instance does not feed the per-resolve accumulators, see RootCodeBuilder.
+    private IReadOnlyCollection<Accumulator> GetAccumulators(CodeContext ctx)
+    {
+        if (ctx.Accumulators.IsDefaultOrEmpty)
+        {
+            return [];
+        }
+
+        var node = ctx.VarInjection.Var.AbstractNode;
+        var graph = ctx.RootContext.Graph;
+        return nodeTools.IsSharedInstance(node.Node, graph) && !accumulators.GetBoundaryAccumulators(graph, node).Any()
+            ? ctx.Accumulators.Where(i => i.Lifetime is Singleton or Scoped).ToList()
+            : ctx.Accumulators;
+    }
 
     private static bool IsOverrideConsumer(CodeContext ctx) =>
         ctx.HasOverrides

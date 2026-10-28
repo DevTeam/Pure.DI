@@ -149,8 +149,11 @@ sealed class RootCodeBuilder(
         }
 
         var ctx = varCtx;
+        LocalFunctionScope? accumulatorsScope = null;
         if (isLazy || isAccumulatorBoundary)
         {
+            // The local functions of the nodes created under these accumulators are not shared with other code.
+            accumulatorsScope = new LocalFunctionScope();
             var inheritedAccumulators = ctx.Accumulators
                 .Where(i => !accumulatorBindingIds.Contains(i.VarInjection.Var.AbstractNode.BindingId))
                 .ToImmutableArray();
@@ -163,7 +166,8 @@ sealed class RootCodeBuilder(
                     .Where(i => !accumulatorBindingIds.Contains(i.VarInjection.Var.AbstractNode.BindingId))
                     .ToImmutableArray(),
                 IsFactory = !isLazy && ctx.IsFactory,
-                IsDeferred = isLazy || ctx.IsDeferred
+                IsDeferred = isLazy || ctx.IsDeferred,
+                LocalFunctionScope = accumulatorsScope
             };
             if (isLazy)
             {
@@ -234,6 +238,14 @@ sealed class RootCodeBuilder(
         accumulatorBoundaryToken.Dispose();
         mapToken.Dispose();
 
+        if (accumulatorsScope is not null)
+        {
+            foreach (var function in accumulatorsScope.Functions)
+            {
+                lines.AppendLine();
+                lines.AppendLines(function);
+            }
+        }
 
         if (isLocalFunction)
         {
