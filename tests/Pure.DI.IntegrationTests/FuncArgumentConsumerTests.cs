@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Pure.DI.IntegrationTests;
 
 /// <summary>
@@ -301,7 +303,7 @@ public class FuncArgumentConsumerTests
         result.StdOut.ShouldBe([values, "True"], result);
     }
 
-    [Fact(Skip = "Known limitation: a node that consumes the Func argument still gets no Ensure...Exists() helper, because a helper is shared by the whole root and cannot see a value overridden inside one lambda, so a diamond of argument consumers is still written out once per dependency path. Fixing it needs helpers that take the override values as parameters.")]
+    [Fact]
     public async Task ShouldCreateArgumentConsumingDiamondInOnePlace()
     {
         // Given
@@ -354,5 +356,74 @@ public class FuncArgumentConsumerTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.A4(")).ShouldBe(1, result);
+    }
+
+    [Theory]
+    // A shared instance is created by the first call, so later calls keep the first call's argument.
+    [InlineData("Singleton", "x x")]
+    [InlineData("Scoped", "x x")]
+    [InlineData("PerResolve", "x x")]
+    public async Task ShouldCreateDeepArgumentConsumingDiamondInOnePlace(string lifetime, string values)
+    {
+        // Given
+        const int count = 21;
+        var classes = new StringBuilder();
+        var bindings = new StringBuilder();
+        classes.AppendLine("sealed class S0 { public S0(string label) => Label = label; public string Label { get; } }");
+        classes.AppendLine("sealed class S1 { public S1(S0 s0) => S0 = s0; public S0 S0 { get; } }");
+        for (var i = 2; i < count; i++)
+        {
+            classes.AppendLine($"sealed class S{i} {{ public S{i}(S{i - 1} a, S{i - 2} b) => S0 = a.S0; public S0 S0 {{ get; }} }}");
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            bindings.AppendLine($".Bind<S{i}>().As(#lifetime#).To<S{i}>()");
+        }
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var top = composition.Root;
+                                       Console.WriteLine($"{top.Make("x").S0.Label} {top.Make("y").S0.Label}");
+                                   }
+                               }
+
+                               #classes#
+
+                               sealed class Top
+                               {
+                                   private readonly Func<string, S20> _factory;
+
+                                   public Top(Func<string, S20> factory) => _factory = factory;
+
+                                   public S20 Make(string label) => _factory(label);
+                               }
+
+                               partial class Composition
+                               {
+                                   private void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           #bindings#
+                                           .Root<Top>("Root");
+                               }
+                           }
+                           """.Replace("#classes#", classes.ToString()).Replace("#bindings#", bindings.ToString()).Replace("#lifetime#", lifetime).RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        // Every level reaches the argument through two paths, so writing out each path would double the code per level.
+        result.Errors.ShouldBeEmpty(result);
+        result.StdOut.ShouldBe([values], result);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.S0(")).ShouldBe(1, result);
     }
 }

@@ -9,8 +9,8 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
 
     public bool UseFor(CodeContext ctx)
     {
-        // A local function is shared by every use site in the root, so it can neither add to
-        // the accumulator of one particular resolve nor read a value overridden inside one lambda.
+        // A local function is shared by every use site in its scope, so it cannot add to
+        // the accumulator of one particular resolve.
         if (ctx.Accumulators.Length != 0)
         {
             return false;
@@ -22,13 +22,14 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
             return false;
         }
 
-        var bindingId = ctx.VarInjection.Var.Declaration.Node.Node.BindingId;
-        var useSites = ctx.RootContext.UseSites;
-        if (ctx.HasOverrides && useSites.OverrideConsumers.Contains(bindingId))
+        // A node that reads an overridden value needs a scope declared next to that value.
+        if (IsOverrideConsumer(ctx) && ReferenceEquals(ctx.LocalFunctionScope, ctx.RootContext.LocalFunctionScope))
         {
             return false;
         }
 
+        var bindingId = ctx.VarInjection.Var.Declaration.Node.Node.BindingId;
+        var useSites = ctx.RootContext.UseSites;
         if (!useSites.UseSiteCount.TryGetValue(bindingId, out var count) || count < MinUseSites)
         {
             return false;
@@ -46,4 +47,13 @@ class LocalFunctions(INodeTools nodeTools): ILocalFunctions
                              && node.ActualLifetime is Singleton or Scoped;
         return nodeTools.EstimateBodyCost(node, isLockRequired) >= MinBodyCost;
     }
+
+    // A local function of the root cannot see a value overridden inside a lambda,
+    // so a node that reads such a value gets the scope of the injection that overrides it.
+    public LocalFunctionScope GetScope(CodeContext ctx) =>
+        IsOverrideConsumer(ctx) ? ctx.LocalFunctionScope : ctx.RootContext.LocalFunctionScope;
+
+    private static bool IsOverrideConsumer(CodeContext ctx) =>
+        ctx.HasOverrides
+        && ctx.RootContext.UseSites.OverrideConsumers.Contains(ctx.VarInjection.Var.Declaration.Node.Node.BindingId);
 }

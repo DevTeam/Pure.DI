@@ -25,7 +25,8 @@ sealed class RootCodeBuilder(
     public IEnumerator Build(CodeContext parentCtx)
     {
         var (var, injection) = parentCtx.VarInjection;
-        var hasLocalFunction = parentCtx.LocalFunctionScope.TryGetName(var, out var localFunctionName);
+        var localFunctionScope = localFunctions.GetScope(parentCtx);
+        var hasLocalFunction = localFunctionScope.TryGetName(var, out var localFunctionName);
         if (var.IsCreated)
         {
             if (parentCtx.IsFactory && hasLocalFunction)
@@ -114,7 +115,7 @@ sealed class RootCodeBuilder(
             };
         }
 
-        // A local function is declared at the root level, so it cannot read a detached accumulator
+        // A local function may be declared at the root level, so it cannot read a detached accumulator
         // declared inside a lambda when the instance injects it directly (IOwned, for example).
         var isLocalFunction = localFunctions.UseFor(varCtx)
                               && (varCtx.DetachedAccumulators.IsDefaultOrEmpty
@@ -250,7 +251,7 @@ sealed class RootCodeBuilder(
                 localFunction.AppendLines(lines);
             }
 
-            varCtx.LocalFunctionScope.Add(var, localFunctionName, localFunction);
+            localFunctionScope.Add(var, localFunctionName, localFunction);
             lines = new Lines();
             lines.AppendLine($"{localFunctionName}();");
         }

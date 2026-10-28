@@ -344,12 +344,16 @@ sealed class FactoryCodeBuilder(
                     var resolver = factory.Resolvers[resolversIdx];
                     resolversIdx++;
 
-                    if (hasOverrides)
+                    var injectionCtx = ctx;
+                    if (hasOverrides && !resolver.Overrides.IsDefaultOrEmpty)
                     {
                         BuildOverrides(ctx, factory, localVariableRenamingRewriter, resolver.Overrides, lines);
+                        // The local functions that read the overridden values are declared next to them.
+                        injectionCtx = ctx with { LocalFunctionScope = new LocalFunctionScope() };
                     }
 
-                    yield return variablesCodeBuilderFactory().Build(ctx.CreateChild(argument));
+                    yield return variablesCodeBuilderFactory().Build(injectionCtx.CreateChild(argument));
+                    AppendLocalFunctions(injectionCtx, ctx, lines);
 
                     var canInlineReturn =
                         injection.DeclarationRequired
@@ -382,18 +386,20 @@ sealed class FactoryCodeBuilder(
                     var (initialization, initializer) = (inits[initsIdx], factory.Initializers[initsIdx]);
                     initsIdx++;
                         
-                    if (hasOverrides)
+                    var initCtx = ctx;
+                    if (hasOverrides && !initializer.Overrides.IsDefaultOrEmpty)
                     {
                         BuildOverrides(ctx, factory, localVariableRenamingRewriter, initializer.Overrides, lines);
+                        initCtx = ctx with { LocalFunctionScope = new LocalFunctionScope() };
                     }
 
-                    var initCtx = ctx;
                     var initializersWalker = initializersWalkerFactory(
                         new InitializersWalkerContext(
                             injection => variablesCodeBuilderFactory().Build(initCtx.CreateChild(injection)),
                             initialization.VariableName,
                             new FactoryInitializationArgsEnumerator(initializationArgs, initializationArgsIdx)));
-                    yield return initializersWalker.VisitInitializer(ctx, initializer);
+                    yield return initializersWalker.VisitInitializer(initCtx, initializer);
+                    AppendLocalFunctions(initCtx, ctx, lines);
                     continue;
                 }
 
@@ -424,6 +430,20 @@ sealed class FactoryCodeBuilder(
 
         string GetFactoryResultDeclaration() =>
             $"{(hasRefLikeDependencies && refSafety.IsMaybeRefLike(var.InstanceType) ? "scoped " : "")}{buildTools.GetDeclaration(ctx, var.Declaration)}";
+    }
+
+    private static void AppendLocalFunctions(CodeContext injectionCtx, CodeContext ctx, Lines lines)
+    {
+        if (ReferenceEquals(injectionCtx.LocalFunctionScope, ctx.LocalFunctionScope))
+        {
+            return;
+        }
+
+        foreach (var localFunction in injectionCtx.LocalFunctionScope.Functions)
+        {
+            lines.AppendLine();
+            lines.AppendLines(localFunction);
+        }
     }
 
     private void BuildOverrides(CodeContext ctx, DpFactory factory, ILocalVariableRenamingRewriter localVariableRenamingRewriter, ImmutableArray<DpOverride> overrides, Lines lines)
