@@ -36,7 +36,8 @@ class RootBuilder(
             rootContext.IsThreadSafeEnabled,
             lines,
             rootAccumulators,
-            []);
+            [],
+            rootContext.LocalFunctionScope);
 
         accumulators.BuildAccumulators(ctx);
         var body = new Lines();

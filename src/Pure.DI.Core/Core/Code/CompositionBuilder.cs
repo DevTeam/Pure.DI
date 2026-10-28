@@ -94,14 +94,8 @@ class CompositionBuilder(
                 {
                     lines.AppendLine($"return {rootVarInjection.Var.CodeExpression};");
                 }
-                foreach (var variable in varsMap.Vars)
+                foreach (var localFunction in ctx.LocalFunctionScope.Functions)
                 {
-                    var localFunction = variable.LocalFunction;
-                    if (localFunction.Count == 0)
-                    {
-                        continue;
-                    }
-
                     lines.AppendLine();
                     lines.AppendLines(localFunction);
                 }

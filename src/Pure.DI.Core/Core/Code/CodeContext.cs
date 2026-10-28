@@ -9,6 +9,7 @@ record CodeContext(
     Lines Lines,
     in ImmutableArray<Accumulator> Accumulators,
     HashSet<string> Overrides,
+    LocalFunctionScope LocalFunctionScope,
     bool HasOverrides = false,
     object? ContextTag = null,
     bool IsFactory = false,

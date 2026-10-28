@@ -75,17 +75,6 @@ record Var(
     internal string? RawCodeExpression { get; private set; }
 
     /// <summary>
-    /// Gets or sets the name of the local function that creates the variable.
-    /// </summary>
-    public string LocalFunctionName { get; set; } = "";
-
-    /// <summary>
-    /// Gets or sets the lines of code for the local function.
-    /// </summary>
-    // ReSharper disable once MemberCanBePrivate.Global
-    public Lines LocalFunction { get; set; } = new();
-
-    /// <summary>
     /// Gets or sets a value indicating whether the variable has a cyclic dependency.
     /// </summary>
     public bool? HasCycle { get; set; }
@@ -138,18 +127,6 @@ record Var(
         if (defaultCreated != _isCreated)
         {
             _isCreated = defaultCreated;
-            changed = true;
-        }
-
-        if (LocalFunctionName != "")
-        {
-            LocalFunctionName = "";
-            changed = true;
-        }
-
-        if (LocalFunction.Count > 0)
-        {
-            LocalFunction = new Lines();
             changed = true;
         }
 

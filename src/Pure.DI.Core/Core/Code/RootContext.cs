@@ -14,4 +14,6 @@ record RootContext(
     public bool ReturnWasAdded { get; set; }
 
     public List<Var> ConstructionFailureAccumulators { get; } = [];
+
+    public LocalFunctionScope LocalFunctionScope { get; } = new();
 }

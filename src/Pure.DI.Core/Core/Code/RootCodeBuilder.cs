@@ -25,25 +25,26 @@ sealed class RootCodeBuilder(
     public IEnumerator Build(CodeContext parentCtx)
     {
         var (var, injection) = parentCtx.VarInjection;
+        var hasLocalFunction = parentCtx.LocalFunctionScope.TryGetName(var, out var localFunctionName);
         if (var.IsCreated)
         {
-            if (parentCtx.IsFactory && !string.IsNullOrWhiteSpace(var.LocalFunctionName))
+            if (parentCtx.IsFactory && hasLocalFunction)
             {
-                parentCtx.Lines.AppendLine($"{var.LocalFunctionName}();");
+                parentCtx.Lines.AppendLine($"{localFunctionName}();");
             }
 
             yield break;
         }
 
-        if (!string.IsNullOrEmpty(var.LocalFunctionName))
+        if (hasLocalFunction)
         {
             if (parentCtx.IsFactory)
             {
-                parentCtx.Lines.AppendLine($"{var.LocalFunctionName}();");
+                parentCtx.Lines.AppendLine($"{localFunctionName}();");
             }
             else if (!var.IsLocalFunctionCalled)
             {
-                parentCtx.Lines.AppendLine($"{var.LocalFunctionName}();");
+                parentCtx.Lines.AppendLine($"{localFunctionName}();");
                 var.IsLocalFunctionCalled = true;
             }
             var.IsCreated = true;
@@ -236,21 +237,22 @@ sealed class RootCodeBuilder(
         if (isLocalFunction)
         {
             var baseName = nameFormatter.Format("{type}{tag}", varCtx.VarInjection.Var.InstanceType, currentTag);
-            var localFunction = var.LocalFunction;
+            var localFunction = new Lines();
             if (compilations.GetLanguageVersion(varCtx.RootContext.Graph.Source.SemanticModel.Compilation) >= LanguageVersion.CSharp9)
             {
                 buildTools.AddAggressiveInlining(localFunction);
             }
 
-            var.LocalFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
-            localFunction.AppendLine($"void {var.LocalFunctionName}()");
+            localFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
+            localFunction.AppendLine($"void {localFunctionName}()");
             using (localFunction.CreateBlock())
             {
                 localFunction.AppendLines(lines);
             }
 
+            varCtx.LocalFunctionScope.Add(var, localFunctionName, localFunction);
             lines = new Lines();
-            lines.AppendLine($"{var.LocalFunctionName}();");
+            lines.AppendLine($"{localFunctionName}();");
         }
 
         parentCtx.Lines.AppendLines(lines);
