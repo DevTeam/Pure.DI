@@ -40,6 +40,16 @@ var args = string.Join(", ", GetSuffixes(1, i).Select(suffix => $"T{suffix} arg{
 }
 #endif
 
+#if NET20 && !PUREDI_API_EXTENSION_SUPPRESSION
+namespace System.Runtime.CompilerServices
+{
+    [global::System.AttributeUsage(global::System.AttributeTargets.Assembly | global::System.AttributeTargets.Class | global::System.AttributeTargets.Method)]
+    internal sealed class ExtensionAttribute : global::System.Attribute
+    {
+    }
+}
+#endif
+
 namespace Pure.DI
 {
     using System;
@@ -2309,8 +2319,8 @@ namespace Pure.DI
         /// <seealso cref="SpecialType{T}()"/>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="IBinding.To{T1,T}()"/>
-        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding Bind(params object[] tags);
@@ -2337,8 +2347,8 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
         /// <returns>Fluent binding interface for chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<<#=typeArgs#>>(params object[] tags)
@@ -2381,8 +2391,8 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
         /// <seealso cref="Builders{T}"/>
         /// <seealso cref="IBinding.To{T}()"/>
         /// <seealso cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="IBinding.To{T1,T}()"/>
-        /// <seealso cref="IBinding.To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="IBinding.Tags"/>
         /// <seealso cref="IBinding.As"/>
         IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags)
@@ -2844,39 +2854,21 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
 foreach(var lifetime in lifetimes)
 {
 var allowsRefLikeResult = lifetime != "Singleton" && lifetime != "Scoped";
-for (var i = 0; i < lifetimeBindsCount; i++)
-{
-var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
-var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Implementation type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
-var allowsRefStructBlock = allowsRefLikeResult
-    ? GetAllowsRefStructBlock(GetSuffixes(0, i).Select(suffix => $"T{suffix}"), "            ")
-    : "";
-var declarationEnd = allowsRefLikeResult ? $"{allowsRefStructBlock}{Environment.NewLine}            ;" : ";";
+var declarationEnd = allowsRefLikeResult ? $"{GetAllowsRefStructBlock([ "T" ], "            ")}{Environment.NewLine}            ;" : ";";
 #>
 
-<#
-if (i < 4)
-{
-#>
         /// <summary>
         /// Defines simplified lifetime-specific binding.
         /// </summary>
-<#= comments #>
+        /// <typeparam name="T">Implementation type to bind.</typeparam>
         /// <param name="tags">Optional tags associated with these bindings.</param>
         /// <returns>Fluent binding interface for chaining.</returns>
+        /// <seealso cref="ConfigurationExtensions.<#= lifetime #>{T,T1}(IConfiguration,object[])"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
-<#
-}
-#>
-        IConfiguration <#= lifetime #><<#= typeArgs #>>(params object[] tags)<#=declarationEnd#>
-<#
-}
-#>
+        IConfiguration <#= lifetime #><T>(params object[] tags)<#=declarationEnd#>
 
         /// <summary>
         /// Binds to a lifetime-specific factory delegate that creates the implementation instance.
@@ -2915,8 +2907,8 @@ if (i < 4)
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         /// <remarks>
@@ -2953,8 +2945,8 @@ if (i < 4)
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(factory)"/>
         /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         /// <remarks>
@@ -3039,8 +3031,8 @@ var allowsRefStructBlock = GetAllowsRefStructBlock(allowsRefStructTypeParameters
         /// <returns>Fluent binding interface for chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind(params object[] tags);
@@ -3067,8 +3059,8 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
         /// <returns>Fluent binding interface for chaining.</returns>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IBinding Bind<<#=typeArgs#>>(params object[] tags)
@@ -3094,8 +3086,8 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         IBinding As(Pure.DI.Lifetime lifetime);
 
@@ -3143,8 +3135,8 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}()"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="As"/>
         IBinding Tags(params object[] tags);
 
@@ -3161,8 +3153,8 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(System.Func{Pure.DI.IContext,T})"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         IConfiguration To<T>()
@@ -3170,40 +3162,6 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
             where T : allows ref struct
 #endif
             ;
-<#
-for (var i = 2; i <= lifetimeBindsCount; i++)
-{
-var typeArgs = string.Join(", ", GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"));
-var comments = string.Join(Environment.NewLine, GetSuffixes(0, i - 1).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Implementation type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
-var allowsRefStructBlock = GetAllowsRefStructBlock(GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"), "            ");
-#>
-
-        /// <summary>
-        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
-        /// <example>
-        /// <code>
-        /// DI.Setup("Composition")
-        ///     .Bind&lt;IService&gt;(Tag.Unique)
-        ///     .As(Lifetime.Singleton)
-        ///     .To&lt;Service1, Service2&gt;()
-        ///     .Root&lt;IService[]&gt;("Services");
-        /// </code>
-        /// </example>
-        /// </summary>
-<#=comments#>
-        /// <returns>Configuration interface for fluent chaining.</returns>
-        /// <remarks>
-        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
-        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
-        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
-        /// </remarks>
-        /// <seealso cref="IConfiguration.Bind{T}"/>
-        /// <seealso cref="As"/>
-        IConfiguration To<<#=typeArgs#>>()<#=allowsRefStructBlock#>
-            ;
-<#
-}
-#>
 
         /// <summary>
         /// Binds to a factory delegate; dependencies can be resolved via <see cref="IContext"/>.
@@ -3245,8 +3203,8 @@ var allowsRefStructBlock = GetAllowsRefStructBlock(GetSuffixes(0, i - 1).Select(
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         /// <remarks>
@@ -3288,8 +3246,8 @@ var allowsRefStructBlock = GetAllowsRefStructBlock(GetSuffixes(0, i - 1).Select(
         /// <seealso cref="IConfiguration.Bind{T}"/>
         /// <seealso cref="To{T}(factory)"/>
         /// <seealso cref="To{T}()"/>
-        /// <seealso cref="To{T1,T}()"/>
-        /// <seealso cref="To{T1,T2,T}()"/>
+        /// <seealso cref="BindingExtensions.To{T,T1}(IBinding)"/>
+        /// <seealso cref="BindingExtensions.To{T,T1,T2}(IBinding)"/>
         /// <seealso cref="Tags"/>
         /// <seealso cref="As"/>
         /// <remarks>
@@ -3977,21 +3935,6 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(0,
             {
                 return this;
             }
-<#
-for (var i = 2; i <= lifetimeBindsCount; i++)
-{
-var typeArgs = string.Join(", ", GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"));
-var allowsRefStructBlock = GetAllowsRefStructBlock(GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"), "                ");
-#>
-
-            /// <inheritdoc />
-            public IConfiguration To<<#=typeArgs#>>()<#=allowsRefStructBlock#>
-            {
-                return this;
-            }
-<#
-}
-#>
 
             /// <inheritdoc />
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
@@ -4042,22 +3985,13 @@ var allowsRefStructConstraints = string.Join(Environment.NewLine, GetSuffixes(1,
 foreach(var lifetime in lifetimes)
 {
 var allowsRefLikeResult = lifetime != "Singleton" && lifetime != "Scoped";
-for (var i = 0; i < lifetimeBindsCount; i++)
-{
-var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
-var allowsRefStructBlock = allowsRefLikeResult
-    ? GetAllowsRefStructBlock(GetSuffixes(0, i).Select(suffix => $"T{suffix}"), "                ")
-    : "";
 #>
 
             /// <inheritdoc />
-            public IConfiguration <#=lifetime#><<#=typeArgs#>>(params object[] tags)<#=allowsRefStructBlock#>
+            public IConfiguration <#=lifetime#><T>(params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock([ "T" ], "                ") : ""#>
             {
                 return this;
             }
-<#
-}
-#>
 
             /// <inheritdoc />
             public IConfiguration <#=lifetime#><T>(global::System.Func<IContext, T> factory, params object[] tags)<#=allowsRefLikeResult ? GetAllowsRefStructBlock([ "T" ], "                ") : ""#>
@@ -4092,6 +4026,105 @@ var allowsRefStructBlock = GetAllowsRefStructBlock(allowsRefStructTypeParameters
 }
 #>
         }
+    }
+
+    /// <summary>
+    /// Lifetime-specific bindings of several implementation types at once.
+    /// They are extension methods so that overload resolution of the other <see cref="IConfiguration"/> methods
+    /// does not have to infer their numerous type arguments, which greatly slows down compilation.
+    /// </summary>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
+    internal static class ConfigurationExtensions
+    {
+<#
+foreach(var lifetime in lifetimes)
+{
+var allowsRefLikeResult = lifetime != "Singleton" && lifetime != "Scoped";
+for (var i = 1; i < lifetimeBindsCount; i++)
+{
+var typeArgs = string.Join(", ", GetSuffixes(0, i).Select(suffix => $"T{suffix}"));
+var comments = string.Join(Environment.NewLine, GetSuffixes(0, i).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Implementation type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
+var allowsRefStructBlock = allowsRefLikeResult
+    ? GetAllowsRefStructBlock(GetSuffixes(0, i).Select(suffix => $"T{suffix}"), "            ")
+    : "";
+#>
+
+<#
+if (i < 4)
+{
+#>
+        /// <summary>
+        /// Defines simplified lifetime-specific binding.
+        /// </summary>
+        /// <param name="configuration">Configuration interface.</param>
+<#= comments #>
+        /// <param name="tags">Optional tags associated with these bindings.</param>
+        /// <returns>Fluent binding interface for chaining.</returns>
+        /// <seealso cref="IConfiguration.<#= lifetime #>{T}(object[])"/>
+<#
+}
+#>
+        public static IConfiguration <#= lifetime #><<#= typeArgs #>>(this IConfiguration configuration, params object[] tags)<#=allowsRefStructBlock#>
+        {
+            return configuration;
+        }
+<#
+}
+}
+#>
+    }
+
+    /// <summary>
+    /// Bindings of the current contract(s) to several implementation types at once.
+    /// They are extension methods so that overload resolution of the other <see cref="IBinding"/> methods
+    /// does not have to infer their numerous type arguments, which greatly slows down compilation.
+    /// </summary>
+#if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
+    [global::System.CodeDom.Compiler.GeneratedCode("Pure.DI", "")]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+#endif
+    internal static class BindingExtensions
+    {
+<#
+for (var i = 2; i <= lifetimeBindsCount; i++)
+{
+var typeArgs = string.Join(", ", GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"));
+var comments = string.Join(Environment.NewLine, GetSuffixes(0, i - 1).Select(suffix => $"        /// <typeparam name=\"T{suffix}\">Implementation type {(suffix == "" ? "" : suffix + " ")}to bind.</typeparam>"));
+var allowsRefStructBlock = GetAllowsRefStructBlock(GetSuffixes(0, i - 1).Select(suffix => $"T{suffix}"), "            ");
+#>
+
+        /// <summary>
+        /// Creates a separate binding for each implementation type, using the current contract(s), tags, and lifetime.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique)
+        ///     .As(Lifetime.Singleton)
+        ///     .To&lt;Service1, Service2&gt;()
+        ///     .Root&lt;IService[]&gt;("Services");
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="binding">Binding interface.</param>
+<#=comments#>
+        /// <returns>Configuration interface for fluent chaining.</returns>
+        /// <remarks>
+        /// Use <see cref="Tag.Unique"/> to include every implementation in a collection.
+        /// Use <see cref="Tag.Type"/> to tag each binding with its implementation type for individual resolution.
+        /// With no tag or the same ordinary tag, later implementations override earlier ones and a warning is reported.
+        /// </remarks>
+        /// <seealso cref="IConfiguration.Bind{T}"/>
+        /// <seealso cref="IBinding.As"/>
+        public static IConfiguration To<<#=typeArgs#>>(this IBinding binding)<#=allowsRefStructBlock#>
+        {
+            return (IConfiguration)binding;
+        }
+<#
+}
+#>
     }
 
     /// <summary>

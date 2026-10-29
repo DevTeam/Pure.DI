@@ -815,8 +815,10 @@ sealed class SetupsBuilder(
         {
             var semanticModel = compilation.GetSemanticModel(syntaxTree);
             var root = syntaxTree.GetRoot();
+            // Types can only be declared in compilation units, namespaces, and other types,
+            // so member bodies are not walked.
             foreach (var typeDeclaration in root
-                         .DescendantNodes()
+                         .DescendantNodes(static node => node is CompilationUnitSyntax or BaseNamespaceDeclarationSyntax or TypeDeclarationSyntax)
                          .OfType<TypeDeclarationSyntax>()
                          .Where(typeDeclaration => typeDeclaration is ClassDeclarationSyntax or StructDeclarationSyntax or RecordDeclarationSyntax
                                                    && typeDeclaration.AttributeLists.Count > 0))

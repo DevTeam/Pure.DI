@@ -8,6 +8,13 @@
         "t4"
       ],
       "rollForward": false
+    },
+    "jetbrains.dottrace.globaltools": {
+      "version": "2026.2.3.1",
+      "commands": [
+        "dottrace"
+      ],
+      "rollForward": false
     }
   }
 }
