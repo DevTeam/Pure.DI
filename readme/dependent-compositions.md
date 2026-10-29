@@ -6,6 +6,7 @@ The `Setup` method has an additional argument `kind`, which defines the type of 
 - `CompositionKind.Global` - the composition class will also not be created, but that composition will automatically be used to create other compositions
 Use dependent compositions to split large object graphs into reusable setup layers.
 An `Internal` setup is the right choice for a reusable layer that must not expose a composition class of its own; `Global` is for settings that every composition in the project should inherit, such as hints.
+Setups are applied as layers: a setup is applied after every setup it depends on, directly or through a chain of `DependsOn`. A layer that depends on another one and re-binds a contract therefore overrides it, and a composition built on `Composition -> Mid -> Base` gets the binding of `Mid`, exactly as with `.DependsOn("Base", "Mid")`. Among the setups listed in one `DependsOn(...)` call, the later one still overrides the earlier one.
 
 
 ```c#
@@ -136,8 +137,8 @@ Class diagram:
    hideEmptyMembersBox: true
 ---
 classDiagram
-	UserService --|> IUserService
 	SqlDatabase --|> IDatabase
+	UserService --|> IUserService
 	OtherComposition ..> Ui : Ui Ui
 	OtherComposition ..> UserService : IUserService UserService
 	UserService *-- SqlDatabase : IDatabase
