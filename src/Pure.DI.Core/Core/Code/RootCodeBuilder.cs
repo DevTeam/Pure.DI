@@ -150,9 +150,14 @@ sealed class RootCodeBuilder(
             varCtx = varCtx with { IsLockRequired = varCtx.RootContext.IsThreadSafeEnabled };
         }
 
+        // #174 A factory that synchronizes the creation of a shared instance by ctx.Lock
+        // gets the double-checked locking even when the thread safety is disabled.
+        var isContextLockUsed = isBlock
+                                && var.AbstractNode.ActualLifetime is Singleton or Scoped
+                                && nodeTools.UsesContextLock(var.AbstractNode.Node);
         if (isBlock)
         {
-            StartSingleInstanceCheck(varCtx with { Lines = lines });
+            StartSingleInstanceCheck(varCtx with { Lines = lines, IsLockRequired = varCtx.IsLockRequired || isContextLockUsed });
             varCtx = varCtx with { IsLockRequired = false };
         }
 
@@ -247,7 +252,7 @@ sealed class RootCodeBuilder(
 
         if (isBlock)
         {
-            FinishSingleInstanceCheck(varCtx with { IsLockRequired = parentCtx.IsLockRequired });
+            FinishSingleInstanceCheck(varCtx with { IsLockRequired = parentCtx.IsLockRequired || isContextLockUsed }, isContextLockUsed);
         }
 
         accumulatorBoundaryToken.Dispose();
@@ -357,7 +362,7 @@ sealed class RootCodeBuilder(
         lines.IncIndent();
     }
 
-    private void FinishSingleInstanceCheck(CodeContext ctx)
+    private void FinishSingleInstanceCheck(CodeContext ctx, bool isContextLockUsed)
     {
         var var = ctx.VarInjection.Var;
         var lines = ctx.Lines;
@@ -376,7 +381,7 @@ sealed class RootCodeBuilder(
 
         if (var.InstanceType.IsValueType)
         {
-            if (var.AbstractNode.ActualLifetime is not Transient and not PerBlock && ctx.RootContext.IsThreadSafeEnabled)
+            if (var.AbstractNode.ActualLifetime is not Transient and not PerBlock && (ctx.RootContext.IsThreadSafeEnabled || isContextLockUsed))
             {
                 lines.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
             }

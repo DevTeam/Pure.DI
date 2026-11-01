@@ -27,6 +27,25 @@ sealed class NodeTools(
     public bool IsBlock(IDependencyNode node) =>
         node.ActualLifetime is Singleton or Scoped or PerResolve;
 
+    public bool UsesContextLock(DependencyNode node)
+    {
+        if (node.Factory is not {} factory)
+        {
+            return false;
+        }
+
+        var contextName = factory.Source.Context.Identifier.ValueText;
+        return factory.Source.Factory
+            .DescendantNodes()
+            .OfType<MemberAccessExpressionSyntax>()
+            .Any(i => i is
+                {
+                    Expression: IdentifierNameSyntax identifier,
+                    Name.Identifier.ValueText: nameof(IContext.Lock)
+                }
+                && identifier.Identifier.ValueText == contextName);
+    }
+
     public bool IsSharedInstance(DependencyNode node, DependencyGraph graph) =>
         node.ActualLifetime is Singleton or Scoped
         && !IsLazy(node, graph);

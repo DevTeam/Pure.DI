@@ -5617,6 +5617,8 @@ namespace Pure.DI
         /// <summary>
         /// Gets the synchronization object used to control thread-safe access during composition.
         /// Use it to guard manual construction/override logic in factory delegates.
+        /// When a factory of a singleton or scoped instance uses it, the instance is checked once more under the lock,
+        /// so it is created only once even when the thread safety is disabled by the <c>ThreadSafe</c> hint.
         /// <example>
         /// <code>
         /// DI.Setup(nameof(Composition))

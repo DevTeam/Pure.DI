@@ -13,6 +13,11 @@ interface INodeTools
     /// </summary>
     bool IsSharedInstance(DependencyNode node, DependencyGraph graph);
 
+    /// <summary>
+    /// Determines whether the factory of the node uses the composition lock via <c>ctx.Lock</c>.
+    /// </summary>
+    bool UsesContextLock(DependencyNode node);
+
     bool IsDisposableAny(DependencyNode node);
 
     bool IsDisposable(DependencyNode node);
