@@ -157,6 +157,33 @@ public class DependencyDiamondTests
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.S0(")).ShouldBeLessThan(Count, result);
     }
 
+    [Theory]
+    [InlineData("Singleton", 1)]
+    [InlineData("PerResolve", 0)]
+    [InlineData("Transient", 0)]
+    public async Task ShouldRewriteDiamondUnderArgumentOfFuncOncePerNode(string lifetime, int warningsCount)
+    {
+        // Given
+
+        // When
+        // The rewrite of the graph under the argument of the Func once per dependency path
+        // would not end in a reasonable time for this depth, see #172.
+        var result = await CreateSetup(
+                40,
+                lifetime,
+                "",
+                "Func<string, S39>",
+                """Console.WriteLine(composition.Root("x").S0.Label);""",
+                "public S0(string label) => Label = label;")
+            .RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        // A singleton built from the argument keeps the value of the first call, which is reported as a warning.
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(warningsCount, result);
+        result.StdOut.ShouldBe(["x"], result);
+    }
+
     private static string CreateSetup(int count, string lifetime, string hint, string rootType, string main, string s0, string s0Base = "", string extraClasses = "")
     {
         var classes = new StringBuilder(extraClasses);

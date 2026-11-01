@@ -14,9 +14,12 @@ class GraphOverrider(
     {
         var entries = new Dictionary<DependencyNode, IReadOnlyCollection<Dependency>>(graph.Entries.Count);
         var processed = new Dictionary<int, DependencyNode>(graph.Entries.Count);
+        var state = new RewriteState();
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
             Override(
+                state,
+                0,
                 processed,
                 new Dictionary<Injection, DependencyNode>(),
                 new Dictionary<Injection, DependencyNode>(),
@@ -53,6 +56,8 @@ class GraphOverrider(
     }
 
     private DependencyNode Override(
+        RewriteState state,
+        int depth,
         Dictionary<int, DependencyNode> processed,
         Dictionary<Injection, DependencyNode> nodes,
         Dictionary<Injection, DependencyNode> localOverrides,
@@ -70,6 +75,7 @@ class GraphOverrider(
             return targetNode;
         }
 
+        var bindingId = targetNode.Binding.Id;
         var branchProcessed = CreateBranchProcessedCache(
             processed,
             consumeLocalOverrides,
@@ -77,11 +83,74 @@ class GraphOverrider(
             localOverrides,
             overrides);
 
-        if (branchProcessed.TryGetValue(targetNode.Binding.Id, out var node))
+        if (branchProcessed.TryGetValue(bindingId, out var node))
+        {
+            if (state.PathDepths.TryGetValue(bindingId, out var ancestorDepth))
+            {
+                state.MinBackReferenceDepth = Math.Min(state.MinBackReferenceDepth, ancestorDepth);
+            }
+
+            return node;
+        }
+
+        // The rewrite of a node depends only on the override scope it is reached in,
+        // so a node reached by several dependency paths in the same scope is rewritten once, see #172.
+        var context = ReferenceEquals(branchProcessed, processed)
+            ? null
+            : new OverrideContext(bindingId, nodes, consumeLocalOverrides ? localOverrides : null, overrides);
+
+        if (context is not null && state.Rewritten.TryGetValue(context, out node))
         {
             return node;
         }
 
+        var outerMinBackReferenceDepth = state.MinBackReferenceDepth;
+        state.MinBackReferenceDepth = int.MaxValue;
+        state.PathDepths[bindingId] = depth;
+        var rewrittenNode = RewriteNode(
+            state,
+            depth,
+            branchProcessed,
+            nodes,
+            localOverrides,
+            consumeLocalOverrides,
+            overrides,
+            setup,
+            graph,
+            dependencies,
+            rootNode,
+            targetNode,
+            ref maxId,
+            entries);
+
+        state.PathDepths.Remove(bindingId);
+        var minBackReferenceDepth = state.MinBackReferenceDepth;
+        state.MinBackReferenceDepth = Math.Min(outerMinBackReferenceDepth, minBackReferenceDepth);
+        // A rewrite that refers back to a node above it on the current path belongs to this path only.
+        if (context is not null && minBackReferenceDepth >= depth && !cancellationToken.IsCancellationRequested)
+        {
+            state.Rewritten[context] = rewrittenNode;
+        }
+
+        return rewrittenNode;
+    }
+
+    private DependencyNode RewriteNode(
+        RewriteState state,
+        int depth,
+        Dictionary<int, DependencyNode> branchProcessed,
+        Dictionary<Injection, DependencyNode> nodes,
+        Dictionary<Injection, DependencyNode> localOverrides,
+        bool consumeLocalOverrides,
+        Dictionary<int, DpOverride> overrides,
+        MdSetup setup,
+        IGraph<DependencyNode, Dependency> graph,
+        IReadOnlyCollection<Dependency> dependencies,
+        DependencyNode rootNode,
+        DependencyNode targetNode,
+        ref int maxId,
+        Dictionary<DependencyNode, IReadOnlyCollection<Dependency>> entries)
+    {
         var nodesMap = new Dictionary<Injection, DependencyNode>(nodes);
         var localNodesMap = CreateLocalNodesMap(nodesMap, localOverrides, consumeLocalOverrides);
 
@@ -184,6 +253,8 @@ class GraphOverrider(
             {
                 var sourceOverrides = new Dictionary<int, DpOverride>(overridesMap);
                 var source = Override(
+                    state,
+                    depth + 1,
                     branchProcessed,
                     nodesMap,
                     nextLocalOverrides,
@@ -269,5 +340,116 @@ class GraphOverrider(
         }
 
         return false;
+    }
+
+    private sealed class RewriteState
+    {
+        // Nodes rewritten in a non-empty override scope.
+        public readonly Dictionary<OverrideContext, DependencyNode> Rewritten = new();
+
+        // Depths of the nodes being rewritten on the current path, by binding id.
+        public readonly Dictionary<int, int> PathDepths = new();
+
+        // The smallest depth of a node on the current path that the rewrite has referred back to.
+        public int MinBackReferenceDepth = int.MaxValue;
+    }
+
+    private sealed class OverrideContext : IEquatable<OverrideContext>
+    {
+        private readonly int _bindingId;
+        private readonly Dictionary<Injection, DependencyNode> _nodes;
+        private readonly Dictionary<Injection, DependencyNode>? _localOverrides;
+        private readonly Dictionary<int, DpOverride> _overrides;
+        private readonly int _hashCode;
+
+        public OverrideContext(
+            int bindingId,
+            Dictionary<Injection, DependencyNode> nodes,
+            Dictionary<Injection, DependencyNode>? localOverrides,
+            Dictionary<int, DpOverride> overrides)
+        {
+            // The scope dictionaries are copied, because a caller keeps adding to them after the call.
+            _bindingId = bindingId;
+            _nodes = new Dictionary<Injection, DependencyNode>(nodes);
+            _localOverrides = localOverrides is not null ? new Dictionary<Injection, DependencyNode>(localOverrides) : null;
+            _overrides = new Dictionary<int, DpOverride>(overrides);
+            var hashCode = bindingId;
+            hashCode = hashCode * 397 ^ GetHashCode(_nodes);
+            hashCode = hashCode * 397 ^ (_localOverrides is not null ? GetHashCode(_localOverrides) + 1 : 0);
+            foreach (var id in _overrides.Keys)
+            {
+                hashCode ^= id * 31;
+            }
+
+            _hashCode = hashCode * 397 ^ _overrides.Count;
+        }
+
+        public bool Equals(OverrideContext? other)
+        {
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (other is null
+                || _bindingId != other._bindingId
+                || _hashCode != other._hashCode
+                || _overrides.Count != other._overrides.Count
+                || !AreSame(_nodes, other._nodes)
+                || !AreSame(_localOverrides, other._localOverrides))
+            {
+                return false;
+            }
+
+            foreach (var pair in _overrides)
+            {
+                if (!other._overrides.TryGetValue(pair.Key, out var otherOverride) || !pair.Value.Equals(otherOverride))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override bool Equals(object? obj) => obj is OverrideContext other && Equals(other);
+
+        public override int GetHashCode() => _hashCode;
+
+        private static int GetHashCode(Dictionary<Injection, DependencyNode> nodes)
+        {
+            var hashCode = nodes.Count;
+            foreach (var node in nodes.Values)
+            {
+                hashCode ^= node.Binding.Id * 31;
+            }
+
+            return hashCode;
+        }
+
+        private static bool AreSame(
+            Dictionary<Injection, DependencyNode>? nodes,
+            Dictionary<Injection, DependencyNode>? otherNodes)
+        {
+            if (nodes is null || otherNodes is null)
+            {
+                return nodes is null && otherNodes is null;
+            }
+
+            if (nodes.Count != otherNodes.Count)
+            {
+                return false;
+            }
+
+            foreach (var pair in nodes)
+            {
+                if (!otherNodes.TryGetValue(pair.Key, out var otherNode) || !ReferenceEquals(pair.Value, otherNode))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }
