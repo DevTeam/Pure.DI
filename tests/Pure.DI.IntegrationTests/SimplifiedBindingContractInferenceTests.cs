@@ -8,6 +8,80 @@ public class SimplifiedBindingContractInferenceTests
     public interface IMetadataDerivedContract : IMetadataBaseContract { }
     public sealed class MetadataRouter : IMetadataBaseContract { }
     public sealed class MetadataRepository : IMetadataDerivedContract { }
+    public class MetadataBaseRouter : IMetadataBaseContract { }
+    public sealed class MetadataReimplementingRouter : MetadataBaseRouter, IMetadataBaseContract { }
+
+    [Fact]
+    public async Task ShouldInferAnInterfaceReimplementedOnTopOfABaseClass()
+    {
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample;
+
+                           interface ISchedulerFactory { }
+
+                           class StdSchedulerFactory : ISchedulerFactory { }
+
+                           sealed class CompositionSchedulerFactory : StdSchedulerFactory, ISchedulerFactory { }
+
+                           partial class Composition
+                           {
+                               void Setup() => DI.Setup()
+                                   .DefaultLifetime(Lifetime.Scoped)
+                                   .Bind().To<CompositionSchedulerFactory>()
+                                   .Root<ISchedulerFactory>("SchedulerFactory");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition().SchedulerFactory.GetType().Name);
+                           }
+                           """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Errors.ShouldBeEmpty(result);
+        result.Warnings.ShouldBeEmpty(result);
+        result.StdOut.ShouldBe(["CompositionSchedulerFactory"], result);
+    }
+
+    [Fact]
+    public async Task ShouldInferAnInterfaceReimplementedOnTopOfABaseClassForTypeFromReferencedAssembly()
+    {
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using IBaseContract = Pure.DI.IntegrationTests.SimplifiedBindingContractInferenceTests.IMetadataBaseContract;
+                           using Router = Pure.DI.IntegrationTests.SimplifiedBindingContractInferenceTests.MetadataReimplementingRouter;
+
+                           namespace Sample;
+
+                           partial class Composition
+                           {
+                               void Setup() => DI.Setup()
+                                   .Bind().To<Router>()
+                                   .Root<IBaseContract>("Root");
+                           }
+
+                           public class Program
+                           {
+                               public static void Main() =>
+                                   Console.WriteLine(new Composition().Root.GetType().Name);
+                           }
+                           """
+            .RunAsync(new Options(
+                LanguageVersion.Preview,
+                MetadataReferences: [MetadataReference.CreateFromFile(typeof(SimplifiedBindingContractInferenceTests).Assembly.Location)]));
+
+        // Then
+        result.Errors.ShouldBeEmpty(result);
+        result.Warnings.ShouldBeEmpty(result);
+        result.StdOut.ShouldBe(["MetadataReimplementingRouter"], result);
+    }
 
     [Fact]
     public async Task ShouldInferOnlyDirectContractsForTypesFromReferencedAssembly()

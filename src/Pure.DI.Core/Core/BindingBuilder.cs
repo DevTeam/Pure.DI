@@ -191,12 +191,10 @@ sealed class BindingBuilder(
             return ImmutableHashSet<ITypeSymbol>.Empty.WithComparer(typeSymbolComparer.Runtime);
         }
 
-        var inheritedByBaseType = implementationType.BaseType?.AllInterfaces
-            .ToImmutableHashSet(typeSymbolComparer.Runtime)
-            ?? ImmutableHashSet<ITypeSymbol>.Empty.WithComparer(typeSymbolComparer.Runtime);
-
+        // An interface already implemented by a base type stays a contract when the implementation
+        // lists it again (re-implementation), so only interfaces inherited from another declared
+        // interface are excluded.
         return declaredInterfaces
-            .Where(candidate => !inheritedByBaseType.Contains(candidate))
             .Where(candidate => !declaredInterfaces.Any(other =>
                 !typeSymbolComparer.Runtime.Equals(other, candidate)
                 && other.AllInterfaces.Any(inherited => typeSymbolComparer.Runtime.Equals(inherited, candidate))))
