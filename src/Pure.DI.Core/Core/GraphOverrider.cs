@@ -15,14 +15,12 @@ class GraphOverrider(
         ref int bindingId)
     {
         var entries = new Dictionary<DependencyNode, IReadOnlyCollection<Dependency>>(graph.Entries.Count);
-        var processed = new Dictionary<int, DependencyNode>(graph.Entries.Count);
-        var state = new RewriteState(processed, new ConsumedInjections(setup, graph));
+        var state = new RewriteState(graph.Entries.Count, new ConsumedInjections(setup, graph));
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
             Override(
                 state,
                 0,
-                processed,
                 new Dictionary<Injection, DependencyNode>(),
                 new Dictionary<Injection, DependencyNode>(),
                 false,
@@ -60,7 +58,6 @@ class GraphOverrider(
     private DependencyNode Override(
         RewriteState state,
         int depth,
-        Dictionary<int, DependencyNode> processed,
         Dictionary<Injection, DependencyNode> nodes,
         Dictionary<Injection, DependencyNode> localOverrides,
         bool consumeLocalOverrides,
@@ -92,47 +89,36 @@ class GraphOverrider(
             }
 
             overrides = GetConsumedOverrides(overrides, consumedInjections, consumedIds);
-            if (nodes.Count == 0 && !consumeLocalOverrides && overrides.Count == 0)
-            {
-                processed = state.Processed;
-            }
         }
 
-        var branchProcessed = CreateBranchProcessedCache(
-            processed,
-            consumeLocalOverrides,
-            nodes,
-            localOverrides,
-            overrides);
-
-        if (branchProcessed.TryGetValue(bindingId, out var node))
+        // A node above on the current path is referred back to.
+        if (state.Path.TryGetValue(bindingId, out var pathNode))
         {
-            if (state.PathDepths.TryGetValue(bindingId, out var ancestorDepth))
-            {
-                state.MinBackReferenceDepth = Math.Min(state.MinBackReferenceDepth, ancestorDepth);
-            }
-
-            return node;
+            state.MinBackReferenceDepth = Math.Min(state.MinBackReferenceDepth, pathNode.Depth);
+            return pathNode.Node;
         }
 
         // The rewrite of a node depends only on the override scope it is reached in,
         // so a node reached by several dependency paths in the same scope is rewritten once, see #172.
-        var context = ReferenceEquals(branchProcessed, processed)
+        // A node rewritten outside any scope is not reused in a scope, because overridden copies of a node share its binding id.
+        var isContextFree = nodes.Count == 0 && !consumeLocalOverrides && overrides.Count == 0;
+        var context = isContextFree
             ? null
             : new OverrideContext(bindingId, nodes, consumeLocalOverrides ? localOverrides : null, overrides);
 
-        if (context is not null && state.Rewritten.TryGetValue(context, out node))
+        if (context is null
+            ? state.Processed.TryGetValue(bindingId, out var node)
+            : state.Rewritten.TryGetValue(context, out node))
         {
             return node;
         }
 
         var outerMinBackReferenceDepth = state.MinBackReferenceDepth;
         state.MinBackReferenceDepth = int.MaxValue;
-        state.PathDepths[bindingId] = depth;
         var rewrittenNode = RewriteNode(
             state,
             depth,
-            branchProcessed,
+            isContextFree,
             nodes,
             localOverrides,
             consumeLocalOverrides,
@@ -145,7 +131,7 @@ class GraphOverrider(
             ref maxId,
             entries);
 
-        state.PathDepths.Remove(bindingId);
+        state.Path.Remove(bindingId);
         var minBackReferenceDepth = state.MinBackReferenceDepth;
         state.MinBackReferenceDepth = Math.Min(outerMinBackReferenceDepth, minBackReferenceDepth);
         // A rewrite that refers back to a node above it on the current path belongs to this path only.
@@ -160,7 +146,7 @@ class GraphOverrider(
     private DependencyNode RewriteNode(
         RewriteState state,
         int depth,
-        Dictionary<int, DependencyNode> branchProcessed,
+        bool isContextFree,
         Dictionary<Injection, DependencyNode> nodes,
         Dictionary<Injection, DependencyNode> localOverrides,
         bool consumeLocalOverrides,
@@ -192,7 +178,12 @@ class GraphOverrider(
             overridesEnumerable = [];
         }
 
-        branchProcessed[targetNode.Binding.Id] = targetNode;
+        state.Path[targetNode.Binding.Id] = (targetNode, depth);
+        if (isContextFree)
+        {
+            state.Processed[targetNode.Binding.Id] = targetNode;
+        }
+
         var newDependencies = new List<Dependency>(dependencies.Count);
         var lastDependencyPosition = 0;
         using var overridesEnumerator = overridesEnumerable.GetEnumerator();
@@ -277,7 +268,6 @@ class GraphOverrider(
                 var source = Override(
                     state,
                     depth + 1,
-                    branchProcessed,
                     nodesMap,
                     nextLocalOverrides,
                     nextLocalOverrides.Count > 0,
@@ -305,24 +295,6 @@ class GraphOverrider(
 
         entries[targetNode] = newDependencies;
         return targetNode;
-    }
-
-    private static Dictionary<int, DependencyNode> CreateBranchProcessedCache(
-        Dictionary<int, DependencyNode> processed,
-        bool consumeLocalOverrides,
-        Dictionary<Injection, DependencyNode> nodes,
-        Dictionary<Injection, DependencyNode> localOverrides,
-        Dictionary<int, DpOverride> overrides)
-    {
-        // Rewritten nodes are context-dependent when any override scope is active.
-        // In such cases we isolate memoization to the current branch to avoid
-        // leaking context-dependent rewrites into sibling branches.
-        var isContextFree = !consumeLocalOverrides
-                            && nodes.Count == 0
-                            && localOverrides.Count == 0
-                            && overrides.Count == 0;
-
-        return isContextFree ? processed : new Dictionary<int, DependencyNode>(processed);
     }
 
     private static Dictionary<Injection, DependencyNode> CreateLocalNodesMap(
@@ -401,19 +373,19 @@ class GraphOverrider(
     }
 
     private sealed class RewriteState(
-        Dictionary<int, DependencyNode> processed,
+        int capacity,
         ConsumedInjections consumedInjections)
     {
         // Nodes rewritten outside any override scope.
-        public readonly Dictionary<int, DependencyNode> Processed = processed;
+        public readonly Dictionary<int, DependencyNode> Processed = new(capacity);
 
         public readonly ConsumedInjections ConsumedInjections = consumedInjections;
 
         // Nodes rewritten in a non-empty override scope.
         public readonly Dictionary<OverrideContext, DependencyNode> Rewritten = new();
 
-        // Depths of the nodes being rewritten on the current path, by binding id.
-        public readonly Dictionary<int, int> PathDepths = new();
+        // The nodes being rewritten on the current path and their depths, by binding id.
+        public readonly Dictionary<int, (DependencyNode Node, int Depth)> Path = new();
 
         // The smallest depth of a node on the current path that the rewrite has referred back to.
         public int MinBackReferenceDepth = int.MaxValue;
@@ -422,9 +394,9 @@ class GraphOverrider(
     private sealed class OverrideContext : IEquatable<OverrideContext>
     {
         private readonly int _bindingId;
-        private readonly Dictionary<Injection, DependencyNode> _nodes;
-        private readonly Dictionary<Injection, DependencyNode>? _localOverrides;
-        private readonly Dictionary<int, DpOverride> _overrides;
+        private readonly KeyValuePair<Injection, DependencyNode>[] _nodes;
+        private readonly KeyValuePair<Injection, DependencyNode>[]? _localOverrides;
+        private readonly KeyValuePair<int, DpOverride>[] _overrides;
         private readonly int _hashCode;
 
         public OverrideContext(
@@ -433,20 +405,25 @@ class GraphOverrider(
             Dictionary<Injection, DependencyNode>? localOverrides,
             Dictionary<int, DpOverride> overrides)
         {
-            // The scope dictionaries are copied, because a caller keeps adding to them after the call.
+            // The scope is copied, because a caller keeps adding to it after the call.
+            // It is kept in arrays, so that neither the copy nor the comparison hashes the injections, see #176.
             _bindingId = bindingId;
-            _nodes = new Dictionary<Injection, DependencyNode>(nodes);
-            _localOverrides = localOverrides is not null ? new Dictionary<Injection, DependencyNode>(localOverrides) : null;
-            _overrides = new Dictionary<int, DpOverride>(overrides);
-            var hashCode = bindingId;
-            hashCode = hashCode * 397 ^ GetHashCode(_nodes);
-            hashCode = hashCode * 397 ^ (_localOverrides is not null ? GetHashCode(_localOverrides) + 1 : 0);
-            foreach (var id in _overrides.Keys)
+            _nodes = nodes.ToArray();
+            _localOverrides = localOverrides?.ToArray();
+            _overrides = overrides.ToArray();
+            unchecked
             {
-                hashCode ^= id * 31;
-            }
+                var hashCode = bindingId;
+                hashCode = hashCode * 397 ^ GetHashCode(_nodes);
+                hashCode = hashCode * 397 ^ (_localOverrides is not null ? GetHashCode(_localOverrides) + 1 : 0);
+                var overridesHashCode = _overrides.Length;
+                foreach (var pair in _overrides)
+                {
+                    overridesHashCode += Mix(pair.Key * 397 ^ pair.Value.Source.Id);
+                }
 
-            _hashCode = hashCode * 397 ^ _overrides.Count;
+                _hashCode = hashCode * 397 ^ overridesHashCode;
+            }
         }
 
         public bool Equals(OverrideContext? other)
@@ -459,7 +436,7 @@ class GraphOverrider(
             if (other is null
                 || _bindingId != other._bindingId
                 || _hashCode != other._hashCode
-                || _overrides.Count != other._overrides.Count
+                || _overrides.Length != other._overrides.Length
                 || !AreSame(_nodes, other._nodes)
                 || !AreSame(_localOverrides, other._localOverrides))
             {
@@ -468,7 +445,7 @@ class GraphOverrider(
 
             foreach (var pair in _overrides)
             {
-                if (!other._overrides.TryGetValue(pair.Key, out var otherOverride) || !pair.Value.Equals(otherOverride))
+                if (!other._overrides.Any(otherPair => otherPair.Key == pair.Key && AreSame(pair.Value, otherPair.Value)))
                 {
                     return false;
                 }
@@ -481,34 +458,60 @@ class GraphOverrider(
 
         public override int GetHashCode() => _hashCode;
 
-        private static int GetHashCode(Dictionary<Injection, DependencyNode> nodes)
+        // The nodes are compared by reference, so they are hashed by reference too,
+        // and the sum of the hashes does not depend on the order.
+        private static int GetHashCode(KeyValuePair<Injection, DependencyNode>[] nodes)
         {
-            var hashCode = nodes.Count;
-            foreach (var node in nodes.Values)
+            unchecked
             {
-                hashCode ^= node.Binding.Id * 31;
-            }
+                var hashCode = nodes.Length;
+                foreach (var pair in nodes)
+                {
+                    hashCode += Mix(RuntimeHelpers.GetHashCode(pair.Value));
+                }
 
-            return hashCode;
+                return hashCode;
+            }
         }
 
+        // Spreads the bits of a value, so that the sums of the hashes of different scopes rarely match.
+        private static int Mix(int value)
+        {
+            unchecked
+            {
+                var hash = (uint)value;
+                hash ^= hash >> 16;
+                hash *= 0x85EBCA6B;
+                hash ^= hash >> 13;
+                hash *= 0xC2B2AE35;
+                hash ^= hash >> 16;
+                return (int)hash;
+            }
+        }
+
+        // An override is created again each time its factory is rewritten, so the overrides are compared by their content.
+        private static bool AreSame(DpOverride @override, DpOverride otherOverride) =>
+            @override.Source.Equals(otherOverride.Source)
+            && @override.Injections.SequenceEqual(otherOverride.Injections);
+
+        // A node is found by reference first, so an injection is compared only for a matching node.
         private static bool AreSame(
-            Dictionary<Injection, DependencyNode>? nodes,
-            Dictionary<Injection, DependencyNode>? otherNodes)
+            KeyValuePair<Injection, DependencyNode>[]? nodes,
+            KeyValuePair<Injection, DependencyNode>[]? otherNodes)
         {
             if (nodes is null || otherNodes is null)
             {
                 return nodes is null && otherNodes is null;
             }
 
-            if (nodes.Count != otherNodes.Count)
+            if (nodes.Length != otherNodes.Length)
             {
                 return false;
             }
 
             foreach (var pair in nodes)
             {
-                if (!otherNodes.TryGetValue(pair.Key, out var otherNode) || !ReferenceEquals(pair.Value, otherNode))
+                if (!otherNodes.Any(otherPair => ReferenceEquals(pair.Value, otherPair.Value) && pair.Key.Equals(otherPair.Key)))
                 {
                     return false;
                 }

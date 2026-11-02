@@ -3,7 +3,7 @@ using System.Text;
 namespace Pure.DI.IntegrationTests;
 
 /// <summary>
-/// View models that open each other through nested <c>Func&lt;T1, T&gt;</c> delegates with arguments, see #175.
+/// View models that open each other through nested <c>Func&lt;T1, T&gt;</c> delegates with arguments, see #175 and #176.
 /// </summary>
 public class NestedFuncArgumentsTests
 {
@@ -40,6 +40,25 @@ public class NestedFuncArgumentsTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe([$"Vm{levels} 5"], result);
+    }
+
+    [Theory]
+    [InlineData(6)]
+    [InlineData(7)]
+    public async Task ShouldPassArgumentOfNestedFuncsToEachConsumer(int levels)
+    {
+        // Given
+
+        // When
+        // Each view model consumes the argument, so the graph under each delegate is rewritten in a scope of its own
+        // and the scopes are numerous, which made the rewrite several times slower than before #172, see #176.
+        var result = await CreateSetup(levels, "ArgA arg", "ArgA arg")
+            .RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        // The view models are opened by Func<ArgA, T> at odd indexes.
+        result.StdOut.ShouldBe([$"Vm{levels} {(levels % 2 == 1 ? levels : levels - 1)}"], result);
     }
 
     [Theory]
@@ -125,7 +144,7 @@ public class NestedFuncArgumentsTests
         result.StdOut.ShouldBe(["True", "True", "False"], result);
     }
 
-    private static string CreateSetup(int levels, string lastArgs)
+    private static string CreateSetup(int levels, string lastArgs, string args = "")
     {
         var classes = new StringBuilder();
         for (var i = 1; i < 10; i++)
@@ -139,7 +158,7 @@ public class NestedFuncArgumentsTests
                 $$"""
                   public sealed class Vm{{i}} : IVm
                   {
-                      public Vm{{i}}(S9 services, Func<ArgA, Vm{{i + 1}}> openWithA, Func<ArgB, Vm{{i + 1}}> openWithB)
+                      public Vm{{i}}(S9 services, {{(args == "" ? "" : args + ", ")}}Func<ArgA, Vm{{i + 1}}> openWithA, Func<ArgB, Vm{{i + 1}}> openWithB)
                       {
                           OpenWithA = openWithA;
                           OpenWithB = openWithB;
