@@ -528,6 +528,8 @@ class GraphOverrider(
         // Ids of the injections that some override can replace, without tags.
         private readonly Dictionary<Injection, int> _ids = new();
         // The same ids by the type of an injection, because hashing an injection formats its type.
+        // A type is found by reference, so this only saves formatting the same type again.
+        [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
         private readonly Dictionary<ITypeSymbol, int> _idsByType = new(ReferenceComparer.Instance);
         private readonly Dictionary<int, HashSet<int>> _sets = new();
         // Strongly connected components are found by Tarjan's algorithm, because the graph may have cycles.
