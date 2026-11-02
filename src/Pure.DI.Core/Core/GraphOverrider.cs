@@ -118,6 +118,7 @@ class GraphOverrider(
         var rewrittenNode = RewriteNode(
             state,
             depth,
+            bindingId,
             isContextFree,
             nodes,
             localOverrides,
@@ -127,7 +128,7 @@ class GraphOverrider(
             graph,
             dependencies,
             rootNode,
-            targetNode,
+            GetCopy(state, nodes, consumeLocalOverrides ? localOverrides : null, overrides, targetNode, ref maxId),
             ref maxId,
             entries);
 
@@ -143,9 +144,58 @@ class GraphOverrider(
         return rewrittenNode;
     }
 
+    // The nodes are compared by binding id, so the rewrites of a node that override different injections
+    // are copies with binding ids of their own. Otherwise, only one of them would remain in the graph, and,
+    // for example, a node that is reached both under a delegate that overrides an argument and outside it
+    // would use the overridden value outside the delegate too.
+    // The rewrites that override the same injections by different nodes share the binding id,
+    // because an overridden value is named by its contract, so their code is the same.
+    private static DependencyNode GetCopy(
+        RewriteState state,
+        Dictionary<Injection, DependencyNode> nodes,
+        Dictionary<Injection, DependencyNode>? localOverrides,
+        Dictionary<int, DpOverride> overrides,
+        DependencyNode targetNode,
+        ref int maxId)
+    {
+        // A shared instance is created once for its binding id.
+        if (targetNode.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve)
+        {
+            return targetNode;
+        }
+
+        var binding = targetNode.Binding;
+        var scope = new OverrideScope(nodes, localOverrides, overrides);
+        if (!state.Copies.TryGetValue(binding.Id, out var copies))
+        {
+            state.Copies.Add(binding.Id, [(scope, binding.Id)]);
+            return targetNode;
+        }
+
+        foreach (var (copyScope, copyId) in copies)
+        {
+            if (copyScope.Equals(scope))
+            {
+                return copyId == binding.Id ? targetNode : targetNode with { Binding = CreateCopy(binding, copyId) };
+            }
+        }
+
+        var id = ++maxId;
+        copies.Add((scope, id));
+        return targetNode with { Binding = CreateCopy(binding, id) };
+    }
+
+    private static MdBinding CreateCopy(MdBinding binding, int id) =>
+        binding with
+        {
+            Id = id,
+            OriginalIds = (binding.OriginalIds.IsDefault ? ImmutableArray<int>.Empty : binding.OriginalIds).Add(binding.Id)
+        };
+
     private DependencyNode RewriteNode(
         RewriteState state,
         int depth,
+        int bindingId,
         bool isContextFree,
         Dictionary<Injection, DependencyNode> nodes,
         Dictionary<Injection, DependencyNode> localOverrides,
@@ -178,10 +228,10 @@ class GraphOverrider(
             overridesEnumerable = [];
         }
 
-        state.Path[targetNode.Binding.Id] = (targetNode, depth);
+        state.Path[bindingId] = (targetNode, depth);
         if (isContextFree)
         {
-            state.Processed[targetNode.Binding.Id] = targetNode;
+            state.Processed[bindingId] = targetNode;
         }
 
         var newDependencies = new List<Dependency>(dependencies.Count);
@@ -389,6 +439,29 @@ class GraphOverrider(
 
         // The smallest depth of a node on the current path that the rewrite has referred back to.
         public int MinBackReferenceDepth = int.MaxValue;
+
+        // The binding ids of the copies of a node by the injections they override, by the binding id of the node.
+        public readonly Dictionary<int, List<(OverrideScope Scope, int BindingId)>> Copies = new();
+    }
+
+    // The injections that a rewrite of a node overrides, regardless of the nodes that override them.
+    private sealed class OverrideScope(
+        Dictionary<Injection, DependencyNode> nodes,
+        Dictionary<Injection, DependencyNode>? localOverrides,
+        Dictionary<int, DpOverride> overrides)
+        : IEquatable<OverrideScope>
+    {
+        private readonly HashSet<Injection> _injections = [..nodes.Keys.Concat(localOverrides?.Keys ?? Enumerable.Empty<Injection>())];
+        private readonly HashSet<int> _overrides = [..overrides.Keys];
+
+        public bool Equals(OverrideScope? other) =>
+            other is not null
+            && _injections.SetEquals(other._injections)
+            && _overrides.SetEquals(other._overrides);
+
+        public override bool Equals(object? obj) => obj is OverrideScope other && Equals(other);
+
+        public override int GetHashCode() => _injections.Count * 397 ^ _overrides.Count;
     }
 
     private sealed class OverrideContext : IEquatable<OverrideContext>

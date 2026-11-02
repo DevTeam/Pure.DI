@@ -144,7 +144,26 @@ public class NestedFuncArgumentsTests
         result.StdOut.ShouldBe(["True", "True", "False"], result);
     }
 
-    private static string CreateSetup(int levels, string lastArgs, string args = "")
+    [Theory]
+    [InlineData(2)]
+    [InlineData(6)]
+    public async Task ShouldCreateArgumentWhenNoNestedFuncProvidesIt(int levels)
+    {
+        // Given
+
+        // When
+        // On the paths that pass only through Func<ArgA, T>, no Func<ArgB, T> encloses the last view model,
+        // so it gets an ArgB created by the composition instead of the argument of a delegate on another path.
+        var result = await CreateSetup(levels, "ArgB arg", constructibleArgB: true)
+            .RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        // The view models are opened by Func<ArgB, T> at even indexes.
+        result.StdOut.ShouldBe([$"Vm{levels} {levels}"], result);
+    }
+
+    private static string CreateSetup(int levels, string lastArgs, string args = "", bool constructibleArgB = false)
     {
         var classes = new StringBuilder();
         for (var i = 1; i < 10; i++)
@@ -203,6 +222,8 @@ public class NestedFuncArgumentsTests
 
                      public sealed class ArgB
                      {
+                         {{(constructibleArgB ? "public ArgB() => Value = \"new\";" : "")}}
+
                          public ArgB(string value) => Value = value;
 
                          public string Value { get; }
