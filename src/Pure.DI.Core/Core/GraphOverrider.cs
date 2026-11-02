@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
+using System.Runtime.CompilerServices;
+
 class GraphOverrider(
     INodesFactory nodesFactory,
     IBindingsFactory bindingsFactory,
@@ -14,7 +16,7 @@ class GraphOverrider(
     {
         var entries = new Dictionary<DependencyNode, IReadOnlyCollection<Dependency>>(graph.Entries.Count);
         var processed = new Dictionary<int, DependencyNode>(graph.Entries.Count);
-        var state = new RewriteState();
+        var state = new RewriteState(processed, new ConsumedInjections(setup, graph));
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
             Override(
@@ -76,6 +78,26 @@ class GraphOverrider(
         }
 
         var bindingId = targetNode.Binding.Id;
+        if (nodes.Count > 0 || consumeLocalOverrides || overrides.Count > 0)
+        {
+            // Overrides that nothing under the node consumes do not change its rewrite,
+            // so the node is rewritten once for all the scopes that differ only in them, see #175.
+            var consumedInjections = state.ConsumedInjections;
+            var consumedIds = consumedInjections.Get(targetNode);
+            nodes = GetConsumedOverrides(nodes, consumedInjections, consumedIds);
+            if (consumeLocalOverrides)
+            {
+                localOverrides = GetConsumedOverrides(localOverrides, consumedInjections, consumedIds);
+                consumeLocalOverrides = localOverrides.Count > 0;
+            }
+
+            overrides = GetConsumedOverrides(overrides, consumedInjections, consumedIds);
+            if (nodes.Count == 0 && !consumeLocalOverrides && overrides.Count == 0)
+            {
+                processed = state.Processed;
+            }
+        }
+
         var branchProcessed = CreateBranchProcessedCache(
             processed,
             consumeLocalOverrides,
@@ -342,8 +364,51 @@ class GraphOverrider(
         return false;
     }
 
-    private sealed class RewriteState
+    private static Dictionary<Injection, DependencyNode> GetConsumedOverrides(
+        Dictionary<Injection, DependencyNode> overrides,
+        ConsumedInjections consumedInjections,
+        HashSet<int> consumedIds)
     {
+        Dictionary<Injection, DependencyNode>? consumedOverrides = null;
+        foreach (var pair in overrides)
+        {
+            if (!consumedInjections.IsConsumed(consumedIds, pair.Key))
+            {
+                consumedOverrides ??= new Dictionary<Injection, DependencyNode>(overrides);
+                consumedOverrides.Remove(pair.Key);
+            }
+        }
+
+        return consumedOverrides ?? overrides;
+    }
+
+    private static Dictionary<int, DpOverride> GetConsumedOverrides(
+        Dictionary<int, DpOverride> overrides,
+        ConsumedInjections consumedInjections,
+        HashSet<int> consumedIds)
+    {
+        Dictionary<int, DpOverride>? consumedOverrides = null;
+        foreach (var pair in overrides)
+        {
+            if (!pair.Value.Injections.Any(injection => consumedInjections.IsConsumed(consumedIds, injection)))
+            {
+                consumedOverrides ??= new Dictionary<int, DpOverride>(overrides);
+                consumedOverrides.Remove(pair.Key);
+            }
+        }
+
+        return consumedOverrides ?? overrides;
+    }
+
+    private sealed class RewriteState(
+        Dictionary<int, DependencyNode> processed,
+        ConsumedInjections consumedInjections)
+    {
+        // Nodes rewritten outside any override scope.
+        public readonly Dictionary<int, DependencyNode> Processed = processed;
+
+        public readonly ConsumedInjections ConsumedInjections = consumedInjections;
+
         // Nodes rewritten in a non-empty override scope.
         public readonly Dictionary<OverrideContext, DependencyNode> Rewritten = new();
 
@@ -451,5 +516,153 @@ class GraphOverrider(
 
             return true;
         }
+    }
+
+    // The injections that some override can replace and that the nodes reachable from a node of the original graph depend on.
+    private sealed class ConsumedInjections
+    {
+        private readonly IGraph<DependencyNode, Dependency> _graph;
+        // Ids of the injections that some override can replace, without tags.
+        private readonly Dictionary<Injection, int> _ids = new();
+        // The same ids by the type of an injection, because hashing an injection formats its type.
+        private readonly Dictionary<ITypeSymbol, int> _idsByType = new(ReferenceComparer.Instance);
+        private readonly Dictionary<int, HashSet<int>> _sets = new();
+        // Strongly connected components are found by Tarjan's algorithm, because the graph may have cycles.
+        private readonly Dictionary<int, (int Index, HashSet<int> Ids)> _visits = new();
+        private readonly Stack<int> _stack = new();
+        private int _index;
+
+        public ConsumedInjections(MdSetup setup, IGraph<DependencyNode, Dependency> graph)
+        {
+            _graph = graph;
+            foreach (var node in graph.Vertices)
+            {
+                if (node.Factory is not {} factory)
+                {
+                    continue;
+                }
+
+                var overrides = factory.Resolvers.SelectMany(i => i.Overrides)
+                    .Concat(factory.Initializers.SelectMany(i => i.Overrides));
+                foreach (var injection in overrides.SelectMany(i => i.Injections))
+                {
+                    var key = injection with { Type = node.TypeConstructor.Construct(setup, injection.Type), Tag = null };
+                    if (!_ids.ContainsKey(key))
+                    {
+                        _ids.Add(key, _ids.Count);
+                    }
+                }
+            }
+        }
+
+        public HashSet<int> Get(DependencyNode node)
+        {
+            if (!_sets.TryGetValue(node.Binding.Id, out var ids))
+            {
+                Visit(node);
+                ids = _sets[node.Binding.Id];
+            }
+
+            return ids;
+        }
+
+        // An injection that no override was expected to replace is kept as consumed.
+        public bool IsConsumed(HashSet<int> consumedIds, Injection injection) =>
+            !TryGetId(injection.Type, out var id) || consumedIds.Contains(id);
+
+        private bool TryGetId(ITypeSymbol type, out int id)
+        {
+            if (!_idsByType.TryGetValue(type, out id))
+            {
+                id = _ids.TryGetValue(new Injection(InjectionKind.Override, RefKind.None, type, null, ImmutableArray<Location>.Empty), out var injectionId)
+                    ? injectionId
+                    : -1;
+                _idsByType.Add(type, id);
+            }
+
+            return id >= 0;
+        }
+
+        private int Visit(DependencyNode node)
+        {
+            var bindingId = node.Binding.Id;
+            var index = _index++;
+            var lowLink = index;
+            var ids = new HashSet<int>();
+            _visits[bindingId] = (index, ids);
+            _stack.Push(bindingId);
+            if (_graph.TryGetInEdges(node, out var dependencies))
+            {
+                foreach (var dependency in dependencies)
+                {
+                    // An override of a not annotated reference type replaces the annotated one too, see TryGetOverride.
+                    var type = dependency.Injection.Type;
+                    if (TryGetId(type, out var id))
+                    {
+                        ids.Add(id);
+                    }
+
+                    if (type is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated }
+                        && TryGetId(type.WithNullableAnnotation(NullableAnnotation.NotAnnotated), out id))
+                    {
+                        ids.Add(id);
+                    }
+
+                    var sourceBindingId = dependency.Source.Binding.Id;
+                    if (_sets.TryGetValue(sourceBindingId, out var sourceIds))
+                    {
+                        ids.UnionWith(sourceIds);
+                    }
+                    else if (_visits.TryGetValue(sourceBindingId, out var sourceVisit))
+                    {
+                        // The source is on the stack, in the same component.
+                        lowLink = Math.Min(lowLink, sourceVisit.Index);
+                    }
+                    else
+                    {
+                        lowLink = Math.Min(lowLink, Visit(dependency.Source));
+                        if (_sets.TryGetValue(sourceBindingId, out sourceIds))
+                        {
+                            ids.UnionWith(sourceIds);
+                        }
+                    }
+                }
+            }
+
+            if (lowLink < index)
+            {
+                return lowLink;
+            }
+
+            // The node is the root of a component, so all the nodes of the component consume the same injections.
+            var componentBindingIds = new List<int>();
+            int componentBindingId;
+            do
+            {
+                componentBindingId = _stack.Pop();
+                componentBindingIds.Add(componentBindingId);
+                if (componentBindingId != bindingId)
+                {
+                    ids.UnionWith(_visits[componentBindingId].Ids);
+                }
+            } while (componentBindingId != bindingId);
+
+            foreach (var memberBindingId in componentBindingIds)
+            {
+                _visits.Remove(memberBindingId);
+                _sets[memberBindingId] = ids;
+            }
+
+            return lowLink;
+        }
+    }
+
+    private sealed class ReferenceComparer : IEqualityComparer<ITypeSymbol>
+    {
+        public static readonly ReferenceComparer Instance = new();
+
+        public bool Equals(ITypeSymbol? x, ITypeSymbol? y) => ReferenceEquals(x, y);
+
+        public int GetHashCode(ITypeSymbol obj) => RuntimeHelpers.GetHashCode(obj);
     }
 }

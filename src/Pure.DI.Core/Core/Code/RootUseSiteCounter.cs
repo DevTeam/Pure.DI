@@ -1,4 +1,4 @@
-namespace Pure.DI.Core.Code;
+﻿namespace Pure.DI.Core.Code;
 
 sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 {
@@ -121,7 +121,135 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             }
         });
 
+        if (dependents.Count == 0)
+        {
+            return dependents;
+        }
+
+        // A node that is created only as the result of lambdas, such as Func<T1, T>, is the first code of each of their blocks.
+        // When the PerBlock instances it creates are reachable only through it, no other code of these blocks
+        // or of the blocks around them can create them, so a local function creates them just as the code in place, see #175.
+        var consumers = new Dictionary<int, List<DependencyNode>>();
+        var instances = new Dictionary<int, List<DependencyNode>>();
+        CollectConsumers(graph, root, consumers, instances);
+        dependents.RemoveWhere(bindingId => IsBlockHead(graph, bindingId, dependents, consumers, instances));
         return dependents;
+    }
+
+    private bool IsBlockHead(
+        DependencyGraph graph,
+        int bindingId,
+        HashSet<int> dependents,
+        Dictionary<int, List<DependencyNode>> consumers,
+        Dictionary<int, List<DependencyNode>> instances)
+    {
+        if (!consumers.TryGetValue(bindingId, out var nodeConsumers)
+            || nodeConsumers.Count == 0
+            || nodeConsumers.Any(consumer => !nodeTools.IsLazy(consumer, graph))
+            || nodeConsumers.Select(consumer => consumer.BindingId).Distinct().Count() != nodeConsumers.Count)
+        {
+            return false;
+        }
+
+        // The nodes created in place with this node.
+        var nodes = new Dictionary<int, DependencyNode>();
+        var stack = new Stack<DependencyNode>();
+        foreach (var node in instances[bindingId])
+        {
+            stack.Push(node);
+        }
+
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+            if (!graph.Graph.TryGetInEdges(node, out var inEdges))
+            {
+                continue;
+            }
+
+            foreach (var edge in inEdges)
+            {
+                var dep = edge.Source;
+                if (dep.BindingId == bindingId)
+                {
+                    return false;
+                }
+
+                if (nodeTools.IsBlock(dep) || nodes.ContainsKey(dep.BindingId))
+                {
+                    continue;
+                }
+
+                nodes.Add(dep.BindingId, dep);
+
+                if (!nodeTools.IsLazy(dep, graph))
+                {
+                    stack.Push(dep);
+                }
+            }
+        }
+
+        foreach (var node in nodes.Values)
+        {
+            if (node.ActualLifetime is not Lifetime.PerBlock && !dependents.Contains(node.BindingId))
+            {
+                continue;
+            }
+
+            if (consumers.TryGetValue(node.BindingId, out var dependencyConsumers)
+                && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId && !nodes.ContainsKey(consumer.BindingId)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // The consumers of each node by binding id, a consumer once for each of its dependencies,
+    // and the instances of each node, because overridden copies of a node share its binding id.
+    private static void CollectConsumers(
+        DependencyGraph graph,
+        DependencyNode root,
+        Dictionary<int, List<DependencyNode>> consumers,
+        Dictionary<int, List<DependencyNode>> instances)
+    {
+        var visited = new HashSet<DependencyNode> { root };
+        var stack = new Stack<DependencyNode>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var consumer = stack.Pop();
+            if (!graph.Graph.TryGetInEdges(consumer, out var inEdges))
+            {
+                continue;
+            }
+
+            foreach (var edge in inEdges)
+            {
+                var dep = edge.Source;
+                if (!consumers.TryGetValue(dep.BindingId, out var depConsumers))
+                {
+                    depConsumers = [];
+                    consumers.Add(dep.BindingId, depConsumers);
+                }
+
+                depConsumers.Add(consumer);
+                if (!visited.Add(dep))
+                {
+                    continue;
+                }
+
+                if (!instances.TryGetValue(dep.BindingId, out var depInstances))
+                {
+                    depInstances = [];
+                    instances.Add(dep.BindingId, depInstances);
+                }
+
+                depInstances.Add(dep);
+                stack.Push(dep);
+            }
+        }
     }
 
     private static bool IsTransientCandidate(DependencyNode node) =>
