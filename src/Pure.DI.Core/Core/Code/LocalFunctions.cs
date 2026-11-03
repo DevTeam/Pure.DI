@@ -147,12 +147,15 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         useSiteCount >= MinUseSites
         && (long)(useSiteCount - 1) * cost >= MaxRepeatedTransientCost;
 
-    // Only an instance created by its constructor is returned by a local function. A ref-like value
-    // cannot be returned this way in general, and a PerBlock dependency would be created anew on each call.
+    // An instance created by its constructor or by a factory is returned by a local function,
+    // but not a lambda, such as Func<T> or Lazy<T>, whose code belongs to the place where it is created.
+    // A ref-like value cannot be returned this way in general, and a PerBlock dependency would be created anew on each call.
     private bool IsTransientCandidate(CodeContext ctx)
     {
         var var = ctx.VarInjection.Var;
-        return var.AbstractNode is { ActualLifetime: Transient, Arg: null, Node.Implementation: not null }
+        var node = var.AbstractNode.Node;
+        return var.AbstractNode is { ActualLifetime: Transient, Arg: null }
+               && (node.Implementation is not null || node.Factory is not null && !nodeTools.IsLazy(node, ctx.RootContext.Graph))
                && var.HasCycle != true
                && !refSafety.IsMaybeRefLike(var.InstanceType)
                && !ctx.RootContext.UseSites.PerBlockDependents.Contains(var.AbstractNode.BindingId);

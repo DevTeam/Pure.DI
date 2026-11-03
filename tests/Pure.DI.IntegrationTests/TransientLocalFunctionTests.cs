@@ -154,7 +154,7 @@ public class TransientLocalFunctionTests
 #endif
 
     [Fact]
-    public async Task ShouldCreateFactoryOfTransientDiamondInPlace()
+    public async Task ShouldCreateFactoryOfTransientDiamondByLocalFunction()
     {
         // Given
 
@@ -175,10 +175,11 @@ public class TransientLocalFunctionTests
             .RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
-        // A factory is created in place, while its dependencies are created by local functions.
+        // A factory is created by a local function like its dependencies, otherwise the code of a diamond of factories
+        // grows with the number of dependency paths.
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe([LeafCount.ToString()], result);
-        result.GeneratedCode.ShouldNotContain(" CreateL5", Case.Sensitive, result);
+        result.GeneratedCode.ShouldContain(" CreateL5", Case.Sensitive, result);
         result.GeneratedCode.ShouldContain(" CreateL4", Case.Sensitive, result);
     }
 

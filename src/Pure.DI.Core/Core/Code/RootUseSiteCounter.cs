@@ -70,7 +70,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         var costs = new Dictionary<int, int>();
         VisitDependenciesFirst(graph, root, (node, dependencies) =>
         {
-            var cost = IsTransientCandidate(node) ? nodeTools.EstimateBodyCost(node, false) : 1;
+            var cost = IsTransientCandidate(graph, node) ? nodeTools.EstimateBodyCost(node, false) : 1;
             if (!nodeTools.IsBlock(node))
             {
                 foreach (var dep in dependencies)
@@ -97,7 +97,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 return 1;
             }
 
-            var hasLocalFunction = IsTransientCandidate(dep)
+            var hasLocalFunction = IsTransientCandidate(graph, dep)
                                    && useSiteCount.TryGetValue(dep.BindingId, out var count)
                                    && LocalFunctions.IsTransientCostTooHigh(count, depCost);
             return hasLocalFunction ? 1 : depCost;
@@ -253,8 +253,11 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         }
     }
 
-    private static bool IsTransientCandidate(DependencyNode node) =>
-        node is { Implementation: not null, Arg: null, ActualLifetime: Lifetime.Transient };
+    // A factory is created by a local function too, unless it creates a lambda, such as Func<T> or Lazy<T>,
+    // whose code belongs to the place where it is created.
+    private bool IsTransientCandidate(DependencyGraph graph, DependencyNode node) =>
+        node is { Arg: null, ActualLifetime: Lifetime.Transient }
+        && (node.Implementation is not null || node.Factory is not null && !nodeTools.IsLazy(node, graph));
 
     // Visits each node after its dependencies; a dependency that closes a cycle is visited after its consumer.
     private static void VisitDependenciesFirst(
