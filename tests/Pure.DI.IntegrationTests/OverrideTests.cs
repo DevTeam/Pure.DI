@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 using Core;
 
@@ -5564,5 +5564,58 @@ public class OverrideTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["a b"], result);
+    }
+
+    [Theory]
+    [InlineData("Transient")]
+    [InlineData("PerBlock")]
+    public async Task ShouldInjectArgumentOfFuncInFactory(string lifetime)
+    {
+        // Given
+
+        // When
+        // The injection of an overridden value lost its kind, so the factory had fewer injections than ctx.Inject calls
+        // and was reported as a lifetime that does not support cyclic dependencies.
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class Nav(string value)
+                               {
+                                   public string Value => value;
+                               }
+
+                               public sealed class Service;
+
+                               public sealed class Vm(Nav nav)
+                               {
+                                   public override string ToString() => nav.Value;
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<Vm>().As(Lifetime.#lifetime#).To(ctx =>
+                                           {
+                                               ctx.Inject(out Nav nav);
+                                               ctx.Inject(out Service service);
+                                               return new Vm(nav);
+                                           })
+                                           .Root<Func<Nav, Vm>>("Root");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => Console.WriteLine(new Composition().Root(new Nav("x")));
+                               }
+                           }
+                           """.Replace("#lifetime#", lifetime).RunAsync(new Options(LanguageVersion.CSharp12));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["x"], result);
     }
 }

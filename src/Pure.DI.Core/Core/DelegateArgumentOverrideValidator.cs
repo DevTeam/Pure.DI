@@ -32,9 +32,9 @@ sealed class DelegateArgumentOverrideValidator(
         foreach (var dependency in dependencyGraph.Graph.Edges)
         {
             var consumer = dependency.Target;
+            // An overridden injection of a factory keeps its kind, so an override is found by the node that provides it.
             if (consumer.ActualLifetime is not (Lifetime.Singleton or Lifetime.Scoped)
-                || dependency.Injection.Kind != InjectionKind.Override
-                || dependency.Source.Construct is not { Source.State: DpOverride @override }
+                || dependency.Source.Construct is not { Source: { Kind: MdConstructKind.Override, State: DpOverride @override } }
                 || !delegateArgumentOverrides.Contains(@override.Source.Source))
             {
                 continue;

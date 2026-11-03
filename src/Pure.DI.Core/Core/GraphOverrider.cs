@@ -304,9 +304,14 @@ class GraphOverrider(
             }
             else
             {
+                // A factory matches its dependencies to its ctx.Inject calls by the kind of injection,
+                // so an overridden one keeps it. Otherwise, a factory that injects the argument of a delegate
+                // had fewer injections than calls and was reported as a cyclic dependency.
                 currentDependency = currentDependency with
                 {
-                    Injection = currentDependency.Injection with { Kind = InjectionKind.Override },
+                    Injection = currentDependency.Injection.Kind is InjectionKind.FactoryInjection
+                        ? currentDependency.Injection
+                        : currentDependency.Injection with { Kind = InjectionKind.Override },
                     Source = overridingSourceNode,
                     IsResolved = true
                 };
