@@ -3567,6 +3567,8 @@ public class FuncTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["FirstCycle SecondCycle"], result);
+        // The delegate overrides its own argument, so it is created once rather than again in the scope of that argument.
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new System.Func<global::Sample.Input, global::Sample.Item>(")).ShouldBe(1, result);
     }
 
     [Theory]
