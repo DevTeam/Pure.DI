@@ -163,6 +163,133 @@ public class NestedFuncArgumentsTests
         result.StdOut.ShouldBe([$"Vm{levels} {levels}"], result);
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ShouldPassArgumentOfEachNestedFuncToConsumerWhenEachFuncPassesConsumedArgument(bool passesOneArgument)
+    {
+        // Given
+        const int levels = 6;
+
+        // When
+        // Each delegate creates override nodes of its own, so the graph under the delegates was rewritten once
+        // for each chain of delegates above it, although the overridden values are named by their contracts, see #178.
+        // The rewrites are now shared, and each view model still gets the argument of the delegate that creates it.
+        var result = await CreateShadowedArgumentsSetup(levels, passesOneArgument)
+            .RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([passesOneArgument ? $"Vm{levels} {levels - 1} {levels}" : $"Vm{levels} {levels}"], result);
+    }
+
+    private static string CreateShadowedArgumentsSetup(int levels, bool passesOneArgument)
+    {
+        // With passesOneArgument, each view model consumes Nav and ArgB, and each delegate passes only one of them.
+        // Otherwise, each view model consumes Nav, and both delegates pass it.
+        var args = passesOneArgument ? "Nav nav, ArgB b" : "Nav nav";
+        var openWithB = passesOneArgument ? "Func<ArgB, Vm{0}>" : "Func<Nav, ArgB, Vm{0}>";
+        var callWithB = passesOneArgument ? "OpenWithB(new ArgB(value))" : "OpenWithB(new Nav(value), new ArgB(value))";
+        var classes = new StringBuilder();
+        for (var i = 1; i < 10; i++)
+        {
+            classes.AppendLine($"public sealed class S{i} {{ public S{i}(S{i - 1} previous) {{ }} }}");
+        }
+
+        for (var i = 0; i < levels; i++)
+        {
+            var openWithBType = string.Format(openWithB, i + 1);
+            classes.AppendLine(
+                $$"""
+                  public sealed class Vm{{i}} : IVm
+                  {
+                      public Vm{{i}}({{args}}, S9 services, Func<Nav, Vm{{i + 1}}> open, {{openWithBType}} openWithB)
+                      {
+                          Open = open;
+                          OpenWithB = openWithB;
+                      }
+
+                      public Func<Nav, Vm{{i + 1}}> Open { get; }
+
+                      public {{openWithBType}} OpenWithB { get; }
+
+                      public IVm Next(int index)
+                      {
+                          var value = index.ToString();
+                          return index % 2 == 0 ? {{callWithB}} : Open(new Nav(value));
+                      }
+                  }
+                  """);
+        }
+
+        var bindings = new StringBuilder();
+        for (var i = 0; i < 10; i++)
+        {
+            bindings.AppendLine($".Bind<S{i}>().As(Lifetime.Singleton).To<S{i}>()");
+        }
+
+        return $$"""
+                 using System;
+                 using Pure.DI;
+
+                 namespace Sample
+                 {
+                     public interface IVm
+                     {
+                         IVm Next(int index);
+                     }
+
+                     public sealed record Nav(string Value);
+
+                     public sealed record ArgB(string Value);
+
+                     public sealed class S0 { }
+
+                     {{classes}}
+
+                     public sealed class Vm{{levels}} : IVm
+                     {
+                         private readonly string _text;
+
+                         public Vm{{levels}}({{args}}, S9 services) => _text = GetType().Name + " " + nav.Value{{(passesOneArgument ? " + \" \" + b.Value" : "")}};
+
+                         public IVm Next(int index) => this;
+
+                         public override string ToString() => _text;
+                     }
+
+                     public sealed class Top
+                     {
+                         public Top(Func<Nav, ArgB, Vm0> open) => Open = open;
+
+                         public Func<Nav, ArgB, Vm0> Open { get; }
+                     }
+
+                     partial class Composition
+                     {
+                         private static void Setup() =>
+                             DI.Setup(nameof(Composition))
+                                 {{bindings}}
+                                 .Root<Top>("Root");
+                     }
+
+                     public static class Program
+                     {
+                         public static void Main()
+                         {
+                             IVm vm = new Composition().Root.Open(new Nav("0"), new ArgB("0"));
+                             for (var index = 1; index <= {{levels}}; index++)
+                             {
+                                 vm = vm.Next(index);
+                             }
+
+                             Console.WriteLine(vm);
+                         }
+                     }
+                 }
+                 """;
+    }
+
     private static string CreateSetup(int levels, string lastArgs, string args = "", bool constructibleArgB = false)
     {
         var classes = new StringBuilder();

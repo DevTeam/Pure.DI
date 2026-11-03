@@ -184,6 +184,32 @@ public class DependencyDiamondTests
         result.StdOut.ShouldBe(["x"], result);
     }
 
+    [Theory]
+    [InlineData("Singleton", 1)]
+    [InlineData("PerResolve", 0)]
+    public async Task ShouldRewriteDiamondUnderArgumentOfFuncOncePerNodeWhenNodeRefersBackToTop(string lifetime, int warningsCount)
+    {
+        // Given
+        const int levels = 40;
+
+        // When
+        // A rewrite that referred back to a node above it on the current path was not reused by other paths,
+        // so the graph under the cycle was rewritten once per dependency path again, see #177.
+        var result = await CreateSetup(
+                levels,
+                lifetime,
+                "",
+                $"Func<string, S{levels - 1}>",
+                """Console.WriteLine(composition.Root("x").S0.Label);""",
+                $"public S0(string label, Lazy<S{levels - 1}> top) => Label = label;")
+            .RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Count.ShouldBe(warningsCount, result);
+        result.StdOut.ShouldBe(["x"], result);
+    }
+
     private static string CreateSetup(int count, string lifetime, string hint, string rootType, string main, string s0, string s0Base = "", string extraClasses = "")
     {
         var classes = new StringBuilder(extraClasses);
