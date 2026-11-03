@@ -92,7 +92,7 @@ public class OverrideTests
                                    }
                                }
                            }
-                           """.Replace("#hints#", hints).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#hints#", hints).RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -5467,11 +5467,17 @@ public class OverrideTests
                                    public const int Max = 5;
                                }
 
-                               public interface IService;
-
-                               public sealed class Service(int value) : IService
+                               public interface IService
                                {
-                                   public override string ToString() => value.ToString();
+                               }
+
+                               public sealed class Service : IService
+                               {
+                                   private readonly int _value;
+
+                                   public Service(int value) => _value = value;
+
+                                   public override string ToString() => _value.ToString();
                                }
 
                                partial class Composition
@@ -5493,7 +5499,7 @@ public class OverrideTests
                                    public static void Main() => Console.WriteLine(new Composition().Root);
                                }
                            }
-                           """.Replace("#statements#", statements).Replace("#value#", value).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#statements#", statements).Replace("#value#", value).RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -5517,21 +5523,40 @@ public class OverrideTests
 
                            namespace Sample
                            {
-                               public sealed class Name(string value)
+                               public sealed class Name
                                {
-                                   public override string ToString() => value;
+                                   private readonly string _value;
+
+                                   public Name(string value) => _value = value;
+
+                                   public override string ToString() => _value;
                                }
 
-                               public interface IService;
-
-                               public sealed class Service(Name name) : IService
+                               public interface IService
                                {
-                                   public override string ToString() => name.ToString();
                                }
 
-                               public sealed class App(IService a, [Tag("b")] IService b)
+                               public sealed class Service : IService
                                {
-                                   public override string ToString() => $"{a} {b}";
+                                   private readonly Name _name;
+
+                                   public Service(Name name) => _name = name;
+
+                                   public override string ToString() => _name.ToString();
+                               }
+
+                               public sealed class App
+                               {
+                                   private readonly IService _a;
+                                   private readonly IService _b;
+
+                                   public App(IService a, [Tag("b")] IService b)
+                                   {
+                                       _a = a;
+                                       _b = b;
+                                   }
+
+                                   public override string ToString() => $"{_a} {_b}";
                                }
 
                                partial class Composition
@@ -5559,7 +5584,7 @@ public class OverrideTests
                                    public static void Main() => Console.WriteLine(new Composition().Root);
                                }
                            }
-                           """.Replace("#hints#", hints).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#hints#", hints).RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -5582,16 +5607,26 @@ public class OverrideTests
 
                            namespace Sample
                            {
-                               public sealed class Nav(string value)
+                               public sealed class Nav
                                {
-                                   public string Value => value;
+                                   private readonly string _value;
+
+                                   public Nav(string value) => _value = value;
+
+                                   public string Value => _value;
                                }
 
-                               public sealed class Service;
-
-                               public sealed class Vm(Nav nav)
+                               public sealed class Service
                                {
-                                   public override string ToString() => nav.Value;
+                               }
+
+                               public sealed class Vm
+                               {
+                                   private readonly Nav _nav;
+
+                                   public Vm(Nav nav) => _nav = nav;
+
+                                   public override string ToString() => _nav.Value;
                                }
 
                                partial class Composition
@@ -5612,7 +5647,7 @@ public class OverrideTests
                                    public static void Main() => Console.WriteLine(new Composition().Root(new Nav("x")));
                                }
                            }
-                           """.Replace("#lifetime#", lifetime).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#lifetime#", lifetime).RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);

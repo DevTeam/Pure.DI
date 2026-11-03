@@ -41,7 +41,7 @@ public class ScalabilityTests
         var lines = new List<int>();
         foreach (var size in Sizes)
         {
-            var result = await CreateDiamond(size, lifetime, creation, context).RunAsync(new Options(LanguageVersion.CSharp12));
+            var result = await CreateDiamond(size, lifetime, creation, context).RunAsync(new Options(Options.ModernLanguageVersion));
 
             // Then
             // A stored lifetime built from a delegate argument is reported as a warning.
@@ -63,7 +63,7 @@ public class ScalabilityTests
         var lines = new List<int>();
         foreach (var size in Sizes)
         {
-            var result = await CreateNestedFuncs(size, creation, arguments).RunAsync(new Options(LanguageVersion.CSharp12));
+            var result = await CreateNestedFuncs(size, creation, arguments).RunAsync(new Options(Options.ModernLanguageVersion));
 
             // Then
             result.Success.ShouldBeTrue(result);
@@ -82,7 +82,7 @@ public class ScalabilityTests
         // When
         // A transient instance on a cycle is created in place on each dependency path.
         var result = await CreateDiamond(16, "Transient", Creation.Constructor, DiamondContext.FuncArgumentWithBackReference)
-            .RunAsync(new Options(LanguageVersion.CSharp12));
+            .RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Errors.Count.ShouldBe(0, result);

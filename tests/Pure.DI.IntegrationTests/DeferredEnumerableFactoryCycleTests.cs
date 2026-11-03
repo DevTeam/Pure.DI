@@ -62,7 +62,7 @@ public class DeferredEnumerableFactoryCycleTests
                            {
                                public static void Main() => new Composition().Root.Run();
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
 
         result.Errors.ShouldBeEmpty(result);
         result.Success.ShouldBeTrue(result);
@@ -137,7 +137,7 @@ public class DeferredEnumerableFactoryCycleTests
                            {
                                public static async Task Main() => await new Composition().Root.RunAsync();
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
 
         result.Errors.ShouldBeEmpty(result);
         result.Success.ShouldBeTrue(result);
