@@ -1,5 +1,7 @@
 namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 /// <summary>
 /// Tests related to the [Export] attribute, which allows defining bindings directly on members like fields, properties, or methods.
 /// </summary>
@@ -1385,6 +1387,67 @@ public class ExportAttributeTests
 
         // Then
         result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldNotWarnWhenExportedRootFromOtherCompositionIsNotUsed()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using Pure.DI;
+
+                           public class MyDependency { }
+
+                           public interface IMyService { void DoSomething(); }
+
+                           public class MyService : IMyService
+                           {
+                               public MyDependency MyDependency { get; }
+                               public MyService(MyDependency myDependency) => MyDependency = myDependency;
+                               public void DoSomething() { }
+                           }
+
+                           public partial class CompositionInOtherProject
+                           {
+                               private void Setup() =>
+                                   DI.Setup()
+                                       .Bind().As(Lifetime.Singleton).To<MyDependency>()
+                                       .Bind().To<MyService>()
+                                       .Root<IMyService>("MyService", kind: RootKinds.Exported);
+                           }
+
+                           public partial class Composition
+                           {
+                               private void Setup() =>
+                                   DI.Setup()
+                                       .Bind().As(Lifetime.Singleton).To<CompositionInOtherProject>()
+                                       .Root<Program>("Program");
+                           }
+
+                           public partial class Program
+                           {
+                               public CompositionInOtherProject Other { get; }
+
+                               // Only passes the composition on, without using its exported roots
+                               public Program(CompositionInOtherProject other)
+                               {
+                                   Other = other;
+                               }
+
+                               public static void Main()
+                               {
+                                   var composition = new Composition();
+                                   System.Console.WriteLine(composition.Program.Other == composition.Program.Other);
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Warnings.Count(i => i.Id == LogId.WarningBindingNotUsed).ShouldBe(0, result);
         result.StdOut.ShouldBe(["True"], result);
     }
 

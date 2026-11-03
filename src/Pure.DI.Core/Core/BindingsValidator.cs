@@ -14,6 +14,12 @@ sealed class BindingsValidator(
         var overriddenInjections = GetOverriddenInjections(graph);
         foreach (var binding in graph.Source.Bindings.Where(i => i.SourceSetup.Kind == CompositionKind.Public && i.Contracts.All(c => c.Kind == ContractKind.Explicit)))
         {
+            // A binding of an exported member or root comes with the binding of its type, and the consumer may use none of them
+            if (binding.Factory?.MemberResolver is not null)
+            {
+                continue;
+            }
+
             // ReSharper disable once InvertIf
             if (!GetIds(binding).Any(id => bindingsRegistry.IsRegistered(graph.Source, id)))
             {
