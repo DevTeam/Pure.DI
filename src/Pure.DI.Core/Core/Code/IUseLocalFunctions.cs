@@ -7,4 +7,6 @@ interface ILocalFunctions
     LocalFunctionScope GetScope(CodeContext ctx);
 
     string GetKey(CodeContext ctx);
+
+    ImmutableArray<MdOverride> GetOverrideArguments(CodeContext ctx);
 }

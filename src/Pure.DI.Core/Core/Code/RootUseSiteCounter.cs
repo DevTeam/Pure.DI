@@ -54,6 +54,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             counts,
             factoryDownstream,
             GetOverrideConsumers(graph, root),
+            GetFreeOverrides(graph, root),
             GetInlineCosts(graph, root, counts, factoryDownstream),
             GetTransientCosts(graph, root, counts),
             GetPerBlockDependents(graph, root));
@@ -420,6 +421,122 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         }
 
         return result;
+    }
+
+    // The overridden values that the code creating a node reads and does not declare itself, by binding id.
+    // A factory declares the values it overrides before a dependency, so they are not free under that dependency.
+    // A transient instance that reads overridden values gets them as the arguments of its local function, see #178.
+    private static Dictionary<int, ImmutableArray<MdOverride>> GetFreeOverrides(DependencyGraph graph, DependencyNode root)
+    {
+        // The dependencies come before their consumers, so an acyclic graph is completed in one pass.
+        var order = new List<DependencyNode>();
+        var visited = new HashSet<int> { root.BindingId };
+        var stack = new Stack<(DependencyNode Node, bool IsExpanded)>();
+        stack.Push((root, false));
+        while (stack.Count > 0)
+        {
+            var (node, isExpanded) = stack.Pop();
+            if (isExpanded)
+            {
+                order.Add(node);
+                continue;
+            }
+
+            stack.Push((node, true));
+            if (!graph.Graph.TryGetInEdges(node, out var inEdges))
+            {
+                continue;
+            }
+
+            foreach (var edge in inEdges)
+            {
+                if (visited.Add(edge.Source.BindingId))
+                {
+                    stack.Push((edge.Source, false));
+                }
+            }
+        }
+
+        var freeOverrides = order.ToDictionary(i => i.BindingId, _ => new Dictionary<int, MdOverride>());
+        bool isChanged;
+        do
+        {
+            isChanged = false;
+            foreach (var node in order)
+            {
+                if (!graph.Graph.TryGetInEdges(node, out var inEdges))
+                {
+                    continue;
+                }
+
+                var nodeFreeOverrides = freeOverrides[node.BindingId];
+                var declaredOverrides = GetDeclaredOverrides(node);
+                foreach (var edge in inEdges)
+                {
+                    if (edge.Source.Construct is { Source: { Kind: MdConstructKind.Override, State: DpOverride @override } })
+                    {
+                        isChanged |= AddFreeOverride(nodeFreeOverrides, @override.Source, declaredOverrides, edge.Position);
+                        continue;
+                    }
+
+                    if (!freeOverrides.TryGetValue(edge.Source.BindingId, out var sourceFreeOverrides))
+                    {
+                        continue;
+                    }
+
+                    foreach (var sourceOverride in sourceFreeOverrides.Values.ToList())
+                    {
+                        isChanged |= AddFreeOverride(nodeFreeOverrides, sourceOverride, declaredOverrides, edge.Position);
+                    }
+                }
+            }
+        } while (isChanged);
+
+        return freeOverrides.ToDictionary(
+            i => i.Key,
+            i => i.Value.Values.OrderBy(@override => @override.Id).ToImmutableArray());
+
+        static bool AddFreeOverride(
+            Dictionary<int, MdOverride> nodeFreeOverrides,
+            MdOverride @override,
+            List<(int Position, int Id)> declaredOverrides,
+            int? position)
+        {
+            if (nodeFreeOverrides.ContainsKey(@override.Id)
+                || position.HasValue && declaredOverrides.Any(i => i.Id == @override.Id && i.Position <= position.Value))
+            {
+                return false;
+            }
+
+            nodeFreeOverrides.Add(@override.Id, @override);
+            return true;
+        }
+    }
+
+    // The ids of the values that a factory overrides, with the 1-based position of the resolver or initializer
+    // that overrides them, in the order in which they are applied to the dependencies, see GraphOverrider.
+    private static List<(int Position, int Id)> GetDeclaredOverrides(DependencyNode node)
+    {
+        var declaredOverrides = new List<(int Position, int Id)>();
+        if (node.Factory is not {} factory)
+        {
+            return declaredOverrides;
+        }
+
+        var position = 0;
+        foreach (var overrides in factory.Resolvers.Select(i => (i.Source.Position, i.Overrides))
+                     .Concat(factory.Initializers.Select(i => (i.Source.Position, i.Overrides)))
+                     .OrderBy(i => i.Position)
+                     .Select(i => i.Overrides))
+        {
+            position++;
+            foreach (var @override in overrides)
+            {
+                declaredOverrides.Add((position, factory.ResolveOverride(@override).Source.Id));
+            }
+        }
+
+        return declaredOverrides;
     }
 
     private static void PropagateFactory(DependencyGraph graph, DependencyNode start, HashSet<int> factoryDownstream)

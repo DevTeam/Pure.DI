@@ -32,8 +32,9 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
             return false;
         }
 
-        // A node that reads an overridden value needs a scope declared next to that value.
-        if (IsOverrideConsumer(ctx) && ReferenceEquals(ctx.LocalFunctionScope, ctx.RootContext.LocalFunctionScope))
+        // A node that reads an overridden value needs a scope declared next to that value,
+        // unless it is a transient instance that gets the overridden values as arguments.
+        if (IsOverrideConsumer(ctx) && !IsOverrideArgumentsConsumer(ctx) && ReferenceEquals(ctx.LocalFunctionScope, ctx.RootContext.LocalFunctionScope))
         {
             return false;
         }
@@ -86,12 +87,21 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
 
     // A local function of the root cannot see a value overridden inside a lambda,
     // so a node that reads such a value gets the scope of the injection that overrides it.
+    // A transient instance gets such values as arguments instead, so the lambdas that create it share its local function, see #178.
     // A node created under accumulators gets the scope of the code that declares them,
     // so its local function is not called where other accumulators collect the instances.
     public LocalFunctionScope GetScope(CodeContext ctx) =>
-        IsOverrideConsumer(ctx) || GetAccumulators(ctx).Count != 0
+        IsOverrideConsumer(ctx) && !IsOverrideArgumentsConsumer(ctx) || GetAccumulators(ctx).Count != 0
             ? ctx.LocalFunctionScope
             : ctx.RootContext.LocalFunctionScope;
+
+    // The overridden values that the local function of a transient instance gets as arguments.
+    public ImmutableArray<MdOverride> GetOverrideArguments(CodeContext ctx) =>
+        IsOverrideConsumer(ctx)
+        && IsOverrideArgumentsConsumer(ctx)
+        && ctx.RootContext.UseSites.FreeOverrides.TryGetValue(ctx.VarInjection.Var.Declaration.Node.Node.BindingId, out var overrides)
+            ? overrides
+            : ImmutableArray<MdOverride>.Empty;
 
     // An instance can be created under different accumulators in the same scope,
     // for example, inside a shared instance that does not feed the per-resolve ones,
@@ -147,6 +157,9 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
                && !refSafety.IsMaybeRefLike(var.InstanceType)
                && !ctx.RootContext.UseSites.PerBlockDependents.Contains(var.AbstractNode.BindingId);
     }
+
+    private bool IsOverrideArgumentsConsumer(CodeContext ctx) =>
+        !nodeTools.IsBlock(ctx.VarInjection.Var.AbstractNode) && IsTransientCandidate(ctx);
 
     private static bool IsOverrideConsumer(CodeContext ctx) =>
         ctx.HasOverrides

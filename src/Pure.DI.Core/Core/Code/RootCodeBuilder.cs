@@ -19,7 +19,8 @@ sealed class RootCodeBuilder(
     ITypeResolver typeResolver,
     ILocalFunctions localFunctions,
     INodeTools nodeTools,
-    IConstructors constructors)
+    IConstructors constructors,
+    INameProvider nameProvider)
     : IBuilder<CodeContext, IEnumerator>
 {
     public IEnumerator Build(CodeContext parentCtx)
@@ -41,7 +42,7 @@ sealed class RootCodeBuilder(
         if (hasLocalFunction && !nodeTools.IsBlock(var.AbstractNode))
         {
             // A transient instance is created by each call of its local function.
-            var.CodeExpression = $"{localFunctionName}()";
+            var.CodeExpression = $"{localFunctionName}({GetOverrideArguments(localFunctions.GetOverrideArguments(parentCtx))})";
             yield break;
         }
 
@@ -133,6 +134,15 @@ sealed class RootCodeBuilder(
                                       varCtx.DetachedAccumulators
                                           .Select(i => i.VarInjection.Var.AbstractNode.BindingId)
                                           .ToImmutableHashSet()));
+        var overrideArguments = isLocalFunction && !isBlock
+            ? localFunctions.GetOverrideArguments(varCtx)
+            : ImmutableArray<MdOverride>.Empty;
+        if (!overrideArguments.IsEmpty)
+        {
+            // The overridden values are the parameters of the local function, so its code declares only the values it overrides itself.
+            varCtx = varCtx with { Overrides = [..overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i))] };
+        }
+
         var mapToken =
             isLocalFunction
                 ? varsMap.LocalFunction(var, lines)
@@ -279,7 +289,8 @@ sealed class RootCodeBuilder(
             }
 
             localFunctionName = uniqueNameProvider.GetUniqueName($"Create{baseName}{Names.Salt}");
-            localFunction.AppendLine($"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, var.InstanceType)} {localFunctionName}()");
+            var parameters = string.Join(", ", overrideArguments.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.ContractType)} {nameProvider.GetOverrideVariableName(i)}"));
+            localFunction.AppendLine($"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, var.InstanceType)} {localFunctionName}({parameters})");
             using (localFunction.CreateBlock())
             {
                 localFunction.AppendLines(lines);
@@ -288,7 +299,7 @@ sealed class RootCodeBuilder(
 
             localFunctionScope.Add(localFunctionKey, localFunctionName, localFunction);
             lines = new Lines();
-            var.CodeExpression = $"{localFunctionName}()";
+            var.CodeExpression = $"{localFunctionName}({GetOverrideArguments(overrideArguments)})";
         }
         else if (isLocalFunction)
         {
@@ -314,6 +325,9 @@ sealed class RootCodeBuilder(
         parentCtx.Lines.AppendLines(lines);
         var.Declaration.IsDeclared = true;
     }
+
+    private string GetOverrideArguments(ImmutableArray<MdOverride> overrideArguments) =>
+        string.Join(", ", overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i)));
 
     private static ImmutableArray<Accumulator> GetDetachedAccumulators(CodeContext ctx) =>
         ctx.DetachedAccumulators.IsDefault ? ImmutableArray<Accumulator>.Empty : ctx.DetachedAccumulators;

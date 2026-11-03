@@ -166,21 +166,23 @@ public class NestedFuncArgumentsTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task ShouldPassArgumentOfEachNestedFuncToConsumerWhenEachFuncPassesConsumedArgument(bool passesOneArgument)
+    public async Task ShouldCreateGraphUnderNestedFuncsOnceWhenEachFuncPassesConsumedArgument(bool passesOneArgument)
     {
         // Given
-        const int levels = 6;
+        const int levels = 12;
 
         // When
-        // Each delegate creates override nodes of its own, so the graph under the delegates was rewritten once
-        // for each chain of delegates above it, although the overridden values are named by their contracts, see #178.
-        // The rewrites are now shared, and each view model still gets the argument of the delegate that creates it.
+        // A view model that reads the argument of a delegate was created in place in each lambda,
+        // so each lambda repeated the whole graph of the next view models, see #178.
+        // It is now created by a local function that gets the overridden values as arguments.
         var result = await CreateShadowedArgumentsSetup(levels, passesOneArgument)
             .RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe([passesOneArgument ? $"Vm{levels} {levels - 1} {levels}" : $"Vm{levels} {levels}"], result);
+        var lines = result.GeneratedCode.Split(Environment.NewLine);
+        lines.Count(i => i.Contains($"new global::Sample.Vm{levels}(")).ShouldBeLessThan(levels, result);
     }
 
     private static string CreateShadowedArgumentsSetup(int levels, bool passesOneArgument)

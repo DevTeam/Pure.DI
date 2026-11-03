@@ -9,6 +9,8 @@ record RootUseSiteAnalysis(
     IReadOnlyDictionary<int, int> UseSiteCount,
     HashSet<int> FactoryDownstream,
     HashSet<int> OverrideConsumers,
+    // The overridden values that the code creating a node reads and does not declare itself, by binding id.
+    IReadOnlyDictionary<int, ImmutableArray<MdOverride>> FreeOverrides,
     // The estimated size of the code that creates a node in place, including the dependencies created in place with it.
     IReadOnlyDictionary<int, int> InlineCost,
     // The estimated size of the code that creates a transient instance in place, including its transient dependencies.
