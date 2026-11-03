@@ -10,14 +10,14 @@ sealed class LocalVariableRenamingRewriter(
 {
     private ConcurrentDictionary<string, string> Names { get; init; } = [];
     private bool _isOverride;
-    private bool _forcibleRename;
     private SemanticModel? _semanticModel;
+    private SyntaxNode? _root;
 
     public SyntaxNode Rewrite(SemanticModel semanticModel, bool isOverride, SyntaxNode lambda)
     {
         _semanticModel = semanticModel;
         _isOverride = isOverride;
-        _forcibleRename = _isOverride;
+        _root = lambda;
         return Visit(lambda);
     }
 
@@ -33,21 +33,8 @@ sealed class LocalVariableRenamingRewriter(
     public override SyntaxNode? VisitParameter(ParameterSyntax node) =>
         base.VisitParameter(
             Names.ContainsKey(node.Identifier.Text)
-                ? node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text)))
+                ? node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text)).WithTriviaFrom(node.Identifier))
                 : node);
-
-    public override SyntaxNode? VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
-    {
-        _forcibleRename = false;
-        try
-        {
-            return base.VisitObjectCreationExpression(node);
-        }
-        finally
-        {
-            _forcibleRename = _isOverride;
-        }
-    }
 
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
     {
@@ -56,7 +43,26 @@ sealed class LocalVariableRenamingRewriter(
             return node;
         }
 
-        return base.VisitIdentifierName(_forcibleRename ? SyntaxFactory.IdentifierName(GetUniqueName(node.Identifier.Text)) : node);
+        return base.VisitIdentifierName(_isOverride && IsLocalOrParameter(node) ? SyntaxFactory.IdentifierName(GetUniqueName(node.Identifier.Text)) : node);
+    }
+
+    // The value of an override refers to the locals and parameters of its factory, which are renamed with the factory,
+    // and keeps the names of types, namespaces and members, see #179.
+    // A parameter of a lambda inside the value is declared there, so it keeps its name.
+    private bool IsLocalOrParameter(IdentifierNameSyntax node)
+    {
+        if (_semanticModel is null || _semanticModel.SyntaxTree != node.SyntaxTree)
+        {
+            return false;
+        }
+
+        var symbolInfo = _semanticModel.GetSymbolInfo(node);
+        return (symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault()) switch
+        {
+            ILocalSymbol => true,
+            IParameterSymbol parameter => !parameter.DeclaringSyntaxReferences.Any(i => i.SyntaxTree == _root?.SyntaxTree && _root.Span.Contains(i.Span)),
+            _ => false
+        };
     }
 
     public override SyntaxToken VisitToken(SyntaxToken token)

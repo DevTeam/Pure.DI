@@ -1,4 +1,4 @@
-namespace Pure.DI.IntegrationTests;
+﻿namespace Pure.DI.IntegrationTests;
 
 using Core;
 
@@ -92,7 +92,7 @@ public class OverrideTests
                                    }
                                }
                            }
-                           """.Replace("#hints#", hints).RunAsync();
+                           """.Replace("#hints#", hints).RunAsync(new Options(LanguageVersion.CSharp12));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -5438,5 +5438,65 @@ public class OverrideTests
 
         // Then
         result.Success.ShouldBeTrue(result);
+    }
+
+    [Theory]
+    [InlineData("", "(int)Mode.Two", "1")]
+    [InlineData("", "Limits.Max + 0", "5")]
+    [InlineData("", "(Math.Max(1, 2))", "2")]
+    [InlineData("", "0 + Math.Max(1, 2)", "2")]
+    [InlineData("", "true ? Limits.Max : 0", "5")]
+    [InlineData("", "new[] { Limits.Max }[0]", "5")]
+    [InlineData("var offset = 3;", "offset + Limits.Max", "8")]
+    public async Task ShouldKeepTypeNamesInOverrideValue(string statements, string value, string expected)
+    {
+        // Given
+
+        // When
+        // The names of types and constants in the value of an override were renamed like local variables, see #179.
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public enum Mode { One, Two }
+
+                               public static class Limits
+                               {
+                                   public const int Max = 5;
+                               }
+
+                               public interface IService;
+
+                               public sealed class Service(int value) : IService
+                               {
+                                   public override string ToString() => value.ToString();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IService>().To(ctx =>
+                                           {
+                                               #statements#
+                                               ctx.Override<int>(#value#);
+                                               ctx.Inject(out Service service);
+                                               return service;
+                                           })
+                                           .Root<IService>("Root");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => Console.WriteLine(new Composition().Root);
+                               }
+                           }
+                           """.Replace("#statements#", statements).Replace("#value#", value).RunAsync(new Options(LanguageVersion.CSharp12));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([expected], result);
     }
 }
