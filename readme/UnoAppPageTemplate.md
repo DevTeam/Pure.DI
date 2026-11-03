@@ -170,7 +170,7 @@ protected override void OnLaunched(LaunchActivatedEventArgs args)
 The [project file](/samples/UnoApp/UnoApp.csproj) uses the current single-project Uno SDK and adds Pure.DI as a source generator:
 
 ```xml
-<Project Sdk="Uno.Sdk/6.5.36">
+<Project Sdk="Uno.Sdk/6.7.30">
     <PropertyGroup>
         <TargetFrameworks>net10.0-desktop</TargetFrameworks>
         <UnoSingleProject>true</UnoSingleProject>
