@@ -202,7 +202,8 @@ sealed class FactoryCodeBuilder(
             locks.AddLockStatements(ctx.RootContext.Root.IsStatic, lines, false);
             lines.AppendLine(BlockStart);
             lines.IncIndent();
-            ctx = ctx with { IsLockRequired = false };
+            // The lock block is a scope of its own, so the overridden values declared in it are not seen after it, see #180.
+            ctx = ctx with { IsLockRequired = false, Overrides = [..ctx.Overrides] };
             hasOverridesLock = true;
         }
 

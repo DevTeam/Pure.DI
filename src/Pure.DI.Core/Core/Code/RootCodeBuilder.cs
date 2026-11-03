@@ -142,6 +142,12 @@ sealed class RootCodeBuilder(
             // The overridden values are the parameters of the local function, so its code declares only the values it overrides itself.
             varCtx = varCtx with { Overrides = [..overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i))] };
         }
+        else if (isLocalFunction || isBlock)
+        {
+            // A local function and the check of a single instance are scopes of their own,
+            // so the overridden values declared in them are not seen after them, see #180.
+            varCtx = varCtx with { Overrides = [..varCtx.Overrides] };
+        }
 
         var mapToken =
             isLocalFunction
@@ -201,7 +207,8 @@ sealed class RootCodeBuilder(
             };
             if (isLazy)
             {
-                ctx.Overrides.Clear();
+                // A lambda declares the overridden values again, and the code after it still sees the values declared before it.
+                ctx = ctx with { Overrides = [] };
                 accumulators.BuildAccumulators(ctx with
                 {
                     Accumulators = ctx.Accumulators

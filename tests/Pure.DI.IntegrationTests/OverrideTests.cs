@@ -5499,4 +5499,70 @@ public class OverrideTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe([expected], result);
     }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(".Hint(Hint.ThreadSafe, \"On\")")]
+    [InlineData(".Hint(Hint.ThreadSafe, \"Off\")")]
+    public async Task ShouldDeclareOverrideOfSameTypeInEachFactory(string hints)
+    {
+        // Given
+
+        // When
+        // Each factory with an override is created in a lock block of its own,
+        // and the overridden value was declared only in the first of them, see #180.
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class Name(string value)
+                               {
+                                   public override string ToString() => value;
+                               }
+
+                               public interface IService;
+
+                               public sealed class Service(Name name) : IService
+                               {
+                                   public override string ToString() => name.ToString();
+                               }
+
+                               public sealed class App(IService a, [Tag("b")] IService b)
+                               {
+                                   public override string ToString() => $"{a} {b}";
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           #hints#
+                                           .Bind<IService>().To(ctx =>
+                                           {
+                                               ctx.Override(new Name("a"));
+                                               ctx.Inject(out Service service);
+                                               return service;
+                                           })
+                                           .Bind<IService>("b").To(ctx =>
+                                           {
+                                               ctx.Override(new Name("b"));
+                                               ctx.Inject(out Service service);
+                                               return service;
+                                           })
+                                           .Root<App>("Root");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => Console.WriteLine(new Composition().Root);
+                               }
+                           }
+                           """.Replace("#hints#", hints).RunAsync(new Options(LanguageVersion.CSharp12));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["a b"], result);
+    }
 }
