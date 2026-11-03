@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Una dipendenza Singleton o Scoped viene creata da un argomento del delegato. L'istanza viene creata una sola volta e mantiene il valore della prima chiamata.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>Il codice di una radice è molto più grande del suo grafo delle dipendenze, perché una dipendenza viene creata sul posto su molti percorsi di dipendenze.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>Il codice della radice {0} ha {1} righe per {2} dipendenze. Probabilmente una dipendenza viene creata sul posto su molti percorsi di dipendenze: assegnale un ciclo di vita condiviso o imposta il suggerimento LocalFunctions su On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>La generazione è stata interrotta.</value>
     </data>

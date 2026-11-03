@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Singleton 或 Scoped 依赖项由委托参数创建。实例只创建一次，并保留第一次调用的值。</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>根的代码比其依赖关系图大得多，因为某个依赖项在许多依赖路径上被就地创建。</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>根 {0} 的代码有 {1} 行，对应 {2} 个依赖项。某个依赖项可能在许多依赖路径上被就地创建：请为其指定共享生命周期，或将 LocalFunctions 提示设置为 On。</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成已中断。</value>
     </data>

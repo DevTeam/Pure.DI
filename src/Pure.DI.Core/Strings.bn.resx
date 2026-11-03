@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>একটি Singleton বা Scoped নির্ভরতা ডেলিগেট আর্গুমেন্ট থেকে তৈরি হয়। ইনস্ট্যান্সটি একবারই তৈরি হয় এবং প্রথম কলের মান ধরে রাখে।</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>একটি রুটের কোড তার ডিপেনডেন্সি গ্রাফের চেয়ে অনেক বড়, কারণ একটি ডিপেনডেন্সি অনেক ডিপেনডেন্সি পথে সেই স্থানেই তৈরি হয়।</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>রুট {0}-এর কোডে {2}টি ডিপেনডেন্সির জন্য {1}টি লাইন রয়েছে। সম্ভবত একটি ডিপেনডেন্সি অনেক ডিপেনডেন্সি পথে সেই স্থানেই তৈরি হয়: এটিকে একটি শেয়ার করা লাইফটাইম দিন অথবা LocalFunctions হিন্ট On-এ সেট করুন।</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>জেনারেশন বাধাপ্রাপ্ত হয়েছে।</value>
     </data>

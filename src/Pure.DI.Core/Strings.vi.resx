@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Phụ thuộc Singleton hoặc Scoped được tạo từ một tham số của delegate. Thể hiện chỉ được tạo một lần và giữ giá trị của lần gọi đầu tiên.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>Mã của một gốc lớn hơn nhiều so với đồ thị phụ thuộc của nó, vì một phụ thuộc được tạo tại chỗ trên nhiều đường phụ thuộc.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>Mã của gốc {0} có {1} dòng cho {2} phụ thuộc. Có thể một phụ thuộc được tạo tại chỗ trên nhiều đường phụ thuộc: hãy đặt cho nó vòng đời dùng chung hoặc đặt gợi ý LocalFunctions thành On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Việc tạo đã bị gián đoạn.</value>
     </data>

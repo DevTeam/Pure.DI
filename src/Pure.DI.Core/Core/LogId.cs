@@ -137,6 +137,8 @@ static class LogId
     public const string WarningInjectionMethodOverloadResolutionPriority = "DIW014";
     // A singleton or scoped dependency is built from a delegate argument.
     public const string WarningStoredLifetimeFromDelegateArgument = "DIW015";
+    // The code of a root is much larger than its dependency graph.
+    public const string WarningRootCodeIsTooLarge = "DIW016";
 
     // Info
     // Generation was interrupted.

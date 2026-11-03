@@ -2,6 +2,8 @@ using System.Text;
 
 namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 /// <summary>
 /// The size of the generated code grows linearly with the size of the graph, see #172, #175, #177 and #178.
 /// A graph is generated in three sizes. The code that does not depend on the size is the same in all of them,
@@ -70,6 +72,22 @@ public class ScalabilityTests
         }
 
         ShouldGrowLinearly(lines);
+    }
+
+    [Fact]
+    public async Task ShouldWarnWhenCodeOfRootIsTooLarge()
+    {
+        // Given
+
+        // When
+        // A transient instance on a cycle is created in place on each dependency path.
+        var result = await CreateDiamond(16, "Transient", Creation.Constructor, DiamondContext.FuncArgumentWithBackReference)
+            .RunAsync(new Options(LanguageVersion.CSharp12));
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Select(i => i.Id).ShouldBe([LogId.WarningRootCodeIsTooLarge], result);
+        result.StdOut.ShouldBe(["S15"], result);
     }
 
     // The code of the API does not depend on the graph, so only the lines that refer to the types of the sample are counted.

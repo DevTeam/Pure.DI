@@ -17,9 +17,14 @@ class CompositionBuilder(
     IGraphVisitor<RootStatisticsContext, DependencyNode> rootStatisticsVisitor,
     IConstructors constructors,
     IRootUseSiteCounter rootUseSiteCounter,
+    ILogger logger,
+    ILocationProvider locationProvider,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
+    private const int MinTooLargeCodeLines = 2000;
+    private const int MaxLinesPerDependency = 50;
+
     public CompositionCode Build(DependencyGraph graph)
     {
         var roots = new List<Root>();
@@ -100,6 +105,7 @@ class CompositionBuilder(
                     lines.AppendLines(localFunction);
                 }
 
+                WarnIfCodeIsTooLarge(processedRoot, ctx.Lines.Count, useSites.UseSiteCount.Count + 1);
                 processedRoot = processedRoot with { Lines = ctx.Lines };
                 args = varsMap.Declarations.Where(i => i.Node.Arg is not null);
             }
@@ -239,6 +245,26 @@ class CompositionBuilder(
 
         var diagram = classDiagramBuilder.Build(composition);
         return composition with { Diagram = diagram };
+    }
+
+    // A graph that is created in place on many dependency paths makes code that grows with the number of paths,
+    // which a user does not see until the build becomes slow, see #172 and #178.
+    private void WarnIfCodeIsTooLarge(Root root, int linesCount, int dependenciesCount)
+    {
+        if (linesCount < MinTooLargeCodeLines || linesCount <= dependenciesCount * MaxLinesPerDependency)
+        {
+            return;
+        }
+
+        logger.CompileWarning(
+            LogMessage.Format(
+                nameof(Strings.Warning_Template_RootCodeIsTooLarge),
+                Strings.Warning_Template_RootCodeIsTooLarge,
+                root.IsPublic ? $"{root.TypeDescription} {root.DisplayName}" : root.TypeDescription.ToString(),
+                linesCount,
+                dependenciesCount),
+            ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)),
+            LogId.WarningRootCodeIsTooLarge);
     }
 
     private static ImmutableArray<string> GetSetupContextMembersToCopy(ImmutableArray<SetupContextMembers> setupContextMembers)

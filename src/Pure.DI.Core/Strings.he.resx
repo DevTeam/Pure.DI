@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>תלות Singleton או Scoped נוצרת מארגומנט של הנציג. המופע נוצר פעם אחת ושומר את הערך של הקריאה הראשונה.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>הקוד של שורש גדול בהרבה מגרף התלויות שלו, מכיוון שתלות נוצרת במקום במסלולי תלות רבים.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>הקוד של השורש {0} כולל {1} שורות עבור {2} תלויות. כנראה שתלות נוצרת במקום במסלולי תלות רבים: הגדר לה משך חיים משותף או הגדר את הרמז LocalFunctions ל-On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>היצירה הופסקה.</value>
     </data>

@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Singleton 또는 Scoped 종속성이 대리자 인수로 만들어집니다. 인스턴스는 한 번만 만들어지며 첫 번째 호출의 값을 유지합니다.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>루트의 코드가 의존성 그래프보다 훨씬 큽니다. 의존성이 많은 의존성 경로에서 그 자리에서 생성되기 때문입니다.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>루트 {0}의 코드는 {2}개의 의존성에 대해 {1}줄입니다. 의존성이 많은 의존성 경로에서 그 자리에서 생성되는 것 같습니다. 공유 수명을 지정하거나 LocalFunctions 힌트를 On으로 설정하세요.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>생성이 중단되었습니다.</value>
     </data>

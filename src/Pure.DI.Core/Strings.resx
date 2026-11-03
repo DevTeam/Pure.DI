@@ -392,6 +392,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>A singleton or scoped dependency is built from a delegate argument. The instance is created once and keeps the value of the first call.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>The code of a root is much larger than its dependency graph, because a dependency is created in place on many dependency paths.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>The code of the root {0} has {1} lines for {2} dependencies. A dependency is probably created in place on many dependency paths: give it a shared lifetime or set the LocalFunctions hint to On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generation was interrupted.</value>
     </data>

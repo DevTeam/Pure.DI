@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>يتم إنشاء تبعية Singleton أو Scoped من وسيط المندوب. يتم إنشاء المثيل مرة واحدة ويحتفظ بقيمة الاستدعاء الأول.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>شيفرة الجذر أكبر بكثير من رسم التبعيات الخاص به، لأن تبعية تُنشأ في مكانها على العديد من مسارات التبعيات.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>تحتوي شيفرة الجذر {0} على {1} سطرًا لـ {2} تبعية. من المحتمل أن تبعية تُنشأ في مكانها على العديد من مسارات التبعيات: امنحها مدة حياة مشتركة أو اضبط التلميح LocalFunctions على On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>تمت مقاطعة التوليد.</value>
     </data>

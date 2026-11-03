@@ -1023,6 +1023,24 @@ namespace Pure.DI {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to The code of a root is much larger than its dependency graph, because a dependency is created in place on many dependency paths..
+        /// </summary>
+        internal static string Description_WarningRootCodeIsTooLarge {
+            get {
+                return ResourceManager.GetString("Description_WarningRootCodeIsTooLarge", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The code of the root {0} has {1} lines for {2} dependencies. A dependency is probably created in place on many dependency paths: give it a shared lifetime or set the LocalFunctions hint to On..
+        /// </summary>
+        internal static string Warning_Template_RootCodeIsTooLarge {
+            get {
+                return ResourceManager.GetString("Warning_Template_RootCodeIsTooLarge", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Cannot use stack-only dependency with stored lifetime. Use method injection or scoped root argument for Span&lt;T&gt;/ReadOnlySpan&lt;T&gt;..
         /// </summary>
         internal static string Description_ErrorStackOnlyDependencyWithStoredLifetime {

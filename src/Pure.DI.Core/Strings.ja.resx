@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Singleton または Scoped の依存関係がデリゲート引数から作成されます。インスタンスは一度だけ作成され、最初の呼び出しの値を保持します。</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>ルートのコードが依存関係グラフよりはるかに大きくなっています。依存関係が多くの依存パス上でその場で生成されているためです。</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>ルート {0} のコードは {2} 個の依存関係に対して {1} 行あります。依存関係が多くの依存パス上でその場で生成されている可能性があります。共有のライフタイムを指定するか、ヒント LocalFunctions を On に設定してください。</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成が中断されました。</value>
     </data>

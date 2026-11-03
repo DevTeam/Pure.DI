@@ -392,6 +392,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Singleton- или Scoped-зависимость создаётся из аргумента делегата. Экземпляр создаётся один раз и сохраняет значение первого вызова.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>Код корня намного больше его графа зависимостей, потому что зависимость создаётся на месте на многих путях зависимостей.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>Код корня {0} содержит {1} строк для {2} зависимостей. Вероятно, зависимость создаётся на месте на многих путях зависимостей: задайте ей общее время жизни или установите подсказку LocalFunctions в On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Генерация была прервана.</value>
     </data>

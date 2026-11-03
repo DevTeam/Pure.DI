@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>एक Singleton या Scoped निर्भरता डेलीगेट आर्ग्युमेंट से बनाई जाती है। इंस्टेंस एक बार बनाया जाता है और पहली कॉल का मान रखता है।</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>रूट का कोड उसके डिपेंडेंसी ग्राफ़ से बहुत बड़ा है, क्योंकि एक डिपेंडेंसी कई डिपेंडेंसी पथों पर उसी स्थान पर बनाई जाती है।</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>रूट {0} के कोड में {2} डिपेंडेंसी के लिए {1} पंक्तियाँ हैं। संभवतः एक डिपेंडेंसी कई डिपेंडेंसी पथों पर उसी स्थान पर बनाई जाती है: उसे साझा लाइफ़टाइम दें या LocalFunctions संकेत को On पर सेट करें।</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>जनरेशन रुका दिया गया था।</value>
     </data>

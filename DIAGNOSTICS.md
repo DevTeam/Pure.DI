@@ -467,6 +467,13 @@ example scenarios. IDs and anchors are stable; message text is localized.
 - See: [overrides](readme/overrides.md), [singleton](readme/singleton.md), [scoped](readme/scoped.md).
 - Examples: `class Dependency(string value)` bound `As(Lifetime.Singleton)` and reached through `Func<string, Service>`.
 
+### DIW016
+- Description: The code of a root is much larger than its dependency graph.
+- Problem: An instance that is not shared is created in place at each of its use sites, together with the instances it depends on. When a dependency is reached by many dependency paths, for example through a diamond of transient dependencies or through nested `Func<..., T>` delegates, its code is repeated on each path, so the generated code and the build time grow with the number of paths rather than with the number of bindings. The warning is reported when the code of a root has at least 2,000 lines and more than 50 lines per dependency of its graph.
+- Fix: Give the dependency that is created on many paths a shared lifetime, such as `PerResolve`, `PerBlock` or `Singleton`, when it does not need to be a new instance each time, or set `Hint.LocalFunctions` to `On` so that it is created by a local function. Break a cycle through `Lazy<T>` or `Func<T>` that makes a transient dependency reachable from itself.
+- See: [transient](readme/transient.md), [perresolve](readme/perresolve.md), [func](readme/func.md).
+- Examples: transient classes `S{i}(S{i-1} a, S{i-2} b)` for 20 levels, where the lowest one refers back to the highest one through `Lazy<T>`.
+
 ## Info
 
 ### DII000

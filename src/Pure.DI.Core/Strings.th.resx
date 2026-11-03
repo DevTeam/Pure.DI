@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>การพึ่งพาแบบ Singleton หรือ Scoped ถูกสร้างจากอาร์กิวเมนต์ของเดลิเกต อินสแตนซ์จะถูกสร้างเพียงครั้งเดียวและเก็บค่าของการเรียกครั้งแรก</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>โค้ดของรูทมีขนาดใหญ่กว่ากราฟการพึ่งพามาก เนื่องจากการพึ่งพาถูกสร้างขึ้นในที่บนเส้นทางการพึ่งพาจำนวนมาก</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>โค้ดของรูท {0} มี {1} บรรทัดสำหรับการพึ่งพา {2} รายการ การพึ่งพาอาจถูกสร้างขึ้นในที่บนเส้นทางการพึ่งพาจำนวนมาก: กำหนดอายุการใช้งานแบบใช้ร่วมกันให้ หรือตั้งค่าคำแนะนำ LocalFunctions เป็น On</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>การสร้างถูกขัดจังหวะ</value>
     </data>

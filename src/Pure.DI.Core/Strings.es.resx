@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Una dependencia Singleton o Scoped se crea a partir de un argumento del delegado. La instancia se crea una sola vez y conserva el valor de la primera llamada.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>El código de una raíz es mucho mayor que su grafo de dependencias, porque una dependencia se crea en el lugar en muchas rutas de dependencias.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>El código de la raíz {0} tiene {1} líneas para {2} dependencias. Probablemente una dependencia se crea en el lugar en muchas rutas de dependencias: asígnele un ciclo de vida compartido o establezca la sugerencia LocalFunctions en On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>La generación se interrumpió.</value>
     </data>

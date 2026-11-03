@@ -371,6 +371,12 @@
     <data name="Description_WarningStoredLifetimeFromDelegateArgument" xml:space="preserve">
         <value>Eine Singleton- oder Scoped-Abhängigkeit wird aus einem Delegate-Argument erstellt. Die Instanz wird einmal erstellt und behält den Wert des ersten Aufrufs.</value>
     </data>
+    <data name="Description_WarningRootCodeIsTooLarge" xml:space="preserve">
+        <value>Der Code eines Roots ist viel größer als sein Abhängigkeitsgraph, weil eine Abhängigkeit auf vielen Abhängigkeitspfaden direkt erstellt wird.</value>
+    </data>
+    <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
+        <value>Der Code des Roots {0} hat {1} Zeilen für {2} Abhängigkeiten. Eine Abhängigkeit wird wahrscheinlich auf vielen Abhängigkeitspfaden direkt erstellt: Geben Sie ihr eine gemeinsame Lebensdauer oder setzen Sie den Hinweis LocalFunctions auf On.</value>
+    </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generierung wurde unterbrochen.</value>
     </data>
