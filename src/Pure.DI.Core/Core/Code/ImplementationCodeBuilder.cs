@@ -23,6 +23,14 @@ sealed class ImplementationCodeBuilder(
         var var = varInjection.Var;
         var lines = ctx.Lines;
         var implementation = var.AbstractNode.Node.Implementation!;
+        // A dependency can refer back to a PerBlock instance through a lambda, such as the one of Lazy<T>,
+        // which is created before the instance, so its variable is declared before its dependencies, like for a factory.
+        if (!var.Declaration.IsDeclared && var.HasCycle == true && var.AbstractNode.ActualLifetime == PerBlock)
+        {
+            lines.AppendLine($"var {var.Name} = default({typeResolver.Resolve(ctx.RootContext.Graph.Source, var.InstanceType)});");
+            var.Declaration.IsDeclared = true;
+        }
+
         if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var implementationDependencies))
         {
             var injectionsList = new List<VarInjection>(implementationDependencies.Count);
