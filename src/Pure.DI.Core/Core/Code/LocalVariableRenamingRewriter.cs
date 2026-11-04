@@ -9,6 +9,7 @@ sealed class LocalVariableRenamingRewriter(
     : CSharpSyntaxRewriter, ILocalVariableRenamingRewriter
 {
     private ConcurrentDictionary<string, string> Names { get; init; } = [];
+    private readonly HashSet<ISymbol> _renamedParameters = new(SymbolEqualityComparer.Default);
     private bool _isOverride;
     private SemanticModel? _semanticModel;
     private SyntaxNode? _root;
@@ -30,11 +31,20 @@ sealed class LocalVariableRenamingRewriter(
     public override SyntaxNode? VisitSingleVariableDesignation(SingleVariableDesignationSyntax node) =>
         base.VisitSingleVariableDesignation(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
 
-    public override SyntaxNode? VisitParameter(ParameterSyntax node) =>
-        base.VisitParameter(
-            Names.ContainsKey(node.Identifier.Text)
-                ? node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text)).WithTriviaFrom(node.Identifier))
-                : node);
+    public override SyntaxNode? VisitParameter(ParameterSyntax node)
+    {
+        if (!Names.ContainsKey(node.Identifier.Text))
+        {
+            return base.VisitParameter(node);
+        }
+
+        if (_semanticModel?.SyntaxTree == node.SyntaxTree && _semanticModel.GetDeclaredSymbol(node) is {} parameter)
+        {
+            _renamedParameters.Add(parameter);
+        }
+
+        return base.VisitParameter(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text)).WithTriviaFrom(node.Identifier)));
+    }
 
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
     {
@@ -70,13 +80,23 @@ sealed class LocalVariableRenamingRewriter(
         if (Names.TryGetValue(token.Text, out var newName)
             && token.IsKind(SyntaxKind.IdentifierToken)
             && token.Parent is {} parent
-            && (_semanticModel?.SyntaxTree != parent.SyntaxTree || _semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
+            && (_semanticModel?.SyntaxTree != parent.SyntaxTree || IsRenamed(_semanticModel.GetSymbolInfo(parent).Symbol)))
         {
             token = SyntaxFactory.Identifier(newName).WithLeadingTrivia(token.LeadingTrivia).WithTrailingTrivia(token.TrailingTrivia);
         }
 
         return base.VisitToken(token);
     }
+
+    // A parameter of a factory is renamed when the value of its override has already renamed it,
+    // so the other references to the parameter are renamed too, see #183.
+    private bool IsRenamed(ISymbol? symbol) =>
+        symbol switch
+        {
+            ILocalSymbol => true,
+            IParameterSymbol parameter => _renamedParameters.Contains(parameter),
+            _ => false
+        };
 
     private string GetUniqueName(string baseName) => Names.GetOrAdd(baseName, nameProvider.GetLocalUniqueVariableName);
 }

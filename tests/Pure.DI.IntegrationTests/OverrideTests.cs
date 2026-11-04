@@ -5653,4 +5653,137 @@ public class OverrideTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["x"], result);
     }
+
+    [Theory]
+    [InlineData("Let")]
+    [InlineData("Override")]
+    public async Task ShouldUseFactoryParameterThatOverrides(string method)
+    {
+        // Given
+
+        // When
+        // The parameter of a factory was renamed with the value of its override,
+        // but its other references kept the old name, see #183.
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class Dep
+                               {
+                                   public Dep(string name) => Name = name;
+
+                                   public string Name { get; }
+                               }
+
+                               public sealed class Outer
+                               {
+                                   public Outer(string name, Dep dep) => Name = name + dep.Name;
+
+                                   public string Name { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<Func<string, Outer>>().To<Func<string, Outer>>(ctx => name =>
+                                           {
+                                               ctx.#method#<string>(name);
+                                               ctx.Inject(out Dep dep);
+                                               return new Outer(name, dep);
+                                           })
+                                           .Root<Func<string, Outer>>("Open");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => Console.WriteLine(new Composition().Open("a").Name);
+                               }
+                           }
+                           """.Replace("#method#", method).RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["aa"], result);
+    }
+
+    [Theory]
+    [InlineData("Let", false)]
+    [InlineData("Override", false)]
+    [InlineData("Let", true)]
+    [InlineData("Override", true)]
+    public async Task ShouldPassArgumentOfFuncUnderFactoryThatOverridesIt(string method, bool isFuncBound)
+    {
+        // Given
+        var funcBinding = isFuncBound
+            ? """
+              .Bind<Func<TT1, TT>>().As(Lifetime.PerBlock).To(ctx => new Func<TT1, TT>(arg1 =>
+              {
+                  ctx.Let<TT1>(arg1);
+                  ctx.Inject<TT>(ctx.Tag, out var value);
+                  return value;
+              }))
+              """
+            : "";
+
+        // When
+        // The override of the delegate argument was skipped, because the factory above it had already overridden the same injection, see #183.
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class Inner
+                               {
+                                   public Inner(string name) => Name = name;
+
+                                   public string Name { get; }
+                               }
+
+                               public sealed class Outer
+                               {
+                                   public Outer(string name, Func<string, Inner> createInner)
+                                   {
+                                       Name = name;
+                                       CreateInner = createInner;
+                                   }
+
+                                   public string Name { get; }
+
+                                   public Func<string, Inner> CreateInner { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           #funcBinding#
+                                           .Bind<Func<string, Outer>>().To<Func<string, Outer>>(ctx => name =>
+                                           {
+                                               ctx.#method#<string>(name);
+                                               ctx.Inject(out Func<string, Inner> createInner);
+                                               return new Outer(name, createInner);
+                                           })
+                                           .Root<Func<string, Outer>>("Open");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var outer = new Composition().Open("outer");
+                                       var inner = outer.CreateInner("inner");
+                                       Console.WriteLine($"{outer.Name} {inner.Name}");
+                                   }
+                               }
+                           }
+                           """.Replace("#funcBinding#", funcBinding).Replace("#method#", method).RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["outer inner"], result);
+    }
 }

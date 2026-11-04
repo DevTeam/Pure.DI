@@ -213,6 +213,7 @@ class GraphOverrider(
         var lastDependencyPosition = 0;
         using var overridesEnumerator = overridesEnumerable.GetEnumerator();
         var nextLocalOverrides = new Dictionary<Injection, DependencyNode>();
+        var overriddenInjections = new HashSet<Injection>();
         foreach (var dependency in dependencies)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -252,7 +253,10 @@ class GraphOverrider(
                                 return targetNode;
                             }
 
-                            if (localNodesMap.ContainsKey(injection))
+                            // An override of a factory replaces the one inherited from the factories above it,
+                            // otherwise, for example, Func<T1, T> under a factory that overrides T1 did not pass its own argument, see #183.
+                            // The code of both reads the value by the same name, so only the first override of the factory itself is kept.
+                            if (!overriddenInjections.Add(injection))
                             {
                                 continue;
                             }
