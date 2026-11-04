@@ -97,6 +97,9 @@
   <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>{0} を継承し、名前がフィルタ "{1}" に一致する型が見つかりませんでした。</value>
     </data>
+  <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value>コンパイルには {1} を実装する型がありますが、セットアップの位置からは見えません: {0}。その名前空間の using ディレクティブを追加するか、searchInCompilation: true を渡してください。</value>
+    </data>
   <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>Builders 型が無効です。</value>
     </data>

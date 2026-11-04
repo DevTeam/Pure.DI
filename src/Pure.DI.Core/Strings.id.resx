@@ -94,6 +94,9 @@
   <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>Tidak ditemukan tipe yang diwarisi dari {0} yang namanya cocok dengan filter "{1}".</value>
     </data>
+  <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value>Ada tipe yang mengimplementasikan {1} di kompilasi tetapi tidak terlihat dari lokasi setup: {0}. Tambahkan direktif using untuk namespace-nya atau teruskan searchInCompilation: true.</value>
+    </data>
   <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>Tipe Builders tidak valid.</value>
     </data>

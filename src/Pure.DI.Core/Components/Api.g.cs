@@ -2930,6 +2930,12 @@ namespace Pure.DI
         ///     .Roots&lt;IService&gt;("Root{type}", filter: "*MyService");
         /// </code>
         /// </example>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Roots&lt;IService&gt;("Root{type}", searchInCompilation: true);
+        /// </code>
+        /// </example>
         /// </summary>
         /// <typeparam name="T">Base type for auto-root discovery.</typeparam>
         /// <param name="name">
@@ -2938,10 +2944,13 @@ namespace Pure.DI
         /// </param>
         /// <param name="kind">Specifies root accessibility and representation.</param>
         /// <param name="filter">Wildcard pattern to filter types by full name.</param>
+        /// <param name="searchInCompilation">
+        /// Searches all types declared in the current assembly instead of only the types visible from the setup location, so implementations in namespaces without a <c>using</c> directive are discovered as well. Default: <c>false</c>.
+        /// </param>
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="Root{T}"/>
         /// <seealso cref="RootBind{T}"/>
-        IConfiguration Roots<T>(string name = "", RootKinds kind = RootKinds.Default, string filter = "*");
+        IConfiguration Roots<T>(string name = "", RootKinds kind = RootKinds.Default, string filter = "*", bool searchInCompilation = false);
 
         /// <summary>
         /// Defines a builder method that injects into an existing instance.
@@ -2987,14 +2996,23 @@ namespace Pure.DI
         ///     .Builders&lt;Service&gt;("BuildUp{type}", filter: "*MyService");
         /// </code>
         /// </example>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Builders&lt;Service&gt;("BuildUp{type}", searchInCompilation: true);
+        /// </code>
+        /// </example>
         /// </summary>
         /// <typeparam name="T">Base type for builder discovery.</typeparam>
         /// <param name="name">Builder method name template (supports {type}, {TYPE}). Default: "BuildUp".</param>
         /// <param name="kind">Specifies builder accessibility.</param>
         /// <param name="filter">Wildcard pattern to filter types by full name.</param>
+        /// <param name="searchInCompilation">
+        /// Searches all types declared in the current assembly instead of only the types visible from the setup location, so implementations in namespaces without a <c>using</c> directive are discovered as well. Default: <c>false</c>.
+        /// </param>
         /// <returns>Configuration interface for fluent chaining.</returns>
         /// <seealso cref="Builder{T}"/>
-        IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default, string filter = "*");
+        IConfiguration Builders<T>(string name = "BuildUp", RootKinds kind = RootKinds.Default, string filter = "*", bool searchInCompilation = false);
 
         /// <summary>
         /// Configures code generation options for the setup.
@@ -6144,7 +6162,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IConfiguration Roots<T>(string name, RootKinds kind, string filter)
+            public IConfiguration Roots<T>(string name, RootKinds kind, string filter, bool searchInCompilation)
             {
                 return this;
             }
@@ -6156,7 +6174,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IConfiguration Builders<T>(string name, RootKinds kind, string filter)
+            public IConfiguration Builders<T>(string name, RootKinds kind, string filter, bool searchInCompilation)
             {
                 return this;
             }

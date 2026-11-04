@@ -94,6 +94,9 @@
   <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>{0} से विरासत में मिला कोई प्रकार नहीं मिला जिसका नाम फ़िल्टर "{1}" से मेल खाता हो।</value>
     </data>
+  <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value>कंपाइलेशन में {1} को लागू करने वाले प्रकार मौजूद हैं, लेकिन वे setup स्थान से दिखाई नहीं देते: {0}. उनके namespace के लिए using निर्देश जोड़ें या searchInCompilation: true पास करें।</value>
+    </data>
   <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>अमान्य builders प्रकार।</value>
     </data>

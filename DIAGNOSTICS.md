@@ -120,10 +120,10 @@ example scenarios. IDs and anchors are stable; message text is localized.
 
 ### DIE016
 - Description: No type matched the wildcard filter.
-- Problem: The wildcard filter excluded all candidate types.
-- Fix: Adjust the filter or remove it to include matching types.
+- Problem: The wildcard filter excluded all candidate types, or the matching implementations are not visible from the setup location because their namespaces are not imported.
+- Fix: Adjust the filter or remove it to include matching types. When the message names implementations that exist in the compilation, add a `using` directive for their namespace or pass `searchInCompilation: true` to search the whole assembly.
 - See: [roots-with-filter](readme/roots-with-filter.md).
-- Examples: `Roots<IService>(filter: "NoMatch*")`.
+- Examples: `Roots<IService>(filter: "NoMatch*")`, `Roots<IService>(searchInCompilation: true)`.
 
 ### DIE017
 - Description: Builders type is invalid.

@@ -94,6 +94,9 @@
   <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>未找到继承自 {0} 且名称符合过滤器 "{1}" 的类型。</value>
     </data>
+  <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value>编译中已存在实现 {1} 的类型，但从 setup 位置不可见：{0}。请为其命名空间添加 using 指令，或传入 searchInCompilation: true。</value>
+    </data>
   <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>无效的构建器 (builders) 类型。</value>
     </data>

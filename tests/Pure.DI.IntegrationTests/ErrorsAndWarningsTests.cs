@@ -3328,6 +3328,59 @@ public class ErrorsAndWarningsTests
         result.Errors.Count(i => i.Id == LogId.ErrorNoTypeForWildcard && i.Locations.FirstOrDefault().GetSource() == "Builders<IService>()").ShouldBe(1, result);
     }
 
+    [Fact]
+    public async Task ShouldSuggestUsingOrSearchInCompilationWhenImplementationIsInvisible()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService
+                               {
+                               }
+                           }
+
+                           namespace Sample.Impl
+                           {
+                               class Service: Sample.IService
+                               {
+                               }
+                           }
+
+                           namespace Sample.Composition
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Roots<Sample.IService>();
+                                   }
+                               }
+                           }
+
+                           public class Program
+                           {
+                               public static void Main()
+                               {
+                                   var composition = new Sample.Composition.Composition();
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        var error = result.Errors.Single(i => i.Id == LogId.ErrorNoTypeForWildcard);
+        error.Message.ShouldContain("No type inheriting from Sample.IService was found that matches the \"*\" filter");
+        error.Message.ShouldContain("Sample.Impl.Service");
+        error.Message.ShouldContain("searchInCompilation: true");
+    }
+
     [Theory]
     [InlineData("ctx2")]
     [InlineData("Console")]

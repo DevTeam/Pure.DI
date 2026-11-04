@@ -94,6 +94,9 @@
   <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>لم يتم العثور على نوع يرث من {0} ويتوافق اسمه مع الفلتر "{1}".</value>
     </data>
+  <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value>توجد أنواع تنفّذ {1} في الترجمة لكنها غير مرئية من موضع الإعداد: {0}. أضف توجيه using لمساحة الأسماء الخاصة بها أو مرّر searchInCompilation: true.</value>
+    </data>
   <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>نوع بناة غير صالح.</value>
     </data>

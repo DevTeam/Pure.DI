@@ -94,6 +94,9 @@
   <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>Nenhum tipo herdado de {0} foi encontrado cujo nome corresponda ao filtro "{1}".</value>
     </data>
+  <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value>Existem tipos que implementam {1} na compilação, mas eles não são visíveis a partir do local do setup: {0}. Adicione uma diretiva using para o namespace deles ou passe searchInCompilation: true.</value>
+    </data>
   <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>Tipo de Builders inválido.</value>
     </data>
