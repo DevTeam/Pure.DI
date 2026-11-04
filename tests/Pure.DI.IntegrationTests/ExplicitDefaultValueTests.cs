@@ -1,4 +1,6 @@
-namespace Pure.DI.IntegrationTests;
+﻿namespace Pure.DI.IntegrationTests;
+
+using Core;
 
 /// <summary>
 /// Tests related to explicit default value handling.
@@ -856,5 +858,101 @@ public class ExplicitDefaultValueTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Warning"], result);
+    }
+
+    [Fact]
+    public async Task ShouldUseDefaultValueForEachConsumerOfSameType()
+    {
+        // Given
+        var services = Enumerable.Range(0, 20).Select(i => $"class Service{i} {{ public Service{i}(TimeSpan? interval = null) {{ }} }}");
+        var parameters = Enumerable.Range(0, 20).Select(i => $"Service{i} service{i}");
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               {{string.Join(Environment.NewLine, services)}}
+
+                               class App
+                               {
+                                   public App({{string.Join(", ", parameters)}}) { }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<App>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.DependencyGraphs.ShouldHaveSingleItem().BuildAttempts.ShouldBeLessThanOrEqualTo(2);
+        // Every service gets the default value, rather than a variant of the constructor without the optional parameter.
+        System.Text.RegularExpressions.Regex.Matches(result.GeneratedCode, @"new global::Sample\.Service\d+\(null\)").Count.ShouldBe(20, result);
+    }
+
+    [Fact]
+    public async Task ShouldReportOnlyMissingDependencyWhenConsumersHaveOptionalParameters()
+    {
+        // Given
+        var services = Enumerable.Range(0, 20).Select(i => $"class Service{i} {{ public Service{i}(TimeSpan? interval = null) {{ }} }}");
+        var parameters = Enumerable.Range(0, 20).Select(i => $"Service{i} service{i}");
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IMissing { }
+
+                               {{string.Join(Environment.NewLine, services)}}
+
+                               class App
+                               {
+                                   public App({{string.Join(", ", parameters)}}, IMissing missing) { }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<App>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(CheckCompilationErrors: false));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(1, result);
+        result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Message.Contains("\"Sample.IMissing\"")).ShouldBe(1, result);
+        result.DependencyGraphs.ShouldHaveSingleItem().BuildAttempts.ShouldBeLessThanOrEqualTo(2);
     }
 }

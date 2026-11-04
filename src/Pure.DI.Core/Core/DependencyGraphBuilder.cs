@@ -139,7 +139,9 @@ sealed class DependencyGraphBuilder(
                     continue;
                 }
 
-                if (!processedInjection.Add(injection))
+                // An explicit default value is an edge of the current consumer only and is not added to the map,
+                // so every consumer of an injection without a source needs its own default value.
+                if (!processedInjection.Add(injection) && (hasSourceNode || !hasExplicitDefaultValue))
                 {
                     continue;
                 }
