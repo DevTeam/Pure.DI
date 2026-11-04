@@ -10,6 +10,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         // Edge convention in Pure.DI: Source is the dependency, Target is the consumer.
         // To walk from root downward through its dependencies we follow IN-edges.
         var counts = new Dictionary<int, int>();
+        var consumers = new Dictionary<int, List<DependencyNode>>();
         var factoryDownstream = new HashSet<int>();
         var visited = new HashSet<int> { root.BindingId };
         var stack = new Stack<(DependencyNode Node, bool UnderFactory)>();
@@ -32,6 +33,13 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 var dep = edge.Source;
                 counts.TryGetValue(dep.BindingId, out var c);
                 counts[dep.BindingId] = c + 1;
+                if (!consumers.TryGetValue(dep.BindingId, out var depConsumers))
+                {
+                    depConsumers = [];
+                    consumers.Add(dep.BindingId, depConsumers);
+                }
+
+                depConsumers.Add(consumer);
 
                 var depUnderFactory = underFactory || consumerIsFactory;
                 if (depUnderFactory)
@@ -50,6 +58,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             }
         }
 
+        AddLambdaUseSites(graph, counts, consumers);
         return new RootUseSiteAnalysis(
             counts,
             factoryDownstream,
@@ -58,6 +67,26 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             GetInlineCosts(graph, root, counts, factoryDownstream),
             GetTransientCosts(graph, root, counts),
             GetPerBlockDependents(graph, root));
+    }
+
+    // A node created only as the result of lambdas, such as Func<T>, is created by the code of each lambda,
+    // and the code of a lambda is repeated at each of its own use sites. So, for example, a view model
+    // that opens the next one through delegates has as many use sites as the delegates that create it, see #184.
+    private void AddLambdaUseSites(
+        DependencyGraph graph,
+        Dictionary<int, int> counts,
+        Dictionary<int, List<DependencyNode>> consumers)
+    {
+        var lambdaCounts = (
+                from pair in consumers
+                where pair.Value.All(consumer => nodeTools.IsLazy(consumer, graph))
+                select (BindingId: pair.Key, Count: pair.Value.Sum(consumer => counts.TryGetValue(consumer.BindingId, out var count) ? count : 1)))
+            .ToList();
+
+        foreach (var (bindingId, count) in lambdaCounts)
+        {
+            counts[bindingId] = count;
+        }
     }
 
     // A transient instance is created anew at each use site, so its code, together with the code
@@ -198,7 +227,9 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             }
 
             if (consumers.TryGetValue(node.BindingId, out var dependencyConsumers)
-                && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId && !nodes.ContainsKey(consumer.BindingId)))
+                && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId
+                                                       && !nodes.ContainsKey(consumer.BindingId)
+                                                       && !IsResultOfOtherLambdas(graph, consumer, nodeConsumers, consumers)))
             {
                 return false;
             }
@@ -206,6 +237,18 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 
         return true;
     }
+
+    // A node created only as the result of other lambdas is the first code of blocks of its own,
+    // so the PerBlock instances it shares with a block head are created anew in its blocks anyway.
+    // For example, the copies of a view model made for different override scopes share the delegates that they inject, see #184.
+    private bool IsResultOfOtherLambdas(
+        DependencyGraph graph,
+        DependencyNode node,
+        List<DependencyNode> lambdas,
+        Dictionary<int, List<DependencyNode>> consumers) =>
+        consumers.TryGetValue(node.BindingId, out var nodeConsumers)
+        && nodeConsumers.Count > 0
+        && nodeConsumers.All(consumer => nodeTools.IsLazy(consumer, graph) && lambdas.All(lambda => lambda.BindingId != consumer.BindingId));
 
     // The consumers of each node by binding id, a consumer once for each of its dependencies,
     // and the instances of each node, because overridden copies of a node share its binding id.
