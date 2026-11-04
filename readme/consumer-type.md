@@ -101,6 +101,10 @@ It is available only inside a factory binding (`ctx.ConsumerType`), where it is 
 The same trick applies to `ActivitySource`, `Meter` and `ILogger<T>`-style abstractions: one binding produces a per-consumer instance.
 Each call produces a distinct wrapper, so bind this factory as transient; wrapping a singleton logger factory is free, while wrapping an expensive object per consumer is not.
 
+When the consumer type is also a type argument of the dependency, no runtime value is needed: bind the marker `TT` and the generated code passes the concrete type to a generic call, as in `.Bind<ILogger<TT>>().To(ctx => { ctx.Inject<ILoggerFactory>(out var factory); return factory.CreateLogger<TT>(); })`. For a consumer `Service` this becomes `factory.CreateLogger<Service>()`, so `ILogger<Service>` is created at compile time without reflection.
+Prefer the marker when the consumer type appears in the resolved abstraction (`ILogger<T>`, `IHandler<T>`, `IRepository<T>`); prefer `ctx.ConsumerType` when it is only passed as a value, such as the `Type` accepted by `Serilog.ILogger.ForContext`.
+There is no separate `TConsumer` marker and none is needed: `TT` is substituted by the generator at the call site, while `ctx.ConsumerType` gives the same type as a runtime `Type` value.
+
 <details>
 <summary>The following partial class will be generated</summary>
 
@@ -186,4 +190,5 @@ classDiagram
 See also:
 
 - [Consumer types](consumer-types.md)
+- [Generics](generics.md)
 

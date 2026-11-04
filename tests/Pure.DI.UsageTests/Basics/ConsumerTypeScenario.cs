@@ -3,6 +3,7 @@ $v=true
 $p=32
 $d=Consumer type
 $sa=Consumer types
+$sa=Generics
 $h=`ConsumerType` is used to get the consumer type of the given dependency. The use of `ConsumerType` is demonstrated on the example of [Serilog library](https://serilog.net/):
 $h=Idiomatic consumers use it for context-aware logging, metrics and auditing, where every component reports under its own name instead of one global category.
 $f=>[!NOTE]
@@ -11,6 +12,10 @@ $f=
 $f=It is available only inside a factory binding (`ctx.ConsumerType`), where it is known statically, so the value costs nothing at runtime.
 $f=The same trick applies to `ActivitySource`, `Meter` and `ILogger<T>`-style abstractions: one binding produces a per-consumer instance.
 $f=Each call produces a distinct wrapper, so bind this factory as transient; wrapping a singleton logger factory is free, while wrapping an expensive object per consumer is not.
+$f=
+$f=When the consumer type is also a type argument of the dependency, no runtime value is needed: bind the marker `TT` and the generated code passes the concrete type to a generic call, as in `.Bind<ILogger<TT>>().To(ctx => { ctx.Inject<ILoggerFactory>(out var factory); return factory.CreateLogger<TT>(); })`. For a consumer `Service` this becomes `factory.CreateLogger<Service>()`, so `ILogger<Service>` is created at compile time without reflection.
+$f=Prefer the marker when the consumer type appears in the resolved abstraction (`ILogger<T>`, `IHandler<T>`, `IRepository<T>`); prefer `ctx.ConsumerType` when it is only passed as a value, such as the `Type` accepted by `Serilog.ILogger.ForContext`.
+$f=There is no separate `TConsumer` marker and none is needed: `TT` is substituted by the generator at the call site, while `ctx.ConsumerType` gives the same type as a runtime `Type` value.
 $r=Shouldly;Serilog.Core;Serilog.Events
 */
 
