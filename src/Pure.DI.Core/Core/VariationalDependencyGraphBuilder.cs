@@ -26,6 +26,8 @@ sealed class VariationalDependencyGraphBuilder(
     IDependencyNodePrioritizer dependencyNodePrioritizer,
     IInjectionComparer injectionComparer,
     ITypeSymbolComparer typeSymbolComparer,
+    IMarker marker,
+    ITypes types,
     CancellationToken cancellationToken)
     : IBuilder<MdSetup, DependencyGraph?>
 {
@@ -148,6 +150,14 @@ sealed class VariationalDependencyGraphBuilder(
 
             if (newNodes.Count == 0)
             {
+                // No variation can resolve a dependency that has no source and is injected by every variant
+                // of a consumer that every variation includes, so the search would only repeat this result.
+                if (dependencyGraph is not null
+                    && HasUnavoidableUnresolvedDependency(setup, dependencyGraph.Graph, allNodes, accumulators))
+                {
+                    break;
+                }
+
                 // An unresolved dependency can only be affected by the selected variants of its owner
                 // and the consumers on the path to a root. Try those variants before resuming the full
                 // Cartesian search. The exhaustive search below remains the correctness fallback.
@@ -299,6 +309,80 @@ sealed class VariationalDependencyGraphBuilder(
             .Where(i => prioritizedBindingIds.Contains(i.BindingId))
             .Select(i => (ISetOfOptions<IProcessingNode>)i.Options)
             .ToList();
+    }
+
+    // A consumer is unavoidable when it is a root or when every variant of an unavoidable consumer injects it.
+    // A dependency of an unavoidable consumer stays unresolved in every variation when every variant of the consumer
+    // injects it without a default value and nothing can create it: it has no binding, cannot be constructed or bound
+    // automatically, and is not handled by an accumulator or the OnCannotResolve hint.
+    private bool HasUnavoidableUnresolvedDependency(
+        MdSetup setup,
+        IGraph<DependencyNode, Dependency> graph,
+        IEnumerable<IProcessingNode> allNodes,
+        IReadOnlyDictionary<ISymbol, ImmutableArray<MdAccumulator>> accumulators)
+    {
+        if (setup.Hints.IsOnCannotResolveEnabled)
+        {
+            return false;
+        }
+
+        var variants = allNodes
+            .GroupBy(i => i.Node.Binding.Id)
+            .ToDictionary(i => i.Key, i => i.ToList());
+
+        var unavoidableNodes = new HashSet<DependencyNode>();
+        var queue = new Queue<DependencyNode>(graph.Vertices.Where(i => i.Root is not null && variants.ContainsKey(i.Binding.Id)));
+        while (queue.Count > 0)
+        {
+            var node = queue.Dequeue();
+            if (!unavoidableNodes.Add(node) || !graph.TryGetInEdges(node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                var bindingId = dependency.Source.Binding.Id;
+                if (!dependency.IsResolved || bindingId == node.Binding.Id || !variants.ContainsKey(bindingId))
+                {
+                    continue;
+                }
+
+                if (IsInjectedByAllVariants(node, dependency.Injection))
+                {
+                    queue.Enqueue(dependency.Source);
+                }
+            }
+        }
+
+        foreach (var dependency in graph.Edges)
+        {
+            if (dependency.IsResolved
+                || dependency.Error is not null
+                || !unavoidableNodes.Contains(dependency.Target)
+                || !CannotBeCreated(dependency.Injection, dependency.Target.Binding.SemanticModel.Compilation)
+                || !IsInjectedByAllVariants(dependency.Target, dependency.Injection))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+
+        bool IsInjectedByAllVariants(DependencyNode consumer, Injection injection) =>
+            variants[consumer.Binding.Id].All(variant =>
+                variant.Injections.Any(i => !i.HasExplicitDefaultValue && injectionComparer.Equals(i.Injection, injection)));
+
+        bool CannotBeCreated(Injection injection, Compilation compilation) =>
+            injection.Tag is not MdTagOnSites
+            && !ReferenceEquals(injection.Tag, MdTag.ContextTag)
+            && !ReferenceEquals(injection.Tag, MdTag.AnyTag)
+            && injection.Type is INamedTypeSymbol { IsAbstract: true, IsGenericType: false } type
+            && !marker.IsMarkerBased(setup, type)
+            && !types.IsUnionType(compilation, type)
+            && !accumulators.ContainsKey(type);
     }
 
     private static ImmutableArray<long> CreateVariationState(IEnumerable<IProcessingNode> nodes) =>
