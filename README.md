@@ -324,6 +324,7 @@ Core Pure.DI concepts: bindings, roots, arguments, members, and everyday object 
 - [Consumer type](readme/consumer-type.md)
 - [Ref dependencies](readme/ref-dependencies.md)
 - [Multiple implementations](readme/multiple-implementations.md)
+- [Roots in other namespaces](readme/roots-in-other-namespaces.md)
 - [Union types](readme/union-types.md)
 ### Lifetimes
 

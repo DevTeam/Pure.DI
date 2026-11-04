@@ -94,6 +94,9 @@
     <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>No type inheriting from {0} was found that matches the "{1}" filter.</value>
     </data>
+    <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value> Types implementing {1} exist in the compilation but are not visible from the setup location: {0}. Add a using directive for their namespace or pass searchInCompilation: true.</value>
+    </data>
     <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>Invalid builders type.</value>
     </data>

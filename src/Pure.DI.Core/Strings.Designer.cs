@@ -411,6 +411,15 @@ namespace Pure.DI {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to  Types implementing {1} exist in the compilation but are not visible from the setup location: {0}. Add a using directive for their namespace or pass searchInCompilation: true..
+        /// </summary>
+        internal static string Error_Hint_NoTypeForWildcard {
+            get {
+                return ResourceManager.GetString("Error_Hint_NoTypeForWildcard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The composition root &quot;{0}&quot; duplicates the previously declared root &quot;{1}&quot;..
         /// </summary>
         internal static string Error_Template_RootDuplicate {

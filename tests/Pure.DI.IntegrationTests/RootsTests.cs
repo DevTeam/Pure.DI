@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 /// <summary>
 /// Tests related to the definition and resolution of composition roots.
 /// </summary>
@@ -372,6 +374,102 @@ public class RootsTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Initialize 2 Abc"], result);
+    }
+
+    [Fact]
+    public async Task ShouldFindRootsInOtherNamespacesWhenSearchInCompilation()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService
+                               {
+                               }
+                           }
+
+                           namespace Sample.Services
+                           {
+                               namespace Impl
+                               {
+                                   class Service: IService
+                                   {
+                                   }
+                               }
+                           }
+
+                           namespace Sample.Composition
+                           {
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Roots<Sample.IService>("Root{type}", searchInCompilation: true);
+                                   }
+                               }
+                           }
+
+                           public class Program
+                           {
+                               public static void Main()
+                               {
+                                   var composition = new Sample.Composition.Composition();
+                                   var service = composition.RootService;
+                                   Console.WriteLine(service.GetType().Name);
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Service"], result);
+    }
+
+    [Fact]
+    public async Task ShouldReportOnlyFilterWhenImplementationIsNotInCompilation()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IService
+                               {
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Roots<IService>("Root{type}", filter: "*NoMatch");
+                                   }
+                               }
+                           }
+
+                           public class Program
+                           {
+                               public static void Main()
+                               {
+                                   var composition = new Composition();
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count(i => i.Id == LogId.ErrorNoTypeForWildcard).ShouldBe(1, result);
+        result.Errors.Single(i => i.Id == LogId.ErrorNoTypeForWildcard).Message.ShouldBe("No type inheriting from Sample.IService was found that matches the \"*NoMatch\" filter.");
     }
 
     [Fact]

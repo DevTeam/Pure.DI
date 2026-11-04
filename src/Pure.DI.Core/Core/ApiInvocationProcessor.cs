@@ -4,6 +4,7 @@
 // ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Operations;
 
 sealed class ApiInvocationProcessor(
@@ -648,12 +649,13 @@ sealed class ApiInvocationProcessor(
                                 nameof(Strings.Error_InvalidRootsRype));
                         }
 
-                        var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
+                        var rootsArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter", "searchInCompilation");
                         var rootsName = rootsArgs[0] is {} rootsNameArg ? semantic.GetConstantValue<object>(semanticModel, rootsNameArg.Expression, SmartTagKind.Name)?.ToString() ?? "" : "";
                         var rootsKind = rootsArgs[1] is {} rootsKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, rootsKindArg.Expression) : RootKinds.Default;
                         var rootsWildcardFilter = (rootsArgs[2] is {} rootsFilterArg ? semantic.GetConstantValue<string>(semanticModel, rootsFilterArg.Expression) : "*") ?? "*";
+                        var rootsSearchInCompilation = rootsArgs[3] is {} rootsSearchArg && semantic.GetConstantValue<bool>(semanticModel, rootsSearchArg.Expression) is true;
                         var hasRootsType = false;
-                        foreach (var rootType in GetRelatedTypes(invocation, semanticModel, invocation, rootsType, rootsWildcardFilter))
+                        foreach (var rootType in GetRelatedTypes(invocation, semanticModel, invocation, rootsType, rootsWildcardFilter, rootsSearchInCompilation))
                         {
                             var rootName = GetName((SyntaxNode?)rootsArgs[1] ?? invocation, rootsName, rootType) ?? "";
                             metadataVisitor.VisitRoot(new MdRoot(idGenerator.Generate(), invocation, semanticModel, rootType, rootName, nameProvider.GetUniqueRootName(rootName, rootType), new MdTag(0, null), rootsKind, invocationComments, rootsType, false));
@@ -663,7 +665,8 @@ sealed class ApiInvocationProcessor(
                         if (!hasRootsType)
                         {
                             throw new CompileErrorException(
-                                string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter),
+                                string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter)
+                                + GetWildcardSuggestion(semanticModel, rootsType, rootsWildcardFilter),
                                 ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                                 LogId.ErrorNoTypeForWildcard,
                                 nameof(Strings.Error_Template_NoTypeForWildcard));
@@ -698,12 +701,13 @@ sealed class ApiInvocationProcessor(
                                 nameof(Strings.Error_InvalidBuildersType));
                         }
 
-                        var buildersArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter");
+                        var buildersArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind", "filter", "searchInCompilation");
                         var buildersName = buildersArgs[0] is {} buildersNameArg ? semantic.GetConstantValue<object>(semanticModel, buildersNameArg.Expression, SmartTagKind.Name)?.ToString() ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
                         var buildersKind = buildersArgs[1] is {} buildersKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, buildersKindArg.Expression) : RootKinds.Default;
                         var buildersWildcardFilter = (buildersArgs[2] is {} buildersFilterArg ? semantic.GetConstantValue<string>(semanticModel, buildersFilterArg.Expression) : "*") ?? "*";
+                        var buildersSearchInCompilation = buildersArgs[3] is {} buildersSearchArg && semantic.GetConstantValue<bool>(semanticModel, buildersSearchArg.Expression) is true;
                         var builderRoots = (
-                            from buildersType in GetRelatedTypes(invocation, semanticModel, invocation, buildersRootType, buildersWildcardFilter)
+                            from buildersType in GetRelatedTypes(invocation, semanticModel, invocation, buildersRootType, buildersWildcardFilter, buildersSearchInCompilation)
                             let buildersItemName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersType) ?? Names.DefaultBuilderName
                             select VisitBuilder(invocation, metadataVisitor, semanticModel, buildersType, buildersRootType, buildersItemName, buildersKind, invocationComments))
                             .ToList();
@@ -711,7 +715,8 @@ sealed class ApiInvocationProcessor(
                         if (builderRoots.Count == 0)
                         {
                             throw new CompileErrorException(
-                                string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter),
+                                string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter)
+                                + GetWildcardSuggestion(semanticModel, buildersRootType, buildersWildcardFilter),
                                 ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                                 LogId.ErrorNoTypeForWildcard,
                                 nameof(Strings.Error_Template_NoTypeForWildcard));
@@ -913,8 +918,9 @@ sealed class ApiInvocationProcessor(
         SemanticModel semanticModel,
         InvocationExpressionSyntax invocation,
         INamedTypeSymbol baseType,
-        string wildcardFilter) =>
-        from type in semanticModel.LookupNamespacesAndTypes(invocation.Span.Start)
+        string wildcardFilter,
+        bool searchInCompilation = false) =>
+        from type in GetCandidateTypes(semanticModel, invocation, searchInCompilation)
         where !type.IsAbstract
         let namedTypeSymbol = type as INamedTypeSymbol
         where namedTypeSymbol != null
@@ -926,6 +932,77 @@ sealed class ApiInvocationProcessor(
         where wildcardMatcher.Match(wildcardFilter.AsSpan(), symbolNames.GetName(namedTypeSymbol).AsSpan())
         orderby typeInfo.Deepness descending
         select CreateBuilderType(source, baseType, namedTypeSymbol);
+
+    private IEnumerable<ISymbol> GetCandidateTypes(
+        SemanticModel semanticModel,
+        InvocationExpressionSyntax invocation,
+        bool searchInCompilation) =>
+        searchInCompilation
+            ? semanticModel.LookupNamespacesAndTypes(invocation.Span.Start)
+                .Concat(GetDeclaredTypes(semanticModel.Compilation))
+                .Distinct<ISymbol>(SymbolEqualityComparer.Default)
+            : semanticModel.LookupNamespacesAndTypes(invocation.Span.Start);
+
+    // The whole-assembly walk is done at most once per compilation, because the opt-in search
+    // is much more expensive than a lookup from the setup location.
+    private IReadOnlyList<INamedTypeSymbol> GetDeclaredTypes(Compilation compilation) =>
+        _declaredTypes.GetValue(
+            compilation,
+            static currentCompilation =>
+            {
+                var declaredTypes = ImmutableArray.CreateBuilder<INamedTypeSymbol>();
+                CollectDeclaredTypes(currentCompilation.Assembly.GlobalNamespace, declaredTypes);
+                return declaredTypes.ToImmutable();
+            });
+
+    private static void CollectDeclaredTypes(
+        INamespaceOrTypeSymbol container,
+        ImmutableArray<INamedTypeSymbol>.Builder declaredTypes)
+    {
+        foreach (var member in container.GetMembers())
+        {
+            switch (member)
+            {
+                case INamespaceSymbol namespaceSymbol:
+                    CollectDeclaredTypes(namespaceSymbol, declaredTypes);
+                    break;
+
+                case INamedTypeSymbol { DeclaredAccessibility: Accessibility.Public or Accessibility.Internal or Accessibility.NotApplicable } namedTypeSymbol:
+                    declaredTypes.Add(namedTypeSymbol);
+                    CollectDeclaredTypes(namedTypeSymbol, declaredTypes);
+                    break;
+            }
+        }
+    }
+
+    // Suggests the most likely cause of DIE016 when implementations exist in the compilation
+    // but cannot be seen from the setup location.
+    private string GetWildcardSuggestion(
+        SemanticModel semanticModel,
+        INamedTypeSymbol baseType,
+        string wildcardFilter)
+    {
+        var hiddenTypes = (
+            from type in GetDeclaredTypes(semanticModel.Compilation)
+            where !type.IsAbstract
+            where !types.TypeEquals(baseType.ConstructedFrom, type.ConstructedFrom)
+            where wildcardMatcher.Match(wildcardFilter.AsSpan(), symbolNames.GetName(type).AsSpan())
+            where baseSymbolsProvider.GetBaseSymbols(type, (t, _) => t is INamedTypeSymbol).Any(info => TypesMath(baseType, info))
+            select symbolNames.GetName(type))
+            .Distinct()
+            .OrderBy(name => name, StringComparer.Ordinal)
+            .Take(MaxSuggestedTypes + 1)
+            .ToList();
+
+        if (hiddenTypes.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        var suffix = hiddenTypes.Count > MaxSuggestedTypes ? ", ..." : string.Empty;
+        var typeNames = string.Join(", ", hiddenTypes.Take(MaxSuggestedTypes)) + suffix;
+        return string.Format(Strings.Error_Hint_NoTypeForWildcard, typeNames, symbolNames.GetName(baseType));
+    }
 
     private bool TypesMath(INamedTypeSymbol baseType, TypeInfo info)
     {
@@ -963,6 +1040,10 @@ sealed class ApiInvocationProcessor(
 
         return typeSymbol.Construct(markers.ToArray());
     }
+
+    private const int MaxSuggestedTypes = 5;
+
+    private readonly ConditionalWeakTable<Compilation, IReadOnlyList<INamedTypeSymbol>> _declaredTypes = new();
 
     private MdRoot VisitBuilder(
         InvocationExpressionSyntax source,

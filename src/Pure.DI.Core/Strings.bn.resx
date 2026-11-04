@@ -94,6 +94,9 @@
   <data name="Error_Template_NoTypeForWildcard" xml:space="preserve">
         <value>{0} থেকে ইনহেরিট করা এমন কোনো টাইপ পাওয়া যায়নি যার নাম ফিল্টার "{1}" এর সাথে মেলে।</value>
     </data>
+  <data name="Error_Hint_NoTypeForWildcard" xml:space="preserve">
+        <value>কম্পাইলেশনে {1} বাস্তবায়নকারী টাইপ আছে, কিন্তু সেগুলো সেটআপের অবস্থান থেকে দৃশ্যমান নয়: {0}. তাদের নেমস্পেসের জন্য using নির্দেশ যোগ করুন অথবা searchInCompilation: true পাস করুন।</value>
+    </data>
   <data name="Error_InvalidBuildersType" xml:space="preserve">
         <value>অমান্য Builders টাইপ।</value>
     </data>
