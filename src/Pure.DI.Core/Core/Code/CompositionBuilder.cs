@@ -105,7 +105,7 @@ class CompositionBuilder(
                     lines.AppendLines(localFunction);
                 }
 
-                WarnIfCodeIsTooLarge(processedRoot, ctx.Lines.Count, useSites.UseSiteCount.Count + 1);
+                WarnIfCodeIsTooLarge(processedRoot, ctx.Lines.Count, GetDependenciesCount(graph, root.Node));
                 processedRoot = processedRoot with { Lines = ctx.Lines };
                 args = varsMap.Declarations.Where(i => i.Node.Arg is not null);
             }
@@ -265,6 +265,46 @@ class CompositionBuilder(
                 dependenciesCount),
             ImmutableArray.Create(locationProvider.GetLocation(root.Source.Source)),
             LogId.WarningRootCodeIsTooLarge);
+    }
+
+    // The copies of a node made for different override scopes, and the values that override an injection, are counted once,
+    // so a graph that grows with the number of combinations of overridden delegate arguments is compared
+    // with the bindings it is made of rather than with its nodes, see #184.
+    private static int GetDependenciesCount(DependencyGraph graph, DependencyNode root)
+    {
+        var dependencies = new HashSet<string> { GetDependencyKey(root) };
+        var visited = new HashSet<int> { root.BindingId };
+        var stack = new Stack<DependencyNode>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            if (!graph.Graph.TryGetInEdges(stack.Pop(), out var edges))
+            {
+                continue;
+            }
+
+            foreach (var edge in edges)
+            {
+                var source = edge.Source;
+                if (visited.Add(source.BindingId))
+                {
+                    dependencies.Add(GetDependencyKey(source));
+                    stack.Push(source);
+                }
+            }
+        }
+
+        return dependencies.Count;
+    }
+
+    // A copy keeps the id of the binding it is made from first in OriginalIds, as a generic binding does for its constructed types.
+    private static string GetDependencyKey(DependencyNode node)
+    {
+        var binding = node.Binding;
+        var originalId = node.Construct is { Source.Kind: MdConstructKind.Override }
+            ? -1
+            : binding.OriginalIds.IsDefaultOrEmpty ? binding.Id : binding.OriginalIds[0];
+        return $"{originalId}:{node.Type}";
     }
 
     private static ImmutableArray<string> GetSetupContextMembersToCopy(ImmutableArray<SetupContextMembers> setupContextMembers)

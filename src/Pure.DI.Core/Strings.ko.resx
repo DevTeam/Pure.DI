@@ -378,7 +378,7 @@
         <value>루트의 코드가 의존성 그래프보다 훨씬 큽니다. 의존성이 많은 의존성 경로에서 그 자리에서 생성되기 때문입니다.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>루트 {0}의 코드는 {2}개의 의존성에 대해 {1}줄입니다. 의존성이 많은 의존성 경로에서 그 자리에서 생성되는 것 같습니다. 공유 수명을 지정하거나 LocalFunctions 힌트를 On으로 설정하세요.</value>
+        <value>루트 {0}의 코드는 {2}개의 의존성에 대해 {1}줄입니다. 의존성이 많은 의존성 경로에서 그 자리에서 생성되는 것 같습니다. 공유 수명을 지정하거나 LocalFunctions 힌트를 On으로 설정하세요. Func&lt;T1, T&gt; 같은 델리게이트의 인수가 델리게이트가 만드는 객체에만 필요하다면 ctx.Override 대신 ctx.Let으로 델리게이트를 바인딩하세요. 재정의된 인수는 델리게이트 아래에서 생성되는 모든 객체에 전달되므로 인수 조합마다 그래프가 생성됩니다.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>생성이 중단되었습니다.</value>

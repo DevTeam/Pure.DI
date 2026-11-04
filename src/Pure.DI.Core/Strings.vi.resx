@@ -378,7 +378,7 @@
         <value>Mã của một gốc lớn hơn nhiều so với đồ thị phụ thuộc của nó, vì một phụ thuộc được tạo tại chỗ trên nhiều đường phụ thuộc.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>Mã của gốc {0} có {1} dòng cho {2} phụ thuộc. Có thể một phụ thuộc được tạo tại chỗ trên nhiều đường phụ thuộc: hãy đặt cho nó vòng đời dùng chung hoặc đặt gợi ý LocalFunctions thành On.</value>
+        <value>Mã của gốc {0} có {1} dòng cho {2} phụ thuộc. Có thể một phụ thuộc được tạo tại chỗ trên nhiều đường phụ thuộc: hãy đặt cho nó vòng đời dùng chung hoặc đặt gợi ý LocalFunctions thành On. Nếu đối số của một delegate như Func&lt;T1, T&gt; chỉ cần cho đối tượng mà delegate tạo ra, hãy liên kết delegate bằng ctx.Let thay vì ctx.Override: đối số bị ghi đè đi đến mọi đối tượng được tạo dưới delegate, nên đồ thị được tạo cho mỗi tổ hợp đối số.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Việc tạo đã bị gián đoạn.</value>

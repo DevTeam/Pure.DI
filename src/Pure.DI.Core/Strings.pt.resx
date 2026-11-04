@@ -378,7 +378,7 @@
         <value>O código de uma raiz é muito maior que seu grafo de dependências, porque uma dependência é criada no local em muitos caminhos de dependências.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>O código da raiz {0} tem {1} linhas para {2} dependências. Provavelmente uma dependência é criada no local em muitos caminhos de dependências: dê a ela um tempo de vida compartilhado ou defina a dica LocalFunctions como On.</value>
+        <value>O código da raiz {0} tem {1} linhas para {2} dependências. Provavelmente uma dependência é criada no local em muitos caminhos de dependências: dê a ela um tempo de vida compartilhado ou defina a dica LocalFunctions como On. Se o argumento de um delegado como Func&lt;T1, T&gt; for necessário apenas para o objeto que o delegado cria, vincule o delegado com ctx.Let em vez de ctx.Override: um argumento sobrescrito alcança cada objeto criado sob o delegado, então o grafo é criado para cada combinação de argumentos.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>A geração foi interrompida.</value>

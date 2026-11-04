@@ -2,6 +2,8 @@ using System.Text;
 
 namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 /// <summary>
 /// The code of a view model created by the lambdas of nested delegates grows linearly with the number of view models, see #184.
 /// </summary>
@@ -36,7 +38,24 @@ public class Issue184Tests
             $"Generated lines for sizes {string.Join(", ", Sizes)}: {string.Join(", ", lines)}; constructions of the last view model: {string.Join(", ", constructions)}");
     }
 
-    private static string Create(int size)
+    [Fact]
+    public async Task ShouldSuggestLetWhenOverriddenArgumentsOfNestedFuncsMakeCodeTooLarge()
+    {
+        // Given
+
+        // When
+        // The built-in delegates override their argument, which reaches the view models of nested delegates too,
+        // so each view model is created for each combination of the arguments passed along the way.
+        var result = await Create(12, letFunc: false).RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Errors.Count.ShouldBe(0, result);
+        result.Warnings.Select(i => i.Id).ShouldBe([LogId.WarningRootCodeIsTooLarge], result);
+        result.Warnings.Single().Message.ShouldContain("ctx.Let");
+        result.StdOut.ShouldBe(["Vm12"], result);
+    }
+
+    private static string Create(int size, bool letFunc = true)
     {
         var services = string.Join(", ", Enumerable.Range(0, size).Select(i => $"A{i} a{i}"));
         var classes = new StringBuilder();
@@ -64,14 +83,16 @@ public class Issue184Tests
         }
 
         // The argument of a delegate reaches only the view model it creates.
-        const string funcBinding = """
+        var funcBinding = letFunc
+            ? """
               .Bind<Func<TT1, TT>>().As(Lifetime.PerBlock).To(ctx => new Func<TT1, TT>(arg1 =>
               {
                   ctx.Let<TT1>(arg1);
                   ctx.Inject<TT>(ctx.Tag, out var value);
                   return value;
               }))
-              """;
+              """
+            : "";
 
         return $$"""
                  using System;

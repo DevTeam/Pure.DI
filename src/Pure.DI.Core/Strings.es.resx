@@ -378,7 +378,7 @@
         <value>El código de una raíz es mucho mayor que su grafo de dependencias, porque una dependencia se crea en el lugar en muchas rutas de dependencias.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>El código de la raíz {0} tiene {1} líneas para {2} dependencias. Probablemente una dependencia se crea en el lugar en muchas rutas de dependencias: asígnele un ciclo de vida compartido o establezca la sugerencia LocalFunctions en On.</value>
+        <value>El código de la raíz {0} tiene {1} líneas para {2} dependencias. Probablemente una dependencia se crea en el lugar en muchas rutas de dependencias: asígnele un ciclo de vida compartido o establezca la sugerencia LocalFunctions en On. Si el argumento de un delegado como Func&lt;T1, T&gt; solo lo necesita el objeto que crea el delegado, vincule el delegado con ctx.Let en lugar de ctx.Override: un argumento sobrescrito llega a cada objeto creado bajo el delegado, por lo que el grafo se crea para cada combinación de argumentos.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>La generación se interrumpió.</value>

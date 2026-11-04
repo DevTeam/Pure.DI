@@ -378,7 +378,7 @@
         <value>הקוד של שורש גדול בהרבה מגרף התלויות שלו, מכיוון שתלות נוצרת במקום במסלולי תלות רבים.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>הקוד של השורש {0} כולל {1} שורות עבור {2} תלויות. כנראה שתלות נוצרת במקום במסלולי תלות רבים: הגדר לה משך חיים משותף או הגדר את הרמז LocalFunctions ל-On.</value>
+        <value>הקוד של השורש {0} כולל {1} שורות עבור {2} תלויות. כנראה שתלות נוצרת במקום במסלולי תלות רבים: הגדר לה משך חיים משותף או הגדר את הרמז LocalFunctions ל-On. אם הארגומנט של נציג כמו Func&lt;T1, T&gt; נחוץ רק לאובייקט שהנציג יוצר, קשרו את הנציג עם ctx.Let במקום ctx.Override: ארגומנט שנדרס מגיע לכל אובייקט שנוצר תחת הנציג, ולכן הגרף נוצר עבור כל צירוף של ארגומנטים.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>היצירה הופסקה.</value>

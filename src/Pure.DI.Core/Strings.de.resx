@@ -378,7 +378,7 @@
         <value>Der Code eines Roots ist viel größer als sein Abhängigkeitsgraph, weil eine Abhängigkeit auf vielen Abhängigkeitspfaden direkt erstellt wird.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>Der Code des Roots {0} hat {1} Zeilen für {2} Abhängigkeiten. Eine Abhängigkeit wird wahrscheinlich auf vielen Abhängigkeitspfaden direkt erstellt: Geben Sie ihr eine gemeinsame Lebensdauer oder setzen Sie den Hinweis LocalFunctions auf On.</value>
+        <value>Der Code des Roots {0} hat {1} Zeilen für {2} Abhängigkeiten. Eine Abhängigkeit wird wahrscheinlich auf vielen Abhängigkeitspfaden direkt erstellt: Geben Sie ihr eine gemeinsame Lebensdauer oder setzen Sie den Hinweis LocalFunctions auf On. Wenn das Argument eines Delegates wie Func&lt;T1, T&gt; nur von dem Objekt benötigt wird, das der Delegate erstellt, binden Sie den Delegate mit ctx.Let statt ctx.Override: Ein überschriebenes Argument erreicht jedes unter dem Delegate erstellte Objekt, sodass der Graph für jede Kombination von Argumenten erstellt wird.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generierung wurde unterbrochen.</value>

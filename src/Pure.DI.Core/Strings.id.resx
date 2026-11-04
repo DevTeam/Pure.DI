@@ -378,7 +378,7 @@
         <value>Kode sebuah root jauh lebih besar daripada graf dependensinya, karena sebuah dependensi dibuat di tempat pada banyak jalur dependensi.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>Kode root {0} memiliki {1} baris untuk {2} dependensi. Kemungkinan sebuah dependensi dibuat di tempat pada banyak jalur dependensi: berikan masa hidup bersama atau setel petunjuk LocalFunctions ke On.</value>
+        <value>Kode root {0} memiliki {1} baris untuk {2} dependensi. Kemungkinan sebuah dependensi dibuat di tempat pada banyak jalur dependensi: berikan masa hidup bersama atau setel petunjuk LocalFunctions ke On. Jika argumen delegate seperti Func&lt;T1, T&gt; hanya dibutuhkan oleh objek yang dibuat delegate, ikat delegate dengan ctx.Let alih-alih ctx.Override: argumen yang ditimpa mencapai setiap objek yang dibuat di bawah delegate, sehingga graf dibuat untuk setiap kombinasi argumen.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>Generasi terganggu.</value>

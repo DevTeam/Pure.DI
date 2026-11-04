@@ -378,7 +378,7 @@
         <value>Il codice di una radice è molto più grande del suo grafo delle dipendenze, perché una dipendenza viene creata sul posto su molti percorsi di dipendenze.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>Il codice della radice {0} ha {1} righe per {2} dipendenze. Probabilmente una dipendenza viene creata sul posto su molti percorsi di dipendenze: assegnale un ciclo di vita condiviso o imposta il suggerimento LocalFunctions su On.</value>
+        <value>Il codice della radice {0} ha {1} righe per {2} dipendenze. Probabilmente una dipendenza viene creata sul posto su molti percorsi di dipendenze: assegnale un ciclo di vita condiviso o imposta il suggerimento LocalFunctions su On. Se l'argomento di un delegato come Func&lt;T1, T&gt; serve solo all'oggetto creato dal delegato, associa il delegato con ctx.Let invece di ctx.Override: un argomento sovrascritto raggiunge ogni oggetto creato sotto il delegato, quindi il grafo viene creato per ogni combinazione di argomenti.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>La generazione è stata interrotta.</value>

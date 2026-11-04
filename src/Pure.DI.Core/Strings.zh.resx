@@ -378,7 +378,7 @@
         <value>根的代码比其依赖关系图大得多，因为某个依赖项在许多依赖路径上被就地创建。</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>根 {0} 的代码有 {1} 行，对应 {2} 个依赖项。某个依赖项可能在许多依赖路径上被就地创建：请为其指定共享生命周期，或将 LocalFunctions 提示设置为 On。</value>
+        <value>根 {0} 的代码有 {1} 行，对应 {2} 个依赖项。某个依赖项可能在许多依赖路径上被就地创建：请为其指定共享生命周期，或将 LocalFunctions 提示设置为 On。如果 Func&lt;T1, T&gt; 等委托的参数只被委托创建的对象需要，请使用 ctx.Let 而不是 ctx.Override 绑定该委托：被覆盖的参数会到达委托下创建的每个对象，因此会为每种参数组合创建一次图。</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成已中断。</value>

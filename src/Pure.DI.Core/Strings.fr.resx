@@ -378,7 +378,7 @@
         <value>Le code d'une racine est beaucoup plus grand que son graphe de dépendances, car une dépendance est créée sur place sur de nombreux chemins de dépendances.</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>Le code de la racine {0} compte {1} lignes pour {2} dépendances. Une dépendance est probablement créée sur place sur de nombreux chemins de dépendances : donnez-lui une durée de vie partagée ou définissez l'indication LocalFunctions sur On.</value>
+        <value>Le code de la racine {0} compte {1} lignes pour {2} dépendances. Une dépendance est probablement créée sur place sur de nombreux chemins de dépendances : donnez-lui une durée de vie partagée ou définissez l'indication LocalFunctions sur On. Si l'argument d'un délégué tel que Func&lt;T1, T&gt; n'est nécessaire qu'à l'objet créé par le délégué, liez le délégué avec ctx.Let au lieu de ctx.Override : un argument remplacé atteint chaque objet créé sous le délégué, si bien que le graphe est créé pour chaque combinaison d'arguments.</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>La génération a été interrompue.</value>

@@ -1041,7 +1041,7 @@ namespace Pure.DI {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to The code of the root {0} has {1} lines for {2} dependencies. A dependency is probably created in place on many dependency paths: give it a shared lifetime or set the LocalFunctions hint to On..
+        ///   Looks up a localized string similar to The code of the root {0} has {1} lines for {2} dependencies. A dependency is probably created in place on many dependency paths: give it a shared lifetime or set the LocalFunctions hint to On. When the argument of a delegate such as Func&lt;T1, T&gt; is needed only by the object the delegate creates, bind the delegate with ctx.Let instead of ctx.Override: an overridden argument reaches every object created under the delegate, so the graph is created for each combination of arguments..
         /// </summary>
         internal static string Warning_Template_RootCodeIsTooLarge {
             get {

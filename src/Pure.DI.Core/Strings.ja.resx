@@ -378,7 +378,7 @@
         <value>ルートのコードが依存関係グラフよりはるかに大きくなっています。依存関係が多くの依存パス上でその場で生成されているためです。</value>
     </data>
     <data name="Warning_Template_RootCodeIsTooLarge" xml:space="preserve">
-        <value>ルート {0} のコードは {2} 個の依存関係に対して {1} 行あります。依存関係が多くの依存パス上でその場で生成されている可能性があります。共有のライフタイムを指定するか、ヒント LocalFunctions を On に設定してください。</value>
+        <value>ルート {0} のコードは {2} 個の依存関係に対して {1} 行あります。依存関係が多くの依存パス上でその場で生成されている可能性があります。共有のライフタイムを指定するか、ヒント LocalFunctions を On に設定してください。 Func&lt;T1, T&gt; などのデリゲートの引数がデリゲートの生成するオブジェクトだけに必要な場合は、ctx.Override の代わりに ctx.Let でデリゲートをバインドしてください。オーバーライドされた引数はデリゲートの下で生成されるすべてのオブジェクトに届くため、引数の組み合わせごとにグラフが生成されます。</value>
     </data>
     <data name="Description_InfoGenerationInterrupted" xml:space="preserve">
         <value>生成が中断されました。</value>
