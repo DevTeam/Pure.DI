@@ -19,7 +19,9 @@ namespace Pure.DI.MS
     /// <see cref="Lifetime.Scoped"/> to <see cref="ServiceLifetime.Scoped"/>, and all other
     /// lifetimes to <see cref="ServiceLifetime.Transient"/>.
     /// When scoped roots are present, a child Pure.DI composition is created for each Microsoft
-    /// dependency injection scope.
+    /// dependency injection scope. Singleton roots are resolved from the parent composition, while
+    /// every shorter lifetime is resolved from the composition of the current scope, so a scoped
+    /// dependency of a transient root comes from that scope rather than from the parent one.
     /// </remarks>
     /// <typeparam name="TComposition">The Pure.DI composition type.</typeparam>
 #if !NET20 && !NET35 && !NETSTANDARD1_0 && !NETSTANDARD1_1 && !NETSTANDARD1_2 && !NETSTANDARD1_3 && !NETSTANDARD1_4 && !NETSTANDARD1_5 && !NETSTANDARD1_6 && !NETCOREAPP1_0 && !NETCOREAPP1_1
@@ -208,9 +210,20 @@ namespace Pure.DI.MS
 
             private TComposition GetComposition(TComposition composition, IServiceProvider serviceProvider)
             {
-                return Lifetime == ServiceLifetime.Scoped
-                    ? ((ScopedCompositionHolder)serviceProvider.GetRequiredService(typeof(ScopedCompositionHolder))).Composition
-                    : composition;
+                // A singleton root lives as long as the whole application, so it belongs to the
+                // parent composition. Every shorter lifetime (scoped, transient, per-resolve,
+                // per-block) is resolved in the current Microsoft dependency injection scope when
+                // there is one, so that its scoped dependencies come from that very scope instead
+                // of leaking the parent one into the whole application.
+                if (Lifetime == ServiceLifetime.Singleton)
+                {
+                    return composition;
+                }
+
+                // The holder is registered only when the composition has scoped roots, so a
+                // composition without them keeps resolving from the parent composition.
+                var holder = serviceProvider.GetService(typeof(ScopedCompositionHolder)) as ScopedCompositionHolder;
+                return holder is null ? composition : holder.Composition;
             }
         }
 

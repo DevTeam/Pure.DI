@@ -83,6 +83,8 @@ Each root becomes a registration, and a tagged root becomes a keyed registration
 >[!IMPORTANT]
 >A composition used as a service provider factory must keep its resolve methods enabled; `Hint.Resolve = Off` removes the methods the generated registrations call.
 
+Every Pure.DI lifetime is mapped to the nearest Microsoft lifetime, and the mapped lifetime also decides which composition resolves the root. Singleton roots are resolved from the parent composition, so they stay shared for the whole application. Scoped roots, and roots of any shorter lifetime such as transient, per-resolve or per-block, are resolved from the composition of the current Microsoft scope. This matters when a root of a shorter lifetime depends on a scoped service: the dependency comes from that very scope instead of escaping to the parent composition, where it would behave like a singleton. A root of a shorter lifetime is bound to a scope, so resolving it from the root service provider is reported by the scope validation of Microsoft DI the same way as any other scoped service.
+
 <details>
 <summary>The following partial class will be generated</summary>
 
