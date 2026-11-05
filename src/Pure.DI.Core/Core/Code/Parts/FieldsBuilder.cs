@@ -45,6 +45,13 @@ sealed class FieldsBuilder(
             // _disposeIndex field
             code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private int {Names.DisposeIndexFieldName};");
             membersCounter++;
+
+            if (composition.DisposablesScopedCount > 0)
+            {
+                // A scope creates its array of disposables on the first scoped disposable instance only.
+                code.AppendLine($"private const int {Names.ScopedDisposablesCountConstName} = {composition.DisposablesScopedCount.ToString()};");
+                membersCounter++;
+            }
         }
 
         // Singleton fields

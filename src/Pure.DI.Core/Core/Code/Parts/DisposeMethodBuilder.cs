@@ -6,7 +6,8 @@ using static LinesExtensions;
 
 sealed class DisposeMethodBuilder(
     ITypeResolver typeResolver,
-    ILocks locks)
+    ILocks locks,
+    IConstructors constructors)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.DisposeMethod;
@@ -246,7 +247,16 @@ sealed class DisposeMethodBuilder(
         code.AppendLine($"disposeIndex = {Names.DisposeIndexFieldName};");
         code.AppendLine($"{Names.DisposeIndexFieldName} = 0;");
         code.AppendLine($"disposables = {Names.DisposablesFieldName};");
-        code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
+        if (constructors.IsEnabled(composition, ConstructorKind.Scope))
+        {
+            // Only the root composition keeps an array of disposables after disposal.
+            // A scope creates a new one on its next scoped disposable instance.
+            code.AppendLine($"{Names.DisposablesFieldName} = {Names.RootFieldName} == null || {Names.ObjectTypeName}.ReferenceEquals({Names.RootFieldName}, this) ? new object[{composition.TotalDisposablesCount.ToString()}] : null;");
+        }
+        else
+        {
+            code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
+        }
         foreach (var singletonField in composition.Singletons)
         {
             if (singletonField.InstanceType.IsValueType)

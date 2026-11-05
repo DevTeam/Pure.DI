@@ -397,6 +397,12 @@ sealed class RootCodeBuilder(
                     : $"{Names.RootVarName}.";
             }
 
+            if (var.AbstractNode.ActualLifetime == Scoped)
+            {
+                // A scope has no array of disposables until it creates its first scoped disposable instance.
+                lines.AppendLine($"if ({Names.DisposablesFieldName} == null) {Names.DisposablesFieldName} = new object[{Names.ScopedDisposablesCountConstName}];");
+            }
+
             lines.AppendLine($"{parent}{Names.DisposablesFieldName}[{parent}{Names.DisposeIndexFieldName}++] = {var.Name};");
         }
 
