@@ -5,6 +5,4 @@ interface IConstructors
     bool IsEnabled(DependencyGraph graph);
 
     bool IsEnabled(CompositionCode composition, ConstructorKind kind);
-
-    bool IsScopeEnabled(DependencyGraph graph);
 }

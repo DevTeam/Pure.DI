@@ -6,8 +6,7 @@ namespace Pure.DI.Core.Code.Parts;
 sealed class FieldsBuilder(
     ITypeResolver typeResolver,
     IConstructors constructors,
-    ISharedSingletons sharedSingletons,
-    IScopedDisposeOrder scopedDisposeOrder)
+    ISharedSingletons sharedSingletons)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.Fields;
@@ -48,20 +47,7 @@ sealed class FieldsBuilder(
             code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private int {Names.DisposeIndexFieldName};");
             membersCounter++;
 
-            if (scopedDisposeOrder.IsEnabled(composition.Source))
-            {
-                // _scopedDisposeOrder field
-                code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private ulong {Names.ScopedDisposeOrderFieldName};");
-                membersCounter++;
-
-                var id = 1;
-                foreach (var field in scopedDisposeOrder.GetTrackedFields(composition))
-                {
-                    code.AppendLine($"private const ulong {scopedDisposeOrder.GetIdName(field)} = {(id++).ToString()};");
-                    membersCounter++;
-                }
-            }
-            else if (composition.DisposablesScopedCount > 0)
+            if (composition.DisposablesScopedCount > 0)
             {
                 // A scope creates its array of disposables on the first scoped disposable instance only.
                 code.AppendLine($"private const int {Names.ScopedDisposablesCountConstName} = {composition.DisposablesScopedCount.ToString()};");
