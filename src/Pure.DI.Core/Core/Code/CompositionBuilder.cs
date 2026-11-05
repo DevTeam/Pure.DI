@@ -70,13 +70,13 @@ class CompositionBuilder(
                     {
                         if (string.IsNullOrWhiteSpace(graph.Source.Hints.ScopeMethodName))
                         {
-                            lines.Append($"var {Names.SingletonsVarName} = {Names.SingletonsFieldName};");
+                            lines.AppendLine($"var {Names.SingletonsVarName} = {Names.SingletonsFieldName};");
                         }
                         else
                         {
                             // The root composition of a scope method has no constructor that creates the shared singletons.
                             lines.AppendLine($"var {Names.RootVarName} = {Names.RootFieldName} ?? this;");
-                            lines.Append($"var {Names.SingletonsVarName} = {sharedSingletons.GetOrCreateExpression("")};");
+                            lines.AppendLine($"var {Names.SingletonsVarName} = {sharedSingletons.GetOrCreateExpression("")};");
                         }
                     }
                 }
