@@ -46,7 +46,7 @@ record Var(
             // ReSharper disable once InvertIf
             if (AbstractNode.ActualLifetime is Lifetime.Singleton && Constructors.IsEnabled(Graph))
             {
-                _rootBaseName ??= Names.RootVarName + "." + _baseName;
+                _rootBaseName ??= Names.SingletonsVarName + "." + _baseName;
                 return _rootBaseName;
             }
 

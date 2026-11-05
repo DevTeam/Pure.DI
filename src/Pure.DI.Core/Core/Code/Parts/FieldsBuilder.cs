@@ -55,28 +55,60 @@ sealed class FieldsBuilder(
         }
 
         // Singleton fields
+        var hasSharedSingletons = constructors.HasShared(composition);
+        if (hasSharedSingletons)
+        {
+            // _singletons field
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {Names.SingletonsClassName} {Names.SingletonsFieldName};");
+            membersCounter++;
+        }
+
         if (composition.Singletons.Length > 0)
         {
             code.AppendLine();
             foreach (var singletonField in composition.Singletons)
             {
-                if (singletonField.InstanceType.IsValueType)
+                if (!constructors.IsShared(composition, singletonField))
                 {
-                    code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {typeResolver.Resolve(composition.Setup, singletonField.InstanceType)} {singletonField.Name};");
-                    membersCounter++;
-
-                    code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private bool {singletonField.Name}{Names.CreatedValueNameSuffix};");
+                    membersCounter += AddSingletonField(composition, code, singletonField, "private", isNullableEnabled);
                 }
-                else
-                {
-                    var nullable = isNullableEnabled && singletonField.InstanceType.NullableAnnotation != NullableAnnotation.Annotated ? "?" : "";
-                    code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {typeResolver.Resolve(composition.Setup, singletonField.InstanceType)}{nullable} {singletonField.Name};");
-                }
-
-                membersCounter++;
             }
         }
 
+        // ReSharper disable once InvertIf
+        if (hasSharedSingletons)
+        {
+            code.AppendLine();
+            code.AppendLine($"private sealed class {Names.SingletonsClassName}");
+            using (code.CreateBlock())
+            {
+                foreach (var singletonField in composition.Singletons)
+                {
+                    if (constructors.IsShared(composition, singletonField))
+                    {
+                        AddSingletonField(composition, code, singletonField, "internal", isNullableEnabled);
+                    }
+                }
+            }
+
+            membersCounter++;
+        }
+
         return composition with { MembersCount = membersCounter };
+    }
+
+    private int AddSingletonField(CompositionCode composition, Lines code, VarDeclaration singletonField, string modifier, bool isNullableEnabled)
+    {
+        var type = typeResolver.Resolve(composition.Setup, singletonField.InstanceType);
+        if (singletonField.InstanceType.IsValueType)
+        {
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] {modifier} {type} {singletonField.Name};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] {modifier} bool {singletonField.Name}{Names.CreatedValueNameSuffix};");
+            return 2;
+        }
+
+        var nullable = isNullableEnabled && singletonField.InstanceType.NullableAnnotation != NullableAnnotation.Annotated ? "?" : "";
+        code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] {modifier} {type}{nullable} {singletonField.Name};");
+        return 1;
     }
 }

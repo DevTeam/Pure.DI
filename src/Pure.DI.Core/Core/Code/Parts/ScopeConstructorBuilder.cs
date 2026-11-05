@@ -71,6 +71,14 @@ sealed class ScopeConstructorBuilder(
                 }
             }
 
+            if (constructors.HasShared(composition))
+            {
+                // A scope shares the singletons of its root composition.
+                code.AppendLine(composition.IsScopeMethod
+                    ? $"{destination}{Names.SingletonsFieldName} = {SharedSingletons.GetOrCreateExpression(source)};"
+                    : $"{destination}{Names.SingletonsFieldName} = {source}{Names.SingletonsFieldName};");
+            }
+
             if (!composition.IsScopeMethod)
             {
                 foreach (var fieldArg in composition.ClassArgs.GetArgsOfKind(ArgKind.Composition))

@@ -259,14 +259,28 @@ sealed class DisposeMethodBuilder(
         }
         foreach (var singletonField in composition.Singletons)
         {
-            if (singletonField.InstanceType.IsValueType)
+            if (!constructors.IsShared(composition, singletonField))
             {
-                code.AppendLine($"{singletonField.Name} = default({typeResolver.Resolve(composition.Setup, singletonField.InstanceType)});");
-                code.AppendLine($"{singletonField.Name}{Names.CreatedValueNameSuffix} = false;");
+                AddResetField(composition, code, singletonField, "");
             }
-            else
+        }
+
+        if (constructors.HasShared(composition))
+        {
+            // Only the root composition releases the singletons it shares with its scopes.
+            var isScopeEnabled = constructors.IsEnabled(composition, ConstructorKind.Scope);
+            code.AppendLine(isScopeEnabled
+                ? $"if ({Names.SingletonsFieldName} != null && ({Names.RootFieldName} == null || {Names.ObjectTypeName}.ReferenceEquals({Names.RootFieldName}, this)))"
+                : $"if ({Names.SingletonsFieldName} != null)");
+            using (code.CreateBlock())
             {
-                code.AppendLine($"{singletonField.Name} = null;");
+                foreach (var singletonField in composition.Singletons)
+                {
+                    if (constructors.IsShared(composition, singletonField))
+                    {
+                        AddResetField(composition, code, singletonField, $"{Names.SingletonsFieldName}.");
+                    }
+                }
             }
         }
 
@@ -275,6 +289,19 @@ sealed class DisposeMethodBuilder(
         {
             code.DecIndent();
             code.AppendLine(BlockFinish);
+        }
+    }
+
+    private void AddResetField(CompositionCode composition, Lines code, VarDeclaration singletonField, string owner)
+    {
+        if (singletonField.InstanceType.IsValueType)
+        {
+            code.AppendLine($"{owner}{singletonField.Name} = default({typeResolver.Resolve(composition.Setup, singletonField.InstanceType)});");
+            code.AppendLine($"{owner}{singletonField.Name}{Names.CreatedValueNameSuffix} = false;");
+        }
+        else
+        {
+            code.AppendLine($"{owner}{singletonField.Name} = null;");
         }
     }
 }

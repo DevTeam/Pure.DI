@@ -68,6 +68,11 @@ sealed class ParameterizedConstructorBuilder(
                 code.AppendLine($"{Names.RootFieldName} = this;");
             }
 
+            if (constructors.HasShared(composition))
+            {
+                code.AppendLine($"{Names.SingletonsFieldName} = new {Names.SingletonsClassName}();");
+            }
+
             if (composition.IsLockRequired)
             {
                 code.AppendLine(new Line(int.MinValue, "#if NET9_0_OR_GREATER"));

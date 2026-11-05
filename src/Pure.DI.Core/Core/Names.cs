@@ -119,6 +119,9 @@ static class Names
     public static readonly string PerResolveLockFieldName = "perResolveLock" + Salt;
     public static readonly string RootFieldName = "_root" + Salt;
     public static readonly string RootVarName = "root" + Salt;
+    public static readonly string SingletonsFieldName = "_singletons" + Salt;
+    public static readonly string SingletonsVarName = "singletons" + Salt;
+    public static readonly string SingletonsClassName = "Singletons" + Salt;
     public static readonly string CannotResolveFieldName = "CannotResolveMessage" + Salt;
     public static readonly string OfTypeFieldName = "OfTypeMessage" + Salt;
 }
