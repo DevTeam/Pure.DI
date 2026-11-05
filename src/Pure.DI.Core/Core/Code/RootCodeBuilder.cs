@@ -20,7 +20,8 @@ sealed class RootCodeBuilder(
     ILocalFunctions localFunctions,
     INodeTools nodeTools,
     IConstructors constructors,
-    INameProvider nameProvider)
+    INameProvider nameProvider,
+    IScopedDisposeOrder scopedDisposeOrder)
     : IBuilder<CodeContext, IEnumerator>
 {
     public IEnumerator Build(CodeContext parentCtx)
@@ -397,13 +398,32 @@ sealed class RootCodeBuilder(
                     : $"{Names.RootVarName}.";
             }
 
-            if (var.AbstractNode.ActualLifetime == Scoped)
+            if (var.AbstractNode.ActualLifetime == Scoped && scopedDisposeOrder.IsEnabled(ctx.RootContext.Graph))
             {
-                // A scope has no array of disposables until it creates its first scoped disposable instance.
-                lines.AppendLine($"if ({Names.DisposablesFieldName} == null) {Names.DisposablesFieldName} = new object[{Names.ScopedDisposablesCountConstName}];");
-            }
+                // The root composition keeps the order of all its disposable instances in its array.
+                lines.AppendLine($"if ({Names.RootFieldName} == null || {Names.ObjectTypeName}.ReferenceEquals({Names.RootFieldName}, this))");
+                using (lines.Indent())
+                {
+                    lines.AppendLine($"{Names.DisposablesFieldName}[{Names.DisposeIndexFieldName}++] = {var.Name};");
+                }
 
-            lines.AppendLine($"{parent}{Names.DisposablesFieldName}[{parent}{Names.DisposeIndexFieldName}++] = {var.Name};");
+                // A scope pushes the identifier of the instance to the order of its scoped disposable instances.
+                lines.AppendLine("else");
+                using (lines.Indent())
+                {
+                    lines.AppendLine($"{Names.ScopedDisposeOrderFieldName} = ({Names.ScopedDisposeOrderFieldName} << 4) | {scopedDisposeOrder.GetIdName(var.Declaration)};");
+                }
+            }
+            else
+            {
+                if (var.AbstractNode.ActualLifetime == Scoped)
+                {
+                    // A scope has no array of disposables until it creates its first scoped disposable instance.
+                    lines.AppendLine($"if ({Names.DisposablesFieldName} == null) {Names.DisposablesFieldName} = new object[{Names.ScopedDisposablesCountConstName}];");
+                }
+
+                lines.AppendLine($"{parent}{Names.DisposablesFieldName}[{parent}{Names.DisposeIndexFieldName}++] = {var.Name};");
+            }
         }
 
         if (var.InstanceType.IsValueType)

@@ -31,7 +31,7 @@ class Constructors(
         where bindingsRegistry.IsRegistered(graph.Source, node.BindingId)
         select node).Any() || HasSetupContextArgs(graph) || IsScopeEnabled(graph);
 
-    private bool IsScopeEnabled(DependencyGraph graph) => (
+    public bool IsScopeEnabled(DependencyGraph graph) => (
         from node in graph.Graph.Vertices
         where node.ActualLifetime == Lifetime.Scoped
         where bindingsRegistry.IsRegistered(graph.Source, node.BindingId)

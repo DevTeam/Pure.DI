@@ -115,6 +115,8 @@ static class Names
     public static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
     public static readonly string DisposablesFieldName = "_disposables" + Salt;
     public static readonly string ScopedDisposablesCountConstName = "ScopedDisposablesCount" + Salt;
+    public static readonly string ScopedDisposeOrderFieldName = "_scopedDisposeOrder" + Salt;
+    public const string DisposeIdSuffix = "DisposeId";
     public static readonly string LockFieldName = "_lock" + Salt;
     public static readonly string PerResolveLockFieldName = "perResolveLock" + Salt;
     public static readonly string RootFieldName = "_root" + Salt;

@@ -8,7 +8,8 @@ sealed class DisposeMethodBuilder(
     ITypeResolver typeResolver,
     ILocks locks,
     IConstructors constructors,
-    ISharedSingletons sharedSingletons)
+    ISharedSingletons sharedSingletons,
+    IScopedDisposeOrder scopedDisposeOrder)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.DisposeMethod;
@@ -74,6 +75,7 @@ sealed class DisposeMethodBuilder(
         using (code.CreateBlock())
         {
             AddSyncPart(composition, code, false);
+            AddScopedDisposeOrderPart(composition, code, false);
             code.AppendLine();
             code.AppendLine("while (disposeIndex-- > 0)");
             using (code.CreateBlock())
@@ -81,20 +83,7 @@ sealed class DisposeMethodBuilder(
                 code.AppendLine("switch (disposables[disposeIndex])");
                 using (code.CreateBlock())
                 {
-                    if (hasDisposable)
-                    {
-                        AddDisposePart(code, isOnDisposeEnabled);
-                    }
-
-                    if (hasAsyncDisposable)
-                    {
-                        if (hasDisposable)
-                        {
-                            code.AppendLine();
-                        }
-
-                        AddDisposeAsyncPart(code, false, isOnDisposeAsyncEnabled);
-                    }
+                    AddCases(composition, code, false);
                 }
             }
         }
@@ -138,6 +127,7 @@ sealed class DisposeMethodBuilder(
             using (code.CreateBlock())
             {
                 AddSyncPart(composition, code, true);
+                AddScopedDisposeOrderPart(composition, code, true);
                 code.AppendLine();
                 code.AppendLine("while (disposeIndex-- > 0)");
                 using (code.CreateBlock())
@@ -145,20 +135,7 @@ sealed class DisposeMethodBuilder(
                     code.AppendLine("switch (disposables[disposeIndex])");
                     using (code.CreateBlock())
                     {
-                        if (hasAsyncDisposable)
-                        {
-                            AddDisposeAsyncPart(code, true, isOnDisposeAsyncEnabled);
-                        }
-
-                        if (hasDisposable)
-                        {
-                            if (hasAsyncDisposable)
-                            {
-                                code.AppendLine();
-                            }
-
-                            AddDisposePart(code, isOnDisposeEnabled);
-                        }
+                        AddCases(composition, code, true);
                     }
                 }
             }
@@ -167,6 +144,95 @@ sealed class DisposeMethodBuilder(
         }
 
         return composition with { MembersCount = membersCounter };
+    }
+
+    private static void AddCases(CompositionCode composition, Lines code, bool isAsync)
+    {
+        var hasDisposable = composition.DisposablesCount > 0;
+        var hasAsyncDisposable = composition.AsyncDisposableCount > 0;
+        var isOnDisposeEnabled = composition.Hints.IsOnDisposeEnabled;
+        var isOnDisposeAsyncEnabled = composition.Hints.IsOnDisposeAsyncEnabled;
+        if (isAsync)
+        {
+            if (hasAsyncDisposable)
+            {
+                AddDisposeAsyncPart(code, true, isOnDisposeAsyncEnabled);
+            }
+
+            // ReSharper disable once InvertIf
+            if (hasDisposable)
+            {
+                if (hasAsyncDisposable)
+                {
+                    code.AppendLine();
+                }
+
+                AddDisposePart(code, isOnDisposeEnabled);
+            }
+
+            return;
+        }
+
+        if (hasDisposable)
+        {
+            AddDisposePart(code, isOnDisposeEnabled);
+        }
+
+        // ReSharper disable once InvertIf
+        if (hasAsyncDisposable)
+        {
+            if (hasDisposable)
+            {
+                code.AppendLine();
+            }
+
+            AddDisposeAsyncPart(code, false, isOnDisposeAsyncEnabled);
+        }
+    }
+
+    private void AddScopedDisposeOrderPart(CompositionCode composition, Lines code, bool isAsync)
+    {
+        if (!scopedDisposeOrder.IsEnabled(composition.Source))
+        {
+            return;
+        }
+
+        // A scope disposes its scoped instances in the reverse order of their creation.
+        var fields = scopedDisposeOrder.GetTrackedFields(composition).ToList();
+        code.AppendLine();
+        code.AppendLine("while (scopedDisposeOrder != 0)");
+        using (code.CreateBlock())
+        {
+            code.AppendLine("object scopedDisposable;");
+            code.AppendLine("switch (scopedDisposeOrder & 15)");
+            using (code.CreateBlock())
+            {
+                for (var i = 0; i < fields.Count; i++)
+                {
+                    code.AppendLine($"case {scopedDisposeOrder.GetIdName(fields[i])}:");
+                    using (code.Indent())
+                    {
+                        code.AppendLine($"scopedDisposable = scopedDisposable{(i + 1).ToString()};");
+                        code.AppendLine("break;");
+                    }
+                }
+
+                code.AppendLine("default:");
+                using (code.Indent())
+                {
+                    code.AppendLine("scopedDisposable = null;");
+                    code.AppendLine("break;");
+                }
+            }
+
+            code.AppendLine();
+            code.AppendLine("scopedDisposeOrder >>= 4;");
+            code.AppendLine("switch (scopedDisposable)");
+            using (code.CreateBlock())
+            {
+                AddCases(composition, code, isAsync);
+            }
+        }
     }
 
     private static void AddDisposeAsyncPart(Lines code, bool makeAsyncCall, bool isHookEnabled)
@@ -237,6 +303,17 @@ sealed class DisposeMethodBuilder(
     {
         code.AppendLine("int disposeIndex;");
         code.AppendLine("object[] disposables;");
+        var isScopedDisposeOrderEnabled = scopedDisposeOrder.IsEnabled(composition.Source);
+        var scopedFields = isScopedDisposeOrderEnabled ? scopedDisposeOrder.GetTrackedFields(composition).ToList() : [];
+        if (isScopedDisposeOrderEnabled)
+        {
+            code.AppendLine("ulong scopedDisposeOrder;");
+            for (var i = 0; i < scopedFields.Count; i++)
+            {
+                code.AppendLine($"object scopedDisposable{(i + 1).ToString()};");
+            }
+        }
+
         var isLockRequired = composition.IsLockRequired;
         if (isLockRequired)
         {
@@ -258,6 +335,16 @@ sealed class DisposeMethodBuilder(
         {
             code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
         }
+        if (isScopedDisposeOrderEnabled)
+        {
+            code.AppendLine($"scopedDisposeOrder = {Names.ScopedDisposeOrderFieldName};");
+            code.AppendLine($"{Names.ScopedDisposeOrderFieldName} = 0;");
+            for (var i = 0; i < scopedFields.Count; i++)
+            {
+                code.AppendLine($"scopedDisposable{(i + 1).ToString()} = {scopedFields[i].Name};");
+            }
+        }
+
         foreach (var singletonField in composition.Singletons)
         {
             if (!sharedSingletons.IsShared(composition, singletonField))
