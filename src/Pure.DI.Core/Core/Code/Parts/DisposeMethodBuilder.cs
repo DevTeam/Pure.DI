@@ -7,7 +7,8 @@ using static LinesExtensions;
 sealed class DisposeMethodBuilder(
     ITypeResolver typeResolver,
     ILocks locks,
-    IConstructors constructors)
+    IConstructors constructors,
+    ISharedSingletons sharedSingletons)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.DisposeMethod;
@@ -259,13 +260,13 @@ sealed class DisposeMethodBuilder(
         }
         foreach (var singletonField in composition.Singletons)
         {
-            if (!constructors.IsShared(composition, singletonField))
+            if (!sharedSingletons.IsShared(composition, singletonField))
             {
                 AddResetField(composition, code, singletonField, "");
             }
         }
 
-        if (constructors.HasShared(composition))
+        if (sharedSingletons.HasShared(composition))
         {
             // Only the root composition releases the singletons it shares with its scopes.
             var isScopeEnabled = constructors.IsEnabled(composition, ConstructorKind.Scope);
@@ -276,7 +277,7 @@ sealed class DisposeMethodBuilder(
             {
                 foreach (var singletonField in composition.Singletons)
                 {
-                    if (constructors.IsShared(composition, singletonField))
+                    if (sharedSingletons.IsShared(composition, singletonField))
                     {
                         AddResetField(composition, code, singletonField, $"{Names.SingletonsFieldName}.");
                     }

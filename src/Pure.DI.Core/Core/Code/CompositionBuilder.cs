@@ -16,6 +16,7 @@ class CompositionBuilder(
     IGraphWalker<RootStatisticsContext, DependencyNode> graphStatisticsWalker,
     IGraphVisitor<RootStatisticsContext, DependencyNode> rootStatisticsVisitor,
     IConstructors constructors,
+    ISharedSingletons sharedSingletons,
     IRootUseSiteCounter rootUseSiteCounter,
     ILogger logger,
     ILocationProvider locationProvider,
@@ -75,7 +76,7 @@ class CompositionBuilder(
                         {
                             // The root composition of a scope method has no constructor that creates the shared singletons.
                             lines.AppendLine($"var {Names.RootVarName} = {Names.RootFieldName} ?? this;");
-                            lines.Append($"var {Names.SingletonsVarName} = {SharedSingletons.GetOrCreateExpression("")};");
+                            lines.Append($"var {Names.SingletonsVarName} = {sharedSingletons.GetOrCreateExpression("")};");
                         }
                     }
                 }

@@ -4,6 +4,7 @@ namespace Pure.DI.Core.Code.Parts;
 
 sealed class DefaultConstructorBuilder(
     IConstructors constructors,
+    ISharedSingletons sharedSingletons,
     ICodeNameProvider codeNameProvider)
     : IClassPartBuilder
 {
@@ -37,7 +38,7 @@ sealed class DefaultConstructorBuilder(
                 code.AppendLine($"{Names.RootFieldName} = this;");
             }
 
-            if (constructors.HasShared(composition))
+            if (sharedSingletons.HasShared(composition))
             {
                 code.AppendLine($"{Names.SingletonsFieldName} = new {Names.SingletonsClassName}();");
             }

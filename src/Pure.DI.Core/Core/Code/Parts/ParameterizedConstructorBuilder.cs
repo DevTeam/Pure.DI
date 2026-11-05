@@ -6,6 +6,7 @@ sealed class ParameterizedConstructorBuilder(
     ITypeResolver typeResolver,
     [Tag(typeof(ParameterizedConstructorCommenter))] ICommenter<Unit> constructorCommenter,
     IConstructors constructors,
+    ISharedSingletons sharedSingletons,
     ICodeNameProvider codeNameProvider)
     : IClassPartBuilder
 {
@@ -68,7 +69,7 @@ sealed class ParameterizedConstructorBuilder(
                 code.AppendLine($"{Names.RootFieldName} = this;");
             }
 
-            if (constructors.HasShared(composition))
+            if (sharedSingletons.HasShared(composition))
             {
                 code.AppendLine($"{Names.SingletonsFieldName} = new {Names.SingletonsClassName}();");
             }

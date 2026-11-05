@@ -5,7 +5,8 @@ namespace Pure.DI.Core.Code.Parts;
 
 sealed class FieldsBuilder(
     ITypeResolver typeResolver,
-    IConstructors constructors)
+    IConstructors constructors,
+    ISharedSingletons sharedSingletons)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.Fields;
@@ -55,7 +56,7 @@ sealed class FieldsBuilder(
         }
 
         // Singleton fields
-        var hasSharedSingletons = constructors.HasShared(composition);
+        var hasSharedSingletons = sharedSingletons.HasShared(composition);
         if (hasSharedSingletons)
         {
             // _singletons field
@@ -68,7 +69,7 @@ sealed class FieldsBuilder(
             code.AppendLine();
             foreach (var singletonField in composition.Singletons)
             {
-                if (!constructors.IsShared(composition, singletonField))
+                if (!sharedSingletons.IsShared(composition, singletonField))
                 {
                     membersCounter += AddSingletonField(composition, code, singletonField, "private", isNullableEnabled);
                 }
@@ -84,7 +85,7 @@ sealed class FieldsBuilder(
             {
                 foreach (var singletonField in composition.Singletons)
                 {
-                    if (constructors.IsShared(composition, singletonField))
+                    if (sharedSingletons.IsShared(composition, singletonField))
                     {
                         AddSingletonField(composition, code, singletonField, "internal", isNullableEnabled);
                     }

@@ -5,6 +5,7 @@ namespace Pure.DI.Core.Code.Parts;
 
 sealed class ScopeConstructorBuilder(
     IConstructors constructors,
+    ISharedSingletons sharedSingletons,
     ICodeNameProvider codeNameProvider)
     : IClassPartBuilder
 {
@@ -71,11 +72,11 @@ sealed class ScopeConstructorBuilder(
                 }
             }
 
-            if (constructors.HasShared(composition))
+            if (sharedSingletons.HasShared(composition))
             {
                 // A scope shares the singletons of its root composition.
                 code.AppendLine(composition.IsScopeMethod
-                    ? $"{destination}{Names.SingletonsFieldName} = {SharedSingletons.GetOrCreateExpression(source)};"
+                    ? $"{destination}{Names.SingletonsFieldName} = {sharedSingletons.GetOrCreateExpression(source)};"
                     : $"{destination}{Names.SingletonsFieldName} = {source}{Names.SingletonsFieldName};");
             }
 
