@@ -74,6 +74,54 @@ public class ScalabilityTests
         ShouldGrowLinearly(lines);
     }
 
+    // Each level reaches the next one by two dependency paths, so the number of paths to the last level grows as the powers of 2.
+    // The code that creates an instance must not be repeated on each of these paths, see #186.
+    public static IEnumerable<object[]> BranchingCases() =>
+        from lifetime in new[] { "Transient", "PerResolve", "Scoped", "Singleton" }
+        from edges in new[]
+        {
+            (Edge.FuncArgumentConsumed, Edge.FuncArgumentConsumed),
+            (Edge.FuncArgumentConsumed, Edge.FuncArgumentNotConsumed),
+            (Edge.FuncArgumentNotConsumed, Edge.FuncArgumentNotConsumed),
+            (Edge.FuncArgumentConsumed, Edge.Func),
+            (Edge.FuncArgumentConsumed, Edge.Lazy),
+            (Edge.FuncArgumentConsumed, Edge.Direct),
+            (Edge.Func, Edge.Lazy)
+        }
+        from funcBinding in new[] { FuncBinding.BuiltIn, FuncBinding.Let }
+        from localFunctions in new[] { "On", "Auto" }
+        // A delegate without arguments does not depend on the binding of Func<T1, T>.
+        where funcBinding == FuncBinding.BuiltIn || edges.Item1 is Edge.FuncArgumentConsumed or Edge.FuncArgumentNotConsumed
+        select new object[] { lifetime, edges.Item1, edges.Item2, funcBinding, localFunctions };
+
+    [Theory]
+    [MemberData(nameof(BranchingCases))]
+    public async Task ShouldGrowLinearlyForBranching(string lifetime, Edge first, Edge second, FuncBinding funcBinding, string localFunctions)
+    {
+        // Given
+        var isShared = lifetime is "Scoped" or "Singleton";
+
+        // When
+        var lines = new List<int>();
+        foreach (var size in Sizes)
+        {
+            var result = await CreateBranching(size, lifetime, first, second, funcBinding, localFunctions, isShared).RunAsync(new Options(Options.ModernLanguageVersion));
+
+            // Then
+            result.Errors.Count.ShouldBe(0, result);
+            result.StdOut.ShouldBe([string.Concat(Enumerable.Range(0, size).Select(i => $"S{i}"))], result);
+            lines.Add(CountGraphLines(result));
+            if (isShared && localFunctions == "On")
+            {
+                // A shared instance that does not read the arguments of the delegates it is reached from is created in one place.
+                var constructions = result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains($"new global::Sample.S{size - 1}("));
+                constructions.ShouldBe(1, $"Constructions of S{size - 1} of {size} levels");
+            }
+        }
+
+        ShouldGrowLinearly(lines);
+    }
+
     [Fact]
     public async Task ShouldWarnWhenCodeOfRootIsTooLarge()
     {
@@ -284,6 +332,145 @@ public class ScalabilityTests
                      }
                  }
                  """;
+    }
+
+    // S{i} reaches S{i+1} through the items of two edges. The edges are distinguished by the types of their arguments,
+    // so two delegates with arguments override different values.
+    private static string CreateBranching(int size, string lifetime, Edge first, Edge second, FuncBinding funcBinding, string localFunctions, bool isShared)
+    {
+        var classes = new StringBuilder();
+        var bindings = new StringBuilder();
+        var edges = new[] { first, second };
+        var argumentTypes = new[] { "A", "B" };
+        for (var i = 0; i < size; i++)
+        {
+            var isLast = i == size - 1;
+            var parameters = new List<string>();
+            var items = new List<string>();
+            for (var k = 0; k < edges.Length; k++)
+            {
+                var edge = edges[k];
+                var argumentType = argumentTypes[k];
+                var item = $"I{k}x{i}";
+                parameters.Add(edge switch
+                {
+                    Edge.FuncArgumentConsumed or Edge.FuncArgumentNotConsumed => $"Func<{argumentType}, {item}> e{k}",
+                    Edge.Func => $"Func<{item}> e{k}",
+                    Edge.Lazy => $"Lazy<{item}> e{k}",
+                    _ => $"{item} e{k}"
+                });
+
+                items.Add(edge switch
+                {
+                    Edge.FuncArgumentConsumed or Edge.FuncArgumentNotConsumed => $"e{k}(new {argumentType}())",
+                    Edge.Func => $"e{k}()",
+                    Edge.Lazy => $"e{k}.Value",
+                    _ => $"e{k}"
+                });
+
+                var itemParameters = new List<string>();
+                if (edge == Edge.FuncArgumentConsumed)
+                {
+                    itemParameters.Add($"{argumentType} argument");
+                }
+
+                if (!isLast)
+                {
+                    itemParameters.Add($"S{i + 1} next");
+                }
+
+                var argumentProperty = edge == Edge.FuncArgumentConsumed ? $"public {argumentType} Argument => argument;" : "";
+                var nextProperty = isLast ? "public object? Next => null;" : $"public S{i + 1} Next => next;";
+                classes.AppendLine(
+                    $$"""
+                      public sealed class {{item}}({{string.Join(", ", itemParameters)}})
+                      {
+                          {{argumentProperty}}
+                          {{nextProperty}}
+                      }
+                      """);
+            }
+
+            // The items of both edges must get the same shared instance of the next level.
+            var walk = isLast
+                ? $"\"S{i}\""
+                : isShared
+                    ? $"\"S{i}\" + (ReferenceEquals(item0.Next, item1.Next) ? \"\" : \"!\") + item0.Next.Walk()"
+                    : $"\"S{i}\" + item0.Next.Walk()";
+            classes.AppendLine(
+                $$"""
+                  public sealed class S{{i}}({{string.Join(", ", parameters)}})
+                  {
+                      public string Walk()
+                      {
+                          var item0 = {{items[0]}};
+                          var item1 = {{items[1]}};
+                          return {{walk}};
+                      }
+                  }
+                  """);
+            bindings.AppendLine($".Bind<S{i}>().As(Lifetime.{lifetime}).To<S{i}>()");
+        }
+
+        // The argument of a delegate reaches only the item it creates.
+        var funcBindingCode = funcBinding == FuncBinding.Let
+            ? """
+              .Bind<Func<TT1, TT>>().As(Lifetime.PerBlock).To(ctx => new Func<TT1, TT>(arg1 =>
+              {
+                  ctx.Let<TT1>(arg1);
+                  ctx.Inject<TT>(ctx.Tag, out var value);
+                  return value;
+              }))
+              """
+            : "";
+
+        return $$"""
+                 using System;
+                 using Pure.DI;
+
+                 namespace Sample
+                 {
+                     public sealed class A;
+
+                     public sealed class B;
+
+                     {{classes}}
+
+                     partial class Composition
+                     {
+                         private static void Setup() =>
+                             DI.Setup(nameof(Composition))
+                                 .Hint(Hint.LocalFunctions, "{{localFunctions}}")
+                                 {{funcBindingCode}}
+                                 {{bindings}}
+                                 .Root<S0>("Root");
+                     }
+
+                     public static class Program
+                     {
+                         public static void Main() => Console.WriteLine(new Composition().Root.Walk());
+                     }
+                 }
+                 """;
+    }
+
+    public enum Edge
+    {
+        // A delegate with an argument that the item it creates consumes.
+        FuncArgumentConsumed,
+        // A delegate with an argument that the item it creates does not consume.
+        FuncArgumentNotConsumed,
+        Func,
+        Lazy,
+        Direct
+    }
+
+    public enum FuncBinding
+    {
+        // The built-in binding of Func<T1, T> overrides its argument.
+        BuiltIn,
+        // A binding of Func<T1, T> that passes its argument by ctx.Let.
+        Let
     }
 
     public enum Creation

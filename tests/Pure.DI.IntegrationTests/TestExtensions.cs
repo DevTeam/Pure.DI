@@ -173,14 +173,19 @@ public static class TestExtensions
                 string.Empty));
         }
 
-        compilation = compilation
-            .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray());
+        var generatedTrees = generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray();
+        compilation = compilation.AddSyntaxTrees(generatedTrees);
 
         DumpGeneratedCode(sourceList, runOptions, generatedSources);
         generatedSources.AddRange(generatedApiSources);
         var generatedCode = string.Join(Environment.NewLine, generatedSources.Select(i => i.SourceText));
 
         compilation.Check(stdOut, options);
+        if (options?.CheckCompilationErrors ?? true)
+        {
+            var duplicates = DuplicateLocalFunctions.Find(compilation, generatedTrees);
+            Assert.True(duplicates.Count == 0, $"The same local functions are declared more than once:{Environment.NewLine}{string.Join(Environment.NewLine, duplicates)}{Environment.NewLine}{generatedCode}");
+        }
 
         using var assemblyStream = new MemoryStream();
         var result = compilation.Emit(assemblyStream);

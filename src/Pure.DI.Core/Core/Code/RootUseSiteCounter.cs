@@ -155,27 +155,31 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             return dependents;
         }
 
-        // A node that is created only as the result of lambdas, such as Func<T1, T>, is the first code of each of their blocks.
-        // When the PerBlock instances it creates are reachable only through it, no other code of these blocks
+        // A node that each block of code creates at most once, for example, the result of lambdas, such as Func<T1, T>,
+        // or a transient dependency of such results in different lambdas, has no other instance in its block to share
+        // the PerBlock instances with. When these PerBlock instances are reachable only through it, no other code of these blocks
         // or of the blocks around them can create them, so a local function creates them just as the code in place, see #175.
+        // Otherwise, a transient instance reached from several lambdas would be created in place in each of them, and its code
+        // would double per level of such lambdas.
         var consumers = new Dictionary<int, List<DependencyNode>>();
         var instances = new Dictionary<int, List<DependencyNode>>();
         CollectConsumers(graph, root, consumers, instances);
-        dependents.RemoveWhere(bindingId => IsBlockHead(graph, bindingId, dependents, consumers, instances));
+        var blocks = new Dictionary<int, HashSet<int>?>();
+        dependents.RemoveWhere(bindingId => IsCreatedOncePerBlockAlone(graph, root, bindingId, dependents, consumers, instances, blocks));
         return dependents;
     }
 
-    private bool IsBlockHead(
+    private bool IsCreatedOncePerBlockAlone(
         DependencyGraph graph,
+        DependencyNode root,
         int bindingId,
         HashSet<int> dependents,
         Dictionary<int, List<DependencyNode>> consumers,
-        Dictionary<int, List<DependencyNode>> instances)
+        Dictionary<int, List<DependencyNode>> instances,
+        Dictionary<int, HashSet<int>?> blocks)
     {
-        if (!consumers.TryGetValue(bindingId, out var nodeConsumers)
-            || nodeConsumers.Count == 0
-            || nodeConsumers.Any(consumer => !nodeTools.IsLazy(consumer, graph))
-            || nodeConsumers.Select(consumer => consumer.BindingId).Distinct().Count() != nodeConsumers.Count)
+        var nodeBlocks = GetBlocks(graph, root, bindingId, consumers, blocks);
+        if (nodeBlocks is null)
         {
             return false;
         }
@@ -228,7 +232,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             if (consumers.TryGetValue(node.BindingId, out var dependencyConsumers)
                 && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId
                                                        && !nodes.ContainsKey(consumer.BindingId)
-                                                       && !IsResultOfOtherLambdas(graph, consumer, nodeConsumers, consumers)))
+                                                       && !IsResultOfOtherLambdas(graph, consumer, nodeBlocks, consumers)))
             {
                 return false;
             }
@@ -237,17 +241,70 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         return true;
     }
 
+    // The blocks of code that create a node in place, by the binding ids of the lambdas or of the root whose code they are,
+    // when each of these blocks creates it at most once; otherwise null.
+    // The result of a lambda is created once in its block, and a transient dependency is created
+    // in the blocks of its consumer as many times as its consumer.
+    private HashSet<int>? GetBlocks(
+        DependencyGraph graph,
+        DependencyNode root,
+        int bindingId,
+        Dictionary<int, List<DependencyNode>> consumers,
+        Dictionary<int, HashSet<int>?> blocks)
+    {
+        if (blocks.TryGetValue(bindingId, out var nodeBlocks))
+        {
+            return nodeBlocks;
+        }
+
+        // A node on a cycle is not created once per block.
+        blocks.Add(bindingId, null);
+        if (!consumers.TryGetValue(bindingId, out var nodeConsumers) || nodeConsumers.Count == 0)
+        {
+            return null;
+        }
+
+        nodeBlocks = [];
+        foreach (var consumer in nodeConsumers)
+        {
+            HashSet<int>? consumerBlocks;
+            if (consumer.BindingId == root.BindingId || nodeTools.IsLazy(consumer, graph))
+            {
+                consumerBlocks = [consumer.BindingId];
+            }
+            // The code of a factory can create its dependencies any number of times, for example, in a loop.
+            else if (consumer is { ActualLifetime: Lifetime.Transient, Arg: null, Factory: null })
+            {
+                consumerBlocks = GetBlocks(graph, root, consumer.BindingId, consumers, blocks);
+            }
+            else
+            {
+                consumerBlocks = null;
+            }
+
+            if (consumerBlocks is null || consumerBlocks.Overlaps(nodeBlocks))
+            {
+                return null;
+            }
+
+            nodeBlocks.UnionWith(consumerBlocks);
+        }
+
+        blocks[bindingId] = nodeBlocks;
+        return nodeBlocks;
+    }
+
     // A node created only as the result of other lambdas is the first code of blocks of its own,
-    // so the PerBlock instances it shares with a block head are created anew in its blocks anyway.
+    // so the PerBlock instances it shares with a node created once per block are created anew in its blocks anyway.
     // For example, the copies of a view model made for different override scopes share the delegates that they inject, see #184.
     private bool IsResultOfOtherLambdas(
         DependencyGraph graph,
         DependencyNode node,
-        List<DependencyNode> lambdas,
+        HashSet<int> lambdas,
         Dictionary<int, List<DependencyNode>> consumers) =>
         consumers.TryGetValue(node.BindingId, out var nodeConsumers)
         && nodeConsumers.Count > 0
-        && nodeConsumers.All(consumer => nodeTools.IsLazy(consumer, graph) && lambdas.All(lambda => lambda.BindingId != consumer.BindingId));
+        && nodeConsumers.All(consumer => nodeTools.IsLazy(consumer, graph) && !lambdas.Contains(consumer.BindingId));
 
     // The consumers of each node by binding id, a consumer once for each of its dependencies,
     // and the instances of each node, because overridden copies of a node share its binding id.
