@@ -178,8 +178,9 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         Dictionary<int, List<DependencyNode>> instances,
         Dictionary<int, HashSet<int>?> blocks)
     {
-        var nodeBlocks = GetBlocks(graph, root, bindingId, consumers, blocks);
-        if (nodeBlocks is null)
+        // The root, for example, on a cycle through a lambda, has no instances among the dependencies.
+        if (!instances.TryGetValue(bindingId, out var nodeInstances)
+            || GetBlocks(graph, root, bindingId, consumers, blocks) is not {} nodeBlocks)
         {
             return false;
         }
@@ -187,7 +188,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         // The nodes created in place with this node.
         var nodes = new Dictionary<int, DependencyNode>();
         var stack = new Stack<DependencyNode>();
-        foreach (var node in instances[bindingId])
+        foreach (var node in nodeInstances)
         {
             stack.Push(node);
         }
