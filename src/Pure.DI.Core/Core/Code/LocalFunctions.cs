@@ -164,7 +164,11 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     private bool IsOverrideArgumentsConsumer(CodeContext ctx) =>
         !nodeTools.IsBlock(ctx.VarInjection.Var.AbstractNode) && IsTransientCandidate(ctx);
 
+    // A node reads an overridden value of the lambda it is reached from only if it does not override that value itself
+    // on the way to the value, for example, by a nested Func<T1, T>. Otherwise, a shared instance reached
+    // from several such lambdas would get a local function in each of them, and its code would double per level, see #186.
     private static bool IsOverrideConsumer(CodeContext ctx) =>
         ctx.HasOverrides
-        && ctx.RootContext.UseSites.OverrideConsumers.Contains(ctx.VarInjection.Var.Declaration.Node.Node.BindingId);
+        && ctx.RootContext.UseSites.FreeOverrides.TryGetValue(ctx.VarInjection.Var.Declaration.Node.Node.BindingId, out var overrides)
+        && !overrides.IsDefaultOrEmpty;
 }

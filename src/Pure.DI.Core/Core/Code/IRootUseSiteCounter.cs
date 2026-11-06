@@ -8,8 +8,8 @@ interface IRootUseSiteCounter
 record RootUseSiteAnalysis(
     IReadOnlyDictionary<int, int> UseSiteCount,
     HashSet<int> FactoryDownstream,
-    HashSet<int> OverrideConsumers,
     // The overridden values that the code creating a node reads and does not declare itself, by binding id.
+    // A node with none of them does not depend on the lambda it is reached from, see #186.
     IReadOnlyDictionary<int, ImmutableArray<MdOverride>> FreeOverrides,
     // The estimated size of the code that creates a node in place, including the dependencies created in place with it.
     IReadOnlyDictionary<int, int> InlineCost,
