@@ -1,5 +1,6 @@
 namespace Pure.DI.IntegrationTests;
 
+#if ROSLYN4_8_OR_GREATER
 /// <summary>
 /// A nested delegate creates its result instead of returning the argument of an outer delegate, see #185.
 /// </summary>
@@ -116,3 +117,4 @@ public class Issue185Tests
         result.StdOut.ShouldBe(["root root"], result);
     }
 }
+#endif

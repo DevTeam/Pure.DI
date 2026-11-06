@@ -74,6 +74,7 @@ public class ScalabilityTests
         ShouldGrowLinearly(lines);
     }
 
+#if ROSLYN4_8_OR_GREATER
     // Each level reaches the next one by two dependency paths, so the number of paths to the last level grows as the powers of 2.
     // The code that creates an instance must not be repeated on each of these paths, see #186.
     public static IEnumerable<object[]> BranchingCases() =>
@@ -121,6 +122,7 @@ public class ScalabilityTests
 
         ShouldGrowLinearly(lines);
     }
+#endif
 
     [Fact]
     public async Task ShouldWarnWhenCodeOfRootIsTooLarge()
@@ -334,6 +336,7 @@ public class ScalabilityTests
                  """;
     }
 
+#if ROSLYN4_8_OR_GREATER
     // S{i} reaches S{i+1} through the items of two edges. The edges are distinguished by the types of their arguments,
     // so two delegates with arguments override different values.
     private static string CreateBranching(int size, string lifetime, Edge first, Edge second, FuncBinding funcBinding, string localFunctions, bool isShared)
@@ -472,6 +475,7 @@ public class ScalabilityTests
         // A binding of Func<T1, T> that passes its argument by ctx.Let.
         Let
     }
+#endif
 
     public enum Creation
     {

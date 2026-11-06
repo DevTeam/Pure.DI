@@ -4,6 +4,7 @@ namespace Pure.DI.IntegrationTests;
 
 using Core;
 
+#if ROSLYN4_8_OR_GREATER
 /// <summary>
 /// A shared instance reached inside the lambdas of delegates with arguments is created in one place
 /// when it does not read those arguments itself, see #186.
@@ -266,3 +267,4 @@ public class Issue186Tests
                  """;
     }
 }
+#endif
