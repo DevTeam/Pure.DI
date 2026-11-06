@@ -94,6 +94,17 @@ class GraphOverrider(
             ? null
             : new OverrideContext(bindingId, nodes, consumeLocalOverrides ? localOverrides : null);
 
+        // A shared instance is created once for its binding id, so it has one rewrite. Otherwise, each rewrite replaced
+        // the dependencies of the previous one, and the code of the instance could read the overridden value
+        // of a delegate where it is not declared, see #185. The rewrite outside any scope is valid everywhere,
+        // so it replaces the rewrite in a scope, and the instance does not depend on the order in which it is reached.
+        if (IsShared(targetNode)
+            && state.Shared.TryGetValue(bindingId, out var shared)
+            && (shared.IsContextFree || context is not null))
+        {
+            return shared.Node;
+        }
+
         if (context is null
             ? state.Processed.TryGetValue(bindingId, out var node)
             : state.Rewritten.TryGetValue(context, out node))
@@ -131,7 +142,7 @@ class GraphOverrider(
         ref int maxId)
     {
         // A shared instance is created once for its binding id.
-        if (targetNode.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve)
+        if (IsShared(targetNode))
         {
             return targetNode;
         }
@@ -155,6 +166,36 @@ class GraphOverrider(
         var id = ++maxId;
         copies.Add((scope, id));
         return targetNode with { Binding = CreateCopy(binding, id) };
+    }
+
+    private static bool IsShared(DependencyNode node) =>
+        node.Lifetime is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve;
+
+    // The 1-based positions of the resolvers that a delegate calls after overriding its arguments, in the order of RewriteNode.
+    // Such a resolver creates the result of the delegate, so an override inherited from an outer delegate does not replace it.
+    // Otherwise, Func<T1, T> under Func<T, T2> returned the argument of the outer delegate instead of creating its result, see #185.
+    private static HashSet<int>? GetDelegateResultPositions(DependencyNode node)
+    {
+        if (node.Factory is not {} factory)
+        {
+            return null;
+        }
+
+        HashSet<int>? positions = null;
+        var position = 0;
+        foreach (var (isResolver, overrides) in factory.Resolvers.Select(i => (i.Source.Position, IsResolver: true, i.Overrides))
+                     .Concat(factory.Initializers.Select(i => (i.Source.Position, IsResolver: false, i.Overrides)))
+                     .OrderBy(i => i.Position)
+                     .Select(i => (i.IsResolver, i.Overrides)))
+        {
+            position++;
+            if (isResolver && overrides.Any(i => !i.Injections.IsDefaultOrEmpty && DelegateArgumentOverrideValidator.IsDelegateArgument(i.Source)))
+            {
+                (positions ??= []).Add(position);
+            }
+        }
+
+        return positions;
     }
 
     private static MdBinding CreateCopy(MdBinding binding, int id) =>
@@ -208,6 +249,15 @@ class GraphOverrider(
         {
             state.Rewritten[context] = targetNode;
         }
+
+        if (IsShared(targetNode))
+        {
+            state.Shared[bindingId] = (context is null, targetNode);
+        }
+
+        var delegateResultPositions = GetDelegateResultPositions(targetNode);
+        // The overrides that the factory declares itself.
+        var ownNodesMap = new Dictionary<Injection, DependencyNode>();
 
         var newDependencies = new List<Dependency>(dependencies.Count);
         var lastDependencyPosition = 0;
@@ -284,6 +334,7 @@ class GraphOverrider(
                                 }
 
                                 localNodesMap[injection] = sourceNode;
+                                ownNodesMap[injection] = sourceNode;
                             }
                         }
                     }
@@ -291,7 +342,10 @@ class GraphOverrider(
             }
 
             var currentDependency = dependency with { Target = targetNode };
-            if (!TryGetOverride(localNodesMap, currentDependency.Injection, out var overridingSourceNode))
+            var overridingNodesMap = dependency.Position is {} resolverPosition && delegateResultPositions?.Contains(resolverPosition) == true
+                ? ownNodesMap
+                : localNodesMap;
+            if (!TryGetOverride(overridingNodesMap, currentDependency.Injection, out var overridingSourceNode))
             {
                 var source = Override(
                     state,
@@ -396,6 +450,9 @@ class GraphOverrider(
 
         // Nodes rewritten in a non-empty override scope.
         public readonly Dictionary<OverrideContext, DependencyNode> Rewritten = new();
+
+        // The rewrite of a shared instance by its binding id and whether it was rewritten outside any override scope.
+        public readonly Dictionary<int, (bool IsContextFree, DependencyNode Node)> Shared = new();
 
         // The binding ids of the copies of a node by the injections they override, by the binding id of the node.
         public readonly Dictionary<int, List<(OverrideScope Scope, int BindingId)>> Copies = new();
@@ -622,6 +679,7 @@ class GraphOverrider(
             if (_graph.TryGetInEdges(node, out var dependencies))
             {
                 var overrides = GetOverrides(node);
+                var delegateResultPositions = GetDelegateResultPositions(node);
                 foreach (var dependency in dependencies)
                 {
                     HashSet<int>? shadowedIds = null;
@@ -636,7 +694,12 @@ class GraphOverrider(
                         shadowedIds = GetShadowedIds(overrides, position);
                     }
 
-                    AddInjection(consumed, dependency.Injection);
+                    // The result of a delegate is created by the delegate, so an override from outside does not replace it.
+                    if (dependency.Position is not {} resolverPosition || delegateResultPositions?.Contains(resolverPosition) != true)
+                    {
+                        AddInjection(consumed, dependency.Injection);
+                    }
+
                     var sourceBindingId = dependency.Source.Binding.Id;
                     if (!_sets.TryGetValue(sourceBindingId, out var sourceConsumed))
                     {

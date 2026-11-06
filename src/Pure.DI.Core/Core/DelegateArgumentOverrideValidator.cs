@@ -86,7 +86,7 @@ sealed class DelegateArgumentOverrideValidator(
         return result;
     }
 
-    private static bool IsDelegateArgument(in MdOverride @override)
+    public static bool IsDelegateArgument(in MdOverride @override)
     {
         if (@override.Source is not InvocationExpressionSyntax invocation
             || invocation.ArgumentList.Arguments is not [{} valueArgument, ..]
