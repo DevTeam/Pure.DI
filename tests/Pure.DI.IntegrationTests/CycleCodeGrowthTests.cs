@@ -1,4 +1,4 @@
-namespace Pure.DI.IntegrationTests;
+﻿namespace Pure.DI.IntegrationTests;
 
 using System.Diagnostics;
 using System.Text;
@@ -73,6 +73,25 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     [MemberData(nameof(PreviousCases))]
     public Task ShouldGrowLinearlyForScreensReadingContextsOfPreviousScreens(CycleEdge edge, int previous, string mode) =>
         CheckGrowth(Sizes, size => new Ring(size, edge, "Transient", mode) { Previous = previous });
+
+    // A screen reads the context of the screen above it, which each pass of the cycle overrides again.
+    // The lambda that opens the screen was created on the first pass, so it read the context of that pass.
+    [Theory]
+    [InlineData(1, "Auto")]
+    [InlineData(1, "On")]
+    [InlineData(3, "Auto")]
+    public async Task ShouldReadContextsOfCurrentPassOfCycle(int previous, string mode)
+    {
+        // Given
+        var ring = new Ring(6, CycleEdge.FuncWithArguments, "Transient", mode) { Previous = previous };
+
+        // When
+        var result = await ring.Create().RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Errors.ShouldBeEmpty(result);
+        result.StdOut.ShouldBe([ring.GetExpectedPath()], result);
+    }
 
     // Each screen opens only the next one, so it reaches itself by a single lambda,
     // but a hub opens each screen of the ring, so the ring is entered in as many places as it has screens.

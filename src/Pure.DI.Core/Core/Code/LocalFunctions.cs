@@ -266,7 +266,62 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         var graph = ctx.RootContext.Graph;
         var root = ctx.VarInjection.Var.AbstractNode.Node;
         return !cycleTools.IsCyclic(graph.Graph, root, node => !nodeTools.IsLazy(node, graph))
-               && CountLambdasBackTo(graph, root) >= MinCycleLambdas;
+               && (CountLambdasBackTo(graph, root) >= MinCycleLambdas || IsOverriddenOnCycle(ctx, root));
+    }
+
+    // The code created in place closes the cycle by a lambda created on an earlier pass of the cycle.
+    // If that lambda captures a value that another lambda on the cycle overrides, the lambda of the earlier pass
+    // reads the value of that pass, rather than the value of the current one. The local function of the instance
+    // creates the lambdas anew from the values it gets as arguments.
+    // A lambda that overrides the value itself, such as Func<T1, T> that creates T with T1, reads its own argument.
+    private bool IsOverriddenOnCycle(CodeContext ctx, DependencyNode root)
+    {
+        var graph = ctx.RootContext.Graph.Graph;
+        var freeOverrides = ctx.RootContext.UseSites.FreeOverrides;
+        var capturedIds = new HashSet<int>();
+        var declaredIds = new HashSet<int>();
+        var visited = new HashSet<int> { root.BindingId };
+        var stack = new Stack<DependencyNode>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+            if (!graph.TryGetInEdges(node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                var source = dependency.Source;
+                if (!visited.Add(source.BindingId))
+                {
+                    continue;
+                }
+
+                stack.Push(source);
+                if (source.Factory is null || !cycleTools.DependsOn(graph, source, root))
+                {
+                    continue;
+                }
+
+                foreach (var (_, id) in RootUseSiteCounter.GetDeclaredOverrides(source))
+                {
+                    declaredIds.Add(id);
+                }
+
+                if (nodeTools.IsLazy(source, ctx.RootContext.Graph)
+                    && freeOverrides.TryGetValue(source.BindingId, out var captured))
+                {
+                    foreach (var @override in captured)
+                    {
+                        capturedIds.Add(@override.Id);
+                    }
+                }
+            }
+        }
+
+        return capturedIds.Overlaps(declaredIds);
     }
 
     // A single lambda that leads back to the instance repeats its code once per level of the cycle,

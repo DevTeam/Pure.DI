@@ -560,7 +560,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 
     // The ids of the values that a factory overrides, with the 1-based position of the resolver or initializer
     // that overrides them, in the order in which they are applied to the dependencies, see GraphOverrider.
-    private static List<(int Position, int Id)> GetDeclaredOverrides(DependencyNode node)
+    internal static List<(int Position, int Id)> GetDeclaredOverrides(DependencyNode node)
     {
         var declaredOverrides = new List<(int Position, int Id)>();
         if (node.Factory is not {} factory)
