@@ -122,10 +122,17 @@ class VarsMap(
     }
 
     /// <inheritdoc />
-    public IDisposable LocalFunction(Var var, Lines lines)
+    public IDisposable LocalFunction(Var var, Lines lines, ImmutableArray<VarInjection> parameters = default)
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
         var removed = RemovePerBlockVars(lines, nameof(LocalFunction));
+        if (!parameters.IsDefaultOrEmpty)
+        {
+            foreach (var parameter in parameters)
+            {
+                _map[parameter.Var.AbstractNode.BindingId] = parameter.Var;
+            }
+        }
 
         return Disposables.Create(() => {
             _suppressedTrackingCount++;
@@ -133,6 +140,13 @@ class VarsMap(
             {
                 RemoveNewNonPersistentVars(var, scope, lines, nameof(LocalFunction));
                 RestoreState(scope, lines, nameof(LocalFunction), false);
+                if (!parameters.IsDefaultOrEmpty)
+                {
+                    foreach (var parameter in parameters)
+                    {
+                        _map.Remove(parameter.Var.AbstractNode.BindingId);
+                    }
+                }
                 RestorePerBlockVars(removed, lines, nameof(LocalFunction));
             }
             finally

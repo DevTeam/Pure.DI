@@ -41,8 +41,13 @@ sealed class RootCodeBuilder(
 
         if (hasLocalFunction && !nodeTools.IsBlock(var.AbstractNode))
         {
+            var arguments = GetPerBlockArguments(parentCtx);
+            foreach (var argument in arguments)
+            {
+                yield return Build(parentCtx.CreateChild(argument));
+            }
             // A transient instance is created by each call of its local function.
-            var.CodeExpression = $"{localFunctionName}({GetOverrideArguments(localFunctions.GetOverrideArguments(parentCtx))})";
+            var.CodeExpression = $"{localFunctionName}({GetArguments(localFunctions.GetOverrideArguments(parentCtx), arguments)})";
             yield break;
         }
 
@@ -137,6 +142,24 @@ sealed class RootCodeBuilder(
         var overrideArguments = isLocalFunction && !isBlock
             ? localFunctions.GetOverrideArguments(varCtx)
             : ImmutableArray<MdOverride>.Empty;
+        // A repeated transient may share PerBlock values with its siblings. Supply those values
+        // from the caller's block instead of creating them again inside its helper, see #188.
+        var perBlockArguments = isLocalFunction && !isBlock ? GetPerBlockArguments(varCtx) : ImmutableArray<VarInjection>.Empty;
+        foreach (var argument in perBlockArguments)
+        {
+            yield return Build(parentCtx.CreateChild(argument));
+        }
+
+        var perBlockParameters = perBlockArguments.Select(argument =>
+        {
+            var parameter = argument.Var with
+            {
+                Declaration = argument.Var.Declaration with { },
+                NameOverride = uniqueNameProvider.GetUniqueName("perBlockArgument")
+            };
+            parameter.CodeExpression = parameter.Name;
+            return argument with { Var = parameter };
+        }).ToImmutableArray();
         if (!overrideArguments.IsEmpty)
         {
             // The overridden values are the parameters of the local function, so its code declares only the values it overrides itself.
@@ -151,7 +174,7 @@ sealed class RootCodeBuilder(
 
         var mapToken =
             isLocalFunction
-                ? varsMap.LocalFunction(var, lines)
+                ? varsMap.LocalFunction(var, lines, perBlockParameters)
                 : isLazy
                     ? varsMap.Lazy(var, lines, accumulatorBindingIds)
                     : isBlock
@@ -296,7 +319,8 @@ sealed class RootCodeBuilder(
             }
 
             localFunctionName = uniqueNameProvider.GetUniqueName($"Create{baseName}{Names.Salt}");
-            var parameters = string.Join(", ", overrideArguments.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.ContractType)} {nameProvider.GetOverrideVariableName(i)}"));
+            var parameters = string.Join(", ", overrideArguments.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.ContractType)} {nameProvider.GetOverrideVariableName(i)}")
+                .Concat(perBlockParameters.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.Var.InstanceType)} {i.Var.Name}")));
             localFunction.AppendLine($"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, var.InstanceType)} {localFunctionName}({parameters})");
             using (localFunction.CreateBlock())
             {
@@ -306,7 +330,7 @@ sealed class RootCodeBuilder(
 
             localFunctionScope.Add(localFunctionKey, localFunctionName, localFunction);
             lines = new Lines();
-            var.CodeExpression = $"{localFunctionName}({GetOverrideArguments(overrideArguments)})";
+            var.CodeExpression = $"{localFunctionName}({GetArguments(overrideArguments, perBlockArguments)})";
         }
         else if (isLocalFunction)
         {
@@ -333,8 +357,12 @@ sealed class RootCodeBuilder(
         var.Declaration.IsDeclared = true;
     }
 
-    private string GetOverrideArguments(ImmutableArray<MdOverride> overrideArguments) =>
-        string.Join(", ", overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i)));
+    private ImmutableArray<VarInjection> GetPerBlockArguments(CodeContext ctx) =>
+        localFunctions.GetPerBlockArguments(ctx).Select(dependency =>
+            ctx.VarsMap.GetInjection(ctx.RootContext.Graph, dependency.Injection, dependency.Source)).ToImmutableArray();
+
+    private string GetArguments(ImmutableArray<MdOverride> overrideArguments, ImmutableArray<VarInjection> perBlockArguments) =>
+        string.Join(", ", overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i)).Concat(perBlockArguments.Select(i => i.Var.CodeExpression)));
 
     private static ImmutableArray<Accumulator> GetDetachedAccumulators(CodeContext ctx) =>
         ctx.DetachedAccumulators.IsDefault ? ImmutableArray<Accumulator>.Empty : ctx.DetachedAccumulators;

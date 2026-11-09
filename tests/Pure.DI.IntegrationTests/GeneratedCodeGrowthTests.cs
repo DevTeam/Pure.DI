@@ -134,6 +134,74 @@ public class GeneratedCodeGrowthTests(ITestOutputHelper output)
         ShouldGrowLinearly(measurements);
     }
 
+    [Theory]
+    [InlineData("Auto")]
+    [InlineData("On")]
+    public async Task ShouldPassThePerBlockInstanceOfEachDelegateInvocationToTransientHelpers(string mode)
+    {
+        const int depth = 8;
+        var classes = new StringBuilder();
+        for (var level = 1; level <= depth; level++)
+        {
+            classes.AppendLine($$"""
+                sealed class N{{level}}
+                {
+                    public N{{level}}(Token token, N{{level - 1}} left, N{{level - 1}} right)
+                    {
+                        Token = token;
+                        Valid = ReferenceEquals(token, left.Token) && ReferenceEquals(token, right.Token)
+                            && !ReferenceEquals(left, right) && left.Valid && right.Valid;
+                    }
+                    public Token Token { get; }
+                    public bool Valid { get; }
+                }
+                """);
+        }
+
+        var result = await $$"""
+            using System;
+            using Pure.DI;
+            namespace Sample
+            {
+                sealed class Token
+                {
+                    public static int Created;
+                    public Token(string label) { Label = label; Created++; }
+                    public string Label { get; }
+                }
+                sealed class N0
+                {
+                    public static int Created;
+                    public N0(Token token) { Token = token; Created++; }
+                    public Token Token { get; }
+                    public bool Valid => true;
+                }
+                {{classes}}
+                partial class Composition
+                {
+                    private static void Setup() => DI.Setup(nameof(Composition))
+                        .Hint(Hint.LocalFunctions, "{{mode}}")
+                        .Bind<Token>().As(Lifetime.PerBlock).To<Token>()
+                        .Root<Func<string, N{{depth}}>>("Root");
+                }
+                public static class Program
+                {
+                    public static void Main()
+                    {
+                        var factory = new Composition().Root;
+                        var first = factory("a");
+                        var second = factory("b");
+                        Console.WriteLine($"{first.Valid && second.Valid} {ReferenceEquals(first.Token, second.Token)} {first.Token.Label} {second.Token.Label} {Token.Created} {N0.Created}");
+                    }
+                }
+            }
+            """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([$"True False a b 2 {2 << depth}"], result);
+        Measure(depth, result).Constructions.ShouldBeLessThan(80, result);
+    }
+
     [Fact]
     public async Task ShouldDetectExpansionEvenWhenItFitsOnOneLine()
     {

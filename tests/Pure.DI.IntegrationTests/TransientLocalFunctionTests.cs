@@ -95,10 +95,10 @@ public class TransientLocalFunctionTests
             .RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
-        // A local function would create the PerBlock instance anew on each call.
+        // The local function receives the caller's PerBlock instance instead of creating it again.
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["1 True"], result);
-        result.GeneratedCode.ShouldNotContain(" CreateL", Case.Sensitive, result);
+        result.GeneratedCode.ShouldContain(" CreateL", Case.Sensitive, result);
     }
 
 #if ROSLYN5_6_OR_GREATER

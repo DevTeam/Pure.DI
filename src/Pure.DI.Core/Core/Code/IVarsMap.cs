@@ -41,8 +41,9 @@ interface IVarsMap
     /// </summary>
     /// <param name="var">The variable representing the local function.</param>
     /// <param name="lines">The code lines for debugging.</param>
+    /// <param name="parameters">PerBlock values supplied by the caller of the function.</param>
     /// <returns>A disposable that restores the state when the scope is closed.</returns>
-    IDisposable LocalFunction(Var var, Lines lines);
+    IDisposable LocalFunction(Var var, Lines lines, ImmutableArray<VarInjection> parameters = default);
 
     /// <summary>
     /// Creates a scope for a lazy initialization.

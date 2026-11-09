@@ -103,6 +103,63 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
             ? overrides
             : ImmutableArray<MdOverride>.Empty;
 
+    public ImmutableArray<Dependency> GetPerBlockArguments(CodeContext ctx)
+    {
+        var root = ctx.VarInjection.Var.AbstractNode.Node;
+        if (!ctx.RootContext.UseSites.PerBlockDependents.Contains(root.BindingId))
+        {
+            return ImmutableArray<Dependency>.Empty;
+        }
+
+        var graph = ctx.RootContext.Graph;
+        var arguments = new Dictionary<int, Dependency>();
+        var visited = new HashSet<int>();
+        var stack = new Stack<DependencyNode>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+            if (!visited.Add(node.BindingId))
+            {
+                continue;
+            }
+
+            // Factories may inject only in a branch or loop, so their PerBlock dependencies
+            // must not be evaluated eagerly at the call site of a helper.
+            if (node.Factory is not null && ctx.RootContext.UseSites.PerBlockDependents.Contains(node.BindingId))
+            {
+                return default;
+            }
+
+            if (!graph.Graph.TryGetInEdges(node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                var source = dependency.Source;
+                if (source.ActualLifetime is PerBlock)
+                {
+                    if (source.Construct is { Source.Kind: MdConstructKind.Accumulator }
+                        || refSafety.IsMaybeRefLike(source.Type)
+                        || ReferenceEquals(dependency.Injection.Tag, MdTag.ContextTag))
+                    {
+                        return default;
+                    }
+
+                    arguments[source.BindingId] = dependency;
+                }
+                else if (!nodeTools.IsBlock(source) && !nodeTools.IsLazy(source, graph))
+                {
+                    stack.Push(source);
+                }
+            }
+        }
+
+        return arguments.OrderBy(i => i.Key).Select(i => i.Value).ToImmutableArray();
+    }
+
     // An instance can be created under different accumulators in the same scope,
     // for example, inside a shared instance that does not feed the per-resolve ones,
     // so each set of accumulators gets a local function of its own.
@@ -149,7 +206,8 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
 
     // An instance created by its constructor or by a factory is returned by a local function,
     // but not a lambda, such as Func<T> or Lazy<T>, whose code belongs to the place where it is created.
-    // A ref-like value cannot be returned this way in general, and a PerBlock dependency would be created anew on each call.
+    // A ref-like value cannot be returned this way in general. Shared PerBlock dependencies
+    // must be supplied by the caller, without moving a conditional injection out of a factory.
     private bool IsTransientCandidate(CodeContext ctx)
     {
         var var = ctx.VarInjection.Var;
@@ -158,7 +216,7 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
                && (node.Implementation is not null || node.Factory is not null && !nodeTools.IsLazy(node, ctx.RootContext.Graph))
                && var.HasCycle != true
                && !refSafety.IsMaybeRefLike(var.InstanceType)
-               && !ctx.RootContext.UseSites.PerBlockDependents.Contains(var.AbstractNode.BindingId);
+               && !GetPerBlockArguments(ctx).IsDefault;
     }
 
     private bool IsOverrideArgumentsConsumer(CodeContext ctx) =>
