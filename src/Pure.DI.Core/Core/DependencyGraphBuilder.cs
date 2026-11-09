@@ -293,7 +293,9 @@ sealed class DependencyGraphBuilder(
                                     break;
 
                                 default:
-                                    var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient;
+                                    // Both iterator kinds share their code within a block. Calling the
+                                    // iterator still creates fresh deferred elements on each enumeration.
+                                    var lifetime = constructKind is MdConstructKind.Enumerable or MdConstructKind.AsyncEnumerable ? Lifetime.PerBlock : Lifetime.Transient;
                                     var constructBinding = bindingsFactory.CreateConstructBinding(
                                         setup,
                                         targetNode,
@@ -587,7 +589,7 @@ sealed class DependencyGraphBuilder(
                 consumer,
                 injection,
                 elementType,
-                constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient,
+                constructKind is MdConstructKind.Enumerable or MdConstructKind.AsyncEnumerable ? Lifetime.PerBlock : Lifetime.Transient,
                 typeConstructor,
                 ++maxBindingId,
                 constructKind,

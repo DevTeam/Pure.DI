@@ -642,6 +642,83 @@ public class GeneratedCodeGrowthTests(ITestOutputHelper output)
         result.StdOut.ShouldBe(["8 8 True"], result);
     }
 
+    [Theory]
+    [InlineData("Auto")]
+    [InlineData("On")]
+    public async Task ShouldCreateFreshElementsWhenReusingAsyncIteratorCode(string mode)
+    {
+        var result = await $$"""
+            using System;
+            using System.Collections.Generic;
+            using System.Threading.Tasks;
+            using Pure.DI;
+            namespace Sample
+            {
+                sealed class Token
+                {
+                    public static int Created;
+                    public Token(string label) { Label = label; Created++; }
+                    public string Label { get; }
+                }
+                sealed class Item
+                {
+                    public static int Created;
+                    public Item(Token first, Token second) { Token = first; Valid = ReferenceEquals(first, second); Created++; }
+                    public Token Token { get; }
+                    public bool Valid { get; }
+                }
+                partial class Composition
+                {
+                    private static void Setup() => DI.Setup(nameof(Composition))
+                        .Hint(Hint.LocalFunctions, "{{mode}}")
+                        .Bind<Token>().As(Lifetime.PerBlock).To<Token>()
+                        .Bind<Item>().To<Item>()
+                        .Root<Func<string, (IAsyncEnumerable<Item> first, IAsyncEnumerable<Item> second)>>("Root");
+                }
+                public static class Program
+                {
+                    private static async Task<Item> Single(IAsyncEnumerable<Item> items)
+                    {
+                        Item result = null!;
+                        await foreach (var item in items)
+                        {
+                            if (result != null) throw new Exception("Multiple elements");
+                            result = item;
+                        }
+                        return result ?? throw new Exception("Empty");
+                    }
+                    private static async Task Run()
+                    {
+                        var factory = new Composition().Root;
+                        var a = factory("a");
+                        var b = factory("b");
+                        var tokens = new HashSet<Token>();
+                        var elements = new HashSet<Item>();
+                        var valid = true;
+                        foreach (var sample in new[] { (a, "a"), (b, "b") })
+                        {
+                            foreach (var sequence in new[] { sample.Item1.first, sample.Item1.second })
+                            {
+                                for (var index = 0; index < 2; index++)
+                                {
+                                    var item = await Single(sequence);
+                                    valid &= item.Valid && item.Token.Label == sample.Item2;
+                                    tokens.Add(item.Token);
+                                    elements.Add(item);
+                                }
+                            }
+                        }
+                        Console.WriteLine($"{valid} {tokens.Count} {elements.Count} {Token.Created} {Item.Created}");
+                    }
+                    public static void Main() => Run().GetAwaiter().GetResult();
+                }
+            }
+            """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True 8 8 8 8"], result);
+    }
+
     private sealed record Measurement(int Depth, int Tokens, int Constructions, int SizeWarnings);
 
     public enum Edge { Constructor, Property, Field, Method, BuildUp, Array, Span, ReadOnlySpan, Memory, ReadOnlyMemory, Enumerable, AsyncEnumerable }
