@@ -364,7 +364,7 @@ class VarsMap(
     {
         foreach (var scope in _activeScopes)
         {
-            scope.AddAddedBindingId(bindingId);
+            scope.AddAddedVar(bindingId, _map[bindingId]);
         }
     }
 
@@ -385,7 +385,7 @@ class VarsMap(
         foreach (var scope in _activeScopes)
         {
             if (bindingId == scope.ExcludeBindingId
-                || scope.ContainsAddedBindingId(bindingId)
+                || scope.ContainsAddedVar(bindingId, var)
                 || scope.ContainsChangedBindingId(bindingId))
             {
                 continue;
@@ -413,6 +413,13 @@ class VarsMap(
         foreach (var bindingId in scope.AddedBindingIds)
         {
             if (!_map.TryGetValue(bindingId, out var addedVar))
+            {
+                continue;
+            }
+
+            // An inner boundary may have replaced this binding and then restored the outer
+            // accumulator. That restored variable was not introduced in this scope, see #190.
+            if (!scope.ContainsAddedVar(bindingId, addedVar))
             {
                 continue;
             }
@@ -482,7 +489,9 @@ class VarsMap(
 
         foreach (var bindingId in scope.AddedBindingIds)
         {
-            if (bindingId == scope.ExcludeBindingId || !_map.TryGetValue(bindingId, out var varToRestore))
+            if (bindingId == scope.ExcludeBindingId
+                || !_map.TryGetValue(bindingId, out var varToRestore)
+                || !scope.ContainsAddedVar(bindingId, varToRestore))
             {
                 continue;
             }
@@ -517,6 +526,7 @@ class VarsMap(
     {
         private Dictionary<int, VarState>? _changedStates;
         private HashSet<int>? _addedBindingIds;
+        private HashSet<(int BindingId, int VariableId)>? _addedVariables;
 
         public int ExcludeBindingId { get; } = excludeBindingId;
 
@@ -533,13 +543,16 @@ class VarsMap(
         public void AddChangedState(int bindingId, in VarState state) =>
             (_changedStates ??= new Dictionary<int, VarState>())[bindingId] = state;
 
-        public void AddAddedBindingId(int bindingId) =>
+        public void AddAddedVar(int bindingId, Var var)
+        {
             (_addedBindingIds ??= []).Add(bindingId);
+            (_addedVariables ??= []).Add((bindingId, var.Declaration.PerLifetimeId));
+        }
 
         public bool ContainsChangedBindingId(int bindingId) =>
             _changedStates?.ContainsKey(bindingId) == true;
 
-        public bool ContainsAddedBindingId(int bindingId) =>
-            _addedBindingIds?.Contains(bindingId) == true;
+        public bool ContainsAddedVar(int bindingId, Var var) =>
+            _addedVariables?.Contains((bindingId, var.Declaration.PerLifetimeId)) == true;
     }
 }
