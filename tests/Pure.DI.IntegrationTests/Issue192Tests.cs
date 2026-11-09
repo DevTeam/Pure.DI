@@ -130,7 +130,7 @@ public class Issue192Tests
 
                  namespace Sample
                  {
-                     public interface INavigation;
+                     public interface INavigation { }
 
                      public sealed class Navigation : INavigation
                      {
