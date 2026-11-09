@@ -12,5 +12,6 @@ enum CodeBuilderKind
     ImplicitConversion,
     Composition,
     CannotResolve,
-    ExplicitDefaultValue
+    ExplicitDefaultValue,
+    MaybeOverride
 }

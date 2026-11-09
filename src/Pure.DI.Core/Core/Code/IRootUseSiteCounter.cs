@@ -16,4 +16,6 @@ record RootUseSiteAnalysis(
     // The estimated size of the code that creates a transient instance in place, including its transient dependencies.
     IReadOnlyDictionary<int, int> TransientCost,
     // Binding ids of the nodes that create a PerBlock instance in place, directly or through other nodes.
-    HashSet<int> PerBlockDependents);
+    HashSet<int> PerBlockDependents,
+    // The ids of the overrides that the code may or may not have overridden, depending on the path to it, see MaybeOverrideCodeBuilder.
+    HashSet<int> MaybeOverrides);

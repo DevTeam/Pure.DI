@@ -11,7 +11,8 @@ sealed class ConstructCodeBuilder(
     [Tag(CodeBuilderKind.ImplicitConversion)] IBuilder<CodeBuilderContext, IEnumerator> implicitConversionBuilder,
     [Tag(CodeBuilderKind.Composition)] IBuilder<CodeBuilderContext, IEnumerator> compositionBuilder,
     [Tag(CodeBuilderKind.CannotResolve)] IBuilder<CodeBuilderContext, IEnumerator> onCannotResolveBuilder,
-    [Tag(CodeBuilderKind.ExplicitDefaultValue)] IBuilder<CodeBuilderContext, IEnumerator> explicitDefaultValueBuilder)
+    [Tag(CodeBuilderKind.ExplicitDefaultValue)] IBuilder<CodeBuilderContext, IEnumerator> explicitDefaultValueBuilder,
+    [Tag(CodeBuilderKind.MaybeOverride)] IBuilder<CodeBuilderContext, IEnumerator> maybeOverrideBuilder)
     : IBuilder<CodeBuilderContext, IEnumerator>
 {
     public IEnumerator Build(CodeBuilderContext ctx) =>
@@ -25,6 +26,7 @@ sealed class ConstructCodeBuilder(
             Composition => compositionBuilder.Build(ctx),
             OnCannotResolve => onCannotResolveBuilder.Build(ctx),
             ExplicitDefaultValue => explicitDefaultValueBuilder.Build(ctx),
+            Override => maybeOverrideBuilder.Build(ctx),
             _ => EmptyEnumerator()
         };
 

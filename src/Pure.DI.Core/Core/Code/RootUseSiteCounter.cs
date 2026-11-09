@@ -65,7 +65,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             GetFreeOverrides(graph, root),
             GetInlineCosts(graph, root, counts, factoryDownstream),
             GetTransientCosts(graph, root, counts),
-            GetPerBlockDependents(graph, root));
+            GetPerBlockDependents(graph, root),
+            GetMaybeOverrides(graph));
     }
 
     // A node created only as the result of lambdas, such as Func<T>, is created by the code of each lambda,
@@ -468,6 +469,22 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         }
     }
 
+    private static HashSet<int> GetMaybeOverrides(DependencyGraph graph)
+    {
+        var maybeOverrides = new HashSet<int>();
+        foreach (var node in graph.Graph.Vertices)
+        {
+            if (node.Construct is { Source: { Kind: MdConstructKind.Override, State: DpOverride @override } }
+                && graph.Graph.TryGetInEdges(node, out var dependencies)
+                && dependencies.Count > 0)
+            {
+                maybeOverrides.Add(@override.Source.Id);
+            }
+        }
+
+        return maybeOverrides;
+    }
+
     // The overridden values that the code creating a node reads and does not declare itself, by binding id.
     // A factory declares the values it overrides before a dependency, so they are not free under that dependency.
     // A transient instance that reads overridden values gets them as the arguments of its local function, see #178.
@@ -521,7 +538,11 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                     if (edge.Source.Construct is { Source: { Kind: MdConstructKind.Override, State: DpOverride @override } })
                     {
                         isChanged |= AddFreeOverride(nodeFreeOverrides, @override.Source, declaredOverrides, edge.Position);
-                        continue;
+                        // A value that may be overridden is created where it is not, see MaybeOverrideCodeBuilder.
+                        if (!freeOverrides.ContainsKey(edge.Source.BindingId))
+                        {
+                            continue;
+                        }
                     }
 
                     if (!freeOverrides.TryGetValue(edge.Source.BindingId, out var sourceFreeOverrides))

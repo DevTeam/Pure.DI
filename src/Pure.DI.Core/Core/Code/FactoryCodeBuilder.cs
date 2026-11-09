@@ -203,7 +203,7 @@ sealed class FactoryCodeBuilder(
             lines.AppendLine(BlockStart);
             lines.IncIndent();
             // The lock block is a scope of its own, so the overridden values declared in it are not seen after it, see #180.
-            ctx = ctx with { IsLockRequired = false, Overrides = [..ctx.Overrides] };
+            ctx = ctx with { IsLockRequired = false, Overrides = [..ctx.Overrides], VisibleOverrides = new Dictionary<string, string?>(ctx.VisibleOverrides, StringComparer.Ordinal) };
             hasOverridesLock = true;
         }
 
@@ -463,6 +463,7 @@ sealed class FactoryCodeBuilder(
         {
             var name = nameProvider.GetOverrideVariableName(@override.Source);
             var isDeclared = !ctx.Overrides.Add(name);
+            ctx.VisibleOverrides[name] = null;
             var valueExpression = localVariableRenamingRewriter.Clone().Rewrite(ctx.RootContext.Graph.Source.SemanticModel, false, @override.Source.ValueExpression);
             lines.AppendLine($"{(isDeclared ? "" : $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.Source.ContractType)} ")}{name} = {valueExpression};");
             overridesRegistry.Register(ctx.RootContext.Root, @override);

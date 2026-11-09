@@ -18,6 +18,8 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
 {
     private static readonly int[] Sizes = [4, 6, 8];
     private static readonly int[] HubSizes = [4, 8, 12];
+    // The real application of #192 overrides 27 types in the scope of a screen.
+    private static readonly int[] WideSizes = [9, 18, 27];
     private static readonly TimeSpan GenerationTimeout = TimeSpan.FromMinutes(2);
     private const int Steps = 9;
     // Equal steps in the number of screens must add approximately equal amounts of code.
@@ -73,6 +75,14 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     [MemberData(nameof(PreviousCases))]
     public Task ShouldGrowLinearlyForScreensReadingContextsOfPreviousScreens(CycleEdge edge, int previous, string mode) =>
         CheckGrowth(Sizes, size => new Ring(size, edge, "Transient", mode) { Previous = previous });
+
+    // A ring of as many screens as the overridden types of the real application of #192,
+    // whose override rewrite did not complete in time.
+    [Theory]
+    [InlineData(CycleEdge.FuncWithArguments)]
+    [InlineData(CycleEdge.FuncWithArgumentsByLet)]
+    public Task ShouldGrowLinearlyForWideScopesOfScreensReadingContextsOfPreviousScreens(CycleEdge edge) =>
+        CheckGrowth(WideSizes, size => new Ring(size, edge, "Transient", "Auto") { Previous = 3 });
 
     // A screen reads the context of the screen above it, which each pass of the cycle overrides again.
     // The lambda that opens the screen was created on the first pass, so it read the context of that pass.

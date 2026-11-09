@@ -113,6 +113,7 @@ public sealed partial class Generator
             .PerBlock<CompositionCodeBuilder>(Composition)
             .PerBlock<OnCannotResolveCodeBuilder>(CannotResolve)
             .PerBlock<ExplicitDefaultValueCodeBuilder>(ExplicitDefaultValue)
+            .PerBlock<MaybeOverrideCodeBuilder>(MaybeOverride)
 
             // Code builders
             .PerBlock<CompositionClassBuilder>(CompositionClass)

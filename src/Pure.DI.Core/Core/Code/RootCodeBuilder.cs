@@ -47,7 +47,7 @@ sealed class RootCodeBuilder(
                 yield return Build(parentCtx.CreateChild(argument));
             }
             // A transient instance is created by each call of its local function.
-            var.CodeExpression = $"{localFunctionName}({GetArguments(localFunctions.GetOverrideArguments(parentCtx), arguments)})";
+            var.CodeExpression = $"{localFunctionName}({GetArguments(parentCtx, localFunctions.GetOverrideArguments(parentCtx), arguments)})";
             yield break;
         }
 
@@ -163,13 +163,20 @@ sealed class RootCodeBuilder(
         if (!overrideArguments.IsEmpty)
         {
             // The overridden values are the parameters of the local function, so its code declares only the values it overrides itself.
-            varCtx = varCtx with { Overrides = [..overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i))] };
+            varCtx = varCtx with
+            {
+                Overrides = [..overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i))],
+                VisibleOverrides = overrideArguments.ToDictionary(
+                    i => nameProvider.GetOverrideVariableName(i),
+                    i => IsMaybeOverride(varCtx, i) ? MaybeOverrideCodeBuilder.GetPresenceName(nameProvider.GetOverrideVariableName(i)) : null,
+                    StringComparer.Ordinal)
+            };
         }
         else if (isLocalFunction || isBlock)
         {
             // A local function and the check of a single instance are scopes of their own,
             // so the overridden values declared in them are not seen after them, see #180.
-            varCtx = varCtx with { Overrides = [..varCtx.Overrides] };
+            varCtx = varCtx with { Overrides = [..varCtx.Overrides], VisibleOverrides = new Dictionary<string, string?>(varCtx.VisibleOverrides, StringComparer.Ordinal) };
         }
 
         // The local function of an instance on a cycle through lambdas is registered before its code is built,
@@ -240,7 +247,7 @@ sealed class RootCodeBuilder(
             if (isLazy)
             {
                 // A lambda declares the overridden values again, and the code after it still sees the values declared before it.
-                ctx = ctx with { Overrides = [] };
+                ctx = ctx with { Overrides = [], VisibleOverrides = new Dictionary<string, string?>(ctx.VisibleOverrides, StringComparer.Ordinal) };
                 accumulators.BuildAccumulators(ctx with
                 {
                     Accumulators = ctx.Accumulators
@@ -328,7 +335,7 @@ sealed class RootCodeBuilder(
             }
 
             localFunctionName = reservedLocalFunctionName ?? uniqueNameProvider.GetUniqueName($"Create{baseName}{Names.Salt}");
-            var parameters = string.Join(", ", overrideArguments.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.ContractType)} {nameProvider.GetOverrideVariableName(i)}")
+            var parameters = string.Join(", ", overrideArguments.Select(i => GetParameter(varCtx, i))
                 .Concat(perBlockParameters.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.Var.InstanceType)} {i.Var.Name}")));
             localFunction.AppendLine($"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, var.InstanceType)} {localFunctionName}({parameters})");
             using (localFunction.CreateBlock())
@@ -339,7 +346,7 @@ sealed class RootCodeBuilder(
 
             localFunctionScope.Add(localFunctionKey, localFunctionName, localFunction);
             lines = new Lines();
-            var.CodeExpression = $"{localFunctionName}({GetArguments(overrideArguments, perBlockArguments)})";
+            var.CodeExpression = $"{localFunctionName}({GetArguments(parentCtx, overrideArguments, perBlockArguments)})";
         }
         else if (isLocalFunction)
         {
@@ -370,8 +377,35 @@ sealed class RootCodeBuilder(
         localFunctions.GetPerBlockArguments(ctx).Select(dependency =>
             ctx.VarsMap.GetInjection(ctx.RootContext.Graph, dependency.Injection, dependency.Source)).ToImmutableArray();
 
-    private string GetArguments(ImmutableArray<MdOverride> overrideArguments, ImmutableArray<VarInjection> perBlockArguments) =>
-        string.Join(", ", overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i)).Concat(perBlockArguments.Select(i => i.Var.CodeExpression)));
+    private string GetArguments(CodeContext ctx, ImmutableArray<MdOverride> overrideArguments, ImmutableArray<VarInjection> perBlockArguments) =>
+        string.Join(", ", overrideArguments.Select(i => GetArgument(ctx, i)).Concat(perBlockArguments.Select(i => i.Var.CodeExpression)));
+
+    // A value that may be overridden is passed with whether the caller overrides it, see MaybeOverrideCodeBuilder.
+    private string GetArgument(CodeContext ctx, MdOverride @override)
+    {
+        var name = nameProvider.GetOverrideVariableName(@override);
+        if (!IsMaybeOverride(ctx, @override))
+        {
+            return name;
+        }
+
+        if (!ctx.VisibleOverrides.TryGetValue(name, out var presence))
+        {
+            return $"default({typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.ContractType)}), false";
+        }
+
+        return $"{name}, {presence ?? "true"}";
+    }
+
+    private string GetParameter(CodeContext ctx, MdOverride @override)
+    {
+        var name = nameProvider.GetOverrideVariableName(@override);
+        var parameter = $"{typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.ContractType)} {name}";
+        return IsMaybeOverride(ctx, @override) ? $"{parameter}, bool {MaybeOverrideCodeBuilder.GetPresenceName(name)}" : parameter;
+    }
+
+    private static bool IsMaybeOverride(CodeContext ctx, MdOverride @override) =>
+        ctx.RootContext.UseSites.MaybeOverrides.Contains(@override.Id);
 
     private static ImmutableArray<Accumulator> GetDetachedAccumulators(CodeContext ctx) =>
         ctx.DetachedAccumulators.IsDefault ? ImmutableArray<Accumulator>.Empty : ctx.DetachedAccumulators;
