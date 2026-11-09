@@ -34,6 +34,13 @@ sealed class LocalFunctionScope
         _names.TryGetValue(key, out name);
 
     /// <summary>
+    /// Registers the name of a local function before its code is built,
+    /// so the code of the function, for example, a lambda in it, can call the function itself.
+    /// </summary>
+    public void Reserve(string key, string name) =>
+        _names[key] = name;
+
+    /// <summary>
     /// Adds a local function.
     /// </summary>
     public void Add(string key, string name, Lines function)

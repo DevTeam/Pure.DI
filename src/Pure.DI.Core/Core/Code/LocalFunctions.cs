@@ -2,7 +2,7 @@ namespace Pure.DI.Core.Code;
 
 using static Lifetime;
 
-class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafety refSafety): ILocalFunctions
+class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafety refSafety, ICycleTools cycleTools): ILocalFunctions
 {
     internal const int MinBodyCost = 4;
     internal const int MinUseSites = 2;
@@ -39,6 +39,16 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
             return false;
         }
 
+        var mode = ctx.RootContext.Graph.Source.Hints.LocalFunctions;
+
+        // A transient instance on a cycle through lambdas, such as screens that open each other by Func<T1, T>,
+        // is created by one local function that the lambdas call. Otherwise, each lambda creates it again
+        // with the lambdas of its own dependencies, and the code grows with the number of paths on the cycle, see #192.
+        if (!isBlock && mode != LocalFunctionsMode.Off && IsDeferredCycle(ctx))
+        {
+            return true;
+        }
+
         var bindingId = ctx.VarInjection.Var.Declaration.Node.Node.BindingId;
         var useSites = ctx.RootContext.UseSites;
         if (!useSites.UseSiteCount.TryGetValue(bindingId, out var count) || count < MinUseSites)
@@ -46,7 +56,6 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
             return false;
         }
 
-        var mode = ctx.RootContext.Graph.Source.Hints.LocalFunctions;
         if (!isBlock)
         {
             return mode switch
@@ -112,6 +121,7 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         }
 
         var graph = ctx.RootContext.Graph;
+        var isDeferredCycle = ctx.VarInjection.Var.HasCycle == true && GetAccumulators(ctx).Count == 0;
         var arguments = new Dictionary<int, Dependency>();
         var visited = new HashSet<int>();
         var stack = new Stack<DependencyNode>();
@@ -139,6 +149,16 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
             foreach (var dependency in dependencies)
             {
                 var source = dependency.Source;
+                // A lambda that leads back to the instance on a cycle is created inside its local function,
+                // so the local function does not need the lambda from its caller, which would need the same lambdas again.
+                if (isDeferredCycle
+                    && source.ActualLifetime is PerBlock
+                    && nodeTools.IsLazy(source, graph)
+                    && cycleTools.DependsOn(graph.Graph, source, root))
+                {
+                    continue;
+                }
+
                 if (source.ActualLifetime is PerBlock)
                 {
                     if (source.Construct is { Source.Kind: MdConstructKind.Accumulator }
@@ -223,9 +243,69 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         var node = var.AbstractNode.Node;
         return var.AbstractNode is { ActualLifetime: Transient, Arg: null }
                && (node.Implementation is not null || node.Factory is not null && !nodeTools.IsLazy(node, ctx.RootContext.Graph))
-               && var.HasCycle != true
+               && (var.HasCycle != true || IsCycleCandidate(ctx))
                && !refSafety.IsMaybeRefLike(var.InstanceType)
                && !GetPerBlockArguments(ctx).IsDefault;
+    }
+
+    // An instance that depends on itself only through lambdas, such as Func<T> or Lazy<T>.
+    public bool IsDeferredCycle(CodeContext ctx) =>
+        ctx.VarInjection.Var.HasCycle == true
+        && IsTransientCandidate(ctx);
+
+    // A cycle that does not pass through a lambda would create the instance again on each call of its local function.
+    // An instance created under accumulators gets the scope of the code that declares them, and a lambda declares accumulators
+    // of its own, so the lambdas on the cycle could not find the local function of the instance by its scope.
+    private bool IsCycleCandidate(CodeContext ctx)
+    {
+        if (GetAccumulators(ctx).Count != 0)
+        {
+            return false;
+        }
+
+        var graph = ctx.RootContext.Graph;
+        var root = ctx.VarInjection.Var.AbstractNode.Node;
+        return !cycleTools.IsCyclic(graph.Graph, root, node => !nodeTools.IsLazy(node, graph))
+               && CountLambdasBackTo(graph, root) >= MinCycleLambdas;
+    }
+
+    // A single lambda that leads back to the instance repeats its code once per level of the cycle,
+    // which the code reaches only once, so the code is linear and is created in place.
+    // Several such lambdas double the paths to the instance on each level of the cycle.
+    private const int MinCycleLambdas = 2;
+
+    private int CountLambdasBackTo(DependencyGraph graph, DependencyNode root)
+    {
+        var count = 0;
+        var visited = new HashSet<int>();
+        var stack = new Stack<DependencyNode>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+            if (!visited.Add(node.BindingId) || !graph.Graph.TryGetInEdges(node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                var source = dependency.Source;
+                if (nodeTools.IsLazy(source, graph))
+                {
+                    if (visited.Add(source.BindingId) && cycleTools.DependsOn(graph.Graph, source, root))
+                    {
+                        count++;
+                    }
+                }
+                else if (!nodeTools.IsBlock(source))
+                {
+                    stack.Push(source);
+                }
+            }
+        }
+
+        return count;
     }
 
     private bool IsOverrideArgumentsConsumer(CodeContext ctx) =>

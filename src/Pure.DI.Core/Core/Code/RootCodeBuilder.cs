@@ -172,6 +172,15 @@ sealed class RootCodeBuilder(
             varCtx = varCtx with { Overrides = [..varCtx.Overrides] };
         }
 
+        // The local function of an instance on a cycle through lambdas is registered before its code is built,
+        // so the lambdas in it that lead back to the instance call the function, see #192.
+        string? reservedLocalFunctionName = null;
+        if (isLocalFunction && !isBlock && localFunctions.IsDeferredCycle(varCtx))
+        {
+            reservedLocalFunctionName = uniqueNameProvider.GetUniqueName($"Create{nameFormatter.Format("{type}{tag}", var.InstanceType, currentTag)}{Names.Salt}");
+            localFunctionScope.Reserve(localFunctionKey, reservedLocalFunctionName);
+        }
+
         var mapToken =
             isLocalFunction
                 ? varsMap.LocalFunction(var, lines, perBlockParameters)
@@ -318,7 +327,7 @@ sealed class RootCodeBuilder(
                 buildTools.AddAggressiveInlining(localFunction);
             }
 
-            localFunctionName = uniqueNameProvider.GetUniqueName($"Create{baseName}{Names.Salt}");
+            localFunctionName = reservedLocalFunctionName ?? uniqueNameProvider.GetUniqueName($"Create{baseName}{Names.Salt}");
             var parameters = string.Join(", ", overrideArguments.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.ContractType)} {nameProvider.GetOverrideVariableName(i)}")
                 .Concat(perBlockParameters.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.Var.InstanceType)} {i.Var.Name}")));
             localFunction.AppendLine($"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, var.InstanceType)} {localFunctionName}({parameters})");
