@@ -58,7 +58,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             }
         }
 
-        AddLambdaUseSites(graph, counts, consumers);
+        AddInlineUseSites(graph, counts, consumers);
         return new RootUseSiteAnalysis(
             counts,
             factoryDownstream,
@@ -71,7 +71,9 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
     // A node created only as the result of lambdas, such as Func<T>, is created by the code of each lambda,
     // and the code of a lambda is repeated at each of its own use sites. So, for example, a view model
     // that opens the next one through delegates has as many use sites as the delegates that create it, see #184.
-    private void AddLambdaUseSites(
+    // Arrays and spans cannot have a creation helper of their own. Each use of the collection
+    // repeats its elements, so those elements need the collection's use sites too, see #187.
+    private void AddInlineUseSites(
         DependencyGraph graph,
         Dictionary<int, int> counts,
         Dictionary<int, List<DependencyNode>> consumers)
@@ -79,7 +81,10 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         var lambdaCounts = (
                 from pair in consumers
                 where pair.Value.All(consumer => nodeTools.IsLazy(consumer, graph))
-                select (BindingId: pair.Key, Count: pair.Value.Sum(consumer => counts.TryGetValue(consumer.BindingId, out var count) ? count : 1)))
+                      || pair.Value.Any(IsInlineCollection)
+                select (BindingId: pair.Key, Count: pair.Value.Sum(consumer =>
+                    (nodeTools.IsLazy(consumer, graph) || IsInlineCollection(consumer))
+                    && counts.TryGetValue(consumer.BindingId, out var count) ? count : 1)))
             .ToList();
 
         foreach (var (bindingId, count) in lambdaCounts)
@@ -87,6 +92,9 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             counts[bindingId] = count;
         }
     }
+
+    private static bool IsInlineCollection(DependencyNode node) =>
+        node.Construct is { Source.Kind: MdConstructKind.Array or MdConstructKind.Span };
 
     // A transient instance is created anew at each use site, so its code, together with the code
     // of the transient dependencies created with it, is repeated at each of them.
