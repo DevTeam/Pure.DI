@@ -148,6 +148,15 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
                         return default;
                     }
 
+                    // A shared binding can be injected with different tags. Its first creation
+                    // chooses the tag, so keep the original traversal instead of choosing a tag
+                    // while collecting arguments for a helper.
+                    if (arguments.TryGetValue(source.BindingId, out var previous)
+                        && !Equals(previous.Injection.Tag, dependency.Injection.Tag))
+                    {
+                        return default;
+                    }
+
                     arguments[source.BindingId] = dependency;
                 }
                 else if (!nodeTools.IsBlock(source) && !nodeTools.IsLazy(source, graph))

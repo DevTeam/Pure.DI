@@ -719,6 +719,62 @@ public class GeneratedCodeGrowthTests(ITestOutputHelper output)
         result.StdOut.ShouldBe(["True 8 8 8 8"], result);
     }
 
+    [Theory]
+    [InlineData("Auto")]
+    [InlineData("On")]
+    public async Task ShouldKeepTheFirstInjectionTagOfASharedPerBlockInstance(string mode)
+    {
+        const int depth = 6;
+        var classes = new StringBuilder();
+        for (var level = 1; level <= depth; level++)
+        {
+            classes.AppendLine($"sealed class N{level} {{ public N{level}(N{level - 1} first, N{level - 1} second) {{ Valid = first.Valid && second.Valid && !ReferenceEquals(first, second); }} public bool Valid {{ get; }} }}");
+        }
+
+        var result = await $$"""
+            using System;
+            using Pure.DI;
+            namespace Sample
+            {
+                sealed class Token
+                {
+                    public static int Created;
+                    public Token(string tag) { Tag = tag; Created++; }
+                    public string Tag { get; }
+                }
+                sealed class N0
+                {
+                    public static int Created;
+                    public N0([Tag("a")] Token first, [Tag("b")] Token second)
+                    {
+                        Valid = ReferenceEquals(first, second) && first.Tag == "a";
+                        Created++;
+                    }
+                    public bool Valid { get; }
+                }
+                {{classes}}
+                partial class Composition
+                {
+                    private static void Setup() => DI.Setup(nameof(Composition))
+                        .Hint(Hint.LocalFunctions, "{{mode}}")
+                        .Bind<Token>("a", "b").As(Lifetime.PerBlock).To(ctx => new Token(ctx.Tag?.ToString() ?? ""))
+                        .Root<N{{depth}}>("Root");
+                }
+                public static class Program
+                {
+                    public static void Main()
+                    {
+                        var root = new Composition().Root;
+                        Console.WriteLine($"{root.Valid} {Token.Created} {N0.Created}");
+                    }
+                }
+            }
+            """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([$"True 1 {1 << depth}"], result);
+    }
+
     private sealed record Measurement(int Depth, int Tokens, int Constructions, int SizeWarnings);
 
     public enum Edge { Constructor, Property, Field, Method, BuildUp, Array, Span, ReadOnlySpan, Memory, ReadOnlyMemory, Enumerable, AsyncEnumerable }
