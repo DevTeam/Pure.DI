@@ -1,7 +1,5 @@
 namespace Pure.DI.IntegrationTests;
 
-using Core;
-
 public class DeferredEnumerableScopeTests
 {
     [Fact]
@@ -203,7 +201,7 @@ public class DeferredEnumerableScopeTests
     [Theory]
     [InlineData("Transient")]
     [InlineData("PerBlock")]
-    public async Task ShouldReportCycleThroughAsyncEnumerable(string lifetime)
+    public async Task ShouldSupportDeferredCycleThroughAsyncEnumerable(string lifetime)
     {
         var source = """
                      using System;
@@ -293,8 +291,10 @@ public class DeferredEnumerableScopeTests
                      """.Replace("###Lifetime###", lifetime);
         var result = await source.RunAsync(new Options(LanguageVersion.CSharp10));
 
-        result.Errors.Count(i => i.Id == LogId.ErrorCyclicDependency).ShouldBe(1, result);
-        result.Success.ShouldBeFalse(result);
+        // The iterator is reused to close the deferred cycle, just as for IEnumerable<T>.
+        // Enumerating it after construction must create a usable policy graph.
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "ready"], result);
     }
 
     [Fact]
