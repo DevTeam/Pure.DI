@@ -18,4 +18,6 @@ record RootUseSiteAnalysis(
     // Binding ids of the nodes that create a PerBlock instance in place, directly or through other nodes.
     HashSet<int> PerBlockDependents,
     // The ids of the overrides that the code may or may not have overridden, depending on the path to it, see MaybeOverrideCodeBuilder.
-    HashSet<int> MaybeOverrides);
+    HashSet<int> MaybeOverrides,
+    // The number of the dependencies on the nodes of the cycle of a node from the nodes outside it, by binding id.
+    IReadOnlyDictionary<int, int> CycleEntries);

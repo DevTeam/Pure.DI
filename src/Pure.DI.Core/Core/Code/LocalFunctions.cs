@@ -20,9 +20,11 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
 
         // A local function that adds to accumulators or injects one refers to their variables,
         // so they must be declared before the place of its scope.
+        // An instance on a cycle through lambdas gets the accumulators as arguments instead.
         var nodeAccumulators = GetAccumulators(ctx);
         if (nodeAccumulators.Count != 0
             && !nodeAccumulators.All(ctx.LocalFunctionScope.CanSee)
+            && !IsDeferredCycle(ctx)
             && (nodeAccumulators.Any(i => !i.IsEmpty)
                 || accumulators.InjectsAccumulator(
                     ctx.RootContext.Graph,
@@ -99,10 +101,18 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     // A transient instance gets such values as arguments instead, so the lambdas that create it share its local function, see #178.
     // A node created under accumulators gets the scope of the code that declares them,
     // so its local function is not called where other accumulators collect the instances.
+    // An instance on a cycle through lambdas gets the accumulators as arguments, so the lambdas on the cycle,
+    // which declare accumulators of their own, such as Owned<T>, call the same local function, see #192.
     public LocalFunctionScope GetScope(CodeContext ctx) =>
-        IsOverrideConsumer(ctx) && !IsOverrideArgumentsConsumer(ctx) || GetAccumulators(ctx).Count != 0
+        IsOverrideConsumer(ctx) && !IsOverrideArgumentsConsumer(ctx) || GetAccumulators(ctx).Count != 0 && !IsDeferredCycle(ctx)
             ? ctx.LocalFunctionScope
             : ctx.RootContext.LocalFunctionScope;
+
+    // The accumulators that the local function of an instance on a cycle through lambdas gets as arguments.
+    public ImmutableArray<Accumulator> GetAccumulatorArguments(CodeContext ctx) =>
+        IsDeferredCycle(ctx)
+            ? GetAccumulators(ctx).ToImmutableArray()
+            : ImmutableArray<Accumulator>.Empty;
 
     // The overridden values that the local function of a transient instance gets as arguments.
     public ImmutableArray<MdOverride> GetOverrideArguments(CodeContext ctx) =>
@@ -121,7 +131,7 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         }
 
         var graph = ctx.RootContext.Graph;
-        var isDeferredCycle = ctx.VarInjection.Var.HasCycle == true && GetAccumulators(ctx).Count == 0;
+        var isDeferredCycle = ctx.VarInjection.Var.HasCycle == true;
         var arguments = new Dictionary<int, Dependency>();
         var visited = new HashSet<int>();
         var stack = new Stack<DependencyNode>();
@@ -199,7 +209,10 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         var nodeAccumulators = GetAccumulators(ctx);
         if (nodeAccumulators.Count != 0)
         {
-            key = $"{key}:{string.Join(",", nodeAccumulators.Select(i => i.VarInjection.Var.Name))}";
+            // The local function of an instance on a cycle gets the accumulators as arguments, so it depends only on their kinds.
+            key = IsDeferredCycle(ctx)
+                ? $"{key}:{string.Join(",", nodeAccumulators.Select(i => i.VarInjection.Var.AbstractNode.BindingId))}"
+                : $"{key}:{string.Join(",", nodeAccumulators.Select(i => i.VarInjection.Var.Name))}";
         }
 
         // A transient instance is created by the code of each injection, which can depend on the tag of this injection.
@@ -241,11 +254,42 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     {
         var var = ctx.VarInjection.Var;
         var node = var.AbstractNode.Node;
-        return var.AbstractNode is { ActualLifetime: Transient, Arg: null }
+        return var.AbstractNode.Arg is null
+               && (var.AbstractNode.ActualLifetime is Transient || IsPerBlockResultOfLambdasOnCycle(ctx))
                && (node.Implementation is not null || node.Factory is not null && !nodeTools.IsLazy(node, ctx.RootContext.Graph))
                && (var.HasCycle != true || IsCycleCandidate(ctx))
                && !refSafety.IsMaybeRefLike(var.InstanceType)
                && !GetPerBlockArguments(ctx).IsDefault;
+    }
+
+    // A PerBlock instance that only lambdas return, such as screens that open each other by Func<T>, is created once
+    // in the block of each lambda, so it is created like a transient instance there. Its local function on a cycle
+    // creates the lambdas of the instance, rather than each lambda repeating the code of the lambdas it leads to.
+    private bool IsPerBlockResultOfLambdasOnCycle(CodeContext ctx)
+    {
+        var var = ctx.VarInjection.Var;
+        if (var.AbstractNode.ActualLifetime is not PerBlock || var.HasCycle != true)
+        {
+            return false;
+        }
+
+        var graph = ctx.RootContext.Graph;
+        var node = var.AbstractNode.Node;
+        if (!graph.Graph.TryGetOutEdges(node, out var consumers) || consumers.Count == 0)
+        {
+            return false;
+        }
+
+        var lambdas = new HashSet<int>();
+        foreach (var consumer in consumers)
+        {
+            if (!nodeTools.IsLazy(consumer.Target, graph) || !lambdas.Add(consumer.Target.BindingId))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // An instance that depends on itself only through lambdas, such as Func<T> or Lazy<T>.
@@ -254,11 +298,10 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         && IsTransientCandidate(ctx);
 
     // A cycle that does not pass through a lambda would create the instance again on each call of its local function.
-    // An instance created under accumulators gets the scope of the code that declares them, and a lambda declares accumulators
-    // of its own, so the lambdas on the cycle could not find the local function of the instance by its scope.
     private bool IsCycleCandidate(CodeContext ctx)
     {
-        if (GetAccumulators(ctx).Count != 0)
+        // A detached accumulator is declared inside a lambda that the local function cannot see.
+        if (!ctx.DetachedAccumulators.IsDefaultOrEmpty)
         {
             return false;
         }
@@ -266,8 +309,19 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         var graph = ctx.RootContext.Graph;
         var root = ctx.VarInjection.Var.AbstractNode.Node;
         return !cycleTools.IsCyclic(graph.Graph, root, node => !nodeTools.IsLazy(node, graph))
-               && (CountLambdasBackTo(graph, root) >= MinCycleLambdas || IsOverriddenOnCycle(ctx, root));
+               && (CountLambdasBackTo(graph, root) >= MinCycleLambdas
+                   || IsEnteredInSeveralPlaces(ctx, root)
+                   || IsOverriddenOnCycle(ctx, root));
     }
+
+    // The code of a cycle created in place is repeated from each place that enters the cycle up to the lambda that closes it,
+    // such as a hub that opens each screen of a ring, so its code grew with the square of the number of screens.
+    // Repeating the code of a small cycle is cheaper than a call.
+    private static bool IsEnteredInSeveralPlaces(CodeContext ctx, DependencyNode root) =>
+        ctx.RootContext.UseSites.CycleEntries.TryGetValue(root.BindingId, out var entries)
+        && entries >= MinCycleLambdas
+        && ctx.RootContext.UseSites.TransientCost.TryGetValue(root.BindingId, out var cost)
+        && IsTransientCostTooHigh(entries, cost);
 
     // The code created in place closes the cycle by a lambda created on an earlier pass of the cycle.
     // If that lambda captures a value that another lambda on the cycle overrides, the lambda of the earlier pass

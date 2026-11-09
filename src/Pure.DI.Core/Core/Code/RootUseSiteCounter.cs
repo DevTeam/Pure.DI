@@ -66,7 +66,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             GetInlineCosts(graph, root, counts, factoryDownstream),
             GetTransientCosts(graph, root, counts),
             GetPerBlockDependents(graph, root),
-            GetMaybeOverrides(graph));
+            GetMaybeOverrides(graph),
+            GetCycleEntries(graph));
     }
 
     // A node created only as the result of lambdas, such as Func<T>, is created by the code of each lambda,
@@ -467,6 +468,32 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                                    && (factoryDownstream.Contains(dep.BindingId) || depCost >= LocalFunctions.MinBodyCost);
             return hasLocalFunction ? 1 : depCost;
         }
+    }
+
+    private static Dictionary<int, int> GetCycleEntries(DependencyGraph graph)
+    {
+        var cycleEntries = new Dictionary<int, int>();
+        foreach (var cycle in GraphCycles.GetCycles(graph.Graph))
+        {
+            var members = new HashSet<int>(cycle.Select(i => i.BindingId));
+            var entries = 0;
+            foreach (var node in cycle)
+            {
+                if (!graph.Graph.TryGetOutEdges(node, out var consumers))
+                {
+                    continue;
+                }
+
+                entries += consumers.Count(i => !members.Contains(i.Target.BindingId));
+            }
+
+            foreach (var bindingId in members)
+            {
+                cycleEntries[bindingId] = entries;
+            }
+        }
+
+        return cycleEntries;
     }
 
     private static HashSet<int> GetMaybeOverrides(DependencyGraph graph)

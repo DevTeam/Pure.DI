@@ -126,11 +126,19 @@ class VarsMap(
     {
         var scope = EnterScope(var.AbstractNode.BindingId);
         var removed = RemovePerBlockVars(lines, nameof(LocalFunction));
+        // A parameter can replace a variable of the caller, such as an accumulator, which the caller still sees after the function.
+        List<KeyValuePair<int, Var>>? replaced = null;
         if (!parameters.IsDefaultOrEmpty)
         {
             foreach (var parameter in parameters)
             {
-                _map[parameter.Var.AbstractNode.BindingId] = parameter.Var;
+                var bindingId = parameter.Var.AbstractNode.BindingId;
+                if (_map.TryGetValue(bindingId, out var callerVar))
+                {
+                    (replaced ??= []).Add(new KeyValuePair<int, Var>(bindingId, callerVar));
+                }
+
+                _map[bindingId] = parameter.Var;
             }
         }
 
@@ -147,6 +155,15 @@ class VarsMap(
                         _map.Remove(parameter.Var.AbstractNode.BindingId);
                     }
                 }
+
+                if (replaced is not null)
+                {
+                    foreach (var item in replaced)
+                    {
+                        _map[item.Key] = item.Value;
+                    }
+                }
+
                 RestorePerBlockVars(removed, lines, nameof(LocalFunction));
             }
             finally

@@ -47,7 +47,7 @@ sealed class RootCodeBuilder(
                 yield return Build(parentCtx.CreateChild(argument));
             }
             // A transient instance is created by each call of its local function.
-            var.CodeExpression = $"{localFunctionName}({GetArguments(parentCtx, localFunctions.GetOverrideArguments(parentCtx), arguments)})";
+            var.CodeExpression = $"{localFunctionName}({GetArguments(parentCtx, localFunctions.GetOverrideArguments(parentCtx), localFunctions.GetAccumulatorArguments(parentCtx), arguments)})";
             yield break;
         }
 
@@ -150,6 +150,42 @@ sealed class RootCodeBuilder(
             yield return Build(parentCtx.CreateChild(argument));
         }
 
+        // An instance on a cycle through lambdas adds to the accumulators of its caller, which it gets as arguments, see #192.
+        var accumulatorArguments = isLocalFunction && !isBlock
+            ? localFunctions.GetAccumulatorArguments(varCtx)
+            : ImmutableArray<Accumulator>.Empty;
+        var accumulatorParameters = accumulatorArguments.Select(accumulator =>
+        {
+            var parameter = accumulator.VarInjection.Var with
+            {
+                Declaration = accumulator.VarInjection.Var.Declaration with { },
+                NameOverride = uniqueNameProvider.GetUniqueName("accumulator")
+            };
+            parameter.CodeExpression = parameter.Name;
+            parameter.Declaration.IsDeclared = true;
+            return accumulator with { VarInjection = accumulator.VarInjection with { Var = parameter } };
+        }).ToImmutableArray();
+        if (!accumulatorParameters.IsEmpty)
+        {
+            varCtx = varCtx with
+            {
+                Accumulators = varCtx.Accumulators
+                    .Select(accumulator =>
+                    {
+                        for (var index = 0; index < accumulatorArguments.Length; index++)
+                        {
+                            if (ReferenceEquals(accumulatorArguments[index], accumulator))
+                            {
+                                return accumulatorParameters[index];
+                            }
+                        }
+
+                        return accumulator;
+                    })
+                    .ToImmutableArray()
+            };
+        }
+
         var perBlockParameters = perBlockArguments.Select(argument =>
         {
             var parameter = argument.Var with
@@ -190,7 +226,7 @@ sealed class RootCodeBuilder(
 
         var mapToken =
             isLocalFunction
-                ? varsMap.LocalFunction(var, lines, perBlockParameters)
+                ? varsMap.LocalFunction(var, lines, perBlockParameters.AddRange(accumulatorParameters.Select(i => i.VarInjection)))
                 : isLazy
                     ? varsMap.Lazy(var, lines, accumulatorBindingIds)
                     : isBlock
@@ -336,6 +372,7 @@ sealed class RootCodeBuilder(
 
             localFunctionName = reservedLocalFunctionName ?? uniqueNameProvider.GetUniqueName($"Create{baseName}{Names.Salt}");
             var parameters = string.Join(", ", overrideArguments.Select(i => GetParameter(varCtx, i))
+                .Concat(accumulatorParameters.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.VarInjection.Var.InstanceType)} {i.VarInjection.Var.Name}"))
                 .Concat(perBlockParameters.Select(i => $"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, i.Var.InstanceType)} {i.Var.Name}")));
             localFunction.AppendLine($"{typeResolver.Resolve(varCtx.RootContext.Graph.Source, var.InstanceType)} {localFunctionName}({parameters})");
             using (localFunction.CreateBlock())
@@ -346,7 +383,7 @@ sealed class RootCodeBuilder(
 
             localFunctionScope.Add(localFunctionKey, localFunctionName, localFunction);
             lines = new Lines();
-            var.CodeExpression = $"{localFunctionName}({GetArguments(parentCtx, overrideArguments, perBlockArguments)})";
+            var.CodeExpression = $"{localFunctionName}({GetArguments(parentCtx, overrideArguments, accumulatorArguments, perBlockArguments)})";
         }
         else if (isLocalFunction)
         {
@@ -377,8 +414,14 @@ sealed class RootCodeBuilder(
         localFunctions.GetPerBlockArguments(ctx).Select(dependency =>
             ctx.VarsMap.GetInjection(ctx.RootContext.Graph, dependency.Injection, dependency.Source)).ToImmutableArray();
 
-    private string GetArguments(CodeContext ctx, ImmutableArray<MdOverride> overrideArguments, ImmutableArray<VarInjection> perBlockArguments) =>
-        string.Join(", ", overrideArguments.Select(i => GetArgument(ctx, i)).Concat(perBlockArguments.Select(i => i.Var.CodeExpression)));
+    private string GetArguments(
+        CodeContext ctx,
+        ImmutableArray<MdOverride> overrideArguments,
+        ImmutableArray<Accumulator> accumulatorArguments,
+        ImmutableArray<VarInjection> perBlockArguments) =>
+        string.Join(", ", overrideArguments.Select(i => GetArgument(ctx, i))
+            .Concat(accumulatorArguments.Select(i => i.VarInjection.Var.Name))
+            .Concat(perBlockArguments.Select(i => i.Var.CodeExpression)));
 
     // A value that may be overridden is passed with whether the caller overrides it, see MaybeOverrideCodeBuilder.
     private string GetArgument(CodeContext ctx, MdOverride @override)
