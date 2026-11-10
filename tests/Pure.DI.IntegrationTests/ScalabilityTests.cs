@@ -20,10 +20,6 @@ public class ScalabilityTests
         from lifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
         from creation in new[] { Creation.Constructor, Creation.Factory }
         from context in new[] { DiamondContext.Root, DiamondContext.Lazy, DiamondContext.FuncArgument, DiamondContext.FuncArgumentWithBackReference }
-        // A transient instance on a cycle is created in place, because the code of its local function would reach it again
-        // through the lambda of Lazy<T> and would refer to the variables of the code around it. Such a graph creates
-        // as many instances as there are dependency paths anyway.
-        where lifetime != "Transient" || context != DiamondContext.FuncArgumentWithBackReference
         select new object[] { lifetime, creation, context };
 
     public static IEnumerable<object[]> NestedFuncCases() =>
@@ -130,8 +126,8 @@ public class ScalabilityTests
         // Given
 
         // When
-        // A transient instance on a cycle is created in place on each dependency path.
-        var result = await CreateDiamond(16, "Transient", Creation.Constructor, DiamondContext.FuncArgumentWithBackReference)
+        // Without local functions a transient instance is created in place on each dependency path.
+        var result = await CreateDiamond(16, "Transient", Creation.Constructor, DiamondContext.FuncArgumentWithBackReference, "Off")
             .RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
@@ -152,7 +148,7 @@ public class ScalabilityTests
     }
 
     // S{i} depends on S{i-1} and S{i-2}, so the number of dependency paths to S0 grows as the Fibonacci numbers.
-    private static string CreateDiamond(int size, string lifetime, Creation creation, DiamondContext context)
+    private static string CreateDiamond(int size, string lifetime, Creation creation, DiamondContext context, string? localFunctions = null)
     {
         var top = $"S{size - 1}";
         var s0Parameters = context switch
@@ -214,6 +210,7 @@ public class ScalabilityTests
                      {
                          private static void Setup() =>
                              DI.Setup(nameof(Composition))
+                                 {{(localFunctions is null ? "" : $".Hint(Hint.LocalFunctions, \"{localFunctions}\")")}}
                                  {{bindings}}
                                  .Root<{{rootType}}>("Root");
                      }

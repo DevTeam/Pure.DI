@@ -134,23 +134,26 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         var isDeferredCycle = ctx.VarInjection.Var.HasCycle == true;
         var arguments = new Dictionary<int, Dependency>();
         var visited = new HashSet<int>();
-        var stack = new Stack<DependencyNode>();
-        stack.Push(root);
+        var visitedUnderFactory = new HashSet<int>();
+        var stack = new Stack<(DependencyNode Node, bool IsUnderFactory)>();
+        stack.Push((root, false));
         while (stack.Count > 0)
         {
-            var node = stack.Pop();
+            var (node, isUnderFactory) = stack.Pop();
             if (!visited.Add(node.BindingId))
             {
-                continue;
+                // The PerBlock dependencies of a node reached again under a factory are checked under the factory too.
+                if (!isUnderFactory || !visitedUnderFactory.Add(node.BindingId))
+                {
+                    continue;
+                }
             }
-
-            // Factories may inject only in a branch or loop, so their PerBlock dependencies
-            // must not be evaluated eagerly at the call site of a helper.
-            if (node.Factory is not null && ctx.RootContext.UseSites.PerBlockDependents.Contains(node.BindingId))
+            else if (isUnderFactory)
             {
-                return default;
+                visitedUnderFactory.Add(node.BindingId);
             }
 
+            isUnderFactory |= node.Factory is not null && ctx.RootContext.UseSites.PerBlockDependents.Contains(node.BindingId);
             if (!graph.Graph.TryGetInEdges(node, out var dependencies))
             {
                 continue;
@@ -171,7 +174,11 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
 
                 if (source.ActualLifetime is PerBlock)
                 {
-                    if (source.Construct is { Source.Kind: MdConstructKind.Accumulator }
+                    // Factories may inject only in a branch or loop, so their PerBlock dependencies
+                    // must not be evaluated eagerly at the call site of a helper. A factory that injects
+                    // only the lambdas created inside the local function has no such dependencies.
+                    if (isUnderFactory
+                        || source.Construct is { Source.Kind: MdConstructKind.Accumulator }
                         || refSafety.IsMaybeRefLike(source.Type)
                         || ReferenceEquals(dependency.Injection.Tag, MdTag.ContextTag))
                     {
@@ -191,7 +198,7 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
                 }
                 else if (!nodeTools.IsBlock(source) && !nodeTools.IsLazy(source, graph))
                 {
-                    stack.Push(source);
+                    stack.Push((source, isUnderFactory));
                 }
             }
         }
