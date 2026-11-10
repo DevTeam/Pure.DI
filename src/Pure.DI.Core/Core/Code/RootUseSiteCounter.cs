@@ -234,6 +234,12 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             }
         }
 
+        // A lambda, such as Func<T1, T>, keeps no state of its own, so the lambdas of different blocks are interchangeable,
+        // and a consumer created only in other blocks does not share them with this node. For example, a node reached
+        // both under a delegate and outside it has a copy for each of these scopes, and the copies share the delegates
+        // they inject. Otherwise, the local function of a copy got these delegates as arguments, and each call of it
+        // created the delegates of all the levels below it again.
+        var hasOnlyLambdas = nodes.Values.All(node => node.ActualLifetime is not Lifetime.PerBlock || nodeTools.IsLazy(node, graph));
         foreach (var node in nodes.Values)
         {
             if (node.ActualLifetime is not Lifetime.PerBlock && !dependents.Contains(node.BindingId))
@@ -244,7 +250,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             if (consumers.TryGetValue(node.BindingId, out var dependencyConsumers)
                 && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId
                                                        && !nodes.ContainsKey(consumer.BindingId)
-                                                       && !IsResultOfOtherLambdas(graph, consumer, nodeBlocks, consumers)))
+                                                       && !IsResultOfOtherLambdas(graph, consumer, nodeBlocks, consumers)
+                                                       && !(hasOnlyLambdas && IsCreatedInOtherBlocks(graph, root, consumer, nodeBlocks, consumers, blocks))))
             {
                 return false;
             }
@@ -252,6 +259,16 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 
         return true;
     }
+
+    private bool IsCreatedInOtherBlocks(
+        DependencyGraph graph,
+        DependencyNode root,
+        DependencyNode node,
+        HashSet<int> nodeBlocks,
+        Dictionary<int, List<DependencyNode>> consumers,
+        Dictionary<int, HashSet<int>?> blocks) =>
+        GetBlocks(graph, root, node.BindingId, consumers, blocks) is {} otherBlocks
+        && !otherBlocks.Overlaps(nodeBlocks);
 
     // The blocks of code that create a node in place, by the binding ids of the lambdas or of the root whose code they are,
     // when each of these blocks creates it at most once; otherwise null.

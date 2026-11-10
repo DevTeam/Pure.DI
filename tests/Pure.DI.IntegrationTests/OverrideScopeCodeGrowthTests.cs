@@ -38,8 +38,6 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
     {
         (Arguments.OnePerLevelReadByLeaf, _) =>
             "The last node is rewritten for each subset of the values that the delegates above it override.",
-        (Arguments.OnePerLevelReadByNextLevel, "Transient") =>
-            "The local function of a node gets the delegates of the levels below it as arguments, so each call of it creates all of them again.",
         _ => null
     };
 
