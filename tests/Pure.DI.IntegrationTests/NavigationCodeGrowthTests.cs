@@ -38,8 +38,6 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     {
         { HasTags: true, Edge: Edge.Lazy or Edge.FuncOfOwned } =>
             "Lazy<T> and Owned<T> of an instance are different nodes for each tag, so each of them gets a local function with the same code.",
-        { Edge: Edge.FuncOfOwned, Creation: Creation.FactoryWithOverride } =>
-            "An instance that reads the value overridden by a factory under Owned<T> gets a local function with the same code in each screen.",
         _ => null
     };
 

@@ -2,7 +2,12 @@ namespace Pure.DI.Core.Code;
 
 using static Lifetime;
 
-class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafety refSafety, ICycleTools cycleTools): ILocalFunctions
+class LocalFunctions(
+    INodeTools nodeTools,
+    IAccumulators accumulators,
+    IRefSafety refSafety,
+    ICycleTools cycleTools,
+    ITypeSymbolComparer typeSymbolComparer): ILocalFunctions
 {
     internal const int MinBodyCost = 4;
     internal const int MinUseSites = 2;
@@ -242,6 +247,9 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     }
 
     // A shared instance does not feed the per-resolve accumulators, see RootCodeBuilder.
+    // A node that neither feeds the accumulators nor injects them, together with the nodes created in place with it,
+    // does not depend on them, so its local function is shared by the code under different accumulators,
+    // for example, by the screens that lambdas create under Owned<T>.
     private IReadOnlyCollection<Accumulator> GetAccumulators(CodeContext ctx)
     {
         if (ctx.Accumulators.IsDefaultOrEmpty)
@@ -251,9 +259,76 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
 
         var node = ctx.VarInjection.Var.AbstractNode;
         var graph = ctx.RootContext.Graph;
-        return nodeTools.IsSharedInstance(node.Node, graph) && !accumulators.GetBoundaryAccumulators(graph, node).Any()
+        var nodeAccumulators = nodeTools.IsSharedInstance(node.Node, graph) && !accumulators.GetBoundaryAccumulators(graph, node).Any()
             ? ctx.Accumulators.Where(i => i.Lifetime is Singleton or Scoped).ToList()
-            : ctx.Accumulators;
+            : (IReadOnlyCollection<Accumulator>)ctx.Accumulators;
+        if (nodeAccumulators.Count == 0 || UsesAccumulators(ctx, nodeAccumulators))
+        {
+            return nodeAccumulators;
+        }
+
+        return [];
+    }
+
+    private bool UsesAccumulators(CodeContext ctx, IReadOnlyCollection<Accumulator> nodeAccumulators)
+    {
+        var graph = ctx.RootContext.Graph;
+        var root = ctx.VarInjection.Var.AbstractNode.Node;
+        var bindingIds = nodeAccumulators.Select(i => i.VarInjection.Var.AbstractNode.BindingId).ToImmutableHashSet();
+        if (accumulators.InjectsAccumulator(graph, root, bindingIds))
+        {
+            return true;
+        }
+
+        var visited = new HashSet<int>();
+        var stack = new Stack<DependencyNode>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var node = stack.Pop();
+            if (!visited.Add(node.BindingId))
+            {
+                continue;
+            }
+
+            // A lambda or a boundary, such as Owned<T>, declares accumulators of its own, so the code under it uses them too.
+            if (nodeTools.IsLazy(node, graph)
+                || node.Construct is { Source.Kind: MdConstructKind.Accumulator }
+                || accumulators.GetBoundaryAccumulators(graph, node).Any())
+            {
+                return true;
+            }
+
+            if (node.Arg is null && nodeAccumulators.Any(accumulator => !accumulator.IsEmpty && accumulator.Lifetime == node.Lifetime && IsAssignableTo(node.Type, accumulator.Type)))
+            {
+                return true;
+            }
+
+            if (!graph.Graph.TryGetInEdges(node, out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                stack.Push(dependency.Source);
+            }
+        }
+
+        return false;
+    }
+
+    private bool IsAssignableTo(ITypeSymbol type, ITypeSymbol contract)
+    {
+        for (var current = type; current is not null; current = current.BaseType)
+        {
+            if (typeSymbolComparer.RuntimeEquals(current, contract))
+            {
+                return true;
+            }
+        }
+
+        return type.AllInterfaces.Any(i => typeSymbolComparer.RuntimeEquals(i, contract));
     }
 
     // A transient instance is created anew at each use site, so a local function that returns it
