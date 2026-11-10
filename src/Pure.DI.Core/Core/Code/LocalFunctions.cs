@@ -8,6 +8,7 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     internal const int MinUseSites = 2;
     // The size of the code a transient instance may repeat across its use sites before it gets a local function.
     private const int MaxRepeatedTransientCost = 32;
+    private readonly Dictionary<SyntaxNode, bool> _readsTag = new();
 
     public bool UseFor(CodeContext ctx)
     {
@@ -230,14 +231,43 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
                 : $"{key}:{string.Join(",", nodeAccumulators.Select(i => i.VarInjection.Var.Name))}";
         }
 
-        // A transient instance is created by the code of each injection, which can depend on the tag of this injection.
-        if (!nodeTools.IsBlock(var.AbstractNode))
+        // A transient instance is created by the code of each injection, which depends on the tag of this injection
+        // when a factory reads the tag. Otherwise, the injections of an instance by different tags share its local function.
+        if (!nodeTools.IsBlock(var.AbstractNode) && ReadsTag(var.AbstractNode.Node))
         {
             var tag = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? ctx.ContextTag : injection.Tag;
             key = $"{key}#{tag}";
         }
 
         return key;
+    }
+
+    // A factory reads the tag of its injection by ctx.Tag, for example, to inject its dependencies by the same tag.
+    private bool ReadsTag(DependencyNode node)
+    {
+        if (node.Factory is not {} factory)
+        {
+            return false;
+        }
+
+        var lambda = factory.Source.Factory;
+        if (_readsTag.TryGetValue(lambda, out var readsTag))
+        {
+            return readsTag;
+        }
+
+        var contextName = factory.Source.Context.Identifier.ValueText;
+        readsTag = lambda
+            .DescendantNodes()
+            .OfType<MemberAccessExpressionSyntax>()
+            .Any(i => i is
+                {
+                    Expression: IdentifierNameSyntax identifier,
+                    Name.Identifier.ValueText: nameof(IContext.Tag)
+                }
+                && identifier.Identifier.ValueText == contextName);
+        _readsTag.Add(lambda, readsTag);
+        return readsTag;
     }
 
     // A shared instance does not feed the per-resolve accumulators, see RootCodeBuilder.

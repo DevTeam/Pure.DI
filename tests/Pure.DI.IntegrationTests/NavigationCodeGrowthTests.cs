@@ -38,8 +38,8 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     {
         { Topology: Topology.Router, RouterLifetime: "PerBlock", Edge: not Edge.FuncOfOwned } =>
             "Each lambda creates a router of its own with the lambdas for all the screens, so the code grows with the square of the number of screens.",
-        { HasTags: true } =>
-            "A transient instance gets a local function for each tag of its injections, although its code does not depend on the tag.",
+        { HasTags: true, Edge: Edge.Lazy or Edge.FuncOfOwned } =>
+            "Lazy<T> and Owned<T> of an instance are different nodes for each tag, so each of them gets a local function with the same code.",
         { Topology: Topology.Ring, Edge: Edge.FuncOfOwned, Lifetime: "PerBlock" } =>
             "A PerBlock screen under Owned<T> is not the result of a lambda, so it is created in place in each lambda.",
         { Edge: Edge.FuncOfOwned, Creation: Creation.Factory or Creation.FactoryWithOverride } =>
@@ -127,6 +127,8 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
         knownProblems);
 
     // Each screen opens the next screens by different tags, and the code of a transient instance depends on its tag.
+    public static IEnumerable<object[]> TagCases() => TagCases(false);
+
     private static IEnumerable<object[]> TagCases(bool knownProblems) => Cases(
         from edge in Edges
         from lifetime in new[] { "Transient", "PerBlock" }
@@ -168,6 +170,10 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     [Theory]
     [MemberData(nameof(ServiceCases))]
     public Task ShouldGrowLinearlyForScreensWithService(Scenario scenario) => CheckGrowth(scenario);
+
+    [Theory]
+    [MemberData(nameof(TagCases))]
+    public Task ShouldGrowLinearlyForScreensOpenedByTags(Scenario scenario) => CheckGrowth(scenario);
 
     [Theory]
     [MemberData(nameof(RootCases))]
