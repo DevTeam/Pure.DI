@@ -243,6 +243,17 @@ sealed class RootCodeBuilder(
             varCtx = varCtx with { IsLockRequired = varCtx.RootContext.IsThreadSafeEnabled };
         }
 
+        // The code of a local function that returns an instance is a scope of its own. Its caller may be a lambda,
+        // whose local functions the function, declared at the level of its root, cannot see, and the local functions
+        // created by its code may read its parameters, such as the overridden values, see #193.
+        LocalFunctionScope? bodyScope = null;
+        if (isLocalFunction && !isBlock)
+        {
+            bodyScope = new LocalFunctionScope(localFunctionScope);
+            bodyScope.AddVisibleAccumulators(accumulatorParameters);
+            varCtx = varCtx with { LocalFunctionScope = bodyScope };
+        }
+
         // #174 A factory that synchronizes the creation of a shared instance by ctx.Lock
         // gets the double-checked locking even when the thread safety is disabled.
         var isContextLockUsed = isBlock
@@ -381,6 +392,11 @@ sealed class RootCodeBuilder(
             {
                 localFunction.AppendLines(lines);
                 localFunction.AppendLine($"return {var.CodeExpression};");
+                foreach (var function in bodyScope?.Functions ?? [])
+                {
+                    localFunction.AppendLine();
+                    localFunction.AppendLines(function);
+                }
             }
 
             localFunctionScope.Add(localFunctionKey, localFunctionName, localFunction);

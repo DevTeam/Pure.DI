@@ -23,6 +23,13 @@ sealed class LocalFunctionScope
     }
 
     /// <summary>
+    /// Creates a scope inside the code of a local function declared in the parent scope,
+    /// so its local functions see what the parent scope sees.
+    /// </summary>
+    public LocalFunctionScope(LocalFunctionScope parent) =>
+        _visibleAccumulators.UnionWith(parent._visibleAccumulators);
+
+    /// <summary>
     /// Gets the declarations of the local functions in the order they were added.
     /// </summary>
     public IEnumerable<Lines> Functions => _functions;
