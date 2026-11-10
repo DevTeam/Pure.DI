@@ -26,7 +26,7 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
     private const double MaxQuadraticGrowthRatio = MaxGrowthRatio * 5 / 3;
 
     public static IEnumerable<object[]> Cases() =>
-        from arguments in new[] { Arguments.OnePerLevelReadByLeaf, Arguments.OnePerLevelReadByNextLevel, Arguments.SameReadByLeaf, Arguments.SameReadByEachLevel }
+        from arguments in new[] { Arguments.OnePerLevelReadByLeaf, Arguments.OnePerLevelReadByNextLevel, Arguments.SameReadByLeaf, Arguments.SameReadByEachLevel, Arguments.SameReadByEachLevelThroughPerBlock }
         from lifetime in new[] { "Transient", "PerBlock" }
         from mode in new[] { "Auto", "On" }
         select new object[] { arguments, lifetime, mode };
@@ -129,7 +129,7 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
         return [0, all, odd, all & ~odd];
     }
 
-    private static bool IsSame(Arguments arguments) => arguments is Arguments.SameReadByLeaf or Arguments.SameReadByEachLevel;
+    private static bool IsSame(Arguments arguments) => arguments is Arguments.SameReadByLeaf or Arguments.SameReadByEachLevel or Arguments.SameReadByEachLevelThroughPerBlock;
 
     private static bool IsReadByLeaf(Arguments arguments) => arguments is Arguments.OnePerLevelReadByLeaf or Arguments.SameReadByLeaf;
 
@@ -146,6 +146,12 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
             bindings.AppendLine($"            .Bind<{argument}>().To(_ => new {argument}(\"d\"))");
         }
 
+        if (arguments == Arguments.SameReadByEachLevelThroughPerBlock)
+        {
+            classes.AppendLine("    sealed class Holder { public Holder(A a) => Value = a.Value; public string Value { get; } }");
+            bindings.AppendLine("            .Bind<Holder>().As(Lifetime.PerBlock).To<Holder>()");
+        }
+
         for (var level = 0; level <= depth; level++)
         {
             // The values that the node reads.
@@ -155,6 +161,7 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
                 Arguments.OnePerLevelReadByNextLevel when level < depth => [$"A{level + 1}"],
                 Arguments.SameReadByLeaf when level == 0 => ["A"],
                 Arguments.SameReadByEachLevel => ["A"],
+                Arguments.SameReadByEachLevelThroughPerBlock => ["Holder"],
                 _ => []
             };
 
@@ -239,6 +246,7 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
 
                 case Arguments.SameReadByLeaf when level == 0:
                 case Arguments.SameReadByEachLevel:
+                case Arguments.SameReadByEachLevelThroughPerBlock:
                     var nearest = Enumerable.Range(level + 1, depth - level).Where(IsSet).Select(i => $"{i}").FirstOrDefault();
                     walk.Append(nearest ?? "d");
                     break;
@@ -265,6 +273,8 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
         // All the delegates override the same type, which the last node reads.
         SameReadByLeaf,
         // All the delegates override the same type, which each node reads.
-        SameReadByEachLevel
+        SameReadByEachLevel,
+        // All the delegates override the same type, which each node reads through a PerBlock instance that the nodes of a block share.
+        SameReadByEachLevelThroughPerBlock
     }
 }

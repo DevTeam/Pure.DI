@@ -24,4 +24,6 @@ record RootUseSiteAnalysis(
     // Binding ids of the nodes of the cycles that have several paths through their nodes.
     HashSet<int> BranchingCycles,
     // Binding ids of the nodes whose code depends on the consumers they are injected into.
-    HashSet<int> ConsumerDependents);
+    HashSet<int> ConsumerDependents,
+    // The lambdas that the code around a node does not share with it, so its local function creates them, by the binding id of the node.
+    IReadOnlyDictionary<int, HashSet<int>> PrivateLambdas);

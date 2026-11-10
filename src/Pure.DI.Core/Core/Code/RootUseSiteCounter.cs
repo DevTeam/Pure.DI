@@ -69,11 +69,12 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             freeOverrides,
             GetInlineCosts(graph, root, counts, factoryDownstream),
             GetTransientCosts(graph, root, counts, freeOverrides),
-            GetPerBlockDependents(graph, root),
+            GetPerBlockDependents(graph, root, freeOverrides, out var privateLambdas),
             GetMaybeOverrides(graph),
             cycleEntries,
             branchingCycles,
-            GetConsumerDependents(nodes, consumers));
+            GetConsumerDependents(nodes, consumers),
+            privateLambdas);
     }
 
     // A factory that reads ctx.ConsumerType creates an instance for the consumer it is injected into, so the code
@@ -207,8 +208,13 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 
     // A PerBlock instance is shared by the code of one block, so a local function that creates it anew
     // on each call would change it. The code inside a lambda is a block of its own.
-    private HashSet<int> GetPerBlockDependents(DependencyGraph graph, DependencyNode root)
+    private HashSet<int> GetPerBlockDependents(
+        DependencyGraph graph,
+        DependencyNode root,
+        IReadOnlyDictionary<int, ImmutableArray<MdOverride>> freeOverrides,
+        out Dictionary<int, HashSet<int>> privateLambdas)
     {
+        privateLambdas = new Dictionary<int, HashSet<int>>();
         var dependents = new HashSet<int>();
         VisitDependenciesFirst(graph, root, (node, dependencies) =>
         {
@@ -238,7 +244,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         var instances = new Dictionary<int, List<DependencyNode>>();
         CollectConsumers(graph, root, consumers, instances);
         var blocks = new Dictionary<int, HashSet<int>?>();
-        dependents.RemoveWhere(bindingId => IsCreatedOncePerBlockAlone(graph, root, bindingId, dependents, consumers, instances, blocks));
+        var nodePrivateLambdas = privateLambdas;
+        dependents.RemoveWhere(bindingId => IsCreatedOncePerBlockAlone(graph, root, bindingId, dependents, consumers, instances, blocks, freeOverrides, nodePrivateLambdas));
         return dependents;
     }
 
@@ -249,7 +256,9 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         HashSet<int> dependents,
         Dictionary<int, List<DependencyNode>> consumers,
         Dictionary<int, List<DependencyNode>> instances,
-        Dictionary<int, HashSet<int>?> blocks)
+        Dictionary<int, HashSet<int>?> blocks,
+        IReadOnlyDictionary<int, ImmutableArray<MdOverride>> freeOverrides,
+        Dictionary<int, HashSet<int>> privateLambdas)
     {
         if (!instances.TryGetValue(bindingId, out var nodeInstances)
             || GetBlocks(graph, root, bindingId, consumers, blocks) is not {} nodeBlocks)
@@ -300,6 +309,9 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         // both under a delegate and outside it has a copy for each of these scopes, and the copies share the delegates
         // they inject. Otherwise, the local function of a copy got these delegates as arguments, and each call of it
         // created the delegates of all the levels below it again.
+        // When another PerBlock instance is shared with the code around this node, the local function gets it as an argument,
+        // but it still creates the lambdas that the code around it does not share, see LocalFunctions.GetPerBlockArguments.
+        var isAlone = true;
         foreach (var node in nodes.Values)
         {
             if (node.ActualLifetime is not Lifetime.PerBlock && !dependents.Contains(node.BindingId))
@@ -307,17 +319,67 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 continue;
             }
 
+            var isLazy = nodeTools.IsLazy(node, graph);
             if (consumers.TryGetValue(node.BindingId, out var dependencyConsumers)
                 && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId
                                                        && !nodes.ContainsKey(consumer.BindingId)
                                                        && !IsResultOfOtherLambdas(graph, consumer, nodeBlocks, consumers)
-                                                       && !(nodeTools.IsLazy(node, graph) && IsCreatedInOtherBlocks(graph, root, consumer, nodeBlocks, consumers, blocks))))
+                                                       && !(isLazy && IsCreatedInOtherBlocks(graph, root, consumer, nodeBlocks, consumers, blocks))))
             {
-                return false;
+                isAlone = false;
+                continue;
+            }
+
+            if (isLazy && node.ActualLifetime is Lifetime.PerBlock && !CapturesPerBlockInstances(graph, node, freeOverrides))
+            {
+                if (!privateLambdas.TryGetValue(bindingId, out var lambdas))
+                {
+                    lambdas = [];
+                    privateLambdas.Add(bindingId, lambdas);
+                }
+
+                lambdas.Add(node.BindingId);
             }
         }
 
-        return true;
+        return isAlone;
+    }
+
+    // The code of a lambda reads the PerBlock instances of the block around it, except the ones that read a value
+    // the lambda overrides, which it creates anew. A lambda created by a local function cannot read the instances
+    // of the block of its caller, so it would create them again with all the instances under them.
+    private bool CapturesPerBlockInstances(DependencyGraph graph, DependencyNode lambda, IReadOnlyDictionary<int, ImmutableArray<MdOverride>> freeOverrides)
+    {
+        var overrideIds = new HashSet<int>(GetDeclaredOverrides(lambda).Select(i => i.Id));
+        var visited = new HashSet<int>();
+        var stack = new Stack<DependencyNode>();
+        stack.Push(lambda);
+        while (stack.Count > 0)
+        {
+            if (!graph.Graph.TryGetInEdges(stack.Pop(), out var dependencies))
+            {
+                continue;
+            }
+
+            foreach (var dependency in dependencies)
+            {
+                var source = dependency.Source;
+                if (!visited.Add(source.BindingId) || nodeTools.IsBlock(source) || nodeTools.IsLazy(source, graph) || source.Arg is not null)
+                {
+                    continue;
+                }
+
+                if (source.ActualLifetime is Lifetime.PerBlock
+                    && !(freeOverrides.TryGetValue(source.BindingId, out var overrides) && overrides.Any(i => overrideIds.Contains(i.Id))))
+                {
+                    return true;
+                }
+
+                stack.Push(source);
+            }
+        }
+
+        return false;
     }
 
     private bool IsCreatedInOtherBlocks(

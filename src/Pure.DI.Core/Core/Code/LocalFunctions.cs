@@ -185,6 +185,15 @@ class LocalFunctions(
                     continue;
                 }
 
+                // A lambda that the code around this instance does not share with it is created by its local function too.
+                if (source.ActualLifetime is PerBlock
+                    && nodeTools.IsLazy(source, graph)
+                    && ctx.RootContext.UseSites.PrivateLambdas.TryGetValue(root.BindingId, out var privateLambdas)
+                    && privateLambdas.Contains(source.BindingId))
+                {
+                    continue;
+                }
+
                 // A PerBlock dependency that only this instance holds in each block is created by its local function too.
                 if (source.ActualLifetime is PerBlock
                     && source.Arg is null
