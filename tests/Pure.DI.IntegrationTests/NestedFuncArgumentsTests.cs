@@ -404,4 +404,257 @@ public class NestedFuncArgumentsTests
                  }
                  """;
     }
+
+    // The code of a view model created by the lambdas of nested delegates grows linearly with the number of view models, see #184.
+    private static readonly int[] NestedViewModelSizes = [4, 6, 10];
+    // A view model reached with a single argument or without it has a copy for each of these cases,
+    // so the code of the first view models differs from the code of the others.
+    private static readonly int[] NestedViewModelBuiltInFuncSizes = [8, 12, 20];
+    private const double NestedViewModelMaxGrowthRatio = 3;
+
+    // The built-in delegates override their argument, which reaches the view models of nested delegates too,
+    // so a view model is reached with each combination of the arguments passed along the way. It is created once
+    // for all of them, and its code checks whether an argument is passed.
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ShouldCreateViewModelOfNestedFuncsOncePerVariant(bool letFunc)
+    {
+        // Given
+
+        // When
+        var sizes = letFunc ? NestedViewModelSizes : NestedViewModelBuiltInFuncSizes;
+        var lines = new List<int>();
+        var constructions = new List<int>();
+        foreach (var size in sizes)
+        {
+            var result = await CreateNestedViewModels(size, letFunc).RunAsync(new Options(Options.ModernLanguageVersion));
+
+            // Then
+            result.Success.ShouldBeTrue(result);
+            result.StdOut.ShouldBe([$"Vm{size}"], result);
+            lines.Add(result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("global::Sample.")));
+            constructions.Add(result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains($"new global::Sample.Vm{size}(")));
+        }
+
+        var firstStep = Math.Max(lines[1] - lines[0], 1);
+        var lastStep = lines[2] - lines[1];
+        ((double)lastStep / firstStep).ShouldBeLessThan(
+            NestedViewModelMaxGrowthRatio,
+            $"Generated lines for sizes {string.Join(", ", sizes)}: {string.Join(", ", lines)}; constructions of the last view model: {string.Join(", ", constructions)}");
+    }
+
+    [Fact]
+    public async Task ShouldNotWarnWhenNestedFuncsOverrideArguments()
+    {
+        // Given
+
+        // When
+        var result = await CreateNestedViewModels(12, letFunc: false).RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Vm12"], result);
+    }
+
+    private static string CreateNestedViewModels(int size, bool letFunc = true)
+    {
+        var services = string.Join(", ", Enumerable.Range(0, size).Select(i => $"A{i} a{i}"));
+        var classes = new StringBuilder();
+        var bindings = new StringBuilder();
+        for (var i = 0; i < size; i++)
+        {
+            classes.AppendLine($"public sealed class A{i} {{ }}");
+            bindings.AppendLine($".Bind<A{i}>().To<A{i}>()");
+            classes.AppendLine(
+                $$"""
+                  public sealed class Vm{{i}} : IVm
+                  {
+                      private readonly Func<A{{i}}, Vm{{i + 1}}> _openWith;
+                      private readonly Func<Vm{{i + 1}}> _open;
+
+                      public Vm{{i}}({{services}}, Func<A{{i}}, Vm{{i + 1}}> openWith, Func<Vm{{i + 1}}> open)
+                      {
+                          _openWith = openWith;
+                          _open = open;
+                      }
+
+                      public IVm Next(int index) => index % 2 == 0 ? _openWith(new A{{i}}()) : _open();
+                  }
+                  """);
+        }
+
+        // The argument of a delegate reaches only the view model it creates.
+        var funcBinding = letFunc
+            ? """
+              .Bind<Func<TT1, TT>>().As(Lifetime.PerBlock).To(ctx => new Func<TT1, TT>(arg1 =>
+              {
+                  ctx.Let<TT1>(arg1);
+                  ctx.Inject<TT>(ctx.Tag, out var value);
+                  return value;
+              }))
+              """
+            : "";
+
+        return $$"""
+                 using System;
+                 using Pure.DI;
+
+                 namespace Sample
+                 {
+                     public interface IVm
+                     {
+                         IVm Next(int index);
+                     }
+
+                     {{classes}}
+
+                     public sealed class Vm{{size}} : IVm
+                     {
+                         public Vm{{size}}({{services}}) { }
+
+                         public IVm Next(int index) => this;
+
+                         public override string ToString() => GetType().Name;
+                     }
+
+                     partial class Composition
+                     {
+                         private static void Setup() =>
+                             DI.Setup(nameof(Composition))
+                                 {{funcBinding}}
+                                 {{bindings}}
+                                 .Root<Vm0>("Root");
+                     }
+
+                     public static class Program
+                     {
+                         public static void Main()
+                         {
+                             IVm vm = new Composition().Root;
+                             for (var index = 1; index <= {{size}}; index++)
+                             {
+                                 vm = vm.Next(index);
+                             }
+
+                             Console.WriteLine(vm);
+                         }
+                     }
+                 }
+                 """;
+    }
+
+    // A nested delegate creates its result instead of returning the argument of an outer delegate, see #185.
+#if ROSLYN4_8_OR_GREATER
+    [Theory]
+    [InlineData("ContextProvider provider, Func<IContext, Persister> persisterFactory", "provider.Open(\"c\") + \" \" + persisterFactory(new Context(\"a\"))", "c a b")]
+    [InlineData("Func<IContext, Persister> persisterFactory, ContextProvider provider", "provider.Open(\"c\") + \" \" + persisterFactory(new Context(\"a\"))", "c a b")]
+    [InlineData("Func<IContext, Persister> persisterFactory", "persisterFactory(new Context(\"a\")).ToString()", "a b")]
+    public async Task ShouldCreateResultOfNestedDelegate(string appArgs, string appToString, string expected)
+    {
+        // Given
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public interface IContext;
+
+                               public sealed class Context(string name) : IContext
+                               {
+                                   public override string ToString() => name;
+                               }
+
+                               public sealed class ContextProvider(Func<string, IContext> factory)
+                               {
+                                   public IContext Open(string name) => factory(name);
+                               }
+
+                               public sealed class Persister(IContext context, ContextProvider provider)
+                               {
+                                   public override string ToString() => $"{context} {provider.Open("b")}";
+                               }
+
+                               public sealed class App({{appArgs}})
+                               {
+                                   public override string ToString() => {{appToString}};
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() => DI.Setup(nameof(Composition))
+                                       .Bind<IContext>().To<Context>()
+                                       .Bind().As(Singleton).To<ContextProvider>()
+                                       .Root<App>("Root");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => Console.WriteLine(new Composition().Root);
+                               }
+                           }
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.Warnings.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe([expected], result);
+    }
+
+    [Theory]
+    [InlineData("Shared shared, Func<IContext, Item> items")]
+    [InlineData("Func<IContext, Item> items, Shared shared")]
+    public async Task ShouldCreateSharedInstanceOutsideDelegateWhenItIsReachedInsideDelegateToo(string appArgs)
+    {
+        // Given
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               public interface IContext;
+
+                               public sealed class Context : IContext { public override string ToString() => "root"; }
+
+                               public sealed class Arg(string name) : IContext { public override string ToString() => name; }
+
+                               public sealed class Shared(IContext context) { public override string ToString() => $"{context}"; }
+
+                               public sealed class Item(Shared shared) { public override string ToString() => $"{shared}"; }
+
+                               public sealed class App({{appArgs}})
+                               {
+                                   public override string ToString() => shared + " " + items(new Arg("a"));
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() => DI.Setup(nameof(Composition))
+                                       .Bind<IContext>().To<Context>()
+                                       .Bind().As(Singleton).To<Shared>()
+                                       .Root<App>("Root");
+                               }
+
+                               public static class Program
+                               {
+                                   public static void Main() => Console.WriteLine(new Composition().Root);
+                               }
+                           }
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        // The shared instance is valid everywhere only when it is created outside the delegate,
+        // so it does not depend on the order in which the composition reaches it.
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["root root"], result);
+    }
+#endif
 }
