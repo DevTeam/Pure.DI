@@ -62,12 +62,13 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 
         AddInlineUseSites(graph, counts, consumers);
         var cycleEntries = GetCycleEntries(graph, out var branchingCycles);
+        var freeOverrides = GetFreeOverrides(graph, root);
         return new RootUseSiteAnalysis(
             counts,
             factoryDownstream,
-            GetFreeOverrides(graph, root),
+            freeOverrides,
             GetInlineCosts(graph, root, counts, factoryDownstream),
-            GetTransientCosts(graph, root, counts),
+            GetTransientCosts(graph, root, counts, freeOverrides),
             GetPerBlockDependents(graph, root),
             GetMaybeOverrides(graph),
             cycleEntries,
@@ -154,15 +155,18 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 
     // A transient instance is created anew at each use site, so its code, together with the code
     // of the transient dependencies created with it, is repeated at each of them.
+    // A PerBlock instance that reads a value overridden by a lambda is created again by the code of each such lambda,
+    // so it is estimated like a transient instance, see LocalFunctions.
     private Dictionary<int, int> GetTransientCosts(
         DependencyGraph graph,
         DependencyNode root,
-        IReadOnlyDictionary<int, int> useSiteCount)
+        IReadOnlyDictionary<int, int> useSiteCount,
+        IReadOnlyDictionary<int, ImmutableArray<MdOverride>> freeOverrides)
     {
         var costs = new Dictionary<int, int>();
         VisitDependenciesFirst(graph, root, (node, dependencies) =>
         {
-            var cost = IsTransientCandidate(graph, node) ? nodeTools.EstimateBodyCost(node, false) : 1;
+            var cost = IsTransientCandidate(graph, node) || IsOverrideReader(node) ? nodeTools.EstimateBodyCost(node, false) : 1;
             if (!nodeTools.IsBlock(node))
             {
                 foreach (var dep in dependencies)
@@ -189,11 +193,16 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 return 1;
             }
 
-            var hasLocalFunction = IsTransientCandidate(graph, dep)
+            var hasLocalFunction = (IsTransientCandidate(graph, dep) || IsOverrideReader(dep))
                                    && useSiteCount.TryGetValue(dep.BindingId, out var count)
                                    && LocalFunctions.IsTransientCostTooHigh(count, depCost);
             return hasLocalFunction ? 1 : depCost;
         }
+
+        bool IsOverrideReader(DependencyNode node) =>
+            node is { ActualLifetime: Lifetime.PerBlock, Arg: null }
+            && freeOverrides.TryGetValue(node.BindingId, out var overrides)
+            && !overrides.IsDefaultOrEmpty;
     }
 
     // A PerBlock instance is shared by the code of one block, so a local function that creates it anew
@@ -291,7 +300,6 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         // both under a delegate and outside it has a copy for each of these scopes, and the copies share the delegates
         // they inject. Otherwise, the local function of a copy got these delegates as arguments, and each call of it
         // created the delegates of all the levels below it again.
-        var hasOnlyLambdas = nodes.Values.All(node => node.ActualLifetime is not Lifetime.PerBlock || nodeTools.IsLazy(node, graph));
         foreach (var node in nodes.Values)
         {
             if (node.ActualLifetime is not Lifetime.PerBlock && !dependents.Contains(node.BindingId))
@@ -303,7 +311,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId
                                                        && !nodes.ContainsKey(consumer.BindingId)
                                                        && !IsResultOfOtherLambdas(graph, consumer, nodeBlocks, consumers)
-                                                       && !(hasOnlyLambdas && IsCreatedInOtherBlocks(graph, root, consumer, nodeBlocks, consumers, blocks))))
+                                                       && !(nodeTools.IsLazy(node, graph) && IsCreatedInOtherBlocks(graph, root, consumer, nodeBlocks, consumers, blocks))))
             {
                 return false;
             }
@@ -355,7 +363,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 consumerBlocks = [consumer.BindingId];
             }
             // The code of a factory can create its dependencies any number of times, for example, in a loop.
-            else if (consumer is { ActualLifetime: Lifetime.Transient, Arg: null, Factory: null })
+            // A PerBlock consumer is created at most once in a block, like a transient one created once there.
+            else if (consumer is { ActualLifetime: Lifetime.Transient or Lifetime.PerBlock, Arg: null, Factory: null })
             {
                 consumerBlocks = GetBlocks(graph, root, consumer.BindingId, consumers, blocks);
             }

@@ -185,6 +185,17 @@ class LocalFunctions(
                     continue;
                 }
 
+                // A PerBlock dependency that only this instance holds in each block is created by its local function too.
+                if (source.ActualLifetime is PerBlock
+                    && source.Arg is null
+                    && !isUnderFactory
+                    && ReadsOverrides(ctx, source)
+                    && IsCreatedOncePerBlock(ctx, source))
+                {
+                    stack.Push((source, isUnderFactory));
+                    continue;
+                }
+
                 if (source.ActualLifetime is PerBlock)
                 {
                     // Factories may inject only in a branch or loop, so their PerBlock dependencies
@@ -363,16 +374,23 @@ class LocalFunctions(
     private bool IsPerBlockResultOfLambdasOnCycle(CodeContext ctx)
     {
         var var = ctx.VarInjection.Var;
-        if (var.AbstractNode.ActualLifetime is not PerBlock || var.HasCycle != true)
-        {
-            return false;
-        }
+        return var.AbstractNode.ActualLifetime is PerBlock
+               && (var.HasCycle == true || ReadsOverrides(ctx, var.AbstractNode.Node))
+               && IsCreatedOncePerBlock(ctx, var.AbstractNode.Node);
+    }
 
+    // Outside a cycle, only an instance that reads a value overridden by a lambda is created again by the code of the lambdas,
+    // for example, a view model reached both under Func<T1, T> and outside it, which the lambdas of each level repeated.
+    private static bool ReadsOverrides(CodeContext ctx, DependencyNode node) =>
+        ctx.RootContext.UseSites.FreeOverrides.TryGetValue(node.BindingId, out var overrides) && !overrides.IsDefaultOrEmpty;
+
+    private bool IsCreatedOncePerBlock(CodeContext ctx, DependencyNode root)
+    {
         var graph = ctx.RootContext.Graph;
         var lambdas = new HashSet<int>();
         var holders = new HashSet<int>();
         var nodes = new Stack<DependencyNode>();
-        nodes.Push(var.AbstractNode.Node);
+        nodes.Push(root);
         while (nodes.Count > 0)
         {
             if (!graph.Graph.TryGetOutEdges(nodes.Pop(), out var consumers))

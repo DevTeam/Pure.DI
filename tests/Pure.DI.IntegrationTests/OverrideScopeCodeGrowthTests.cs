@@ -25,35 +25,15 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
     // The code that grows with the square of the number of levels adds 5/3 times as much in the last of two equal steps.
     private const double MaxQuadraticGrowthRatio = MaxGrowthRatio * 5 / 3;
 
-    public static IEnumerable<object[]> Cases() => Cases(false);
-
-    public static IEnumerable<object[]> KnownProblemCases() => Cases(true);
-
-    private static IEnumerable<object[]> Cases(bool knownProblems) =>
+    public static IEnumerable<object[]> Cases() =>
         from arguments in new[] { Arguments.OnePerLevelReadByLeaf, Arguments.OnePerLevelReadByNextLevel, Arguments.SameReadByLeaf, Arguments.SameReadByEachLevel }
         from lifetime in new[] { "Transient", "PerBlock" }
         from mode in new[] { "Auto", "On" }
-        where GetKnownProblem(arguments, lifetime) is not null == knownProblems
         select new object[] { arguments, lifetime, mode };
-
-    // The cases whose code still grows with the number of paths through the graph, with the reason of the growth.
-    // They are not checked until the growth is fixed, see ShouldGrowLinearlyForKnownProblems.
-    private static string? GetKnownProblem(Arguments arguments, string lifetime) => (arguments, lifetime) switch
-    {
-        (Arguments.OnePerLevelReadByLeaf or Arguments.SameReadByLeaf or Arguments.SameReadByEachLevel, "PerBlock") =>
-            "A PerBlock node that reads an overridden value is created in place in each lambda that overrides the value, with all the nodes under it.",
-        _ => null
-    };
 
     [Theory]
     [MemberData(nameof(Cases))]
     public Task ShouldGrowLinearlyForNodesReachedUnderDelegateAndOutsideIt(Arguments arguments, string lifetime, string mode) =>
-        CheckGrowth(arguments, lifetime, mode);
-
-    // Remove the Skip to see how the code of these cases grows.
-    [Theory(Skip = "The code of these cases still grows with the number of paths through the graph, see GetKnownProblem.")]
-    [MemberData(nameof(KnownProblemCases))]
-    public Task ShouldGrowLinearlyForKnownProblems(Arguments arguments, string lifetime, string mode) =>
         CheckGrowth(arguments, lifetime, mode);
 
     private async Task CheckGrowth(Arguments arguments, string lifetime, string mode)

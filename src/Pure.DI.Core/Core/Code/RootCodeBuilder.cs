@@ -412,24 +412,16 @@ sealed class RootCodeBuilder(
         var.Declaration.IsDeclared = true;
     }
 
-    // A value that may be overridden is read by the same code where a lambda overrides it and where none does.
-    // So a PerBlock instance that reads such a value and was created outside the lambda that overrides the value
-    // was created without it, and the code of the lambda creates the instance anew.
+    // A lambda that overrides a value, such as Func<T1, T>, creates anew the PerBlock instances that read the value,
+    // because the instances created around the lambda read the value of that code. For example, the same code reads
+    // a value that may be overridden where a lambda overrides it and where none does, and the local function of
+    // an instance that reads an overridden value creates the lambdas that override it again.
     private static Func<Var, bool>? GetOverrideIsolation(CodeContext ctx)
     {
-        var useSites = ctx.RootContext.UseSites;
-        if (useSites.MaybeOverrides.Count == 0)
-        {
-            return null;
-        }
-
         HashSet<int>? overrideIds = null;
         foreach (var (_, id) in RootUseSiteCounter.GetDeclaredOverrides(ctx.VarInjection.Var.AbstractNode.Node))
         {
-            if (useSites.MaybeOverrides.Contains(id))
-            {
-                (overrideIds ??= []).Add(id);
-            }
+            (overrideIds ??= []).Add(id);
         }
 
         if (overrideIds is null)
@@ -437,7 +429,8 @@ sealed class RootCodeBuilder(
             return null;
         }
 
-        return var => useSites.FreeOverrides.TryGetValue(var.AbstractNode.BindingId, out var overrides)
+        var freeOverrides = ctx.RootContext.UseSites.FreeOverrides;
+        return var => freeOverrides.TryGetValue(var.AbstractNode.BindingId, out var overrides)
                       && overrides.Any(i => overrideIds.Contains(i.Id));
     }
 
