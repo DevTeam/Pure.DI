@@ -49,7 +49,8 @@ sealed class DependencyGraphBuilder(
         foreach (var processingNode in nodes)
         {
             var node = processingNode.Node;
-            if (node.Binding.Id > maxBindingId)
+            // New ids counted from a special id would overflow and repeat the ids of other bindings.
+            if (node.Binding.Id > maxBindingId && !MdBinding.IsSpecialId(node.Binding.Id))
             {
                 maxBindingId = node.Binding.Id;
             }

@@ -124,7 +124,7 @@ sealed class BindingBuilder(
         var lifetime = lifetimeProvider.GetActualLifetime(_defaultLifetimes, _lifetime, implementationType, implementationTags, contractsWithTags, true);
 
         return new MdBinding(
-            int.MaxValue - specialBindingIdGenerator.Generate(),
+            MdBinding.SpecialIdsStart - specialBindingIdGenerator.Generate(),
             source,
             setup,
             semanticModel,

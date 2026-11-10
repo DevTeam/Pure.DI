@@ -1,5 +1,6 @@
 namespace Pure.DI.IntegrationTests;
 
+using System.Text;
 using Core;
 
 /// <summary>
@@ -2321,5 +2322,71 @@ public class ExportAttributeTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportManyAutoBindingsWhenBoundTypeHasExportedMembers()
+    {
+        // Given
+        const int stepsCount = 80;
+        var steps = new StringBuilder();
+        for (var i = 0; i < stepsCount - 1; i++)
+        {
+            steps.AppendLine($"    internal sealed class Step{i}<T> {{ public Step{i}(Step{i + 1}<T> next, IClock clock) {{ }} }}");
+        }
+
+        steps.AppendLine($"    internal sealed class Step{stepsCount - 1}<T> {{ public Step{stepsCount - 1}(IClock clock) {{ }} }}");
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+                           using static Pure.DI.Lifetime;
+
+                           namespace Sample
+                           {
+                               internal interface IClock;
+
+                               internal sealed class Clock : IClock;
+
+                               internal sealed class Module
+                               {
+                                   [Export]
+                                   public IClock Clock { get; } = new Clock();
+                               }
+
+                           #Steps
+
+                               internal sealed class App
+                               {
+                                   public App(Step0<int> steps, IClock clock) { }
+
+                                   public override string ToString() => "ok";
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().As(Singleton).To<Module>()
+                                           .Root<App>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.Replace("#Steps", steps.ToString()).RunAsync(new Options(LanguageVersion.CSharp12));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ok"], result);
     }
 }

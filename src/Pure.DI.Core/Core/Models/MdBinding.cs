@@ -15,7 +15,14 @@ record MdBinding(
     ITypeConstructor? TypeConstructor = null,
     ImmutableArray<int> OriginalIds = default)
 {
-    public ITypeSymbol Type => Implementation?.Type ?? Factory?.Type ?? Arg?.Type ?? Construct?.Type!;
+    // The bindings made after the bindings of the setups are numbered, such as the bindings of exported members,
+    // get special ids that count down from this value.
+    public const int SpecialIdsStart = int.MaxValue;
+
+    // New ids count up from the largest id that is not special, so they never reach the special ids.
+    public static bool IsSpecialId(int id) => id > SpecialIdsStart / 2;
+
+    public ITypeSymbol Type =>Implementation?.Type ?? Factory?.Type ?? Arg?.Type ?? Construct?.Type!;
 
     public virtual bool Equals(MdBinding? other) => Id == other?.Id;
 
