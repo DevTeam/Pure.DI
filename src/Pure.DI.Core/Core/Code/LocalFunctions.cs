@@ -283,13 +283,19 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         var lambdas = new HashSet<int>();
         foreach (var consumer in consumers)
         {
+            // The code of a root creates the instance once, like the block of a lambda.
+            if (consumer.Target.Root is not null)
+            {
+                continue;
+            }
+
             if (!nodeTools.IsLazy(consumer.Target, graph) || !lambdas.Add(consumer.Target.BindingId))
             {
                 return false;
             }
         }
 
-        return true;
+        return lambdas.Count > 0;
     }
 
     // An instance that depends on itself only through lambdas, such as Func<T> or Lazy<T>.
@@ -310,9 +316,17 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         var root = ctx.VarInjection.Var.AbstractNode.Node;
         return !cycleTools.IsCyclic(graph.Graph, root, node => !nodeTools.IsLazy(node, graph))
                && (CountLambdasBackTo(graph, root) >= MinCycleLambdas
+                   || IsOnBranchingCycle(ctx, root)
                    || IsEnteredInSeveralPlaces(ctx, root)
                    || IsOverriddenOnCycle(ctx, root));
     }
+
+    // The code of a cycle created in place is repeated on each path through the nodes of the cycle up to the lambda
+    // that closes it. A single lambda can lead back to the instance by several paths, such as a lazy collection
+    // of the screens that each screen gets, or a lambda under instances that share their dependencies,
+    // so the code grew with the number of these paths.
+    private static bool IsOnBranchingCycle(CodeContext ctx, DependencyNode root) =>
+        ctx.RootContext.UseSites.BranchingCycles.Contains(root.BindingId);
 
     // The code of a cycle created in place is repeated from each place that enters the cycle up to the lambda that closes it,
     // such as a hub that opens each screen of a ring, so its code grew with the square of the number of screens.

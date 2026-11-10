@@ -20,4 +20,6 @@ record RootUseSiteAnalysis(
     // The ids of the overrides that the code may or may not have overridden, depending on the path to it, see MaybeOverrideCodeBuilder.
     HashSet<int> MaybeOverrides,
     // The number of the dependencies on the nodes of the cycle of a node from the nodes outside it, by binding id.
-    IReadOnlyDictionary<int, int> CycleEntries);
+    IReadOnlyDictionary<int, int> CycleEntries,
+    // Binding ids of the nodes of the cycles that have several paths through their nodes.
+    HashSet<int> BranchingCycles);

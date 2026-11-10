@@ -59,6 +59,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         }
 
         AddInlineUseSites(graph, counts, consumers);
+        var cycleEntries = GetCycleEntries(graph, out var branchingCycles);
         return new RootUseSiteAnalysis(
             counts,
             factoryDownstream,
@@ -67,7 +68,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             GetTransientCosts(graph, root, counts),
             GetPerBlockDependents(graph, root),
             GetMaybeOverrides(graph),
-            GetCycleEntries(graph));
+            cycleEntries,
+            branchingCycles);
     }
 
     // A node created only as the result of lambdas, such as Func<T>, is created by the code of each lambda,
@@ -188,7 +190,6 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         Dictionary<int, List<DependencyNode>> instances,
         Dictionary<int, HashSet<int>?> blocks)
     {
-        // The root, for example, on a cycle through a lambda, has no instances among the dependencies.
         if (!instances.TryGetValue(bindingId, out var nodeInstances)
             || GetBlocks(graph, root, bindingId, consumers, blocks) is not {} nodeBlocks)
         {
@@ -275,7 +276,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             return null;
         }
 
-        nodeBlocks = [];
+        // The code of the root creates the root once.
+        nodeBlocks = bindingId == root.BindingId ? [root.BindingId] : [];
         foreach (var consumer in nodeConsumers)
         {
             HashSet<int>? consumerBlocks;
@@ -326,6 +328,8 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         Dictionary<int, List<DependencyNode>> instances)
     {
         var visited = new HashSet<DependencyNode> { root };
+        // The root on a cycle through a lambda is an instance too, which the lambda creates again.
+        instances.Add(root.BindingId, [root]);
         var stack = new Stack<DependencyNode>();
         stack.Push(root);
         while (stack.Count > 0)
@@ -470,15 +474,24 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         }
     }
 
-    private static Dictionary<int, int> GetCycleEntries(DependencyGraph graph)
+    // The entries of the cycles and the nodes of the cycles that branch. A cycle that has as many dependencies
+    // between its nodes as it has nodes is a ring, which has a single path through its nodes.
+    private static Dictionary<int, int> GetCycleEntries(DependencyGraph graph, out HashSet<int> branchingCycles)
     {
         var cycleEntries = new Dictionary<int, int>();
+        branchingCycles = [];
         foreach (var cycle in GraphCycles.GetCycles(graph.Graph))
         {
             var members = new HashSet<int>(cycle.Select(i => i.BindingId));
             var entries = 0;
+            var dependencies = 0;
             foreach (var node in cycle)
             {
+                if (graph.Graph.TryGetInEdges(node, out var nodeDependencies))
+                {
+                    dependencies += nodeDependencies.Count(i => i.IsResolved && members.Contains(i.Source.BindingId));
+                }
+
                 if (!graph.Graph.TryGetOutEdges(node, out var consumers))
                 {
                     continue;
@@ -490,6 +503,11 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             foreach (var bindingId in members)
             {
                 cycleEntries[bindingId] = entries;
+            }
+
+            if (dependencies > members.Count)
+            {
+                branchingCycles.UnionWith(members);
             }
         }
 
