@@ -26,116 +26,68 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     private static readonly Edge[] Edges = [Edge.Func, Edge.Lazy, Edge.FuncWithArgument, Edge.FuncOfOwned];
     private static readonly string[] Modes = ["Auto", "On"];
 
-    private static IEnumerable<object[]> Cases(IEnumerable<Scenario> scenarios, bool knownProblems) =>
+    private static IEnumerable<object[]> Cases(IEnumerable<Scenario> scenarios) =>
         from scenario in scenarios
         from mode in Modes
-        where GetKnownProblem(scenario) is not null == knownProblems
         select new object[] { scenario with { Mode = mode } };
 
-    // The scenarios whose code still grows with the number of paths through the graph, with the reason of the growth.
-    // They are not checked until the growth is fixed, see ShouldGrowLinearlyForKnownProblems.
-    private static string? GetKnownProblem(Scenario scenario) => scenario switch
-    {
-        { HasTags: true, Edge: Edge.Lazy or Edge.FuncOfOwned } =>
-            "Lazy<T> and Owned<T> of an instance are different nodes for each tag, so each of them gets a local function with the same code.",
-        _ => null
-    };
-
-    public static IEnumerable<object[]> KnownProblemCases() =>
-        BackCases(true)
-            .Concat(RouterCases(true))
-            .Concat(EnumerableCases(true))
-            .Concat(SharedCases(true))
-            .Concat(CreationCases(true))
-            .Concat(SessionCases(true))
-            .Concat(ServiceCases(true))
-            .Concat(TagCases(true))
-            .Concat(RootCases(true));
-
     // Each screen opens the next screen and the previous one, so each pair of neighbors is a cycle of its own.
-    public static IEnumerable<object[]> BackCases() => BackCases(false);
-
-    private static IEnumerable<object[]> BackCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> BackCases() => Cases(
         from edge in Edges
         from lifetime in new[] { "Transient", "PerBlock" }
-        select new Scenario { Topology = Topology.Back, Edge = edge, Lifetime = lifetime },
-        knownProblems);
+        select new Scenario { Topology = Topology.Back, Edge = edge, Lifetime = lifetime });
 
     // Each screen gets a router that opens each screen, so all the cycles pass through one node that is not a lambda.
-    public static IEnumerable<object[]> RouterCases() => RouterCases(false);
-
-    private static IEnumerable<object[]> RouterCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> RouterCases() => Cases(
         from edge in Edges
         from routerLifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
-        select new Scenario { Topology = Topology.Router, Edge = edge, RouterLifetime = routerLifetime },
-        knownProblems);
+        select new Scenario { Topology = Topology.Router, Edge = edge, RouterLifetime = routerLifetime });
 
     // Each screen gets the lazy collection of all the other screens. Each collection has an element for each of them,
     // so the code grows with the square of the number of screens, and the code for a screen must grow linearly.
-    public static IEnumerable<object[]> EnumerableCases() => EnumerableCases(false);
-
-    private static IEnumerable<object[]> EnumerableCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> EnumerableCases() => Cases(
         from lifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
         from creation in new[] { Creation.Constructor, Creation.Factory }
-        select new Scenario { Topology = Topology.Enumerable, Lifetime = lifetime, Creation = creation },
-        knownProblems);
+        select new Scenario { Topology = Topology.Enumerable, Lifetime = lifetime, Creation = creation });
 
     // The screens are shared, so a lambda returns the instance created by the code of another lambda.
-    public static IEnumerable<object[]> SharedCases() => SharedCases(false);
-
-    private static IEnumerable<object[]> SharedCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> SharedCases() => Cases(
         from edge in new[] { Edge.Func, Edge.Lazy, Edge.FuncOfOwned }
         from lifetime in new[] { "PerResolve", "Singleton", "Scoped" }
-        select new Scenario { Edge = edge, Lifetime = lifetime },
-        knownProblems);
+        select new Scenario { Edge = edge, Lifetime = lifetime });
 
     // The screens are created by factories or get the lambdas by their members.
-    public static IEnumerable<object[]> CreationCases() => CreationCases(false);
-
-    private static IEnumerable<object[]> CreationCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> CreationCases() => Cases(
         from creation in new[] { Creation.Constructor, Creation.Property, Creation.Method, Creation.Factory, Creation.FactoryWithOverride }
         from edge in Edges
         from lifetime in new[] { "Transient", "PerBlock" }
         // CycleCodeGrowthTests covers the other screens created by their constructors.
         where creation != Creation.Constructor || edge == Edge.FuncOfOwned && lifetime == "PerBlock"
-        select new Scenario { Edge = edge, Lifetime = lifetime, Creation = creation },
-        knownProblems);
+        select new Scenario { Edge = edge, Lifetime = lifetime, Creation = creation });
 
     // The root delegate overrides a session outside the cycle, and each screen reads it, directly and through a service.
-    public static IEnumerable<object[]> SessionCases() => SessionCases(false);
-
-    private static IEnumerable<object[]> SessionCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> SessionCases() => Cases(
         from topology in new[] { Topology.Ring, Topology.Router }
         from edge in Edges
         from serviceLifetime in new[] { null, "Transient", "PerBlock" }
-        select new Scenario { Topology = topology, Edge = edge, HasSession = true, ServiceLifetime = serviceLifetime },
-        knownProblems);
+        select new Scenario { Topology = topology, Edge = edge, HasSession = true, ServiceLifetime = serviceLifetime });
 
     // Each screen gets a service that does not depend on the cycle.
-    public static IEnumerable<object[]> ServiceCases() => ServiceCases(false);
-
-    private static IEnumerable<object[]> ServiceCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> ServiceCases() => Cases(
         from edge in Edges
         from serviceLifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
-        select new Scenario { Edge = edge, ServiceLifetime = serviceLifetime },
-        knownProblems);
+        select new Scenario { Edge = edge, ServiceLifetime = serviceLifetime });
 
     // Each screen opens the next screens by different tags, and the code of a transient instance depends on its tag.
-    public static IEnumerable<object[]> TagCases() => TagCases(false);
-
-    private static IEnumerable<object[]> TagCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> TagCases() => Cases(
         from edge in Edges
         from lifetime in new[] { "Transient", "PerBlock" }
-        select new Scenario { Edge = edge, Lifetime = lifetime, HasTags = true },
-        knownProblems);
+        select new Scenario { Edge = edge, Lifetime = lifetime, HasTags = true });
 
     // Several roots enter the same ring, and each root has the code of its own.
-    public static IEnumerable<object[]> RootCases() => RootCases(false);
-
-    private static IEnumerable<object[]> RootCases(bool knownProblems) => Cases(
+    public static IEnumerable<object[]> RootCases() => Cases(
         from edge in Edges
-        select new Scenario { Edge = edge, Roots = 3 },
-        knownProblems);
+        select new Scenario { Edge = edge, Roots = 3 });
 
     [Theory]
     [MemberData(nameof(BackCases))]
@@ -172,11 +124,6 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     [Theory]
     [MemberData(nameof(RootCases))]
     public Task ShouldGrowLinearlyForSeveralRootsOfRing(Scenario scenario) => CheckGrowth(scenario);
-
-    // Remove the Skip to see how the code of these scenarios grows.
-    [Theory(Skip = "The code of these scenarios still grows with the number of paths through the graph, see GetKnownProblem.")]
-    [MemberData(nameof(KnownProblemCases))]
-    public Task ShouldGrowLinearlyForKnownProblems(Scenario scenario) => CheckGrowth(scenario);
 
     private async Task CheckGrowth(Scenario scenario)
     {

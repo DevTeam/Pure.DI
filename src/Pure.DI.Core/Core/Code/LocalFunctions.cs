@@ -248,13 +248,85 @@ class LocalFunctions(
 
         // A transient instance is created by the code of each injection, which depends on the tag of this injection
         // when a factory reads the tag. Otherwise, the injections of an instance by different tags share its local function.
+        // A factory that only passes the tag to its injections, such as Lazy<T> or Owned<T>, is a node of its own for each tag,
+        // and its code is the same for the tags that lead to the same dependencies, so their nodes share a local function.
         if (!nodeTools.IsBlock(var.AbstractNode) && nodeTools.ReadsContextMember(var.AbstractNode.Node, nameof(IContext.Tag)))
         {
+            if (TryGetTagFreeKey(ctx.RootContext.Graph, var.AbstractNode.Node, [], out var tagFreeKey))
+            {
+                return $"{tagFreeKey}{key.Substring(var.AbstractNode.BindingId.ToString(System.Globalization.CultureInfo.InvariantCulture).Length)}";
+            }
+
             var tag = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? ctx.ContextTag : injection.Tag;
             key = $"{key}#{tag}";
         }
 
         return key;
+    }
+
+    // The key of a factory that passes the tag of its injection only to its injections by ctx.Inject(ctx.Tag, ...):
+    // the factory binding and the nodes that these injections lead to.
+    private bool TryGetTagFreeKey(DependencyGraph graph, DependencyNode node, HashSet<int> visited, out string key)
+    {
+        key = "";
+        if (node.Factory is not {} factory || ReadsTagAsValue(factory) || !visited.Add(node.BindingId))
+        {
+            return false;
+        }
+
+        var sources = new List<string>();
+        if (graph.Graph.TryGetInEdges(node, out var dependencies))
+        {
+            foreach (var dependency in dependencies)
+            {
+                var source = dependency.Source;
+                // A dependency that reads the tag, such as Func<T> of Lazy<T>, has the same code for the tags
+                // that lead to the same dependencies of its own.
+                if (nodeTools.ReadsContextMember(source, nameof(IContext.Tag)))
+                {
+                    if (!TryGetTagFreeKey(graph, source, visited, out var sourceKey))
+                    {
+                        return false;
+                    }
+
+                    sources.Add(sourceKey);
+                    continue;
+                }
+
+                sources.Add(source.BindingId.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+        }
+
+        var bindingId = node.Binding.OriginalIds.IsDefaultOrEmpty ? node.Binding.Id : node.Binding.OriginalIds[0];
+        key = $"t{bindingId}:{node.Type}({string.Join(",", sources)})";
+        return true;
+    }
+
+    // ctx.Tag outside ctx.Inject(ctx.Tag, out ...) is a value the code of the factory depends on.
+    private static bool ReadsTagAsValue(DpFactory factory)
+    {
+        var contextName = factory.Source.Context.Identifier.ValueText;
+        foreach (var member in factory.Source.Factory.DescendantNodes().OfType<MemberAccessExpressionSyntax>())
+        {
+            if (member.Expression is not IdentifierNameSyntax identifier
+                || identifier.Identifier.ValueText != contextName
+                || member.Name.Identifier.ValueText != nameof(IContext.Tag))
+            {
+                continue;
+            }
+
+            if (member.Parent is ArgumentSyntax { Parent: ArgumentListSyntax { Parent: InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax inject } } }
+                && inject.Expression is IdentifierNameSyntax injectContext
+                && injectContext.Identifier.ValueText == contextName
+                && inject.Name.Identifier.ValueText == nameof(IContext.Inject))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     // A shared instance does not feed the per-resolve accumulators, see RootCodeBuilder.

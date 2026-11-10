@@ -115,6 +115,68 @@ public class TransientLocalFunctionTests
         result.StdOut.ShouldBe([expected], result);
     }
 
+    // Lazy<T> and Owned<T> pass the tag of their injection to the value they create, so their nodes for the tags
+    // that lead to different implementations do not share a local function. Here the nodes of a cycle open each other
+    // by tags, and the local functions of the wrappers on the cycle are shared only by the tags of the same node.
+    [Theory]
+    [InlineData("Auto", "Lazy<INode>", ".Value")]
+    [InlineData("On", "Lazy<INode>", ".Value")]
+    [InlineData("Auto", "Func<Owned<INode>>", "().Value")]
+    [InlineData("On", "Func<Owned<INode>>", "().Value")]
+    public async Task ShouldCreateValueOfTagOfWrapperOnCycle(string mode, string wrapper, string value)
+    {
+        // Given
+        var disposable = wrapper.Contains("Owned") ? ", IDisposable" : "";
+        var dispose = wrapper.Contains("Owned") ? "public void Dispose() { }" : "";
+
+        // When
+        var result = await $$"""
+            using System;
+            using Pure.DI;
+
+            namespace Sample
+            {
+                interface INode { string Walk(int steps); }
+
+                sealed class A : INode{{disposable}}
+                {
+                    private readonly {{wrapper}} _next;
+                    private readonly {{wrapper}} _other;
+                    public A([Tag("b")] {{wrapper}} next, [Tag("c")] {{wrapper}} other) { _next = next; _other = other; }
+                    public string Walk(int steps) => steps == 0 ? "A" : "A" + (steps % 2 == 0 ? _next{{value}} : _other{{value}}).Walk(steps - 1);
+                    {{dispose}}
+                }
+
+                sealed class B : INode{{disposable}}
+                {
+                    private readonly {{wrapper}} _next;
+                    private readonly {{wrapper}} _other;
+                    public B([Tag("a")] {{wrapper}} next, [Tag("c")] {{wrapper}} other) { _next = next; _other = other; }
+                    public string Walk(int steps) => steps == 0 ? "B" : "B" + (steps % 2 == 0 ? _next{{value}} : _other{{value}}).Walk(steps - 1);
+                    {{dispose}}
+                }
+
+                partial class Composition
+                {
+                    private static void Setup() => DI.Setup(nameof(Composition))
+                        .Hint(Hint.LocalFunctions, "{{mode}}")
+                        .Bind<INode>("a", "c").To<A>()
+                        .Bind<INode>("b").To<B>()
+                        .Root<{{wrapper}}>("Root", "a");
+                }
+
+                public static class Program
+                {
+                    public static void Main() => Console.WriteLine(new Composition().Root{{value}}.Walk(6));
+                }
+            }
+            """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["ABABABA"], result);
+    }
+
     [Fact]
     public async Task ShouldKeepSmallTransientDiamondInPlace()
     {
