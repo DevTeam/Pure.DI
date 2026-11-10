@@ -38,8 +38,6 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     {
         { Topology: Topology.Router, RouterLifetime: "PerBlock", Edge: not Edge.FuncOfOwned } =>
             "Each lambda creates a router of its own with the lambdas for all the screens, so the code grows with the square of the number of screens.",
-        { Edge: Edge.Lazy or Edge.FuncOfOwned, Lifetime: "PerResolve" or "Singleton" or "Scoped" } =>
-            "A shared screen under Lazy<T> or Owned<T> has a single use site, so it is created in place in each lambda.",
         { HasTags: true } =>
             "A transient instance gets a local function for each tag of its injections, although its code does not depend on the tag.",
         { Topology: Topology.Ring, Edge: Edge.FuncOfOwned, Lifetime: "PerBlock" } =>

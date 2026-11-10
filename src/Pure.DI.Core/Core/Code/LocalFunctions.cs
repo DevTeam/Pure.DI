@@ -51,6 +51,14 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
             return true;
         }
 
+        // A shared instance on a cycle with several paths through it is checked by each of the lambdas that lead to it.
+        // It can have a single use site, for example, under Lazy<T> or Owned<T>, whose code is repeated in each of these lambdas,
+        // so the code of the instance created in place grew with the number of paths on the cycle.
+        if (isBlock && mode != LocalFunctionsMode.Off && IsOnBranchingCycle(ctx, node.Node))
+        {
+            return true;
+        }
+
         var bindingId = ctx.VarInjection.Var.Declaration.Node.Node.BindingId;
         var useSites = ctx.RootContext.UseSites;
         if (!useSites.UseSiteCount.TryGetValue(bindingId, out var count) || count < MinUseSites)
