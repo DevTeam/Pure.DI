@@ -40,10 +40,8 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
             "Each lambda creates a router of its own with the lambdas for all the screens, so the code grows with the square of the number of screens.",
         { HasTags: true, Edge: Edge.Lazy or Edge.FuncOfOwned } =>
             "Lazy<T> and Owned<T> of an instance are different nodes for each tag, so each of them gets a local function with the same code.",
-        { Topology: Topology.Ring, Edge: Edge.FuncOfOwned, Lifetime: "PerBlock" } =>
-            "A PerBlock screen under Owned<T> is not the result of a lambda, so it is created in place in each lambda.",
-        { Edge: Edge.FuncOfOwned, Creation: Creation.Factory or Creation.FactoryWithOverride } =>
-            "A screen created by a factory under Owned<T> is created in place in each lambda.",
+        { Edge: Edge.FuncOfOwned, Creation: Creation.FactoryWithOverride } =>
+            "An instance that reads the value overridden by a factory under Owned<T> gets a local function with the same code in each screen.",
         _ => null
     };
 

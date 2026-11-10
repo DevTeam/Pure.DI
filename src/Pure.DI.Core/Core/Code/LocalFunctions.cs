@@ -310,6 +310,7 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     // A PerBlock instance that only lambdas return, such as screens that open each other by Func<T>, is created once
     // in the block of each lambda, so it is created like a transient instance there. Its local function on a cycle
     // creates the lambdas of the instance, rather than each lambda repeating the code of the lambdas it leads to.
+    // A lambda can return the instance in a PerBlock instance of its own, such as Owned<T>, which its block creates once too.
     private bool IsPerBlockResultOfLambdasOnCycle(CodeContext ctx)
     {
         var var = ctx.VarInjection.Var;
@@ -319,24 +320,42 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
         }
 
         var graph = ctx.RootContext.Graph;
-        var node = var.AbstractNode.Node;
-        if (!graph.Graph.TryGetOutEdges(node, out var consumers) || consumers.Count == 0)
-        {
-            return false;
-        }
-
         var lambdas = new HashSet<int>();
-        foreach (var consumer in consumers)
+        var holders = new HashSet<int>();
+        var nodes = new Stack<DependencyNode>();
+        nodes.Push(var.AbstractNode.Node);
+        while (nodes.Count > 0)
         {
-            // The code of a root creates the instance once, like the block of a lambda.
-            if (consumer.Target.Root is not null)
+            if (!graph.Graph.TryGetOutEdges(nodes.Pop(), out var consumers))
             {
                 continue;
             }
 
-            if (!nodeTools.IsLazy(consumer.Target, graph) || !lambdas.Add(consumer.Target.BindingId))
+            foreach (var consumer in consumers)
             {
-                return false;
+                var target = consumer.Target;
+                // The code of a root creates the instance once, like the block of a lambda.
+                if (target.Root is not null)
+                {
+                    continue;
+                }
+
+                if (nodeTools.IsLazy(target, graph))
+                {
+                    if (!lambdas.Add(target.BindingId))
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                if (target is not { ActualLifetime: PerBlock, Arg: null } || !holders.Add(target.BindingId))
+                {
+                    return false;
+                }
+
+                nodes.Push(target);
             }
         }
 
