@@ -228,7 +228,7 @@ sealed class RootCodeBuilder(
             isLocalFunction
                 ? varsMap.LocalFunction(var, lines, perBlockParameters.AddRange(accumulatorParameters.Select(i => i.VarInjection)))
                 : isLazy
-                    ? varsMap.Lazy(var, lines, accumulatorBindingIds)
+                    ? varsMap.Lazy(var, lines, accumulatorBindingIds, GetOverrideIsolation(varCtx))
                     : isBlock
                         ? varsMap.Block(var, lines)
                         : Disposables.Empty;
@@ -408,6 +408,35 @@ sealed class RootCodeBuilder(
 
         parentCtx.Lines.AppendLines(lines);
         var.Declaration.IsDeclared = true;
+    }
+
+    // A value that may be overridden is read by the same code where a lambda overrides it and where none does.
+    // So a PerBlock instance that reads such a value and was created outside the lambda that overrides the value
+    // was created without it, and the code of the lambda creates the instance anew.
+    private static Func<Var, bool>? GetOverrideIsolation(CodeContext ctx)
+    {
+        var useSites = ctx.RootContext.UseSites;
+        if (useSites.MaybeOverrides.Count == 0)
+        {
+            return null;
+        }
+
+        HashSet<int>? overrideIds = null;
+        foreach (var (_, id) in RootUseSiteCounter.GetDeclaredOverrides(ctx.VarInjection.Var.AbstractNode.Node))
+        {
+            if (useSites.MaybeOverrides.Contains(id))
+            {
+                (overrideIds ??= []).Add(id);
+            }
+        }
+
+        if (overrideIds is null)
+        {
+            return null;
+        }
+
+        return var => useSites.FreeOverrides.TryGetValue(var.AbstractNode.BindingId, out var overrides)
+                      && overrides.Any(i => overrideIds.Contains(i.Id));
     }
 
     private ImmutableArray<VarInjection> GetPerBlockArguments(CodeContext ctx) =>

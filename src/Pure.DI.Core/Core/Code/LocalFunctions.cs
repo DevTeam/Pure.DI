@@ -474,8 +474,10 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     // A node reads an overridden value of the lambda it is reached from only if it does not override that value itself
     // on the way to the value, for example, by a nested Func<T1, T>. Otherwise, a shared instance reached
     // from several such lambdas would get a local function in each of them, and its code would double per level, see #186.
+    // A value that may be overridden is read by the code that no lambda above it overrides the value for too,
+    // so the local function of a node that reads such a value gets it from each of its callers.
     private static bool IsOverrideConsumer(CodeContext ctx) =>
-        ctx.HasOverrides
-        && ctx.RootContext.UseSites.FreeOverrides.TryGetValue(ctx.VarInjection.Var.Declaration.Node.Node.BindingId, out var overrides)
-        && !overrides.IsDefaultOrEmpty;
+        ctx.RootContext.UseSites.FreeOverrides.TryGetValue(ctx.VarInjection.Var.Declaration.Node.Node.BindingId, out var overrides)
+        && !overrides.IsDefaultOrEmpty
+        && (ctx.HasOverrides || overrides.Any(i => ctx.RootContext.UseSites.MaybeOverrides.Contains(i.Id)));
 }

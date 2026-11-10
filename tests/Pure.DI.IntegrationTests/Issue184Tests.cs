@@ -10,19 +10,28 @@ using Core;
 public class Issue184Tests
 {
     private static readonly int[] Sizes = [4, 6, 10];
+    // A view model reached with a single argument or without it has a copy for each of these cases,
+    // so the code of the first view models differs from the code of the others.
+    private static readonly int[] BuiltInFuncSizes = [8, 12, 20];
     private const double MaxGrowthRatio = 3;
 
-    [Fact]
-    public async Task ShouldCreateViewModelOfNestedFuncsOncePerVariant()
+    // The built-in delegates override their argument, which reaches the view models of nested delegates too,
+    // so a view model is reached with each combination of the arguments passed along the way. It is created once
+    // for all of them, and its code checks whether an argument is passed.
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ShouldCreateViewModelOfNestedFuncsOncePerVariant(bool letFunc)
     {
         // Given
 
         // When
+        var sizes = letFunc ? Sizes : BuiltInFuncSizes;
         var lines = new List<int>();
         var constructions = new List<int>();
-        foreach (var size in Sizes)
+        foreach (var size in sizes)
         {
-            var result = await Create(size).RunAsync(new Options(Options.ModernLanguageVersion));
+            var result = await Create(size, letFunc).RunAsync(new Options(Options.ModernLanguageVersion));
 
             // Then
             result.Success.ShouldBeTrue(result);
@@ -35,23 +44,19 @@ public class Issue184Tests
         var lastStep = lines[2] - lines[1];
         ((double)lastStep / firstStep).ShouldBeLessThan(
             MaxGrowthRatio,
-            $"Generated lines for sizes {string.Join(", ", Sizes)}: {string.Join(", ", lines)}; constructions of the last view model: {string.Join(", ", constructions)}");
+            $"Generated lines for sizes {string.Join(", ", sizes)}: {string.Join(", ", lines)}; constructions of the last view model: {string.Join(", ", constructions)}");
     }
 
     [Fact]
-    public async Task ShouldSuggestLetWhenOverriddenArgumentsOfNestedFuncsMakeCodeTooLarge()
+    public async Task ShouldNotWarnWhenNestedFuncsOverrideArguments()
     {
         // Given
 
         // When
-        // The built-in delegates override their argument, which reaches the view models of nested delegates too,
-        // so each view model is created for each combination of the arguments passed along the way.
         var result = await Create(12, letFunc: false).RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
-        result.Errors.Count.ShouldBe(0, result);
-        result.Warnings.Select(i => i.Id).ShouldBe([LogId.WarningRootCodeIsTooLarge], result);
-        result.Warnings.Single().Message.ShouldContain("ctx.Let");
+        result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Vm12"], result);
     }
 

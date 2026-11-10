@@ -67,6 +67,14 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     public Task ShouldGrowLinearlyForScreensWithOverrideReadingDiamond(CycleEdge edge, string mode) =>
         CheckGrowth(Sizes, size => new Ring(size, edge, "Transient", mode) { HasDiamond = true });
 
+    // The service is created once in a block of code, so the header and the body of a screen share it.
+    // The lambda that opens the next screen overrides the navigation, so its code creates the service anew
+    // rather than passing the service of the screen it is created in to the next screen.
+    [Theory]
+    [MemberData(nameof(ArgumentCases))]
+    public Task ShouldGrowLinearlyForScreensWithOverrideReadingPerBlockDiamond(CycleEdge edge, string mode) =>
+        CheckGrowth(Sizes, size => new Ring(size, edge, "Transient", mode) { HasDiamond = true, ServicesLifetime = "PerBlock" });
+
     // Each screen also reads the contexts of the previous screens of the ring. The argument of a delegate stays
     // in the scope of the screens below it, so a screen is reached in a different override scope on each path,
     // and it reads the value of the nearest screen above it on the path, which can differ on each visit.
@@ -193,6 +201,9 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
 
         public bool HasDiamond { get; init; }
 
+        // The lifetime of the service that the header and the body of a screen share.
+        public string ServicesLifetime { get; init; } = "Transient";
+
         // The number of the previous screens of the ring whose contexts each screen reads.
         public int Previous { get; init; }
 
@@ -262,6 +273,11 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
                 {
                     code.AppendLine($"            .Bind().As(Lifetime.{Lifetime}).To<Screen{screen}>()");
                 }
+            }
+
+            if (HasDiamond && ServicesLifetime != "Transient")
+            {
+                code.AppendLine($"            .Bind<Services>().As(Lifetime.{ServicesLifetime}).To<Services>()");
             }
 
             if (Edge == CycleEdge.FuncWithArgumentsByLet)

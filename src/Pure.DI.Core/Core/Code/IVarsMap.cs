@@ -53,8 +53,12 @@ interface IVarsMap
     /// <param name="accumulatorBindingIds">
     /// Parent accumulator bindings reintroduced by the lazy graph and isolated from the parent scope.
     /// </param>
+    /// <param name="isIsolated">
+    /// Determines the PerBlock values of the parent scope that the lazy graph creates anew,
+    /// for example, the values that read a value overridden by the lambda.
+    /// </param>
     /// <returns>A disposable that restores the state when the scope is closed.</returns>
-    IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds);
+    IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds, Func<Var, bool>? isIsolated = null);
 
     /// <summary>
     /// Creates an isolated scope for an ownership accumulator boundary.

@@ -175,13 +175,16 @@ class VarsMap(
     }
 
     /// <inheritdoc />
-    public IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds)
+    public IDisposable Lazy(Var var, Lines lines, in ImmutableArray<int> accumulatorBindingIds, Func<Var, bool>? isIsolated = null)
     {
         // Enumeration runs outside the block that creates it. Keep the current enumerable
         // so a cyclic element can call its iterator, but rebuild other per-block values inside it.
+        // A lambda that overrides a value rebuilds the per-block values that read it.
         var removed = var.AbstractNode.Construct is { Source.Kind: MdConstructKind.Enumerable or MdConstructKind.AsyncEnumerable }
             ? RemovePerBlockVars(lines, nameof(Lazy), var.AbstractNode.BindingId, preserveActiveVars: true)
-            : null;
+            : isIsolated is not null
+                ? RemovePerBlockVars(lines, nameof(Lazy), var.AbstractNode.BindingId, preserveActiveVars: true, isIsolated)
+                : null;
         var scope = IsolateAccumulators(var, lines, accumulatorBindingIds, nameof(Lazy), true);
         return Disposables.Create(() => {
             scope.Dispose();
@@ -312,7 +315,8 @@ class VarsMap(
         Lines lines,
         string reason,
         int? retainedBindingId = null,
-        bool preserveActiveVars = false)
+        bool preserveActiveVars = false,
+        Func<Var, bool>? isRemoved = null)
     {
         List<KeyValuePair<int, Var>>? removed = null;
         foreach (var bindingId in _perBlockBindingIds)
@@ -322,7 +326,8 @@ class VarsMap(
             if (bindingId == retainedBindingId
                 || !_map.TryGetValue(bindingId, out var perBlockVar)
                 || !ShouldIsolatePerBlockVar(perBlockVar)
-                || (preserveActiveVars && _activeScopes.Any(scope => scope.ExcludeBindingId == bindingId)))
+                || (preserveActiveVars && _activeScopes.Any(scope => scope.ExcludeBindingId == bindingId))
+                || isRemoved is not null && !isRemoved(perBlockVar))
             {
                 continue;
             }

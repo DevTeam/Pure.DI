@@ -15,7 +15,10 @@ class GraphOverrider(
         ref int bindingId)
     {
         var entries = new Dictionary<DependencyNode, IReadOnlyCollection<Dependency>>(graph.Entries.Count);
-        var state = new RewriteState(graph.Entries.Count, new ConsumedInjections(setup, graph), CreateCyclicOverrides(setup, graph, ref bindingId));
+        var consumedInjections = new ConsumedInjections(setup, graph);
+        var cyclicOverrides = CreateCyclicOverrides(setup, graph, ref bindingId);
+        AddOptionalOverrides(setup, graph, consumedInjections, cyclicOverrides, ref bindingId);
+        var state = new RewriteState(graph.Entries.Count, consumedInjections, cyclicOverrides);
         foreach (var rootNode in from node in graph.Vertices where node.Root is not null select node)
         {
             Override(
@@ -74,6 +77,7 @@ class GraphOverrider(
         // A node on a cycle through lambdas that override values gets each of those values in its scope,
         // whether a lambda above it on the path has overridden the value or not. Otherwise, the node got a rewrite
         // for each set of the values overridden on the paths to it, which grows exponentially with the length of the cycle, see #192.
+        // So does a node outside the cycles that is reached both with and without several values, see AddOptionalOverrides.
         // The code reads such a value from a variable when it is overridden and creates it otherwise, see MaybeOverride.
         if (state.CyclicOverrides.Markers.TryGetValue(bindingId, out var markers))
         {
@@ -548,6 +552,270 @@ class GraphOverrider(
         return cyclicOverrides;
     }
 
+    // A node is rewritten for each set of the values overridden on the paths to it. A node reached both under a lambda
+    // that overrides a value and outside it has two rewrites, which read the value and create it. But a node reached
+    // so for several values, for example, through the delegates of several levels, each of which can be bypassed,
+    // had a rewrite for each subset of these values, which doubles per value. Such a node gets each of these values
+    // in its scope, like a node on a cycle, and checks in the code whether a value is overridden.
+    private void AddOptionalOverrides(
+        MdSetup setup,
+        IGraph<DependencyNode, Dependency> graph,
+        ConsumedInjections consumedInjections,
+        CyclicOverrides cyclicOverrides,
+        ref int maxId)
+    {
+        // The deep overrides by the injections they replace, with the nodes that declare them.
+        var overrides = new Dictionary<Injection, OptionalOverride>();
+        var otherInjections = new HashSet<Injection>();
+        foreach (var node in graph.Vertices)
+        {
+            if (node.Factory is not {} factory)
+            {
+                continue;
+            }
+
+            var typeConstructor = node.TypeConstructor;
+            var position = 0;
+            foreach (var resolverOverrides in factory.Resolvers.Select(i => (i.Source.Position, i.Overrides))
+                         .Concat(factory.Initializers.Select(i => (i.Source.Position, i.Overrides)))
+                         .OrderBy(i => i.Position)
+                         .Select(i => i.Overrides))
+            {
+                position++;
+                foreach (var @override in resolverOverrides)
+                {
+                    if (@override.Injections.IsDefaultOrEmpty || !@override.Source.IsDeep)
+                    {
+                        continue;
+                    }
+
+                    // The lambda of a delegate is the scope of the arguments it overrides,
+                    // and its code creates the PerBlock instances that read them anew, see RootCodeBuilder.
+                    // The code after a factory that overrides a value by ctx.Override still sees the instances created with it.
+                    var isDelegateArgument = DelegateArgumentOverrideValidator.IsDelegateArgument(@override.Source);
+                    foreach (var injection in @override.Injections.Select(i => i with { Type = typeConstructor.Construct(setup, i.Type) }))
+                    {
+                        if (!isDelegateArgument)
+                        {
+                            otherInjections.Add(injection);
+                            continue;
+                        }
+
+                        if (!overrides.TryGetValue(injection, out var optionalOverride))
+                        {
+                            optionalOverride = new OptionalOverride(node, @override);
+                            overrides.Add(injection, optionalOverride);
+                        }
+
+                        // The first override of a factory replaces the injection for its dependencies from that position.
+                        if (!optionalOverride.Positions.ContainsKey(node.Binding.Id))
+                        {
+                            optionalOverride.Positions.Add(node.Binding.Id, position);
+                            optionalOverride.Nodes.Add(node);
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach (var injection in otherInjections)
+        {
+            overrides.Remove(injection);
+        }
+
+        if (overrides.Count < MinOptionalOverrides)
+        {
+            return;
+        }
+
+        // A value that cannot be created without an override is overridden on each path to the code that reads it.
+        foreach (var entry in graph.Entries)
+        {
+            foreach (var dependency in entry.Edges)
+            {
+                if (TryGetOptionalOverride(overrides, dependency.Injection, out var optionalOverride)
+                    && optionalOverride.CanCreate
+                    && !(dependency.IsResolved && cyclicOverrides.CanCreate(graph, dependency.Source)))
+                {
+                    optionalOverride.CanCreate = false;
+                }
+            }
+        }
+
+        var roots = graph.Vertices.Where(i => i.Root is not null).ToList();
+        var optionalInjections = new Dictionary<int, List<Injection>>();
+        var stack = new Stack<DependencyNode>();
+        foreach (var pair in overrides)
+        {
+            var optionalOverride = pair.Value;
+            if (!optionalOverride.CanCreate)
+            {
+                continue;
+            }
+
+            // The nodes reached with the value.
+            var nodesWith = new HashSet<int>();
+            foreach (var node in optionalOverride.Nodes)
+            {
+                if (!graph.TryGetInEdges(node, out var dependencies))
+                {
+                    continue;
+                }
+
+                var position = optionalOverride.Positions[node.Binding.Id];
+                foreach (var dependency in dependencies)
+                {
+                    if (dependency.IsResolved && dependency.Position >= position && nodesWith.Add(dependency.Source.Binding.Id))
+                    {
+                        stack.Push(dependency.Source);
+                    }
+                }
+            }
+
+            while (stack.Count > 0)
+            {
+                if (!graph.TryGetInEdges(stack.Pop(), out var dependencies))
+                {
+                    continue;
+                }
+
+                foreach (var dependency in dependencies)
+                {
+                    if (dependency.IsResolved && nodesWith.Add(dependency.Source.Binding.Id))
+                    {
+                        stack.Push(dependency.Source);
+                    }
+                }
+            }
+
+            // The nodes reached without the value.
+            var nodesWithout = new HashSet<int>();
+            foreach (var root in roots)
+            {
+                if (nodesWithout.Add(root.Binding.Id))
+                {
+                    stack.Push(root);
+                }
+            }
+
+            while (stack.Count > 0)
+            {
+                var node = stack.Pop();
+                if (!graph.TryGetInEdges(node, out var dependencies))
+                {
+                    continue;
+                }
+
+                var hasPosition = optionalOverride.Positions.TryGetValue(node.Binding.Id, out var position);
+                foreach (var dependency in dependencies)
+                {
+                    if (dependency.IsResolved
+                        && !(hasPosition && dependency.Position >= position)
+                        && nodesWithout.Add(dependency.Source.Binding.Id))
+                    {
+                        stack.Push(dependency.Source);
+                    }
+                }
+            }
+
+            foreach (var bindingId in nodesWith)
+            {
+                if (!nodesWithout.Contains(bindingId))
+                {
+                    continue;
+                }
+
+                if (!optionalInjections.TryGetValue(bindingId, out var injections))
+                {
+                    injections = [];
+                    optionalInjections.Add(bindingId, injections);
+                }
+
+                injections.Add(pair.Key);
+            }
+        }
+
+        if (optionalInjections.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var node in graph.Vertices)
+        {
+            if (!optionalInjections.TryGetValue(node.Binding.Id, out var injections) || injections.Count < MinOptionalOverrides)
+            {
+                continue;
+            }
+
+            // Only the values that the node or the nodes under it read split its rewrites.
+            var consumedIds = consumedInjections.Get(node);
+            var consumedInjectionsOfNode = injections.Where(i => consumedInjections.IsConsumed(consumedIds, i)).ToList();
+            if (consumedInjectionsOfNode.Count < MinOptionalOverrides)
+            {
+                continue;
+            }
+
+            var markers = cyclicOverrides.Markers.TryGetValue(node.Binding.Id, out var cyclicMarkers)
+                ? new Dictionary<Injection, DependencyNode>(cyclicMarkers)
+                : new Dictionary<Injection, DependencyNode>();
+            foreach (var injection in consumedInjectionsOfNode)
+            {
+                if (markers.ContainsKey(injection))
+                {
+                    continue;
+                }
+
+                var optionalOverride = overrides[injection];
+                if (optionalOverride.Marker is null)
+                {
+                    var declaringNode = optionalOverride.Node;
+                    var typeConstructor = declaringNode.TypeConstructor;
+                    var contractType = typeConstructor.Construct(setup, optionalOverride.Override.Source.ContractType);
+                    var overrideId = overrideIdProvider.GetId(contractType, optionalOverride.Override.Source.Tags);
+                    var overrideInjections = optionalOverride.Override.Injections.Select(i => i with { Type = typeConstructor.Construct(setup, i.Type) }).ToImmutableArray();
+                    var currentOverride = new DpOverride(optionalOverride.Override.Source with { Id = overrideId, ContractType = contractType }, overrideInjections);
+                    var binding = bindingsFactory.CreateConstructBinding(
+                        setup,
+                        declaringNode,
+                        injection,
+                        contractType,
+                        Lifetime.Transient,
+                        typeConstructor,
+                        ++maxId,
+                        MdConstructKind.Override,
+                        state: currentOverride);
+
+                    optionalOverride.Marker = nodesFactory.CreateNodes(setup, typeConstructor, binding).First();
+                    cyclicOverrides.Ids.Add(overrideId);
+                }
+
+                markers.Add(injection, optionalOverride.Marker);
+            }
+
+            cyclicOverrides.Markers[node.Binding.Id] = markers;
+        }
+    }
+
+    private static bool TryGetOptionalOverride(
+        Dictionary<Injection, OptionalOverride> overrides,
+        Injection injection,
+        [NotNullWhen(true)] out OptionalOverride? optionalOverride)
+    {
+        if (overrides.TryGetValue(injection, out optionalOverride))
+        {
+            return true;
+        }
+
+        if (injection.Type is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated })
+        {
+            return overrides.TryGetValue(
+                injection with { Type = injection.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated) },
+                out optionalOverride);
+        }
+
+        return false;
+    }
+
     private static Dictionary<Injection, DependencyNode> CreateLocalNodesMap(
         Dictionary<Injection, DependencyNode> nodes,
         Dictionary<Injection, DependencyNode> localOverrides,
@@ -605,12 +873,36 @@ class GraphOverrider(
         return consumedOverrides ?? overrides;
     }
 
+    // A node reached both with and without a single value has two rewrites, which do not check the value in the code.
+    private const int MinOptionalOverrides = 2;
+
+    // A deep override of an injection that the nodes outside the cycles can be reached both with and without.
+    private sealed class OptionalOverride(DependencyNode node, DpOverride @override)
+    {
+        // The first node that declares the override.
+        public readonly DependencyNode Node = node;
+
+        public readonly DpOverride Override = @override;
+
+        // The nodes that declare the override.
+        public readonly List<DependencyNode> Nodes = [];
+
+        // The 1-based position of the resolver or initializer that declares the override, by the binding id of the node.
+        public readonly Dictionary<int, int> Positions = new();
+
+        public bool CanCreate = true;
+
+        // The node that overrides the injection where no lambda above overrides it.
+        public DependencyNode? Marker;
+    }
+
     private sealed class CyclicOverrides
     {
-        // The ids of the overrides that the lambdas on cycles declare.
+        // The ids of the overrides that the lambdas on cycles declare, and of the overrides that are optional for some nodes.
         public readonly HashSet<int> Ids = [];
 
-        // The nodes that override such values by the injections they override, by the binding id of a node on the cycle.
+        // The nodes that override such values by the injections they override, by the binding id of a node on the cycle
+        // or of a node reached both with and without these values.
         public readonly Dictionary<int, Dictionary<Injection, DependencyNode>> Markers = new();
 
         private readonly Dictionary<int, bool> _canCreate = new();

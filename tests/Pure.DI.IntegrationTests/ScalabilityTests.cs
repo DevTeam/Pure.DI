@@ -133,6 +133,8 @@ public class ScalabilityTests
         // Then
         result.Errors.Count.ShouldBe(0, result);
         result.Warnings.Select(i => i.Id).ShouldBe([LogId.WarningRootCodeIsTooLarge], result);
+        // The arguments of delegates that reach nested delegates can make the code large too, see #184.
+        result.Warnings.Single().Message.ShouldContain("ctx.Let");
         result.StdOut.ShouldBe(["S15"], result);
     }
 
