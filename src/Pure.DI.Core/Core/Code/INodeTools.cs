@@ -18,6 +18,11 @@ interface INodeTools
     /// </summary>
     bool UsesContextLock(DependencyNode node);
 
+    /// <summary>
+    /// Determines whether the factory of the node reads a member of its context, such as <c>ctx.ConsumerType</c>.
+    /// </summary>
+    bool ReadsContextMember(DependencyNode node, string memberName);
+
     bool IsDisposableAny(DependencyNode node);
 
     bool IsDisposable(DependencyNode node);

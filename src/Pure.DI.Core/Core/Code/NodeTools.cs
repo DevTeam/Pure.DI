@@ -10,6 +10,8 @@ sealed class NodeTools(
     ICache<NodeTools.LazyKey, bool> isLazy,
     ITypeSymbolComparer typeSymbolComparer) : INodeTools
 {
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<(SyntaxNode Factory, string MemberName), bool> _contextMembers = new();
+
     public bool IsLazy(DependencyNode node, DependencyGraph graph)
     {
         var key = new LazyKey(node, graph.Source.SemanticModel);
@@ -27,23 +29,29 @@ sealed class NodeTools(
     public bool IsBlock(IDependencyNode node) =>
         node.ActualLifetime is Singleton or Scoped or PerResolve;
 
-    public bool UsesContextLock(DependencyNode node)
+    public bool UsesContextLock(DependencyNode node) =>
+        ReadsContextMember(node, nameof(IContext.Lock));
+
+    public bool ReadsContextMember(DependencyNode node, string memberName)
     {
         if (node.Factory is not {} factory)
         {
             return false;
         }
 
-        var contextName = factory.Source.Context.Identifier.ValueText;
-        return factory.Source.Factory
-            .DescendantNodes()
-            .OfType<MemberAccessExpressionSyntax>()
-            .Any(i => i is
-                {
-                    Expression: IdentifierNameSyntax identifier,
-                    Name.Identifier.ValueText: nameof(IContext.Lock)
-                }
-                && identifier.Identifier.ValueText == contextName);
+        // The code of a factory is searched once, because the nodes are asked about it for each of their injections.
+        return _contextMembers.GetOrAdd(
+            (factory.Source.Factory, memberName),
+            key =>
+            {
+                var contextName = factory.Source.Context.Identifier.ValueText;
+                return key.Factory
+                    .DescendantNodes()
+                    .OfType<MemberAccessExpressionSyntax>()
+                    .Any(i => i.Expression is IdentifierNameSyntax identifier
+                              && identifier.Identifier.ValueText == contextName
+                              && i.Name.Identifier.ValueText == key.MemberName);
+            });
     }
 
     public bool IsSharedInstance(DependencyNode node, DependencyGraph graph) =>

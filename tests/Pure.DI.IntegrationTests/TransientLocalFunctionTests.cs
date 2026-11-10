@@ -43,6 +43,78 @@ public class TransientLocalFunctionTests
         }
     }
 
+    // A logger is created for the type it is injected into, so the consumers of the logger do not share its local function.
+    // Each consumer of the logger is injected into the service directly and through a holder.
+    [Theory]
+    [InlineData("Auto", "ConsumerType.Name")]
+    [InlineData("On", "ConsumerType.Name")]
+    [InlineData("Auto", "ConsumerTypes[1].Name")]
+    [InlineData("On", "ConsumerTypes[1].Name")]
+    public async Task ShouldCreateTransientInstanceForEachConsumer(string mode, string consumer)
+    {
+        // Given
+        const int count = 12;
+        var classes = new StringBuilder();
+        for (var i = 0; i < count; i++)
+        {
+            classes.AppendLine($"sealed class C{i} {{ public C{i}(Holder holder) => Name = holder.Logger.Name; public string Name {{ get; }} }}");
+            classes.AppendLine($"sealed class D{i} {{ public D{i}(Logger logger) => Name = logger.Name; public string Name {{ get; }} }}");
+        }
+
+        var parameters = string.Join(", ", Enumerable.Range(0, count).Select(i => $"C{i} c{i}, D{i} d{i}"));
+        var names = string.Join(" ", Enumerable.Range(0, count).Select(i => $"{{c{i}.Name}} {{d{i}.Name}}"));
+
+        // When
+        var result = await $$"""
+            using System;
+            using Pure.DI;
+
+            namespace Sample
+            {
+                sealed class Logger
+                {
+                    public Logger(string name) => Name = name;
+                    public string Name { get; }
+                }
+
+                sealed class Holder
+                {
+                    public Holder(Logger logger) => Logger = logger;
+                    public Logger Logger { get; }
+                }
+
+                {{classes}}
+
+                sealed class Service
+                {
+                    public Service({{parameters}}) => Value = $"{{names}}";
+                    public string Value { get; }
+                }
+
+                partial class Composition
+                {
+                    private static void Setup() => DI.Setup(nameof(Composition))
+                        .Hint(Hint.LocalFunctions, "{{mode}}")
+                        .Bind<Logger>().To(ctx => new Logger(ctx.{{consumer}}))
+                        .Root<Service>("Root");
+                }
+
+                public static class Program
+                {
+                    public static void Main() => Console.WriteLine(new Composition().Root.Value);
+                }
+            }
+            """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        // The second of the consumers of a logger is the consumer of the holder or of the type the logger is injected into.
+        var expected = consumer.StartsWith("ConsumerTypes", StringComparison.Ordinal)
+            ? string.Join(" ", Enumerable.Range(0, count).Select(i => $"C{i} Service"))
+            : string.Join(" ", Enumerable.Range(0, count).Select(i => $"Holder D{i}"));
+        result.StdOut.ShouldBe([expected], result);
+    }
+
     [Fact]
     public async Task ShouldKeepSmallTransientDiamondInPlace()
     {

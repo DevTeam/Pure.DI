@@ -13,6 +13,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         var consumers = new Dictionary<int, List<DependencyNode>>();
         var factoryDownstream = new HashSet<int>();
         var visited = new HashSet<int> { root.BindingId };
+        var nodes = new List<DependencyNode> { root };
         var stack = new Stack<(DependencyNode Node, bool UnderFactory)>();
         stack.Push((root, false));
 
@@ -49,6 +50,7 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 
                 if (visited.Add(dep.BindingId))
                 {
+                    nodes.Add(dep);
                     stack.Push((dep, depUnderFactory));
                 }
                 else if (depUnderFactory)
@@ -69,7 +71,57 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             GetPerBlockDependents(graph, root),
             GetMaybeOverrides(graph),
             cycleEntries,
-            branchingCycles);
+            branchingCycles,
+            GetConsumerDependents(nodes, consumers));
+    }
+
+    // A factory that reads ctx.ConsumerType creates an instance for the consumer it is injected into, so the code
+    // of the instance is not shared by its consumers. A factory that reads ctx.ConsumerTypes depends on all the consumers
+    // up to the root, so the code of each of these consumers is not shared too. Otherwise, a local function
+    // created the instances for all the consumers with the consumers of its first call.
+    private HashSet<int> GetConsumerDependents(List<DependencyNode> nodes, Dictionary<int, List<DependencyNode>> consumers)
+    {
+        var dependents = new HashSet<int>();
+        HashSet<int>? chainDependents = null;
+        Stack<int>? stack = null;
+        foreach (var node in nodes)
+        {
+            if (nodeTools.ReadsContextMember(node, nameof(IContext.ConsumerTypes)))
+            {
+                if ((chainDependents ??= []).Add(node.BindingId))
+                {
+                    (stack ??= new Stack<int>()).Push(node.BindingId);
+                }
+            }
+            else if (nodeTools.ReadsContextMember(node, nameof(IContext.ConsumerType)))
+            {
+                dependents.Add(node.BindingId);
+            }
+        }
+
+        if (chainDependents is null || stack is null)
+        {
+            return dependents;
+        }
+
+        while (stack.Count > 0)
+        {
+            if (!consumers.TryGetValue(stack.Pop(), out var nodeConsumers))
+            {
+                continue;
+            }
+
+            foreach (var consumer in nodeConsumers)
+            {
+                if (chainDependents.Add(consumer.BindingId))
+                {
+                    stack.Push(consumer.BindingId);
+                }
+            }
+        }
+
+        dependents.UnionWith(chainDependents);
+        return dependents;
     }
 
     // A node created only as the result of lambdas, such as Func<T>, is created by the code of each lambda,

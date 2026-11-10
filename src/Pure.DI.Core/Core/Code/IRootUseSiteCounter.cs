@@ -22,4 +22,6 @@ record RootUseSiteAnalysis(
     // The number of the dependencies on the nodes of the cycle of a node from the nodes outside it, by binding id.
     IReadOnlyDictionary<int, int> CycleEntries,
     // Binding ids of the nodes of the cycles that have several paths through their nodes.
-    HashSet<int> BranchingCycles);
+    HashSet<int> BranchingCycles,
+    // Binding ids of the nodes whose code depends on the consumers they are injected into.
+    HashSet<int> ConsumerDependents);
