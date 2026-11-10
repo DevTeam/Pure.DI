@@ -7,14 +7,18 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
     private readonly ConcurrentDictionary<int, string> _overrideVariableNames = new();
     private readonly ConcurrentDictionary<int, string> _persistentVariableNames = new();
     private Dictionary<string, int>? _rootVariableNames;
+    private HashSet<string>? _rootUniqueNames;
 
     public IDisposable Root()
     {
         var rootVariableNames = _rootVariableNames;
+        var rootUniqueNames = _rootUniqueNames;
         _rootVariableNames = new Dictionary<string, int>(StringComparer.Ordinal);
+        _rootUniqueNames = new HashSet<string>(StringComparer.Ordinal);
         _overrideVariableNames.Clear();
         return Disposables.Create(() => {
             _rootVariableNames = rootVariableNames;
+            _rootUniqueNames = rootUniqueNames;
             _overrideVariableNames.Clear();
         });
     }
@@ -51,14 +55,23 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
 
     private string GetRootUniqueName(string baseName)
     {
-        if (_rootVariableNames is null)
+        if (_rootVariableNames is null || _rootUniqueNames is null)
         {
             return uniqueNameProvider.GetUniqueName(baseName);
         }
 
-        _rootVariableNames.TryGetValue(baseName, out var id);
-        _rootVariableNames[baseName] = id + 1;
-        return id == 0 ? baseName : $"{baseName}{id}";
+        // The next variable of a type can get the name of a variable of another type whose name ends with a number,
+        // for example, the second variable of the type Service1 and the first variable of the type Service11.
+        while (true)
+        {
+            _rootVariableNames.TryGetValue(baseName, out var id);
+            _rootVariableNames[baseName] = id + 1;
+            var name = id == 0 ? baseName : $"{baseName}{id}";
+            if (_rootUniqueNames.Add(name))
+            {
+                return name;
+            }
+        }
     }
 
     private static string GetTypeName(ITypeSymbol type) =>
