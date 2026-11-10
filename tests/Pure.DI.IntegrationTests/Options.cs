@@ -17,4 +17,7 @@ record Options(
 #else
     public const LanguageVersion ModernLanguageVersion = CSharpLanguageVersion.CSharp10;
 #endif
+
+    // Cancels the generation, for example, when it takes too long.
+    public CancellationToken CancellationToken { get; init; }
 }

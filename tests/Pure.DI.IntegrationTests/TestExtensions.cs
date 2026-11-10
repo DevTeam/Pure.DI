@@ -89,6 +89,21 @@ public static class TestExtensions
         }
     }
 
+    // The generation and the run are synchronous, so they are done by another thread to stop waiting for them.
+    // The generation is canceled too, otherwise it would keep a processor busy during the tests that follow.
+    internal static async Task<Result> RunAsync(this string setupCode, Options options, TimeSpan timeout)
+    {
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var run = Task.Run(() => setupCode.RunAsync(options with { CancellationToken = cancellationTokenSource.Token }));
+        if (await Task.WhenAny(run, Task.Delay(timeout)) == run)
+        {
+            return await run;
+        }
+
+        cancellationTokenSource.Cancel();
+        throw new TimeoutException($"The code is not generated and run in {timeout}.");
+    }
+
     [SuppressMessage("Performance", "CA1806:Не игнорируйте результаты метода")]
     internal static Task<Result> RunAsync(this string setupCode, Options? options = null)
     {
@@ -151,7 +166,7 @@ public static class TestExtensions
         using var logEntryObserverToken = generator.Observers.Register(logEntryObserver);
 
         // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-        generator.Generate(contextOptions.Object, sources.Object, contextDiagnostic.Object, [..updates], CancellationToken.None);
+        generator.Generate(contextOptions.Object, sources.Object, contextDiagnostic.Object, [..updates], runOptions.CancellationToken);
 
         if (sourceList.Any(source => source.Contains("GenerateInterface", StringComparison.Ordinal)))
         {

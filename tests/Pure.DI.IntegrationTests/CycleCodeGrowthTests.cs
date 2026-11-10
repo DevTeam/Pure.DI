@@ -119,13 +119,16 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         {
             var ring = createRing(size);
             var stopwatch = Stopwatch.StartNew();
-            var run = ring.Create().RunAsync(new Options(Options.ModernLanguageVersion));
-            if (await Task.WhenAny(run, Task.Delay(GenerationTimeout)) != run)
+            Result result;
+            try
+            {
+                result = await ring.Create().RunAsync(new Options(Options.ModernLanguageVersion), GenerationTimeout);
+            }
+            catch (TimeoutException)
             {
                 throw new TimeoutException($"{size} screens are not generated in {GenerationTimeout}; previous: {string.Join("; ", measurements)}");
             }
 
-            var result = await run;
             stopwatch.Stop();
             result.Errors.ShouldBeEmpty(result);
             measurements.Add(Measure(size, result, stopwatch.Elapsed));
