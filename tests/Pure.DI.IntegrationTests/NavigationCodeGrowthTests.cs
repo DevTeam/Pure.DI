@@ -18,6 +18,8 @@ using Xunit.Abstractions;
 public class NavigationCodeGrowthTests(ITestOutputHelper output)
 {
     private static readonly int[] Sizes = [4, 6, 8];
+    // The real application of #192 overrides 27 types in the scope of a screen.
+    private static readonly int[] WideSizes = [9, 18, 27];
     private static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(30);
     private const int Steps = 9;
     // Equal steps in the number of screens must add approximately equal amounts of code.
@@ -89,6 +91,17 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
         from edge in Edges
         select new Scenario { Edge = edge, Roots = 3 });
 
+    // As many screens as the overridden types of the real application of #192. Each screen reads the session
+    // that the root delegate overrides and the context that the delegate opening it overrides.
+    public static IEnumerable<object[]> WideCases() => Cases(
+        from topology in new[] { Topology.Ring, Topology.Back, Topology.Router }
+        from serviceLifetime in new[] { null, "PerBlock" }
+        select new Scenario { Topology = topology, Edge = Edge.FuncWithArgument, HasSession = true, ServiceLifetime = serviceLifetime, IsWide = true });
+
+    [Theory]
+    [MemberData(nameof(WideCases))]
+    public Task ShouldGrowLinearlyForWideNavigation(Scenario scenario) => CheckGrowth(scenario);
+
     [Theory]
     [MemberData(nameof(BackCases))]
     public Task ShouldGrowLinearlyForScreensOpeningNextAndPreviousScreens(Scenario scenario) => CheckGrowth(scenario);
@@ -130,7 +143,7 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
         // All the sizes are measured before the checks, so a failure shows the growth too.
         var measurements = new List<Measurement>();
         var problems = new List<string>();
-        foreach (var size in Sizes)
+        foreach (var size in scenario.IsWide ? WideSizes : Sizes)
         {
             var stopwatch = Stopwatch.StartNew();
             Result result;
@@ -266,6 +279,8 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
 
         public int Roots { get; set; } = 1;
 
+        public bool IsWide { get; set; }
+
         public void Serialize(IXunitSerializationInfo info)
         {
             info.AddValue(nameof(Topology), Topology.ToString());
@@ -278,6 +293,7 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
             info.AddValue(nameof(RouterLifetime), RouterLifetime);
             info.AddValue(nameof(HasTags), HasTags);
             info.AddValue(nameof(Roots), Roots);
+            info.AddValue(nameof(IsWide), IsWide);
         }
 
         public void Deserialize(IXunitSerializationInfo info)
@@ -292,6 +308,7 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
             RouterLifetime = info.GetValue<string>(nameof(RouterLifetime));
             HasTags = info.GetValue<bool>(nameof(HasTags));
             Roots = info.GetValue<int>(nameof(Roots));
+            IsWide = info.GetValue<bool>(nameof(IsWide));
         }
 
         // Each screen depends on each of the other screens.
@@ -630,6 +647,11 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
             if (Roots > 1)
             {
                 name.Append($" roots={Roots}");
+            }
+
+            if (IsWide)
+            {
+                name.Append(" wide");
             }
 
             return name.ToString();
