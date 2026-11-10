@@ -115,7 +115,7 @@ class CompositionBuilder(
                     lines.AppendLines(localFunction);
                 }
 
-                WarnIfCodeIsTooLarge(processedRoot, ctx.Lines.Count, GetDependenciesCount(graph, root.Node));
+                WarnIfCodeIsTooLarge(processedRoot, GetCodeLinesCount(ctx.Lines), GetDependenciesCount(graph, root.Node));
                 processedRoot = processedRoot with { Lines = ctx.Lines };
                 args = varsMap.Declarations.Where(i => i.Node.Arg is not null);
             }
@@ -280,6 +280,22 @@ class CompositionBuilder(
     // The copies of a node made for different override scopes, and the values that override an injection, are counted once,
     // so a graph that grows with the number of combinations of overridden delegate arguments is compared
     // with the bindings it is made of rather than with its nodes, see #184.
+    // Comments do not slow down the build, and the debug build of the generator adds many of them,
+    // so the size of a root does not depend on how the generator is built.
+    private static int GetCodeLinesCount(Lines lines)
+    {
+        var count = 0;
+        foreach (var line in lines)
+        {
+            if (!line.Text.AsSpan().TrimStart().StartsWith("//".AsSpan()))
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     private static int GetDependenciesCount(DependencyGraph graph, DependencyNode root)
     {
         var dependencies = new HashSet<string> { GetDependencyKey(root) };
