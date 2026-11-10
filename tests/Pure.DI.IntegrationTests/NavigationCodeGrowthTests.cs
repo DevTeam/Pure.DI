@@ -36,8 +36,6 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     // They are not checked until the growth is fixed, see ShouldGrowLinearlyForKnownProblems.
     private static string? GetKnownProblem(Scenario scenario) => scenario switch
     {
-        { Topology: Topology.Router, RouterLifetime: "PerBlock", Edge: not Edge.FuncOfOwned } =>
-            "Each lambda creates a router of its own with the lambdas for all the screens, so the code grows with the square of the number of screens.",
         { HasTags: true, Edge: Edge.Lazy or Edge.FuncOfOwned } =>
             "Lazy<T> and Owned<T> of an instance are different nodes for each tag, so each of them gets a local function with the same code.",
         { Edge: Edge.FuncOfOwned, Creation: Creation.FactoryWithOverride } =>

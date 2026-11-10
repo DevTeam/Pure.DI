@@ -283,7 +283,8 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
     // A PerBlock instance that only lambdas return, such as screens that open each other by Func<T>, is created once
     // in the block of each lambda, so it is created like a transient instance there. Its local function on a cycle
     // creates the lambdas of the instance, rather than each lambda repeating the code of the lambdas it leads to.
-    // A lambda can return the instance in a PerBlock instance of its own, such as Owned<T>, which its block creates once too.
+    // A lambda can return the instance in a PerBlock instance of its own, such as Owned<T>, which its block creates once too,
+    // or in a transient instance that only this lambda returns, such as a router that the screen of the lambda gets.
     private bool IsPerBlockResultOfLambdasOnCycle(CodeContext ctx)
     {
         var var = ctx.VarInjection.Var;
@@ -323,7 +324,8 @@ class LocalFunctions(INodeTools nodeTools, IAccumulators accumulators, IRefSafet
                     continue;
                 }
 
-                if (target is not { ActualLifetime: PerBlock, Arg: null } || !holders.Add(target.BindingId))
+                // An instance that holds this one is reached once, so each block that creates it creates this one once.
+                if (target is not { ActualLifetime: PerBlock or Transient, Arg: null } || !holders.Add(target.BindingId))
                 {
                     return false;
                 }

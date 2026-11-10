@@ -31,7 +31,9 @@ sealed class RootCodeBuilder(
         var hasLocalFunction = localFunctionScope.TryGetName(localFunctionKey, out var localFunctionName);
         if (var.IsCreated)
         {
-            if (parentCtx.IsFactory && hasLocalFunction)
+            // A factory may reach a shared instance only in a branch, so it ensures the instance exists.
+            // A created PerBlock instance, for example, a local function parameter, is already available.
+            if (parentCtx.IsFactory && hasLocalFunction && nodeTools.IsBlock(var.AbstractNode))
             {
                 parentCtx.Lines.AppendLine($"{localFunctionName}();");
             }
