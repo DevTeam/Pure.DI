@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="CSharpInteractive" Version="1.2.3" />
-        <PackageReference Include="JetBrains.dotTrace.CommandLineTools.windows-x64" Version="2026.2.4" GeneratePathProperty="true" PrivateAssets="all" />
+        <PackageReference Include="JetBrains.dotTrace.CommandLineTools.windows-x64" Version="2026.2.4.1" GeneratePathProperty="true" PrivateAssets="all" />
         <PackageReference Include="Pure.DI" Version="$(InternalVersion)">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,7 +18,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="System.CommandLine" Version="2.0.14" />
+        <PackageReference Include="System.CommandLine" Version="3.0.0" />
     </ItemGroup>
 
     <ItemGroup>
