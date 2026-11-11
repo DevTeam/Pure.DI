@@ -2345,9 +2345,9 @@ public class ExportAttributeTests
 
                            namespace Sample
                            {
-                               internal interface IClock;
+                               internal interface IClock { }
 
-                               internal sealed class Clock : IClock;
+                               internal sealed class Clock : IClock { }
 
                                internal sealed class Module
                                {
