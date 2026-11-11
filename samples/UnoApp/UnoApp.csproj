@@ -1,7 +1,7 @@
 <Project Sdk="Uno.Sdk/6.7.30">
 
     <PropertyGroup>
-        <TargetFrameworks>net10.0-desktop</TargetFrameworks>
+        <TargetFrameworks>net11.0-desktop</TargetFrameworks>
         <!-- Uno SDK derives this value from TargetFrameworks; clear the conflicting sample-wide property. -->
         <TargetFrameworkVersion />
         <OutputType>Exe</OutputType>

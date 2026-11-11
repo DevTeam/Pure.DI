@@ -6,7 +6,7 @@
         <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>latest</LangVersion>
         <!--Make sure that Build.Settings.BaseDotNetFrameworkMajorVersion has been updated.-->
-        <BaseTargetFramework>net10.0</BaseTargetFramework>
+        <BaseTargetFramework>net11.0</BaseTargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

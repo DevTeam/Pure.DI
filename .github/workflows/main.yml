@@ -13,7 +13,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '11.0.x'
 
       - name: Build and test
         run: dotnet run --project ./build -- check
@@ -34,7 +34,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '11.0.x'
 
       - name: Test examples
         run: dotnet run --project ./build -- te
@@ -49,7 +49,7 @@ jobs:
 #      - name: Setup dotnet
 #        uses: actions/setup-dotnet@v3
 #        with:
-#          dotnet-version: '10.0.x'
+#          dotnet-version: '11.0.x'
           
 #      - name: Clean 
 #        run: rm -rf benchmarks/data
@@ -76,7 +76,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '11.0.x'
 
       - name: Publish Blazor example
         if: ${{ github.ref == 'refs/heads/master' }}

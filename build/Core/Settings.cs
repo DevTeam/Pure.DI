@@ -91,7 +91,7 @@ partial class Settings
             return 0;
         }
 
-        // parse net10.0 using regular expression
+        // parse net11.0 using regular expression
         var match = ParseNetRegex().Match(baseTargetFrameworkStr);
         // ReSharper disable once InvertIf
         if (!match.Success || !int.TryParse(match.Groups[1].Value, out var majorVersion))
