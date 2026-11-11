@@ -427,9 +427,11 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             {
                 consumerBlocks = [consumer.BindingId];
             }
-            // The code of a factory can create its dependencies any number of times, for example, in a loop.
+            // The code of a factory can create its dependencies any number of times, for example, in a loop,
+            // unless it injects each of them once, as the factory of Owned<T> does, see #195.
             // A PerBlock consumer is created at most once in a block, like a transient one created once there.
-            else if (consumer is { ActualLifetime: Lifetime.Transient or Lifetime.PerBlock, Arg: null, Factory: null })
+            else if (consumer is { ActualLifetime: Lifetime.Transient or Lifetime.PerBlock, Arg: null }
+                     && (consumer.Factory is null || InjectsEachDependencyOnce(consumer.Factory)))
             {
                 consumerBlocks = GetBlocks(graph, root, consumer.BindingId, consumers, blocks);
             }
@@ -450,17 +452,54 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         return nodeBlocks;
     }
 
+    // A factory injects each of its dependencies once when it gets them as the parameters of a simple factory,
+    // or by the statements of its body, outside branches, loops and lambdas, as the factory of Owned<T> does.
+    private static bool InjectsEachDependencyOnce(DpFactory factory)
+    {
+        var source = factory.Source;
+        if (source.IsSimpleFactory)
+        {
+            return true;
+        }
+
+        if (!source.Initializers.IsDefaultOrEmpty)
+        {
+            return false;
+        }
+
+        if (source.Resolvers.IsDefaultOrEmpty)
+        {
+            return true;
+        }
+
+        // The factory of a generic binding is rewritten for each type, while its resolvers keep the syntax of the binding,
+        // so a resolver is checked against the factory in the binding, such as To(ctx => { ... }).
+        return source.Factory.Body is BlockSyntax
+               && source.Resolvers.All(resolver =>
+                   resolver.Source.Parent is ExpressionStatementSyntax { Parent: BlockSyntax { Parent: AnonymousFunctionExpressionSyntax factoryLambda } }
+                   && factoryLambda.Ancestors().TakeWhile(node => node != source.Source).All(node => node is not AnonymousFunctionExpressionSyntax)
+                   && factoryLambda.Ancestors().Contains(source.Source));
+    }
+
     // A node created only as the result of other lambdas is the first code of blocks of its own,
     // so the PerBlock instances it shares with a node created once per block are created anew in its blocks anyway.
     // For example, the copies of a view model made for different override scopes share the delegates that they inject, see #184.
+    // A lambda can return the node in a PerBlock instance of its own that injects it once, such as Owned<T>, see #195.
     private bool IsResultOfOtherLambdas(
         DependencyGraph graph,
         DependencyNode node,
         HashSet<int> lambdas,
-        Dictionary<int, List<DependencyNode>> consumers) =>
+        Dictionary<int, List<DependencyNode>> consumers,
+        HashSet<int>? visited = null) =>
         consumers.TryGetValue(node.BindingId, out var nodeConsumers)
         && nodeConsumers.Count > 0
-        && nodeConsumers.All(consumer => nodeTools.IsLazy(consumer, graph) && !lambdas.Contains(consumer.BindingId));
+        && nodeConsumers.All(consumer =>
+            nodeTools.IsLazy(consumer, graph)
+                ? !lambdas.Contains(consumer.BindingId)
+                : consumer is { ActualLifetime: Lifetime.PerBlock, Arg: null, Factory: {} factory }
+                  && InjectsEachDependencyOnce(factory)
+                  && (visited ??= []).Add(consumer.BindingId)
+                  && IsResultOfOtherLambdas(graph, consumer, lambdas, consumers, visited));
 
     // The consumers of each node by binding id, a consumer once for each of its dependencies,
     // and the instances of each node, because overridden copies of a node share its binding id.

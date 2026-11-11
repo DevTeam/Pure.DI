@@ -318,6 +318,16 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     [InlineData(SharedFactoryRing.HubOnlyInRoot)]
     // The module that gets Func<IClock> and Hub are scoped instead of singletons.
     [InlineData(SharedFactoryRing.ScopedModule)]
+    // Hub is PerResolve, which creates its dependencies in a block of its own too.
+    [InlineData(SharedFactoryRing.PerResolveHub)]
+    // The factory injects the PerBlock IClock directly, and Hub is PerResolve.
+    [InlineData(SharedFactoryRing.PerBlockClockPerResolveHub)]
+    // The factory injects the PerBlock IClock directly, and the screens get the singleton Hub as Lazy<Hub>.
+    [InlineData(SharedFactoryRing.PerBlockClockLazyHub)]
+    // The factory injects the PerBlock IClock directly, and the screens get the singleton Hub as Func<Hub>.
+    [InlineData(SharedFactoryRing.PerBlockClockFuncHub)]
+    // The screens are created by factories that inject a PerBlock delegate, as the view models of an application.
+    [InlineData(SharedFactoryRing.FactoryScreens)]
     public async Task ShouldCreateEachScreenOnCycleOnceWhenSingletonSharesFactoryInstance(SharedFactoryRing variant)
     {
         // Given
@@ -333,7 +343,8 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
             var lines = result.GeneratedCode.Split(Environment.NewLine);
             for (var screen = 0; screen < size; screen++)
             {
-                lines.Count(i => i.Contains($"new global::Sample.Screen{screen}(")).ShouldBe(1, $"Screen{screen} of {size} screens{Environment.NewLine}{result.GeneratedCode}");
+                // The factory of a screen keeps its own code, which creates the screen without the global namespace.
+                lines.Count(i => i.Contains($"new global::Sample.Screen{screen}(") || i.Contains($"new Screen{screen}(")).ShouldBe(1, $"Screen{screen} of {size} screens{Environment.NewLine}{result.GeneratedCode}");
             }
         }
     }
@@ -351,6 +362,9 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     [InlineData(SharedFactoryRing.PerBlockClock)]
     [InlineData(SharedFactoryRing.PerBlockClockOnlyInFactory)]
     [InlineData(SharedFactoryRing.PerBlockClockScopedHub)]
+    [InlineData(SharedFactoryRing.PerBlockClockLazyHub)]
+    [InlineData(SharedFactoryRing.PerBlockClockFuncHub)]
+    [InlineData(SharedFactoryRing.FactoryScreens)]
     [InlineData(SharedFactoryRing.FactoryHub)]
     public async Task ShouldCreateFactoryInstanceForEachScreenOnCycleAndShareSingleton(SharedFactoryRing variant)
     {
@@ -377,6 +391,145 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         result.StdOut.ShouldBe(["6", "1"], result);
     }
 
+    // The screens are opened as Owned<T>, and IStorage is disposable and is created by a factory that injects
+    // a PerBlock instance, while the singleton Hub may use IStorage too. Each screen is created in one place,
+    // and each Owned<T> disposes the IStorage of its screen once, but not the IStorage of the singleton Hub.
+    // The factory of Owned<T> injects the screen once, so the screen is created once in the block of each lambda, see #195.
+    [Theory]
+    [InlineData("IClock", true)]
+    [InlineData("Func<IClock>", true)]
+    [InlineData("IClock", false)]
+    [InlineData("Func<IClock>", false)]
+    public async Task ShouldCreateEachOwnedScreenOnCycleOnceWhenFactoryInjectsPerBlockInstance(string clock, bool hasHub)
+    {
+        foreach (var size in SharedFactoryRingSizes)
+        {
+            await CheckOwnedSharedFactoryRing(size, clock, hasHub);
+        }
+    }
+
+    private static async Task CheckOwnedSharedFactoryRing(int size, string clock, bool hasHub)
+    {
+        // Given
+        var hubParameter = hasHub ? "Hub hub," : "";
+        var hubField = hasHub ? "private readonly Hub _hub;" : "";
+        var hubAssignment = hasHub ? "_hub = hub;" : "";
+        var hubCheck = hasHub ? "if (_hub.Storage == _storage) Live.Errors++;" : "";
+        var hubBinding = hasHub ? ".Bind().As(Lifetime.Singleton).To<Hub>()" : "";
+        var classes = new StringBuilder();
+        for (var screen = 0; screen < size; screen++)
+        {
+            var first = (screen + 1) % size;
+            var second = (screen + 2) % size;
+            classes.AppendLine(
+                $$"""
+                  sealed class Screen{{screen}} : IScreen
+                  {
+                      private readonly IStorage _storage;
+                      {{hubField}}
+                      private readonly Func<Owned<Screen{{first}}>> _first;
+                      private readonly Func<Owned<Screen{{second}}>> _second;
+                      public Screen{{screen}}(IStorage storage, {{hubParameter}} Func<Owned<Screen{{first}}>> first, Func<Owned<Screen{{second}}>> second)
+                      {
+                          _storage = storage;
+                          {{hubAssignment}}
+                          _first = first;
+                          _second = second;
+                      }
+                      public string Run(int step, int steps)
+                      {
+                          var current = $"S{{screen}}";
+                          {{hubCheck}}
+                          if (step == steps) return current;
+                          var before = Live.Count;
+                          var owned = step % 2 == 0 ? (IOwned<IScreen>)new OwnedScreen<Screen{{first}}>(_first()) : new OwnedScreen<Screen{{second}}>(_second());
+                          var next = owned.Value.Run(step + 1, steps);
+                          owned.Dispose();
+                          if (Live.Count != before) Live.Errors++;
+                          return current + " " + next;
+                      }
+                  }
+                  """);
+        }
+
+        // When
+        var result = await $$"""
+            using System;
+            using Pure.DI;
+
+            namespace Sample
+            {
+                interface IScreen { string Run(int step, int steps); }
+                interface IOwned<out T> : IDisposable { T Value { get; } }
+                sealed class OwnedScreen<T> : IOwned<T> where T : IScreen
+                {
+                    private readonly Owned<T> _owned;
+                    public OwnedScreen(Owned<T> owned) { _owned = owned; }
+                    public T Value => _owned.Value;
+                    public void Dispose() => _owned.Dispose();
+                }
+                static class Live { public static int Count; public static int Errors; }
+                interface IClock { }
+                sealed class Clock : IClock { }
+                interface IStorage { }
+                sealed class Storage : IStorage, IDisposable
+                {
+                    private bool _isDisposed;
+                    public Storage() { Live.Count++; }
+                    public void Dispose() { if (_isDisposed) Live.Errors++; _isDisposed = true; Live.Count--; }
+                }
+                sealed class Hub
+                {
+                    public Hub(IStorage storage) { Storage = storage; }
+                    public IStorage Storage { get; }
+                }
+            {{classes}}
+                partial class Composition
+                {
+                    private static void Setup() => DI.Setup(nameof(Composition))
+                        .Bind<IClock>().As(Lifetime.PerBlock).To<Clock>()
+                        {{hubBinding}}
+                        .Bind<IStorage>().To(ctx =>
+                        {
+                            ctx.Inject(out {{clock}} clock);
+                            return new Storage();
+                        })
+                        .Root<Func<Owned<Screen0>>>("Root");
+                }
+
+                public static class Program
+                {
+                    public static void Main()
+                    {
+                        var owned = new Composition().Root();
+                        var path = owned.Value.Run(0, {{SharedFactoryRingSteps}});
+                        owned.Dispose();
+                        Console.WriteLine($"{path} {Live.Count} {Live.Errors}");
+                    }
+                }
+            }
+            """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        // Only the IStorage of the singleton Hub is alive.
+        var alive = hasHub ? 1 : 0;
+        var path = new List<string>();
+        var current = 0;
+        for (var step = 0; step <= SharedFactoryRingSteps; step++)
+        {
+            path.Add($"S{current}");
+            current = (current + 1 + step % 2) % size;
+        }
+
+        result.StdOut.ShouldBe([$"{string.Join(" ", path)} {alive} 0"], result);
+        var lines = result.GeneratedCode.Split(Environment.NewLine);
+        for (var screen = 0; screen < size; screen++)
+        {
+            lines.Count(i => i.Contains($"new global::Sample.Screen{screen}(")).ShouldBe(1, $"Screen{screen} of {size} screens{Environment.NewLine}{result.GeneratedCode}");
+        }
+    }
+
     public enum SharedFactoryRing
     {
         FuncFactory,
@@ -396,15 +549,32 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         FactoryHub,
         TransientHub,
         HubOnlyInRoot,
-        ScopedModule
+        ScopedModule,
+        PerResolveHub,
+        PerBlockClockPerResolveHub,
+        PerBlockClockLazyHub,
+        PerBlockClockFuncHub,
+        FactoryScreens
     }
+
+    // The factory of IStorage injects the PerBlock IClock directly.
+    private static bool FactoryInjectsPerBlockClock(SharedFactoryRing variant) =>
+        variant is SharedFactoryRing.PerBlockClock
+            or SharedFactoryRing.PerBlockClockOnlyInFactory
+            or SharedFactoryRing.PerBlockFactoryWithPerBlockClock
+            or SharedFactoryRing.PerBlockClockScopedHub
+            or SharedFactoryRing.PerBlockClockPerResolveHub
+            or SharedFactoryRing.PerBlockClockLazyHub
+            or SharedFactoryRing.PerBlockClockFuncHub;
+
+    // The screens get the PerBlock IClock too and check that their IStorage got the same one.
+    private static bool ScreenGetsClock(SharedFactoryRing variant) =>
+        FactoryInjectsPerBlockClock(variant) && variant != SharedFactoryRing.PerBlockClockOnlyInFactory;
 
     // Each screen opens the next two, so the path visits the screens by steps of one and two.
     private static string GetExpectedSharedFactoryRingPath(int size, SharedFactoryRing variant)
     {
-        var storage = variant is SharedFactoryRing.PerBlockClock or SharedFactoryRing.PerBlockFactoryWithPerBlockClock or SharedFactoryRing.PerBlockClockScopedHub
-            ? "storage,same"
-            : "storage";
+        var storage = ScreenGetsClock(variant) ? "storage,same" : "storage";
         var path = new StringBuilder();
         var screen = 0;
         var context = "start";
@@ -428,20 +598,48 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         {
             SharedFactoryRing.ModuleWithoutHub => null,
             SharedFactoryRing.ScopedHub or SharedFactoryRing.ScopedModule or SharedFactoryRing.PerBlockClockScopedHub => "Scoped",
+            SharedFactoryRing.PerResolveHub or SharedFactoryRing.PerBlockClockPerResolveHub => "PerResolve",
             SharedFactoryRing.TransientHub => "Transient",
             _ => "Singleton"
         };
 
         var hubInScreens = hubLifetime is not null && variant != SharedFactoryRing.HubOnlyInRoot;
         var hubInRoot = variant is SharedFactoryRing.TransientHub or SharedFactoryRing.HubOnlyInRoot;
-        var screenGetsClock = variant is SharedFactoryRing.PerBlockClock or SharedFactoryRing.PerBlockFactoryWithPerBlockClock or SharedFactoryRing.PerBlockClockScopedHub;
+        var screenGetsClock = ScreenGetsClock(variant);
+        var (hubType, hubValue) = variant switch
+        {
+            SharedFactoryRing.PerBlockClockLazyHub => ("Lazy<Hub>", "hub.Value"),
+            SharedFactoryRing.PerBlockClockFuncHub => ("Func<Hub>", "hub()"),
+            _ => ("Hub", "hub")
+        };
+
         var classes = new StringBuilder();
+        var screenBindings = new StringBuilder();
         for (var i = 0; i < size; i++)
         {
             var a = (i + 1) % size;
             var b = (i + 2) % size;
-            var hubParameter = hubInScreens ? "Hub hub," : "";
-            var hubAssignment = hubInScreens ? "Hub = hub;" : "";
+            var hubParameter = hubInScreens ? $"{hubType} hub," : "";
+            var hubAssignment = hubInScreens ? $"Hub = {hubValue};" : "";
+            if (variant == SharedFactoryRing.FactoryScreens)
+            {
+                // The factory of each screen injects a PerBlock delegate, as the factories of view models do.
+                screenBindings.AppendLine(
+                    $$"""
+                      .Bind<Screen{{i}}>().To(ctx =>
+                      {
+                          ctx.Inject(out Func<IClock> clock);
+                          ctx.Inject(out Context{{i}} context);
+                          ctx.Inject(out INavigation navigation);
+                          ctx.Inject(out IStorage storage);
+                          ctx.Inject(out Hub hub);
+                          ctx.Inject(out Func<INavigation, Context{{a}}, Screen{{a}}> openA);
+                          ctx.Inject(out Func<INavigation, Context{{b}}, Screen{{b}}> openB);
+                          return new Screen{{i}}(context, navigation, storage, hub, openA, openB);
+                      })
+                      """);
+            }
+
             var clockParameter = screenGetsClock ? "IClock clock," : "";
             var clockAssignment = screenGetsClock ? "_clock = clock;" : "";
             var clockField = screenGetsClock ? "private readonly IClock _clock;" : "";
@@ -575,7 +773,7 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
                     return new Storage();
                 })
                 """,
-            SharedFactoryRing.PerBlockClock or SharedFactoryRing.PerBlockClockOnlyInFactory or SharedFactoryRing.PerBlockClockScopedHub =>
+            _ when FactoryInjectsPerBlockClock(variant) && variant != SharedFactoryRing.PerBlockFactoryWithPerBlockClock =>
                 """
                 .Bind<IStorage>().To(ctx =>
                 {
@@ -597,10 +795,7 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         var clockBinding = variant switch
         {
             SharedFactoryRing.Constructor => "",
-            SharedFactoryRing.PerBlockClock
-                or SharedFactoryRing.PerBlockClockOnlyInFactory
-                or SharedFactoryRing.PerBlockFactoryWithPerBlockClock
-                or SharedFactoryRing.PerBlockClockScopedHub => ".Bind<IClock>().As(Lifetime.PerBlock).To<Clock>()",
+            _ when FactoryInjectsPerBlockClock(variant) => ".Bind<IClock>().As(Lifetime.PerBlock).To<Clock>()",
             _ => ".Bind<IClock>().To<Clock>()"
         };
 
@@ -714,6 +909,7 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
                                  {{clockBinding}}
                                  {{hubBinding}}
                                  {{storageBindings}}
+                                 {{screenBindings}}
                                  {{root}};
                      }
 
