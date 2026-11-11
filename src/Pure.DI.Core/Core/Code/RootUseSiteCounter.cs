@@ -323,6 +323,9 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
             if (consumers.TryGetValue(node.BindingId, out var dependencyConsumers)
                 && dependencyConsumers.Any(consumer => consumer.BindingId != bindingId
                                                        && !nodes.ContainsKey(consumer.BindingId)
+                                                       // A shared instance creates its dependencies in a block of its own, once,
+                                                       // so it does not share the PerBlock instances of the blocks that reach it, see #195.
+                                                       && !nodeTools.IsBlock(consumer)
                                                        && !IsResultOfOtherLambdas(graph, consumer, nodeBlocks, consumers)
                                                        && !(isLazy && IsCreatedInOtherBlocks(graph, root, consumer, nodeBlocks, consumers, blocks))))
             {

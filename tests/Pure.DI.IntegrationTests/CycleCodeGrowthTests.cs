@@ -299,9 +299,15 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     [InlineData(SharedFactoryRing.NestedFactories)]
     // IStorage is a PerBlock instance of the factory, so each block of a screen creates it once.
     [InlineData(SharedFactoryRing.PerBlockFactory)]
-    // IClock is a PerBlock instance that the factory injects directly, and the screens get it too.
-    // The factory needs the clock of the block around it, so the screens are still created in place on each path.
-    [InlineData(SharedFactoryRing.PerBlockClock, Skip = "The screens are created in place on each path when a factory that a singleton also uses injects a PerBlock instance directly")]
+    // IClock is a PerBlock instance that the factory injects directly, and the screens get it too,
+    // so a screen and its IStorage share the clock of their block.
+    [InlineData(SharedFactoryRing.PerBlockClock)]
+    // The factory injects the PerBlock IClock directly, and only IStorage gets it.
+    [InlineData(SharedFactoryRing.PerBlockClockOnlyInFactory)]
+    // IStorage is a PerBlock instance of a factory that injects the PerBlock IClock directly.
+    [InlineData(SharedFactoryRing.PerBlockFactoryWithPerBlockClock)]
+    // The factory injects the PerBlock IClock directly, and Hub is scoped.
+    [InlineData(SharedFactoryRing.PerBlockClockScopedHub)]
     // Hub is scoped instead of a singleton.
     [InlineData(SharedFactoryRing.ScopedHub)]
     // Hub is a singleton created by a factory that injects IStorage.
@@ -332,14 +338,19 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         }
     }
 
-    // The factory of a transient instance that injects a PerBlock delegate is called in the block of each screen,
+    // The factory of IStorage that injects a PerBlock instance is called in the block of each screen,
     // so each screen gets an IStorage of its own, while the local functions of the screens share the singleton Hub.
+    // A PerBlock IStorage is created by the local function of each screen too, as when no singleton uses it.
     [Theory]
     [InlineData(SharedFactoryRing.FuncFactory)]
+    [InlineData(SharedFactoryRing.PerBlockFactory)]
+    [InlineData(SharedFactoryRing.PerBlockFactoryWithPerBlockClock)]
     [InlineData(SharedFactoryRing.LazyFactory)]
     [InlineData(SharedFactoryRing.ConditionalFactory)]
     [InlineData(SharedFactoryRing.NestedFactories)]
     [InlineData(SharedFactoryRing.PerBlockClock)]
+    [InlineData(SharedFactoryRing.PerBlockClockOnlyInFactory)]
+    [InlineData(SharedFactoryRing.PerBlockClockScopedHub)]
     [InlineData(SharedFactoryRing.FactoryHub)]
     public async Task ShouldCreateFactoryInstanceForEachScreenOnCycleAndShareSingleton(SharedFactoryRing variant)
     {
@@ -378,6 +389,9 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         NestedFactories,
         PerBlockFactory,
         PerBlockClock,
+        PerBlockClockOnlyInFactory,
+        PerBlockFactoryWithPerBlockClock,
+        PerBlockClockScopedHub,
         ScopedHub,
         FactoryHub,
         TransientHub,
@@ -388,7 +402,9 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     // Each screen opens the next two, so the path visits the screens by steps of one and two.
     private static string GetExpectedSharedFactoryRingPath(int size, SharedFactoryRing variant)
     {
-        var storage = variant == SharedFactoryRing.PerBlockClock ? "storage,same" : "storage";
+        var storage = variant is SharedFactoryRing.PerBlockClock or SharedFactoryRing.PerBlockFactoryWithPerBlockClock or SharedFactoryRing.PerBlockClockScopedHub
+            ? "storage,same"
+            : "storage";
         var path = new StringBuilder();
         var screen = 0;
         var context = "start";
@@ -411,14 +427,14 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         var hubLifetime = variant switch
         {
             SharedFactoryRing.ModuleWithoutHub => null,
-            SharedFactoryRing.ScopedHub or SharedFactoryRing.ScopedModule => "Scoped",
+            SharedFactoryRing.ScopedHub or SharedFactoryRing.ScopedModule or SharedFactoryRing.PerBlockClockScopedHub => "Scoped",
             SharedFactoryRing.TransientHub => "Transient",
             _ => "Singleton"
         };
 
         var hubInScreens = hubLifetime is not null && variant != SharedFactoryRing.HubOnlyInRoot;
         var hubInRoot = variant is SharedFactoryRing.TransientHub or SharedFactoryRing.HubOnlyInRoot;
-        var screenGetsClock = variant == SharedFactoryRing.PerBlockClock;
+        var screenGetsClock = variant is SharedFactoryRing.PerBlockClock or SharedFactoryRing.PerBlockFactoryWithPerBlockClock or SharedFactoryRing.PerBlockClockScopedHub;
         var classes = new StringBuilder();
         for (var i = 0; i < size; i++)
         {
@@ -559,9 +575,17 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
                     return new Storage();
                 })
                 """,
-            SharedFactoryRing.PerBlockClock =>
+            SharedFactoryRing.PerBlockClock or SharedFactoryRing.PerBlockClockOnlyInFactory or SharedFactoryRing.PerBlockClockScopedHub =>
                 """
                 .Bind<IStorage>().To(ctx =>
+                {
+                    ctx.Inject(out IClock clock);
+                    return new ClockStorage(clock);
+                })
+                """,
+            SharedFactoryRing.PerBlockFactoryWithPerBlockClock =>
+                """
+                .Bind<IStorage>().As(Lifetime.PerBlock).To(ctx =>
                 {
                     ctx.Inject(out IClock clock);
                     return new ClockStorage(clock);
@@ -573,7 +597,10 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         var clockBinding = variant switch
         {
             SharedFactoryRing.Constructor => "",
-            SharedFactoryRing.PerBlockClock => ".Bind<IClock>().As(Lifetime.PerBlock).To<Clock>()",
+            SharedFactoryRing.PerBlockClock
+                or SharedFactoryRing.PerBlockClockOnlyInFactory
+                or SharedFactoryRing.PerBlockFactoryWithPerBlockClock
+                or SharedFactoryRing.PerBlockClockScopedHub => ".Bind<IClock>().As(Lifetime.PerBlock).To<Clock>()",
             _ => ".Bind<IClock>().To<Clock>()"
         };
 
