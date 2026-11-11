@@ -2383,7 +2383,7 @@ public class ExportAttributeTests
                                    }
                                }
                            }
-                           """.Replace("#Steps", steps.ToString()).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#Steps", steps.ToString()).RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
