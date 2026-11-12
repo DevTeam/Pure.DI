@@ -82,9 +82,22 @@ sealed class TypeResolver(
                     typeArgs.Add(typeArgDescription.Name);
                 }
 
-                var name = string.Join("", namedTypeSymbol.ToDisplayParts().TakeWhile(i => i.ToString() != "<"));
+                string name;
+                if (namedTypeSymbol.ContainingType is { IsGenericType: true } containingType)
+                {
+                    // A type nested in a generic type keeps the type arguments of its containing type
+                    var containingTypeDescription = Resolve(setup, containingType, null, includeNullableReferenceTypes);
+                    args.InsertRange(0, containingTypeDescription.TypeArgs);
+                    name = $"{containingTypeDescription.Name}.{namedTypeSymbol.Name}";
+                }
+                else
+                {
+                    name = string.Join("", namedTypeSymbol.ToDisplayParts().TakeWhile(i => i.ToString() != "<"));
+                }
+
+                var typeArgsList = typeArgs.Count > 0 ? $"<{string.Join(", ", typeArgs)}>" : "";
                 var genericNullableSuffix = includeNullableReferenceTypes && namedTypeSymbol is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated } ? "?" : "";
-                description = new TypeDescription($"{name}<{string.Join(", ", typeArgs)}>{genericNullableSuffix}", args.Distinct().ToList(), typeParam);
+                description = new TypeDescription($"{name}{typeArgsList}{genericNullableSuffix}", args.Distinct().ToList(), typeParam);
             }
                 break;
 

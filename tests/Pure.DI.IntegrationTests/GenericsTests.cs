@@ -1270,4 +1270,301 @@ public class GenericsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
     }
+
+    [Fact]
+    public async Task ShouldSupportTypesNestedInGenericTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public abstract class Mapper<TRaw>
+                               {
+                                   public sealed class Option<TValue> { }
+
+                                   public sealed class Settings { }
+                               }
+
+                               public interface IPicker<T> { }
+
+                               public sealed class Picker<T> : IPicker<T> { }
+
+                               public sealed class App
+                               {
+                                   public App(IPicker<Mapper<int>.Option<string>> options, IPicker<Mapper<int>.Settings> settings)
+                                   {
+                                       Options = options;
+                                       Settings = settings;
+                                   }
+
+                                   public IPicker<Mapper<int>.Option<string>> Options { get; }
+
+                                   public IPicker<Mapper<int>.Settings> Settings { get; }
+                               }
+
+                               public class Program
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IPicker<TT>>().To<Picker<TT>>()
+                                           .Root<App>("Root");
+                                   }
+
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Options is Picker<Mapper<int>.Option<string>>);
+                                       Console.WriteLine(root.Settings is Picker<Mapper<int>.Settings>);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportTypesNestedInGenericTypesOnSeveralLevels()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public class Outer<T1>
+                               {
+                                   public class Middle
+                                   {
+                                       public class Inner<T2> { }
+                                   }
+                               }
+
+                               public interface IPicker<T> { }
+
+                               public sealed class Picker<T> : IPicker<T> { }
+
+                               public sealed class App
+                               {
+                                   public App(IPicker<Outer<int>.Middle.Inner<string>> inner, IPicker<Outer<long>.Middle> middle)
+                                   {
+                                       Inner = inner;
+                                       Middle = middle;
+                                   }
+
+                                   public IPicker<Outer<int>.Middle.Inner<string>> Inner { get; }
+
+                                   public IPicker<Outer<long>.Middle> Middle { get; }
+                               }
+
+                               public class Program
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IPicker<TT>>().To<Picker<TT>>()
+                                           .Root<App>("Root");
+                                   }
+
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Inner is Picker<Outer<int>.Middle.Inner<string>>);
+                                       Console.WriteLine(root.Middle is Picker<Outer<long>.Middle>);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportFuncWithTypesNestedInGenericTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public class Mapper<TRaw>
+                               {
+                                   public class Settings
+                                   {
+                                       public Settings(string name) => Name = name;
+
+                                       public string Name { get; }
+                                   }
+
+                                   public class Option<TValue>
+                                   {
+                                       public Option(Settings settings) => Settings = settings;
+
+                                       public Settings Settings { get; }
+                                   }
+                               }
+
+                               public sealed class App
+                               {
+                                   public App(
+                                       Func<Mapper<int>.Settings> settingsFactory,
+                                       Func<Mapper<int>.Settings, Mapper<int>.Option<string>> optionFactory)
+                                   {
+                                       Settings = settingsFactory();
+                                       Option = optionFactory(new Mapper<int>.Settings("Custom"));
+                                   }
+
+                                   public Mapper<int>.Settings Settings { get; }
+
+                                   public Mapper<int>.Option<string> Option { get; }
+                               }
+
+                               public class Program
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind().To(_ => "Default")
+                                           .Bind<Func<TT1, TT>>().As(Lifetime.PerBlock).To(ctx => new Func<TT1, TT>(arg1 =>
+                                           {
+                                               ctx.Let<TT1>(arg1);
+                                               ctx.Inject<TT>(ctx.Tag, out var value);
+                                               return value;
+                                           }))
+                                           .Root<App>("Root");
+                                   }
+
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.Root;
+                                       Console.WriteLine(root.Settings.Name);
+                                       Console.WriteLine(root.Option.Settings.Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Default", "Custom"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportGenericRootWithTypesNestedInGenericTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public class Mapper<TRaw>
+                               {
+                                   public class Option<TValue> { }
+                               }
+
+                               public interface IPicker<T> { }
+
+                               public sealed class Picker<T> : IPicker<T> { }
+
+                               public class Program
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IPicker<TT>>().To<Picker<TT>>()
+                                           .Root<IPicker<Mapper<TT1>.Option<TT2>>>("GetRoot");
+                                   }
+
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var root = composition.GetRoot<int, string>();
+                                       Console.WriteLine(root is Picker<Mapper<int>.Option<string>>);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+    }
+
+    [Fact]
+    public async Task ShouldSupportNullableTypeArgumentsOfContainingGenericType()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           #nullable enable
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public class Mapper<TRaw>
+                               {
+                                   public class Option<TValue> { }
+                               }
+
+                               public interface IPicker<T> { }
+
+                               public sealed class Picker<T> : IPicker<T> { }
+
+                               public sealed class App
+                               {
+                                   public App(IPicker<Mapper<string?>.Option<int>> picker) => Picker = picker;
+
+                                   public IPicker<Mapper<string?>.Option<int>> Picker { get; }
+                               }
+
+                               public class Program
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IPicker<TT>>().To<Picker<TT>>()
+                                           .Root<App>("Root");
+                                   }
+
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root.Picker is Picker<Mapper<string>.Option<int>>);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True"], result);
+        result.Warnings.Count.ShouldBe(0, result);
+    }
 }
