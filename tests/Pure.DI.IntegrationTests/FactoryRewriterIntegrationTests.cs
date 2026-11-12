@@ -1443,4 +1443,121 @@ public class FactoryRewriterIntegrationTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["1"], result);
     }
+
+    // See https://github.com/DevTeam/Pure.DI/issues/200
+    // The return statements of a local function or of an anonymous method in a factory belong to them, not to the factory.
+    [Fact]
+    public async Task ShouldNotRewriteReturnsOfLocalFunctionsAndAnonymousMethodsInFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDep { }
+
+                               class Dep : IDep { }
+
+                               sealed class Endpoint
+                               {
+                                   private readonly string _address;
+                                   public Endpoint(string address) => _address = address;
+                                   public override string ToString() => _address;
+                               }
+
+                               sealed class Counter
+                               {
+                                   private readonly int _value;
+                                   public Counter(int value) => _value = value;
+                                   public override string ToString() => _value.ToString();
+                               }
+
+                               sealed class Name
+                               {
+                                   private readonly string _value;
+                                   public Name(string value) => _value = value;
+                                   public override string ToString() => _value;
+                               }
+
+                               sealed class App
+                               {
+                                   private readonly string _text;
+                                   public App(Endpoint endpoint, Counter counter, Name name) => _text = $"{endpoint} {counter} {name}";
+                                   public override string ToString() => _text;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDep>().To<Dep>()
+                                           .Bind().To(_ =>
+                                           {
+                                               return new Endpoint(GetAddress(Environment.ProcessorCount));
+
+                                               string GetAddress(int processorCount)
+                                               {
+                                                   if (processorCount > 0)
+                                                   {
+                                                       return "http://192.168.1.1";
+                                                   }
+
+                                                   return "http://localhost";
+                                               }
+                                           })
+                                           .Bind().To(_ =>
+                                           {
+                                               Func<int> getValue = delegate { return 40; };
+                                               Func<int, int> add = delegate (int x) { return x + 2; };
+                                               return new Counter(add(getValue()));
+                                           })
+                                           .Bind().To(ctx =>
+                                           {
+                                               ctx.Inject(out IDep dep);
+                                               if (dep == null)
+                                               {
+                                                   return new Name("null");
+                                               }
+
+                                               return new Name(Format(GetSuffix()));
+
+                                               static string Format(string suffix)
+                                               {
+                                                   Func<string, string> upper = text =>
+                                                   {
+                                                       return text.ToUpperInvariant();
+                                                   };
+
+                                                   return upper("name") + suffix;
+                                               }
+
+                                               string GetSuffix()
+                                               {
+                                                   return dep is Dep ? "!" : "?";
+                                               }
+                                           })
+                                           .Root<App>("Root");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["http://192.168.1.1 42 NAME!"], result);
+    }
 }

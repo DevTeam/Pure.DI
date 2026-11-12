@@ -28,7 +28,7 @@ sealed class FactoryRewriter(
     private LambdaExpressionSyntax? _rootLambda;
     private CodeContext? _ctx;
     private int _nestedBlockCounter;
-    private int _nestedLambdaCounter;
+    private int _nestedFunctionCounter;
 
     public bool IsFinishMarkRequired { get; private set; }
 
@@ -41,7 +41,7 @@ sealed class FactoryRewriter(
 
     public override SyntaxNode? VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
     {
-        _nestedLambdaCounter++;
+        _nestedFunctionCounter++;
         try
         {
             node = ReplaceByBlockLambdaIfNeeded(node);
@@ -49,7 +49,7 @@ sealed class FactoryRewriter(
         }
         finally
         {
-            _nestedLambdaCounter--;
+            _nestedFunctionCounter--;
         }
     }
 
@@ -57,7 +57,7 @@ sealed class FactoryRewriter(
     {
         try
         {
-            _nestedLambdaCounter++;
+            _nestedFunctionCounter++;
             node = ReplaceByBlockLambdaIfNeeded(node);
             var processedNode = base.VisitParenthesizedLambdaExpression(node);
             if (_nestedBlockCounter > 0
@@ -71,13 +71,40 @@ sealed class FactoryRewriter(
         }
         finally
         {
-            _nestedLambdaCounter--;
+            _nestedFunctionCounter--;
+        }
+    }
+
+    // The return statements of a local function or of an anonymous method in a factory belong to them, not to the factory
+    public override SyntaxNode? VisitLocalFunctionStatement(LocalFunctionStatementSyntax node)
+    {
+        _nestedFunctionCounter++;
+        try
+        {
+            return base.VisitLocalFunctionStatement(node);
+        }
+        finally
+        {
+            _nestedFunctionCounter--;
+        }
+    }
+
+    public override SyntaxNode? VisitAnonymousMethodExpression(AnonymousMethodExpressionSyntax node)
+    {
+        _nestedFunctionCounter++;
+        try
+        {
+            return base.VisitAnonymousMethodExpression(node);
+        }
+        finally
+        {
+            _nestedFunctionCounter--;
         }
     }
 
     private T ReplaceByBlockLambdaIfNeeded<T>(T node) where T: LambdaExpressionSyntax
     {
-        if (_nestedLambdaCounter > 1 && node.ExpressionBody is {} expressionBody && GetContextAction(expressionBody) is not null)
+        if (_nestedFunctionCounter > 1 && node.ExpressionBody is {} expressionBody && GetContextAction(expressionBody) is not null)
         {
             node = (T)node.WithExpressionBody(null).WithBlock(
                 SyntaxFactory.Block(
@@ -94,7 +121,7 @@ sealed class FactoryRewriter(
         _nestedBlockCounter++;
         try
         {
-            if (_nestedLambdaCounter == 1 && _nestedBlockCounter == 1)
+            if (_nestedFunctionCounter == 1 && _nestedBlockCounter == 1)
             {
                 var statements = new List<StatementSyntax>(block.Statements.Count);
                 foreach (var statement in block.Statements)
@@ -129,7 +156,7 @@ sealed class FactoryRewriter(
 
     public override SyntaxNode? VisitReturnStatement(ReturnStatementSyntax node)
     {
-        if (_nestedLambdaCounter == 1 && node.Expression is {} returnBody)
+        if (_nestedFunctionCounter == 1 && node.Expression is {} returnBody)
         {
             IsFinishMarkRequired = true;
             var prefix = GetPrefix(node);
