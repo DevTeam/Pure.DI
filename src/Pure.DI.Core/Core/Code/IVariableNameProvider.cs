@@ -10,5 +10,7 @@ interface INameProvider
 
     string GetLocalUniqueVariableName(string baseName);
 
+    void ReserveRootName(string name);
+
     string GetUniqueRootName(string name, ITypeSymbol rootType);
 }

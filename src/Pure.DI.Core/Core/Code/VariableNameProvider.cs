@@ -44,6 +44,10 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
     public string GetLocalUniqueVariableName(string baseName) =>
         GetRootUniqueName($"{Names.LocalVariablePrefix}{ToTitleCase(baseName)}");
 
+    // A name given before the code of a root, for example, to a parameter of a lambda whose value a ctx.Let passes,
+    // is not given again in that code, see #199.
+    public void ReserveRootName(string name) => _rootUniqueNames?.Add(name);
+
     public string GetUniqueRootName(string name, ITypeSymbol rootType) =>
         uniqueNameProvider.GetUniqueName(string.IsNullOrWhiteSpace(name) ? ToTitleCase(rootType.Name) : name);
 

@@ -19,6 +19,11 @@ sealed class LocalVariableRenamingRewriter(
         _semanticModel = semanticModel;
         _isOverride = isOverride;
         _root = lambda;
+        foreach (var name in Names.Values)
+        {
+            nameProvider.ReserveRootName(name);
+        }
+
         return Visit(lambda);
     }
 

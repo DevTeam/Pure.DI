@@ -179,4 +179,70 @@ public class LocalVariableRenamingTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True { name = abc, options = 3 }"], result);
     }
+
+    // A parameter of a lambda, whose value a ctx.Let passes, is renamed before the code of a root is built,
+    // so a local of a factory created inside the lambda gets another name, see #199.
+    [Fact]
+    public async Task ShouldNotReuseNameOfLambdaParameterPassedByLetForLocalOfFactory()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed record Item(string Name);
+
+                               public sealed class ItemList(IEnumerable<Item> items)
+                               {
+                                   public override string ToString() => string.Join(", ", items.Select(i => i.Name));
+                               }
+
+                               public sealed class Screen(Func<IEnumerable<Item>, ItemList> createList)
+                               {
+                                   public override string ToString() => createList([new Item("a"), new Item("b")]).ToString();
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() => DI.Setup(nameof(Composition))
+                                       .Bind<ItemList>().To(ctx =>
+                                       {
+                                           ctx.Inject(out IEnumerable<Item> items);
+                                           return new ItemList(items);
+                                       })
+                                       .Bind<Screen>().To(ctx =>
+                                       {
+                                           Func<IEnumerable<Item>, ItemList> createList = items =>
+                                           {
+                                               ctx.Let(items);
+                                               ctx.Inject<ItemList>(out var list);
+                                               return list;
+                                           };
+
+                                           return new Screen(createList);
+                                       })
+                                       .Root<Screen>("Root");
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Root);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["a, b"], result);
+    }
 }
