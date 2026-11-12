@@ -5,6 +5,10 @@ using Core;
 
 public class UnionTypesTests
 {
+    // Union syntax depends on Roslyn; runtime support is built into .NET 11.
+#if NET11_0_OR_GREATER
+    private const string UnionRuntimePolyfill = "";
+#else
     private const string UnionRuntimePolyfill =
         """
         namespace System.Runtime.CompilerServices
@@ -18,6 +22,8 @@ public class UnionTypesTests
             public sealed class UnionAttribute : Attribute;
         }
         """;
+
+#endif
 
     private static Options PreviewOptions => new(
         LanguageVersion.Preview,
