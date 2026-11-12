@@ -460,4 +460,111 @@ public class OwnedEnumerationElementTests
         enumeration.ShouldContain("global::Sample.Connection CreateConnection", Case.Sensitive, result.ToString());
         enumeration.ShouldContain("perBlockOwned.Add(", Case.Sensitive, result.ToString());
     }
+
+    [Theory]
+    [InlineData("IEnumerable<IItem>", "service.Items.ToList()")]
+    [InlineData("Func<IEnumerable<IItem>>", "service.Items().ToList()")]
+    public async Task ShouldCreateCustomAccumulatorOfEachPassOverEnumeration(string itemsType, string getItems)
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public static class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service = new Composition().Root;
+                                       var items = #getItems#;
+                                       var otherPass = #getItems#;
+                                       // The elements of one pass share an accumulator, and each pass has an accumulator of its own.
+                                       Console.WriteLine(ReferenceEquals(items[0].Accumulator, items[1].Accumulator));
+                                       Console.WriteLine(ReferenceEquals(items[0].Accumulator, otherPass[0].Accumulator));
+                                       Console.WriteLine(items[0].Accumulator.Count);
+                                       Console.WriteLine(items[0].Accumulator.Contains(items[0].Connection) && items[0].Accumulator.Contains(items[1].Connection));
+                                       Console.WriteLine(service.Accumulator.Contains(items[0].Connection));
+                                   }
+                               }
+
+                               interface IAccumulating
+                               {
+                               }
+
+                               sealed class MyAccumulator : List<IAccumulating>
+                               {
+                               }
+
+                               sealed class Connection : IAccumulating
+                               {
+                               }
+
+                               interface IItem
+                               {
+                                   MyAccumulator Accumulator { get; }
+
+                                   Connection Connection { get; }
+                               }
+
+                               sealed class Item : IItem
+                               {
+                                   public Item(MyAccumulator accumulator, Connection connection)
+                                   {
+                                       Accumulator = accumulator;
+                                       Connection = connection;
+                                   }
+
+                                   public MyAccumulator Accumulator { get; }
+
+                                   public Connection Connection { get; }
+                               }
+
+                               sealed class OtherItem : IItem
+                               {
+                                   public OtherItem(MyAccumulator accumulator, Connection connection)
+                                   {
+                                       Accumulator = accumulator;
+                                       Connection = connection;
+                                   }
+
+                                   public MyAccumulator Accumulator { get; }
+
+                                   public Connection Connection { get; }
+                               }
+
+                               sealed class Service
+                               {
+                                   public Service(#itemsType# items, MyAccumulator accumulator)
+                                   {
+                                       Items = items;
+                                       Accumulator = accumulator;
+                                   }
+
+                                   public #itemsType# Items { get; }
+
+                                   public MyAccumulator Accumulator { get; }
+                               }
+
+                               partial class Composition
+                               {
+                                   private static void Setup() =>
+                                       DI.Setup(nameof(Composition))
+                                           .Accumulate<IAccumulating, MyAccumulator>(Lifetime.Transient)
+                                           .Bind<IItem>(1).To<Item>()
+                                           .Bind<IItem>(2).To<OtherItem>()
+                                           .Root<Service>("Root");
+                               }
+                           }
+                           """.Replace("#itemsType#", itemsType).Replace("#getItems#", getItems).RunAsync(new Options(LanguageVersion.CSharp10));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True", "False", "2", "True", "False"], result);
+    }
 }
