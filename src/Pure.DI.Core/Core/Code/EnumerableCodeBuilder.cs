@@ -8,7 +8,8 @@ sealed class EnumerableCodeBuilder(
     ICompilations compilations,
     IBuildTools buildTools,
     ITypeResolver typeResolver,
-    IVariableTools variableTools)
+    IVariableTools variableTools,
+    IAccumulators accumulators)
     : IBuilder<CodeBuilderContext, IEnumerator>
 {
     public IEnumerator Build(CodeBuilderContext data)
@@ -32,6 +33,16 @@ sealed class EnumerableCodeBuilder(
         lines.AppendLine($"{methodPrefix}{typeResolver.Resolve(setup, var.InstanceType)} {localMethodName}()");
         using (lines.CreateBlock())
         {
+            // The enumeration is deferred like a lambda, so each pass over it is a block of its own,
+            // and the accumulators isolated by it, such as the Owned of an element that injects IOwned, are created in it.
+            var elementCtx = ctx;
+            if (ctx.Accumulators.Any(i => !i.VarInjection.Var.Declaration.IsDeclared))
+            {
+                accumulators.BuildAccumulators(ctx);
+                // The local functions that refer to these accumulators are declared in the body of the enumeration.
+                elementCtx = ctx with { LocalFunctionScope = new LocalFunctionScope(ctx.Accumulators) };
+            }
+
             var hasYieldReturn = false;
             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var enumerableDependencies))
             {
@@ -47,7 +58,7 @@ sealed class EnumerableCodeBuilder(
                 foreach (var dependencyVar in injections)
                 {
                     varInjections.Add(dependencyVar);
-                    yield return variablesCodeBuilderFactory().Build(ctx.CreateChild(dependencyVar));
+                    yield return variablesCodeBuilderFactory().Build(elementCtx.CreateChild(dependencyVar));
                     lines.AppendLine($"yield return {buildTools.OnInjected(ctx, dependencyVar)};");
                     hasYieldReturn = true;
                 }
@@ -62,6 +73,15 @@ sealed class EnumerableCodeBuilder(
                 if (!hasYieldReturn)
                 {
                     lines.AppendLine("yield break;");
+                }
+            }
+
+            if (!ReferenceEquals(elementCtx.LocalFunctionScope, ctx.LocalFunctionScope))
+            {
+                foreach (var localFunction in elementCtx.LocalFunctionScope.Functions)
+                {
+                    lines.AppendLine();
+                    lines.AppendLines(localFunction);
                 }
             }
         }
