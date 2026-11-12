@@ -63,11 +63,11 @@ class PhotoService(IGps gps, Func<ICamera> cameraFactory) : IPhotoService
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -154,11 +154,11 @@ Class diagram:
 classDiagram
 	PhotoService --|> IPhotoService
 	Composition ..> PhotoService : IPhotoService PhotoService
-	PhotoService *-- IGps : IGps
 	PhotoService o-- "PerBlock" FuncᐸICameraᐳ : FuncᐸICameraᐳ
+	PhotoService *-- IGps : IGps
+	FuncᐸICameraᐳ *-- ICamera : ICamera
 	ICamera o-- "Singleton" DeviceFeatureProvider : DeviceFeatureProvider
 	IGps o-- "Singleton" DeviceFeatureProvider : DeviceFeatureProvider
-	FuncᐸICameraᐳ *-- ICamera : ICamera
 	namespace Pure.DI.UsageTests.Basics.ExportAttributeScenario {
 		class Composition {
 		<<partial>>

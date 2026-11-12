@@ -102,11 +102,11 @@ partial class Composition
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -150,6 +150,7 @@ partial class Composition: IDisposable
 #endif
   private object[] _disposables;
   private int _disposeIndex;
+  private const int ScopedDisposablesCount = 1;
 
   private RequestContext? _singletonWcfLikeChannel;
 
@@ -170,7 +171,6 @@ partial class Composition: IDisposable
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
     _root = parentScope._root ?? parentScope;
     _lock = parentScope._lock;
-    _disposables = new object[1];
   }
 
   public ICheckoutService RequestRoot
@@ -183,6 +183,8 @@ partial class Composition: IDisposable
           if (_singletonWcfLikeChannel is null)
           {
             _singletonWcfLikeChannel = new RequestContext();
+            if (_disposables == null)
+              _disposables = new object[ScopedDisposablesCount];
             _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
           }
 
@@ -215,7 +217,7 @@ partial class Composition: IDisposable
       disposeIndex = _disposeIndex;
       _disposeIndex = 0;
       disposables = _disposables;
-      _disposables = new object[1];
+      _disposables = _root == null || Object.ReferenceEquals(_root, this) ? new object[1] : null;
       _singletonWcfLikeChannel = null;
     }
 

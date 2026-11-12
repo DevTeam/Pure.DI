@@ -108,11 +108,11 @@ record Payment(decimal Amount);
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -244,13 +244,13 @@ classDiagram
 	Composition ..> PaymentAuditAdapter : IPaymentAuditSink AuditSink
 	Composition ..> FailedPaymentReporter : IFailedPaymentReporter FailedPaymentReporter
 	Composition ..> OrderCheckout : IOrderCheckout Checkout
+	IEnumerableᐸIPaymentAuditSinkᐳ *-- PaymentAuditAdapter : "operations" IPaymentAuditSink
+	IEnumerableᐸIPaymentProcessorᐳ o-- "Singleton" PaymentAuditAdapter : "audit" IPaymentProcessor
+	IEnumerableᐸIPaymentProcessorᐳ *-- CardPaymentGateway : IPaymentProcessor
 	PaymentAuditAdapter o-- "Singleton" EventStore : IEventStore
 	PaymentAuditAdapter o-- "Singleton" EventStore : IEventStore
 	FailedPaymentReporter o-- "PerBlock" IEnumerableᐸIPaymentAuditSinkᐳ : "operations" IEnumerableᐸIPaymentAuditSinkᐳ
 	OrderCheckout o-- "PerBlock" IEnumerableᐸIPaymentProcessorᐳ : IEnumerableᐸIPaymentProcessorᐳ
-	IEnumerableᐸIPaymentAuditSinkᐳ *-- PaymentAuditAdapter : "operations" IPaymentAuditSink
-	IEnumerableᐸIPaymentProcessorᐳ o-- "Singleton" PaymentAuditAdapter : "audit" IPaymentProcessor
-	IEnumerableᐸIPaymentProcessorᐳ *-- CardPaymentGateway : IPaymentProcessor
 	namespace Pure.DI.UsageTests.Attributes.BindAttributeGroupsScenario {
 		class CardPaymentGateway {
 				<<class>>

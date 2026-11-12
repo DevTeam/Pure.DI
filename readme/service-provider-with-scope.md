@@ -91,11 +91,11 @@ partial class Composition
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -137,14 +137,21 @@ partial class Composition: IDisposable
 #endif
   private object[] _disposables;
   private int _disposeIndex;
+  private const int ScopedDisposablesCount = 1;
+  private Singletons _singletons;
 
-  private Configuration? _singletonWcfLikeChannel;
   private Session? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+
+  private sealed class Singletons
+  {
+    internal Configuration? _singletonWcfLikeChannel;
+  }
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
+    _singletons = new Singletons();
 #if NET9_0_OR_GREATER
     _lock = new Lock();
 #else
@@ -157,8 +164,8 @@ partial class Composition: IDisposable
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
     _root = parentScope._root ?? parentScope;
+    _singletons = parentScope._singletons;
     _lock = parentScope._lock;
-    _disposables = new object[1];
   }
 
   private LightweightRoot LightRoot
@@ -166,14 +173,14 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var root = _root ?? this;
+      var singletons = _singletons;
       Func<IConfiguration> perBlockFuncIConfiguration = new Func<IConfiguration>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
         // Creates a deferred value
         EnsureConfigurationExists();
-        return root._singletonWcfLikeChannel;
+        return singletons._singletonWcfLikeChannel;
       });
       Func<ISession> perBlockFuncISession = new Func<ISession>(
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -185,7 +192,9 @@ partial class Composition: IDisposable
             if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               EnsureConfigurationExists();
-              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Session(root._singletonWcfLikeChannel);
+              _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Session(singletons._singletonWcfLikeChannel);
+              if (_disposables == null)
+                _disposables = new object[ScopedDisposablesCount];
               _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
             }
 
@@ -199,11 +208,11 @@ partial class Composition: IDisposable
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureConfigurationExists()
       {
-        if (root._singletonWcfLikeChannel is null)
+        if (singletons._singletonWcfLikeChannel is null)
           lock (_lock)
-            if (root._singletonWcfLikeChannel is null)
+            if (singletons._singletonWcfLikeChannel is null)
             {
-              root._singletonWcfLikeChannel = new Configuration();
+              singletons._singletonWcfLikeChannel = new Configuration();
             }
       }
     }
@@ -304,9 +313,12 @@ partial class Composition: IDisposable
       disposeIndex = _disposeIndex;
       _disposeIndex = 0;
       disposables = _disposables;
-      _disposables = new object[1];
-      _singletonWcfLikeChannel = null;
+      _disposables = _root == null || Object.ReferenceEquals(_root, this) ? new object[1] : null;
       _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
+      if (_singletons != null && (_root == null || Object.ReferenceEquals(_root, this)))
+      {
+        _singletons._singletonWcfLikeChannel = null;
+      }
     }
 
     while (disposeIndex-- > 0)

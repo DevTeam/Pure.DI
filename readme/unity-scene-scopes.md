@@ -129,11 +129,11 @@ public partial class Scope : MonoBehaviour
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -177,9 +177,15 @@ partial class Scope: IDisposable
 #endif
   private object[] _disposables = new object[2];
   private int _disposeIndex;
+  private const int ScopedDisposablesCount = 1;
+  private Singletons _singletons;
 
-  private ClockService? _singletonNetworkDataSource;
-  private ClockSession? _scopedClockSession;
+  private ClockSession? _singletonValueTuple;
+
+  private sealed class Singletons
+  {
+    internal ClockService? _singletonNetworkDataSource;
+  }
 
   internal static Scope SetupScope(Scope parentScope, Scope childScope)
   {
@@ -187,8 +193,9 @@ partial class Scope: IDisposable
     if (Object.ReferenceEquals(childScope, null)) throw new ArgumentNullException(nameof(childScope));
     if (Object.ReferenceEquals(parentScope, childScope)) throw new ArgumentException("The parent and child scopes must be different instances.", nameof(childScope));
     childScope._root = parentScope._root ?? parentScope;
+    childScope._singletons = parentScope._singletons ?? Interlocked.CompareExchange(ref parentScope._singletons, new Singletons(), null) ?? parentScope._singletons;
     childScope._lock = parentScope._lock;
-    childScope._disposables = new object[1];
+    childScope._disposables = null;
     return childScope;
   }
 
@@ -197,28 +204,31 @@ partial class Scope: IDisposable
   {
     if (buildingInstance is null) throw new ArgumentNullException(nameof(buildingInstance));
     var root = _root ?? this;
+    var singletons = _singletons ?? Interlocked.CompareExchange(ref _singletons, new Singletons(), null) ?? _singletons;
     Clock transientClock;
     Clock localBuildingInstance = buildingInstance;
-    if (root._singletonNetworkDataSource is null)
+    if (singletons._singletonNetworkDataSource is null)
       lock (_lock)
-        if (root._singletonNetworkDataSource is null)
+        if (singletons._singletonNetworkDataSource is null)
         {
           ClockConfig transientClockConfig = clockConfig;
-          root._singletonNetworkDataSource = new ClockService(transientClockConfig);
-          root._disposables[root._disposeIndex++] = root._singletonNetworkDataSource;
+          singletons._singletonNetworkDataSource = new ClockService(transientClockConfig);
+          root._disposables[root._disposeIndex++] = singletons._singletonNetworkDataSource;
         }
 
-    if (_scopedClockSession is null)
+    if (_singletonValueTuple is null)
       lock (_lock)
-        if (_scopedClockSession is null)
+        if (_singletonValueTuple is null)
         {
           string transientString = sceneName;
-          _scopedClockSession = new ClockSession(transientString);
-          _disposables[_disposeIndex++] = _scopedClockSession;
+          _singletonValueTuple = new ClockSession(transientString);
+          if (_disposables == null)
+            _disposables = new object[ScopedDisposablesCount];
+          _disposables[_disposeIndex++] = _singletonValueTuple;
         }
 
-    localBuildingInstance.ClockService = root._singletonNetworkDataSource;
-    localBuildingInstance.Session = _scopedClockSession;
+    localBuildingInstance.ClockService = singletons._singletonNetworkDataSource;
+    localBuildingInstance.Session = _singletonValueTuple;
     transientClock = localBuildingInstance;
     return transientClock;
   }
@@ -286,9 +296,12 @@ partial class Scope: IDisposable
       disposeIndex = _disposeIndex;
       _disposeIndex = 0;
       disposables = _disposables;
-      _disposables = new object[2];
-      _singletonNetworkDataSource = null;
-      _scopedClockSession = null;
+      _disposables = _root == null || Object.ReferenceEquals(_root, this) ? new object[2] : null;
+      _singletonValueTuple = null;
+      if (_singletons != null && (_root == null || Object.ReferenceEquals(_root, this)))
+      {
+        _singletons._singletonNetworkDataSource = null;
+      }
     }
 
     while (disposeIndex-- > 0)

@@ -51,11 +51,11 @@ class HealthService(IAsyncEnumerable<IHealthCheck> checks) : IHealthService
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -95,14 +95,14 @@ partial class Composition
     get
     {
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-      async IAsyncEnumerable<IHealthCheck> EnumerationOf_transientIAsyncEnumerableIHealthCheck()
+      async IAsyncEnumerable<IHealthCheck> EnumerationOf_perBlockIAsyncEnumerableIHealthCheck()
       {
         yield return new MemoryCheck();
         yield return new ExternalServiceCheck();
         await Task.CompletedTask;
       }
 
-      return new HealthService(EnumerationOf_transientIAsyncEnumerableIHealthCheck());
+      return new HealthService(EnumerationOf_perBlockIAsyncEnumerableIHealthCheck());
     }
   }
 }
@@ -123,7 +123,7 @@ classDiagram
 	ExternalServiceCheck --|> IHealthCheck : "External"
 	HealthService --|> IHealthService
 	Composition ..> HealthService : IHealthService HealthService
-	HealthService *-- IAsyncEnumerableᐸIHealthCheckᐳ : IAsyncEnumerableᐸIHealthCheckᐳ
+	HealthService o-- "PerBlock" IAsyncEnumerableᐸIHealthCheckᐳ : IAsyncEnumerableᐸIHealthCheckᐳ
 	IAsyncEnumerableᐸIHealthCheckᐳ *-- MemoryCheck : IHealthCheck
 	IAsyncEnumerableᐸIHealthCheckᐳ *-- ExternalServiceCheck : "External" IHealthCheck
 	namespace Pure.DI.UsageTests.BCL.AsyncEnumerableScenario {

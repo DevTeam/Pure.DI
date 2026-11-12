@@ -74,11 +74,11 @@ class TrainTripPlanner(
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -120,8 +120,8 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple1;
-  private bool _singletonValueTuple1Created;
+  private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple;
+  private bool _singletonValueTupleCreated;
 
   public TrainTripPlanner Planner
   {
@@ -129,18 +129,18 @@ partial class Composition
     get
     {
       var perResolveRoutePlanningSession = default(RoutePlanningSession);
-      if (!_singletonValueTuple1Created)
+      if (!_singletonValueTupleCreated)
         lock (_lock)
-          if (!_singletonValueTuple1Created)
+          if (!_singletonValueTupleCreated)
           {
             if (perResolveRoutePlanningSession is null)
             {
               perResolveRoutePlanningSession = new RoutePlanningSession();
             }
 
-            _singletonValueTuple1 = (perResolveRoutePlanningSession, perResolveRoutePlanningSession);
+            _singletonValueTuple = (perResolveRoutePlanningSession, perResolveRoutePlanningSession);
             Thread.MemoryBarrier();
-            _singletonValueTuple1Created = true;
+            _singletonValueTupleCreated = true;
           }
 
       if (perResolveRoutePlanningSession is null)
@@ -150,7 +150,7 @@ partial class Composition
             perResolveRoutePlanningSession = new RoutePlanningSession();
           }
 
-      return new TrainTripPlanner(perResolveRoutePlanningSession, perResolveRoutePlanningSession, _singletonValueTuple1);
+      return new TrainTripPlanner(perResolveRoutePlanningSession, perResolveRoutePlanningSession, _singletonValueTuple);
     }
   }
 }

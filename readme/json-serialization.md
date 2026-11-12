@@ -86,11 +86,11 @@ partial class Composition
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -132,8 +132,8 @@ partial class Composition
   private readonly Object _lock = new Object();
 #endif
 
-  private Func<string, Settings?>? _singletonFunc1;
-  private Func<Settings, string>? _singletonFunc2;
+  private Func<string, Settings?>? _singletonSingletonRoot;
+  private Func<Settings, string>? _singletonFunc;
   private Storage? _singletonILogger;
   private Text.Json.JsonSerializerOptions? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
 
@@ -149,25 +149,25 @@ partial class Composition
             _singletonILogger = new Storage();
           }
 
-      if (_singletonFunc2 is null)
+      if (_singletonFunc is null)
         lock (_lock)
-          if (_singletonFunc2 is null)
+          if (_singletonFunc is null)
           {
             EnsureJsonSerializerOptionsExists();
             Text.Json.JsonSerializerOptions localOptions = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
-            _singletonFunc2 = value => JsonSerializer.Serialize(value, localOptions);
+            _singletonFunc = value => JsonSerializer.Serialize(value, localOptions);
           }
 
-      if (_singletonFunc1 is null)
+      if (_singletonSingletonRoot is null)
         lock (_lock)
-          if (_singletonFunc1 is null)
+          if (_singletonSingletonRoot is null)
           {
             EnsureJsonSerializerOptionsExists();
             Text.Json.JsonSerializerOptions localOptions1 = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
-            _singletonFunc1 = json => JsonSerializer.Deserialize<Settings?>(json, localOptions1);
+            _singletonSingletonRoot = json => JsonSerializer.Deserialize<Settings?>(json, localOptions1);
           }
 
-      return new SettingsService(_singletonFunc1, _singletonFunc2, _singletonILogger);
+      return new SettingsService(_singletonSingletonRoot, _singletonFunc, _singletonILogger);
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureJsonSerializerOptionsExists()
       {

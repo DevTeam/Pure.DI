@@ -115,11 +115,11 @@ partial class Composition
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -160,9 +160,15 @@ partial class Composition: IDisposable
 #endif
   private object[] _disposables = new object[1];
   private int _disposeIndex;
+  private const int ScopedDisposablesCount = 1;
+  private Singletons _singletons;
 
   private RequestContext? _singletonWcfLikeChannel;
-  private IdGenerator? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+
+  private sealed class Singletons
+  {
+    internal IdGenerator? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+  }
 
   internal static Composition SetupScope(Composition parentScope, Composition childScope)
   {
@@ -170,8 +176,9 @@ partial class Composition: IDisposable
     if (Object.ReferenceEquals(childScope, null)) throw new ArgumentNullException(nameof(childScope));
     if (Object.ReferenceEquals(parentScope, childScope)) throw new ArgumentException("The parent and child scopes must be different instances.", nameof(childScope));
     childScope._root = parentScope._root ?? parentScope;
+    childScope._singletons = parentScope._singletons ?? Interlocked.CompareExchange(ref parentScope._singletons, new Singletons(), null) ?? parentScope._singletons;
     childScope._lock = parentScope._lock;
-    childScope._disposables = new object[1];
+    childScope._disposables = null;
     return childScope;
   }
 
@@ -181,16 +188,19 @@ partial class Composition: IDisposable
     get
     {
       var root = _root ?? this;
+      var singletons = _singletons ?? Interlocked.CompareExchange(ref _singletons, new Singletons(), null) ?? _singletons;
       if (_singletonWcfLikeChannel is null)
         lock (_lock)
           if (_singletonWcfLikeChannel is null)
           {
-            if (root._singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
+            if (singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
-              root._singletonCompositionWithGenericRootsAndArgsInOtherProject = new IdGenerator();
+              singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject = new IdGenerator();
             }
 
-            _singletonWcfLikeChannel = new RequestContext(root._singletonCompositionWithGenericRootsAndArgsInOtherProject);
+            _singletonWcfLikeChannel = new RequestContext(singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject);
+            if (_disposables == null)
+              _disposables = new object[ScopedDisposablesCount];
             _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
           }
 
@@ -216,9 +226,12 @@ partial class Composition: IDisposable
       disposeIndex = _disposeIndex;
       _disposeIndex = 0;
       disposables = _disposables;
-      _disposables = new object[1];
+      _disposables = _root == null || Object.ReferenceEquals(_root, this) ? new object[1] : null;
       _singletonWcfLikeChannel = null;
-      _singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
+      if (_singletons != null && (_root == null || Object.ReferenceEquals(_root, this)))
+      {
+        _singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject = null;
+      }
     }
 
     while (disposeIndex-- > 0)

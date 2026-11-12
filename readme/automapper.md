@@ -141,11 +141,11 @@ class LoggerFactory(ICollection<string> logMessages)
 <details>
 <summary>Running this code sample locally</summary>
 
-- Make sure you have the [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) or later installed
+- Make sure you have the [.NET SDK 11.0](https://dotnet.microsoft.com/en-us/download/dotnet/11.0) or later installed
 ```bash
 dotnet --list-sdk
 ```
-- Create a net10.0 (or later) console application
+- Create a net11.0 (or later) console application
 ```bash
 dotnet new console -n Sample
 ```
@@ -195,12 +195,17 @@ partial class Composition: IDisposable
 #endif
   private object[] _disposables;
   private int _disposeIndex;
+  private Singletons _singletons;
 
-  private Microsoft.Extensions.Logging.ILogger? _singletonILogger;
-  private Func<Student, Person>? _singletonFunc;
-  private AutoMapper.Mapper? _singletonMapper;
-  private PersonFormatter? _singletonNetworkDataSource;
-  private LoggerFactory? _scopedClockSession;
+
+  private sealed class Singletons
+  {
+    internal Microsoft.Extensions.Logging.ILogger? _singletonILogger;
+    internal Func<Student, Person>? _singletonStructConsumer;
+    internal AutoMapper.Mapper? _singletonSingletonRoot;
+    internal PersonFormatter? _singletonNetworkDataSource;
+    internal LoggerFactory? _singletonValueTuple;
+  }
 
   private readonly ICollection<string> _argLogMessage;
 
@@ -209,6 +214,7 @@ partial class Composition: IDisposable
   {
     _argLogMessage = logMessage ?? throw new ArgumentNullException(nameof(logMessage));
     _root = this;
+    _singletons = new Singletons();
 #if NET9_0_OR_GREATER
     _lock = new Lock();
 #else
@@ -222,17 +228,17 @@ partial class Composition: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      var root = _root ?? this;
-      if (root._singletonFunc is null)
+      var singletons = _singletons;
+      if (singletons._singletonStructConsumer is null)
         lock (_lock)
-          if (root._singletonFunc is null)
+          if (singletons._singletonStructConsumer is null)
           {
-            root._singletonFunc = source =>
+            singletons._singletonStructConsumer = source =>
             {
-              if (root._singletonMapper is null)
+              if (singletons._singletonSingletonRoot is null)
               {
                 EnsureLoggerFactoryExists();
-                LoggerFactory localLoggerFactory = root._scopedClockSession;
+                LoggerFactory localLoggerFactory = singletons._singletonValueTuple;
                 // Create the mapping configuration
                 var localConfiguration = new MapperConfiguration(cfg =>
                 {
@@ -240,42 +246,42 @@ partial class Composition: IDisposable
                 }, localLoggerFactory);
                 localConfiguration.CompileMappings();
                 // Create the mapper
-                root._singletonMapper = new Mapper(localConfiguration);
+                singletons._singletonSingletonRoot = new Mapper(localConfiguration);
               }
 
-              AutoMapper.IMapper localMapper = root._singletonMapper;
+              AutoMapper.IMapper localMapper = singletons._singletonSingletonRoot;
               // source -> target
               Person localTarget = localMapper.Map<Student, Person>(source);
               // Building-up a mapped value with dependencies
-              if (root._singletonNetworkDataSource is null)
+              if (singletons._singletonNetworkDataSource is null)
               {
-                root._singletonNetworkDataSource = new PersonFormatter();
+                singletons._singletonNetworkDataSource = new PersonFormatter();
               }
 
-              localTarget.Formatter = root._singletonNetworkDataSource;
+              localTarget.Formatter = singletons._singletonNetworkDataSource;
               return localTarget;
             };
           }
 
-      if (root._singletonILogger is null)
+      if (singletons._singletonILogger is null)
         lock (_lock)
-          if (root._singletonILogger is null)
+          if (singletons._singletonILogger is null)
           {
             EnsureLoggerFactoryExists();
-            LoggerFactory localLoggerFactory1 = root._scopedClockSession;
-            root._singletonILogger = localLoggerFactory1.CreateLogger("info");
+            LoggerFactory localLoggerFactory1 = singletons._singletonValueTuple;
+            singletons._singletonILogger = localLoggerFactory1.CreateLogger("info");
           }
 
-      return new Program(root._singletonILogger, new StudentService(root._singletonFunc));
+      return new Program(singletons._singletonILogger, new StudentService(singletons._singletonStructConsumer));
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       void EnsureLoggerFactoryExists()
       {
-        if (root._scopedClockSession is null)
+        if (singletons._singletonValueTuple is null)
           lock (_lock)
-            if (root._scopedClockSession is null)
+            if (singletons._singletonValueTuple is null)
             {
-              root._scopedClockSession = new LoggerFactory(_argLogMessage);
-              _root._disposables[_root._disposeIndex++] = root._scopedClockSession;
+              singletons._singletonValueTuple = new LoggerFactory(_argLogMessage);
+              _root._disposables[_root._disposeIndex++] = singletons._singletonValueTuple;
             }
       }
     }
@@ -291,11 +297,14 @@ partial class Composition: IDisposable
       _disposeIndex = 0;
       disposables = _disposables;
       _disposables = new object[1];
-      _singletonILogger = null;
-      _singletonFunc = null;
-      _singletonMapper = null;
-      _singletonNetworkDataSource = null;
-      _scopedClockSession = null;
+      if (_singletons != null)
+      {
+        _singletons._singletonILogger = null;
+        _singletons._singletonStructConsumer = null;
+        _singletons._singletonSingletonRoot = null;
+        _singletons._singletonNetworkDataSource = null;
+        _singletons._singletonValueTuple = null;
+      }
     }
 
     while (disposeIndex-- > 0)
