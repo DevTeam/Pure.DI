@@ -196,7 +196,7 @@ public static class TestExtensions
         var generatedCode = string.Join(Environment.NewLine, generatedSources.Select(i => i.SourceText));
 
         compilation.Check(stdOut, options);
-        if ((options?.CheckCompilationErrors ?? true) && (options?.CheckDuplicateLocalFunctions ?? true))
+        if (options?.CheckCompilationErrors ?? true)
         {
             var duplicates = DuplicateLocalFunctions.Find(compilation, generatedTrees);
             Assert.True(duplicates.Count == 0, $"The same local functions are declared more than once:{Environment.NewLine}{string.Join(Environment.NewLine, duplicates)}{Environment.NewLine}{generatedCode}");

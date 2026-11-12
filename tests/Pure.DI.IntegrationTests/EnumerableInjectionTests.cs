@@ -1241,4 +1241,75 @@ public class EnumerableInjectionTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Count: 1, Name: Test"], result);
     }
+
+    // Different lambdas create the same enumerable, which reads nothing of the code around it,
+    // so they call one enumeration declared at the level of the root, see #201.
+    [Fact]
+    public async Task ShouldShareEnumerationOfDifferentLambdas()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IValidator {}
+
+                               class Validator: IValidator {}
+
+                               class Formatter
+                               {
+                                   public Formatter(IEnumerable<IValidator> validators) => Validators = validators;
+
+                                   public IEnumerable<IValidator> Validators { get; }
+                               }
+
+                               class App
+                               {
+                                   public App(Func<Formatter> formatter, Func<IEnumerable<IValidator>> validators)
+                                   {
+                                       Formatter = formatter;
+                                       Validators = validators;
+                                   }
+
+                                   public Func<Formatter> Formatter { get; }
+
+                                   public Func<IEnumerable<IValidator>> Validators { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IValidator>(1).To<Validator>()
+                                           .Bind<IValidator>(2).To<Validator>()
+                                           .Root<App>("App");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var app = new Composition().App;
+                                       var validators = app.Formatter().Validators;
+                                       Console.WriteLine(validators.Count());
+                                       Console.WriteLine(app.Validators().Count());
+                                       Console.WriteLine(ReferenceEquals(validators.First(), validators.First()));
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2", "2", "False"], result);
+        result.GeneratedCode.Split("IEnumerable<global::Sample.IValidator> EnumerationOf_").Length.ShouldBe(2, result);
+    }
 }

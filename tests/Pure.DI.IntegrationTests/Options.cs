@@ -20,7 +20,4 @@ record Options(
 
     // Cancels the generation, for example, when it takes too long.
     public CancellationToken CancellationToken { get; init; }
-
-    // Checks that the generated code does not repeat a local function that could be declared once, see DuplicateLocalFunctions.
-    public bool CheckDuplicateLocalFunctions { get; init; } = true;
 }

@@ -5487,12 +5487,7 @@ public class FactoryTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp9)
-                           {
-                               // The branch and the code after it declare the same enumeration local function,
-                               // as the code of different lambdas that create the same enumerable does.
-                               CheckDuplicateLocalFunctions = !dependency.StartsWith("IEnumerable")
-                           });
+                           """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result);
