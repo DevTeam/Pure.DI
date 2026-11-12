@@ -61,7 +61,7 @@ sealed class LocalVariableRenamingRewriter(
     // A parameter of a lambda inside the value is declared there, so it keeps its name.
     private bool IsLocalOrParameter(IdentifierNameSyntax node)
     {
-        if (_semanticModel is null || _semanticModel.SyntaxTree != node.SyntaxTree)
+        if (_semanticModel is null || _semanticModel.SyntaxTree != node.SyntaxTree || IsMemberName(node))
         {
             return false;
         }
@@ -80,6 +80,7 @@ sealed class LocalVariableRenamingRewriter(
         if (Names.TryGetValue(token.Text, out var newName)
             && token.IsKind(SyntaxKind.IdentifierToken)
             && token.Parent is {} parent
+            && !(parent is IdentifierNameSyntax identifierName && IsMemberName(identifierName))
             && (_semanticModel?.SyntaxTree != parent.SyntaxTree || IsRenamed(_semanticModel.GetSymbolInfo(parent).Symbol)))
         {
             token = SyntaxFactory.Identifier(newName).WithLeadingTrivia(token.LeadingTrivia).WithTrailingTrivia(token.TrailingTrivia);
@@ -87,6 +88,37 @@ sealed class LocalVariableRenamingRewriter(
 
         return base.VisitToken(token);
     }
+
+    // An anonymous type member, declared by a local or a parameter that is renamed, keeps its name, see #197.
+    public override SyntaxNode? VisitAnonymousObjectMemberDeclarator(AnonymousObjectMemberDeclaratorSyntax node)
+    {
+        var newNode = (AnonymousObjectMemberDeclaratorSyntax?)base.VisitAnonymousObjectMemberDeclarator(node);
+        if (newNode is { NameEquals: null, Expression: IdentifierNameSyntax newIdentifier }
+            && node.Expression is IdentifierNameSyntax identifier
+            && newIdentifier.Identifier.Text != identifier.Identifier.Text)
+        {
+            return newNode
+                .WithNameEquals(SyntaxFactory.NameEquals(SyntaxFactory.IdentifierName(identifier.Identifier.Text)))
+                .WithLeadingTrivia(newNode.GetLeadingTrivia())
+                .WithTrailingTrivia(newNode.GetTrailingTrivia());
+        }
+
+        return newNode;
+    }
+
+    // The name of a parameter in a named argument, or of a member in an initializer, a pattern or a conditional access,
+    // only looks like a local, so it keeps its text even when there is no semantic model for the factory, see #197.
+    private static bool IsMemberName(IdentifierNameSyntax node) =>
+        node.Parent switch
+        {
+            NameColonSyntax => true,
+            NameEqualsSyntax => true,
+            MemberBindingExpressionSyntax => true,
+            AssignmentExpressionSyntax { Parent: InitializerExpressionSyntax initializer } assignment =>
+                assignment.Left == node
+                && (initializer.IsKind(SyntaxKind.ObjectInitializerExpression) || initializer.IsKind(SyntaxKind.WithInitializerExpression)),
+            _ => false
+        };
 
     // A parameter of a factory is renamed when the value of its override has already renamed it,
     // so the other references to the parameter are renamed too, see #183.

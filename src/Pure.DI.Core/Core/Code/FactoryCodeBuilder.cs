@@ -163,7 +163,8 @@ sealed class FactoryCodeBuilder(
         // Rewrites syntax tree
         var finishLabel = $"{var.Declaration.Name}Finish";
         var localVariableRenamingRewriter = factory.Source.LocalVariableRenamingRewriter.Clone();
-        var factoryExpression = (LambdaExpressionSyntax)localVariableRenamingRewriter.Rewrite(setup.SemanticModel, false, originalLambda);
+        // The factory can be declared in another setup and in another file than the composition, see #197.
+        var factoryExpression = (LambdaExpressionSyntax)localVariableRenamingRewriter.Rewrite(factory.Source.SemanticModel, false, originalLambda);
         var injections = new List<FactoryRewriter.Injection>();
         var inits = new List<FactoryRewriter.Initializer>();
         var rewriterContext = new FactoryRewriterContext(factory, varInjection, finishLabel, injections, inits);
