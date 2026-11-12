@@ -166,7 +166,11 @@ class LocalFunctions(
                 visitedUnderFactory.Add(node.BindingId);
             }
 
-            isUnderFactory |= node.Factory is not null && ctx.RootContext.UseSites.PerBlockDependents.Contains(node.BindingId);
+            // A factory that injects each of its dependencies once before it can leave creates them as a constructor does,
+            // so its PerBlock dependencies can be created by the caller of a local function too, see #201.
+            isUnderFactory |= node.Factory is {} nodeFactory
+                              && ctx.RootContext.UseSites.PerBlockDependents.Contains(node.BindingId)
+                              && !RootUseSiteCounter.InjectsEachDependencyBeforeAnyExit(nodeFactory);
             if (!graph.Graph.TryGetInEdges(node, out var dependencies))
             {
                 continue;

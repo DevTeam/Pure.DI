@@ -138,6 +138,173 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
     [MemberData(nameof(RootCases))]
     public Task ShouldGrowLinearlyForSeveralRootsOfRing(Scenario scenario) => CheckGrowth(scenario);
 
+    // The screens of a ring are created by factories that inject each of their dependencies once, and a PerBlock instance
+    // is under them. A transient that the screens get is injected by another factory in a branch, so the screens
+    // and the transient keep the PerBlock instance from being created alone in each block. The factory of a screen creates
+    // its dependencies as a constructor does, so the caller of its local function creates the PerBlock instance, see #201.
+    [Theory]
+    [InlineData("IBuilder", true)]
+    [InlineData("IBuilder", false)]
+    [InlineData("Func<IBuilder>", true)]
+    [InlineData("Func<IBuilder>", false)]
+    public async Task ShouldCreateEachScreenOnceWhenFactoriesOfScreensHavePerBlockDependency(string builder, bool hasBranch)
+    {
+        var problems = new List<string>();
+        foreach (var size in Sizes)
+        {
+            var result = await CreateFactoryScreens(size, builder, hasBranch).RunAsync(new Options(Options.ModernLanguageVersion), GenerationTimeout);
+            result.Errors.ShouldBeEmpty(result);
+            var constructions = CSharpSyntaxTree.ParseText(result.GeneratedCode).GetRoot().DescendantNodes()
+                .OfType<BaseNamespaceDeclarationSyntax>().Where(i => i.Name.ToString() == "Sample")
+                .SelectMany(i => i.DescendantNodes()).OfType<ObjectCreationExpressionSyntax>()
+                .Count(i => i.Type.ToString().StartsWith("Screen", StringComparison.Ordinal));
+            output.WriteLine($"{size} screens: {constructions} constructions");
+            if (constructions != size)
+            {
+                problems.Add($"{size} screens are constructed {constructions} times");
+            }
+
+            var expected = string.Join(" ", Enumerable.Range(0, Steps + 1).Select(step => $"S{step % size}"));
+            if (result.StdOut.Length != 1 || result.StdOut[0] != expected)
+            {
+                problems.Add($"{size} screens navigate as {string.Join(Environment.NewLine, result.StdOut)} instead of {expected}");
+            }
+        }
+
+        problems.ShouldBeEmpty();
+    }
+
+    // The factory of a screen can return before it injects the PerBlock instance, so the caller of its local function
+    // must not create the instance before calling it, see #201.
+    [Fact]
+    public async Task ShouldNotCreatePerBlockDependencyOfFactoryReturningBeforeInjectingIt()
+    {
+        // When
+        var result = await CreateFactoryScreens(4, "IBuilder", true, true).RunAsync(new Options(Options.ModernLanguageVersion));
+
+        // Then
+        result.Errors.ShouldBeEmpty(result);
+        result.StdOut.ShouldBe([string.Join(" ", Enumerable.Range(0, Steps + 1).Select(step => $"S{step % 4}")), "0"], result);
+    }
+
+    private static string CreateFactoryScreens(int size, string builder, bool hasBranch, bool returnsEarly = false)
+    {
+        var classes = new StringBuilder();
+        var bindings = new StringBuilder();
+        for (var screen = 0; screen < size; screen++)
+        {
+            var next = (screen + 1) % size;
+            var previous = (screen + size - 1) % size;
+            classes.AppendLine($$"""
+                sealed class Screen{{screen}} : IScreen
+                {
+                    private readonly Func<Navigation, Screen{{next}}> _next;
+                    public Screen{{screen}}(Navigation navigation, Formatter formatter, {{builder}} builder, Func<Navigation, Screen{{next}}> next, Func<Navigation, Screen{{previous}}> previous) => _next = next;
+                    public string Walk(int steps) => "S{{screen}}" + (steps == 0 ? "" : " " + _next(new Navigation()).Walk(steps - 1));
+                }
+            """);
+            bindings.AppendLine(returnsEarly
+                ? $$"""
+                            .Bind<Screen{{screen}}>().To(ctx =>
+                            {
+                                ctx.Inject(out Navigation navigation);
+                                ctx.Inject(out Formatter formatter);
+                                ctx.Inject(out Func<Navigation, Screen{{next}}> next);
+                                ctx.Inject(out Func<Navigation, Screen{{previous}}> previous);
+                                if (Builder.IsSkipped)
+                                {
+                                    return new Screen{{screen}}(navigation, formatter, null!, next, previous);
+                                }
+
+                                ctx.Inject(out {{builder}} builder);
+                                return new Screen{{screen}}(navigation, formatter, builder, next, previous);
+                            })
+            """
+                : $$"""
+                            .Bind<Screen{{screen}}>().To(ctx =>
+                            {
+                                ctx.Inject(out Navigation navigation);
+                                ctx.Inject(out Formatter formatter);
+                                ctx.Inject(out {{builder}} builder);
+                                ctx.Inject(out Func<Navigation, Screen{{next}}> next);
+                                ctx.Inject(out Func<Navigation, Screen{{previous}}> previous);
+                                return new Screen{{screen}}(navigation, formatter, builder, next, previous);
+                            })
+            """);
+        }
+
+        var hub = hasBranch
+            ? """
+                            .Bind<Hub>().To(ctx =>
+                            {
+                                if (Environment.ProcessorCount > 0)
+                                {
+                                    ctx.Inject(out Formatter formatter);
+                                    return new Hub(formatter);
+                                }
+
+                                return new Hub(null);
+                            })
+            """
+            : "";
+        return $$"""
+            using System;
+            using System.Collections.Generic;
+            using Pure.DI;
+            using static Pure.DI.Lifetime;
+
+            namespace Sample
+            {
+                interface IScreen { string Walk(int steps); }
+                sealed class Navigation {}
+                interface IValidator {}
+                sealed class LengthValidator : IValidator {}
+                sealed class RangeValidator : IValidator {}
+                sealed class Formatter { public Formatter(IEnumerable<IValidator> validators) {} }
+                interface IBuilder {}
+                sealed class Builder : IBuilder
+                {
+                    public static readonly bool IsSkipped = true;
+                    public static int Created;
+                    public Builder() => Created++;
+                }
+                sealed class Hub { public Hub(Formatter? formatter) {} }
+                sealed class App
+                {
+                    private readonly Func<Navigation, Screen0> _open;
+                    public App(Hub hub, Func<Navigation, Screen0> open) => _open = open;
+                    public string Walk(int steps) => _open(new Navigation()).Walk(steps);
+                }
+            {{classes}}
+                partial class Composition
+                {
+                    private static void Setup() => DI.Setup(nameof(Composition))
+                        .Bind<Func<TT1, TT>>().As(PerBlock).To(ctx => new Func<TT1, TT>(arg =>
+                        {
+                            ctx.Let(arg);
+                            ctx.Inject<TT>(ctx.Tag, out var value);
+                            return value;
+                        }))
+                        .Bind<IValidator>(1).To<LengthValidator>()
+                        .Bind<IValidator>(2).To<RangeValidator>()
+                        .Bind<IBuilder>().As(PerBlock).To<Builder>()
+            {{hub}}
+            {{bindings}}
+                        .Root<App>("Root");
+                }
+
+                public static class Program
+                {
+                    public static void Main()
+                    {
+                        Console.WriteLine(new Composition().Root.Walk({{Steps}}));
+                        {{(returnsEarly ? "Console.WriteLine(Builder.Created);" : "")}}
+                    }
+                }
+            }
+            """;
+    }
+
     private async Task CheckGrowth(Scenario scenario)
     {
         // All the sizes are measured before the checks, so a failure shows the growth too.

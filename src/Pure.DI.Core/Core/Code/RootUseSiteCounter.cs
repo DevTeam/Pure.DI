@@ -478,6 +478,37 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                && source.Resolvers.All(resolver => IsStatementOfBody(source, resolver));
     }
 
+    // A factory creates its dependencies as a constructor does when it injects each of them once, by the statements of its body,
+    // and no statement before the last injection can leave the factory, such as a return in a branch.
+    // Then the caller of the local function of its instance can create its PerBlock dependencies before calling it, see #201.
+    internal static bool InjectsEachDependencyBeforeAnyExit(DpFactory factory)
+    {
+        if (!InjectsEachDependencyOnce(factory))
+        {
+            return false;
+        }
+
+        var source = factory.Source;
+        if (source.IsSimpleFactory || source.Resolvers.IsDefaultOrEmpty)
+        {
+            return true;
+        }
+
+        // The resolvers of a generic binding keep the syntax of the binding, so the statements are taken from it, see InjectsEachDependencyOnce.
+        if (source.Resolvers[0].Source.Parent is not ExpressionStatementSyntax { Parent: BlockSyntax body })
+        {
+            return false;
+        }
+
+        var lastInjection = source.Resolvers.Max(resolver => body.Statements.IndexOf((StatementSyntax)resolver.Source.Parent!));
+        return body.Statements.Take(lastInjection).All(statement => !CanLeave(statement));
+
+        static bool CanLeave(StatementSyntax statement) =>
+            statement
+                .DescendantNodesAndSelf(node => node is not (AnonymousFunctionExpressionSyntax or LocalFunctionStatementSyntax))
+                .Any(node => node is ReturnStatementSyntax or ThrowStatementSyntax or ThrowExpressionSyntax or GotoStatementSyntax or YieldStatementSyntax);
+    }
+
     // An injection by a statement of the body of a factory, outside branches, loops and lambdas.
     internal static bool IsStatementOfBody(MdFactory factory, in MdResolver resolver) =>
         resolver.Source.Parent is ExpressionStatementSyntax { Parent: BlockSyntax { Parent: AnonymousFunctionExpressionSyntax factoryLambda } }
