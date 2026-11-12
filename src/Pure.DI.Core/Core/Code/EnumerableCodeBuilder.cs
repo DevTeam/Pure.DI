@@ -121,6 +121,6 @@ sealed class EnumerableCodeBuilder(
         return var.HasCycle != true
                && ctx.Accumulators.IsDefaultOrEmpty
                && ctx.DetachedAccumulators.IsDefaultOrEmpty
-               &&!(ctx.RootContext.UseSites.FreeOverrides.TryGetValue(var.AbstractNode.BindingId, out var overrides) && !overrides.IsDefaultOrEmpty);
+               && !(ctx.RootContext.UseSites.FreeOverrides.TryGetValue(var.AbstractNode.BindingId, out var overrides) && !overrides.IsDefaultOrEmpty);
     }
 }

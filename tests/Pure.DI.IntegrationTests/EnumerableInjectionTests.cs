@@ -1312,4 +1312,162 @@ public class EnumerableInjectionTests
         result.StdOut.ShouldBe(["2", "2", "False"], result);
         result.GeneratedCode.Split("IEnumerable<global::Sample.IValidator> EnumerationOf_").Length.ShouldBe(2, result);
     }
+
+    // An element of the enumeration opens the instance that gets the enumeration, so the enumeration is on a cycle.
+    // The element gets the lambda that the code around the enumeration creates, here inside another lambda,
+    // so the enumeration is declared in that code rather than once at the level of the root, see #201.
+    [Fact]
+    public async Task ShouldDeclareEnumerationOnCycleInCodeAroundIt()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IItem {}
+
+                               class Item: IItem
+                               {
+                                   public Item(Func<Service> open) => Open = open;
+
+                                   public Func<Service> Open { get; }
+                               }
+
+                               class Other: IItem {}
+
+                               class Service
+                               {
+                                   public Service(IEnumerable<IItem> items) => Items = items;
+
+                                   public IEnumerable<IItem> Items { get; }
+                               }
+
+                               class App
+                               {
+                                   public App(Func<Func<Service>> open) => Open = open;
+
+                                   public Func<Func<Service>> Open { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IItem>(1).To<Item>()
+                                           .Bind<IItem>(2).To<Other>()
+                                           .Root<App>("App");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var service = new Composition().App.Open()();
+                                       Console.WriteLine(service.Items.Count());
+                                       Console.WriteLine(service.Items.OfType<Item>().Single().Open().Items.Count());
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2", "2"], result);
+    }
+
+    // The elements of the enumeration are disposed with the Owned<T> that a lambda creates, so the enumeration adds them
+    // to the accumulator of the lambda, and it is declared in the lambda rather than once at the level of the root,
+    // even when the code of another lambda creates the same enumerable, see #201.
+    [Fact]
+    public async Task ShouldDeclareEnumerationAddingToAccumulatorInCodeAroundIt()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IItem
+                               {
+                                   bool IsDisposed { get; }
+                               }
+
+                               class Item: IItem, IDisposable
+                               {
+                                   public bool IsDisposed { get; private set; }
+
+                                   public void Dispose() => IsDisposed = true;
+                               }
+
+                               class Service
+                               {
+                                   public Service(IEnumerable<IItem> items) => Items = items.ToList();
+
+                                   public IReadOnlyList<IItem> Items { get; }
+                               }
+
+                               class Helper
+                               {
+                                   public Helper(IEnumerable<IItem> items) => Count = items.Count();
+
+                                   public int Count { get; }
+                               }
+
+                               class App
+                               {
+                                   public App(Func<Owned<Service>> open, Func<Helper> helper)
+                                   {
+                                       Open = open;
+                                       Helper = helper;
+                                   }
+
+                                   public Func<Owned<Service>> Open { get; }
+
+                                   public Func<Helper> Helper { get; }
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IItem>(1).To<Item>()
+                                           .Bind<IItem>(2).To<Item>()
+                                           .Root<App>("App");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var app = new Composition().App;
+                                       var first = app.Open();
+                                       var second = app.Open();
+                                       first.Dispose();
+                                       Console.WriteLine(string.Join(",", first.Value.Items.Select(i => i.IsDisposed)));
+                                       Console.WriteLine(string.Join(",", second.Value.Items.Select(i => i.IsDisposed)));
+                                       Console.WriteLine(app.Helper().Count);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["True,True", "False,False", "2"], result);
+    }
 }
