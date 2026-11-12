@@ -475,11 +475,14 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
         // The factory of a generic binding is rewritten for each type, while its resolvers keep the syntax of the binding,
         // so a resolver is checked against the factory in the binding, such as To(ctx => { ... }).
         return source.Factory.Body is BlockSyntax
-               && source.Resolvers.All(resolver =>
-                   resolver.Source.Parent is ExpressionStatementSyntax { Parent: BlockSyntax { Parent: AnonymousFunctionExpressionSyntax factoryLambda } }
-                   && factoryLambda.Ancestors().TakeWhile(node => node != source.Source).All(node => node is not AnonymousFunctionExpressionSyntax)
-                   && factoryLambda.Ancestors().Contains(source.Source));
+               && source.Resolvers.All(resolver => IsStatementOfBody(source, resolver));
     }
+
+    // An injection by a statement of the body of a factory, outside branches, loops and lambdas.
+    internal static bool IsStatementOfBody(MdFactory factory, in MdResolver resolver) =>
+        resolver.Source.Parent is ExpressionStatementSyntax { Parent: BlockSyntax { Parent: AnonymousFunctionExpressionSyntax factoryLambda } }
+        && factoryLambda.Ancestors().TakeWhile(node => node != factory.Source).All(node => node is not AnonymousFunctionExpressionSyntax)
+        && factoryLambda.Ancestors().Contains(factory.Source);
 
     // A node created only as the result of other lambdas is the first code of blocks of its own,
     // so the PerBlock instances it shares with a node created once per block are created anew in its blocks anyway.

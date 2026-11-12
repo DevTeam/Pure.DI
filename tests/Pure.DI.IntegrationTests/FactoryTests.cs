@@ -5380,4 +5380,122 @@ public class FactoryTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["a,b"], result);
     }
+
+    // A factory injects a PerBlock instance, or an instance that gets it, in a branch, and the code after the factory
+    // injects it too. The variable declared in the branch is not seen after it, so that code creates the instance again, see #201.
+    [Theory]
+    [InlineData("IValidator", true)]
+    [InlineData("IValidator", false)]
+    [InlineData("Formatter", true)]
+    [InlineData("Formatter", false)]
+    [InlineData("Func<Formatter>", true)]
+    [InlineData("Func<Formatter>", false)]
+    [InlineData("IEnumerable<IValidator>", true)]
+    [InlineData("IEnumerable<IValidator>", false)]
+    public async Task ShouldCreatePerBlockInstanceAgainAfterBranchOfFactoryThatCreatesIt(string dependency, bool condition)
+    {
+        // Given
+        var validatorBinding = dependency.StartsWith("IEnumerable")
+            ? ".Bind<IValidator>(1).To<Validator>()"
+            : ".Bind<IValidator>().As(Lifetime.PerBlock).To<Validator>()";
+        var value = dependency switch
+        {
+            "Formatter" => "value.Validator",
+            "Func<Formatter>" => "value().Validator",
+            "IEnumerable<IValidator>" => "value.Single()",
+            _ => "value"
+        };
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IValidator {}
+
+                               class Validator: IValidator {}
+
+                               class Formatter
+                               {
+                                   public Formatter(IValidator validator) => Validator = validator;
+
+                                   public IValidator Validator { get; }
+                               }
+
+                               class Hub
+                               {
+                                   public Hub(object? value) => Value = value;
+
+                                   public object? Value { get; }
+                               }
+
+                               class App
+                               {
+                                   public App(Hub hub, IValidator validator)
+                                   {
+                                       Hub = hub;
+                                       Validator = validator;
+                                   }
+
+                                   public Hub Hub { get; }
+
+                                   public IValidator Validator { get; }
+                               }
+
+                               static class Settings
+                               {
+                                   public static readonly bool Condition = {{(condition ? "true" : "false")}};
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           {{validatorBinding}}
+                                           .Bind<Hub>().To(ctx =>
+                                           {
+                                               if (Settings.Condition)
+                                               {
+                                                   ctx.Inject(out {{dependency}} value);
+                                                   return new Hub(value);
+                                               }
+
+                                               return new Hub(null);
+                                           })
+                                           .Bind<App>().To(ctx =>
+                                           {
+                                               ctx.Inject(out Hub hub);
+                                               ctx.Inject(out {{dependency}} value);
+                                               return new App(hub, {{value}});
+                                           })
+                                           .Root<App>("App");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var app = new Composition().App;
+                                       Console.WriteLine(app.Hub.Value is not null);
+                                       Console.WriteLine(app.Validator is Validator);
+                                   }
+                               }
+                           }
+                           """.RunAsync(new Options(LanguageVersion.CSharp9)
+                           {
+                               // The branch and the code after it declare the same enumeration local function,
+                               // as the code of different lambdas that create the same enumerable does.
+                               CheckDuplicateLocalFunctions = !dependency.StartsWith("IEnumerable")
+                           });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe([condition.ToString(), "True"], result);
+    }
 }

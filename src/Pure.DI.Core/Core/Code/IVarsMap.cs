@@ -72,4 +72,12 @@ interface IVarsMap
     /// <param name="lines">The code lines for debugging.</param>
     /// <returns>A disposable that restores the state when the scope is closed.</returns>
     IDisposable Block(Var var, Lines lines);
+
+    /// <summary>
+    /// Creates a scope for an injection inside a nested statement of a factory, such as a branch or a loop.
+    /// The PerBlock instances created in it are declared inside that statement, so the code after it creates them again.
+    /// </summary>
+    /// <param name="lines">The code lines for debugging.</param>
+    /// <returns>A disposable that forgets these instances when the scope is closed.</returns>
+    IDisposable NestedStatement(Lines lines);
 }

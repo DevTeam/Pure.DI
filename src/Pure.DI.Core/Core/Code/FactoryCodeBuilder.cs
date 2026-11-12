@@ -345,6 +345,20 @@ sealed class FactoryCodeBuilder(
                     var (injection, argument) = (injections[resolversIdx], injectionArgs[resolversIdx]);
                     var resolver = factory.Resolvers[resolversIdx];
                     resolversIdx++;
+                    // A preceding injection in a nested statement can forget a PerBlock variable, see VarsMap.NestedStatement.
+                    if (argument.Var.AbstractNode.ActualLifetime == Lifetime.PerBlock)
+                    {
+                        argument = varsMap.GetInjection(ctx.RootContext.Graph, argument.Injection, argument.Var.AbstractNode);
+                    }
+
+                    // The variables declared by an injection in a branch or a loop of the factory are not seen after it, see #201.
+                    // The code of a lambda is isolated by the lambda itself.
+                    using var nestedStatementToken = !isLazy
+                                                     && !factory.Source.IsSimpleFactory
+                                                     && factory.Source.Factory.Body is BlockSyntax
+                                                     && !RootUseSiteCounter.IsStatementOfBody(factory.Source, resolver.Source)
+                        ? varsMap.NestedStatement(lines)
+                        : Disposables.Empty;
 
                     var injectionCtx = ctx;
                     if (hasOverrides)

@@ -14,6 +14,8 @@ class VarsMap(
     : IVarsMap,
       IVarStateTracker
 {
+    // The scope of a nested statement excludes no instance from tracking.
+    private const int NoBindingId = int.MinValue;
     private readonly Dictionary<int, Var> _map = [];
     private readonly HashSet<int> _perBlockBindingIds = [];
     private readonly List<ScopeState> _activeScopes = [];
@@ -287,6 +289,80 @@ class VarsMap(
             }
         });
     }
+
+    /// <inheritdoc />
+    public IDisposable NestedStatement(Lines lines)
+    {
+        var scope = EnterScope(NoBindingId);
+        return Disposables.Create(() => {
+            _suppressedTrackingCount++;
+            try
+            {
+                ForgetPerBlockVars(scope, lines);
+            }
+            finally
+            {
+                _suppressedTrackingCount--;
+                ExitScope(scope);
+            }
+        });
+    }
+
+    // A PerBlock variable created in a nested statement is not seen after it. The code after the statement gets a new variable
+    // with a name of its own, because C# does not allow a variable of a nested statement to have the name of a variable
+    // declared after it in the enclosing block.
+    private void ForgetPerBlockVars(ScopeState scope, Lines lines)
+    {
+#if DEBUG
+        lines.AppendLine($"// forget PerBlock vars ({nameof(NestedStatement)})");
+#endif
+        HashSet<int>? forgotten = null;
+        foreach (var item in scope.ChangedStates)
+        {
+            var state = item.Value;
+            var var = state.Var;
+            if (state.IsCreated
+                || !var.IsCreated
+                || !ShouldForgetPerBlockVar(var)
+                || !_map.TryGetValue(item.Key, out var currentVar)
+                || !ReferenceEquals(currentVar, var))
+            {
+                continue;
+            }
+
+            var.Declaration.RestoreDeclaredState(state.IsDeclared);
+            var.RestorePathState(state.IsCreated, state.IsLocalFunctionCalled, state.RawCodeExpression, false);
+            (forgotten ??= []).Add(item.Key);
+        }
+
+        foreach (var bindingId in scope.AddedBindingIds)
+        {
+            if (_map.TryGetValue(bindingId, out var var)
+                && scope.ContainsAddedVar(bindingId, var)
+                && var.IsCreated
+                && ShouldForgetPerBlockVar(var))
+            {
+                (forgotten ??= []).Add(bindingId);
+            }
+        }
+
+        if (forgotten is null)
+        {
+            return;
+        }
+
+        foreach (var bindingId in forgotten)
+        {
+#if DEBUG
+            lines.AppendLine($"//   {_map[bindingId].Declaration.Name}");
+#endif
+            _map.Remove(bindingId);
+        }
+    }
+
+    private static bool ShouldForgetPerBlockVar(Var var) =>
+        var.AbstractNode is { ActualLifetime: Lifetime.PerBlock, Arg: null }
+        && var.AbstractNode.Construct is not { Source.Kind: MdConstructKind.Accumulator or MdConstructKind.Override };
 
     private Var CreateVar(DependencyGraph graph, IDependencyNode node, ImmutableArray<string> trace)
     {
