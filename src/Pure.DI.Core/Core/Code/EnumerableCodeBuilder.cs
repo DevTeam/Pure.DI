@@ -9,7 +9,8 @@ sealed class EnumerableCodeBuilder(
     IBuildTools buildTools,
     ITypeResolver typeResolver,
     IVariableTools variableTools,
-    ILocalFunctions localFunctions)
+    ILocalFunctions localFunctions,
+    IAccumulators accumulators)
     : IBuilder<CodeBuilderContext, IEnumerator>
 {
     private const string SharedKeyPrefix = "enumeration:";
@@ -26,7 +27,8 @@ sealed class EnumerableCodeBuilder(
         // An enumeration that reads nothing of the code around it is declared once, at the level of its root,
         // so the code of different lambdas, or of a branch of a factory and the code after it, calls the same function, see #201.
         var rootScope = ctx.RootContext.LocalFunctionScope;
-        var sharedKey = IsShared(ctx) ? SharedKeyPrefix + localFunctions.GetKey(ctx) : null;
+        // The accumulators that the enumeration declares itself are not a part of the key.
+        var sharedKey = IsShared(ctx) ? SharedKeyPrefix + localFunctions.GetKey(ctx with { Accumulators = ImmutableArray<Accumulator>.Empty }) : null;
         if (sharedKey is not null && rootScope.TryGetName(sharedKey, out var sharedName))
         {
             var.CodeExpression = $"{sharedName}()";
@@ -52,6 +54,16 @@ sealed class EnumerableCodeBuilder(
         functionLines.AppendLine($"{methodPrefix}{typeResolver.Resolve(setup, var.InstanceType)} {localMethodName}()");
         using (functionLines.CreateBlock())
         {
+            // The enumeration is deferred like a lambda, so each pass over it is a block of its own,
+            // and the accumulators isolated by it, such as the Owned of an element that injects IOwned, are created in it.
+            var elementCtx = functionCtx;
+            if (ctx.Accumulators.Any(i => !i.VarInjection.Var.Declaration.IsDeclared))
+            {
+                accumulators.BuildAccumulators(functionCtx);
+                // The local functions that refer to these accumulators are declared in the body of the enumeration.
+                elementCtx = functionCtx with { LocalFunctionScope = new LocalFunctionScope(ctx.Accumulators) };
+            }
+
             var hasYieldReturn = false;
             if (ctx.RootContext.Graph.Graph.TryGetInEdges(var.AbstractNode.Node, out var enumerableDependencies))
             {
@@ -67,7 +79,7 @@ sealed class EnumerableCodeBuilder(
                 foreach (var dependencyVar in injections)
                 {
                     varInjections.Add(dependencyVar);
-                    yield return variablesCodeBuilderFactory().Build(functionCtx.CreateChild(dependencyVar));
+                    yield return variablesCodeBuilderFactory().Build(elementCtx.CreateChild(dependencyVar));
                     functionLines.AppendLine($"yield return {buildTools.OnInjected(functionCtx, dependencyVar)};");
                     hasYieldReturn = true;
                 }
@@ -82,6 +94,15 @@ sealed class EnumerableCodeBuilder(
                 if (!hasYieldReturn)
                 {
                     functionLines.AppendLine("yield break;");
+                }
+            }
+
+            if (!ReferenceEquals(elementCtx.LocalFunctionScope, functionCtx.LocalFunctionScope))
+            {
+                foreach (var localFunction in elementCtx.LocalFunctionScope.Functions)
+                {
+                    functionLines.AppendLine();
+                    functionLines.AppendLines(localFunction);
                 }
             }
         }
@@ -114,12 +135,13 @@ sealed class EnumerableCodeBuilder(
     // The code of the enumeration refers only to what the whole root sees: the fields, the arguments of the root,
     // and the local functions of the root. The elements are created inside the enumeration, see VarsMap.Lazy,
     // except an instance on a cycle, which the enumeration gets from the code around it.
-    // A value overridden by a lambda or an accumulator is declared by the code around the enumeration.
+    // A value overridden by a lambda and an accumulator that the code around the enumeration declares are not seen
+    // at the level of the root, while the accumulators isolated by the enumeration are declared in it.
     private static bool IsShared(CodeContext ctx)
     {
         var var = ctx.VarInjection.Var;
         return var.HasCycle != true
-               && ctx.Accumulators.IsDefaultOrEmpty
+               && ctx.Accumulators.All(i => !i.VarInjection.Var.Declaration.IsDeclared)
                && ctx.DetachedAccumulators.IsDefaultOrEmpty
                && !(ctx.RootContext.UseSites.FreeOverrides.TryGetValue(var.AbstractNode.BindingId, out var overrides) && !overrides.IsDefaultOrEmpty);
     }
