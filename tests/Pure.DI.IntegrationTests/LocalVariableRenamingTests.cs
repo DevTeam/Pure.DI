@@ -19,11 +19,20 @@ public class LocalVariableRenamingTests
 
             namespace Sample
             {
-                public sealed class Options;
+                public sealed class Options {}
 
-                public sealed class Service(string name, Options? options = null)
+                public sealed class Service
                 {
-                    public override string ToString() => $"{name} {options is not null}";
+                    private readonly string _name;
+                    private readonly Options? _options;
+
+                    public Service(string name, Options? options = null)
+                    {
+                        _name = name;
+                        _options = options;
+                    }
+
+                    public override string ToString() => $"{_name} {_options is not null}";
                 }
 
                 partial class Composition
@@ -79,11 +88,20 @@ public class LocalVariableRenamingTests
 
                            namespace Sample
                            {
-                               public sealed class Options;
+                               public sealed class Options {}
 
-                               public sealed class Service(string name, Options? options = null)
+                               public sealed class Service
                                {
-                                   public override string ToString() => $"{name} {options is not null}";
+                                   private readonly string _name;
+                                   private readonly Options? _options;
+
+                                   public Service(string name, Options? options = null)
+                                   {
+                                       _name = name;
+                                       _options = options;
+                                   }
+
+                                   public override string ToString() => $"{_name} {_options is not null}";
                                }
 
                                static class Setup
@@ -127,7 +145,7 @@ public class LocalVariableRenamingTests
 
             namespace Sample
             {
-                public sealed class Options;
+                public sealed class Options {}
 
                 public sealed class Service
                 {
@@ -198,14 +216,22 @@ public class LocalVariableRenamingTests
                            {
                                public sealed record Item(string Name);
 
-                               public sealed class ItemList(IEnumerable<Item> items)
+                               public sealed class ItemList
                                {
-                                   public override string ToString() => string.Join(", ", items.Select(i => i.Name));
+                                   private readonly IEnumerable<Item> _items;
+
+                                   public ItemList(IEnumerable<Item> items) => _items = items;
+
+                                   public override string ToString() => string.Join(", ", _items.Select(i => i.Name));
                                }
 
-                               public sealed class Screen(Func<IEnumerable<Item>, ItemList> createList)
+                               public sealed class Screen
                                {
-                                   public override string ToString() => createList([new Item("a"), new Item("b")]).ToString();
+                                   private readonly Func<IEnumerable<Item>, ItemList> _createList;
+
+                                   public Screen(Func<IEnumerable<Item>, ItemList> createList) => _createList = createList;
+
+                                   public override string ToString() => _createList(new[] { new Item("a"), new Item("b") }).ToString();
                                }
 
                                partial class Composition
