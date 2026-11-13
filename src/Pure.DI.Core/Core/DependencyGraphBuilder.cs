@@ -106,6 +106,14 @@ sealed class DependencyGraphBuilder(
             foreach (var (injection, hasExplicitDefaultValue, explicitDefaultValue, position) in node.Injections)
             {
                 var hasSourceNode = TryGetSourceNode(map, injection, out var sourceNode);
+                if (hasExplicitDefaultValue && hasSourceNode && sourceNode!.Binding.IsAutoBinding)
+                {
+                    // An auto-binding made for another consumer is not a source of an optional parameter,
+                    // otherwise its value would depend on the other consumers of the composition.
+                    hasSourceNode = false;
+                    sourceNode = null;
+                }
+
                 var bypassSelfFactoryOverride = hasSourceNode
                                                 && sourceNode!.Binding.Id == targetNode.Binding.Id
                                                 && injection.Kind == InjectionKind.FactoryInjection
@@ -141,8 +149,9 @@ sealed class DependencyGraphBuilder(
                 }
 
                 // An explicit default value is an edge of the current consumer only and is not added to the map,
-                // so every consumer of an injection without a source needs its own default value.
-                if (!processedInjection.Add(injection) && (hasSourceNode || !hasExplicitDefaultValue))
+                // so every consumer of an injection without a source needs its own default value,
+                // and a later consumer that requires the injection still has to find its source.
+                if ((hasSourceNode || !hasExplicitDefaultValue) && !processedInjection.Add(injection))
                 {
                     continue;
                 }
@@ -218,6 +227,11 @@ sealed class DependencyGraphBuilder(
                         foreach (var item in map.OrderByDescending(i => i.Value.Binding.Id))
                         {
                             if (item.Key.Type is not INamedTypeSymbol nextNamedTypeSymbol)
+                            {
+                                continue;
+                            }
+
+                            if (hasExplicitDefaultValue && item.Value.Binding.IsAutoBinding)
                             {
                                 continue;
                             }

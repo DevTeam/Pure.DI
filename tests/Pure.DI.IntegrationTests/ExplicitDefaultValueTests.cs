@@ -955,4 +955,388 @@ public class ExplicitDefaultValueTests
         result.Errors.Count(i => i.Id == LogId.ErrorUnableToResolve && i.Message.Contains("\"Sample.IMissing\"")).ShouldBe(1, result);
         result.DependencyGraphs.ShouldHaveSingleItem().BuildAttempts.ShouldBeLessThanOrEqualTo(2);
     }
+
+    // #203 An optional parameter of a type without a binding keeps its default value,
+    // even if another consumer of the composition requires the same type and gets it by an auto-binding.
+    private const string OptionalViewerTypes = """
+                                                   public struct Options
+                                                   {
+                                                       public bool ShowLabels;
+                                                   }
+
+                                                   public sealed class Settings { }
+
+                                                   public sealed class Viewer
+                                                   {
+                                                       private readonly string _description;
+
+                                                       public Viewer(Options? options = null, Settings? settings = null) =>
+                                                           _description = $"Viewer({(options is null ? "null" : "options")}, {(settings is null ? "null" : "settings")})";
+
+                                                       public override string ToString() => _description;
+                                                   }
+                                               """;
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(true, true)]
+    public async Task ShouldKeepDefaultValuesWhenOtherConsumerRequiresSameTypes(bool hasEditor, bool isEditorFirst)
+    {
+        // Given
+        var viewerRoot = ".Root<Viewer>(\"Viewer\")";
+        var editorRoot = hasEditor ? ".Root<Editor>(\"Editor\")" : "";
+        var roots = isEditorFirst ? editorRoot + viewerRoot : viewerRoot + editorRoot;
+        var editorOutput = hasEditor ? "Console.WriteLine(composition.Editor);" : "";
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               {{OptionalViewerTypes}}
+
+                               public sealed class Editor
+                               {
+                                   private readonly string _description;
+
+                                   public Editor(Options? options, Settings settings) =>
+                                       _description = $"Editor({(options is null ? "null" : "options")}, {(settings is null ? "null" : "settings")})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           {{roots}};
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Viewer);
+                                       {{editorOutput}}
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(hasEditor ? ["Viewer(null, null)", "Editor(options, settings)"] : ["Viewer(null, null)"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepDefaultValuesWhenOtherConsumerInTheSameGraphRequiresSameTypes()
+    {
+        // Given
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               {{OptionalViewerTypes}}
+
+                               public sealed class Editor
+                               {
+                                   private readonly string _description;
+
+                                   public Editor(Viewer viewer, Options? options, Settings settings) =>
+                                       _description = $"Editor({viewer}, {(options is null ? "null" : "options")}, {(settings is null ? "null" : "settings")})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               public sealed class Window
+                               {
+                                   private readonly string _description;
+
+                                   public Window(Editor editor, Viewer viewer) =>
+                                       _description = $"Window({editor}, {viewer})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Root<Window>("Window");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Window);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Window(Editor(Viewer(null, null), options, settings), Viewer(null, null))"], result);
+    }
+
+    [Fact]
+    public async Task ShouldKeepDefaultValuesWhenFactoryInjectsSameTypes()
+    {
+        // Given
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               {{OptionalViewerTypes}}
+
+                               public sealed class Editor
+                               {
+                                   private readonly string _description;
+
+                                   public Editor(string description) =>
+                                       _description = description;
+
+                                   public override string ToString() => _description;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind().To(ctx =>
+                                           {
+                                               ctx.Inject(out Options? options);
+                                               ctx.Inject(out Settings settings);
+                                               return new Editor($"Editor({(options is null ? "null" : "options")}, {(settings is null ? "null" : "settings")})");
+                                           })
+                                           .Root<Viewer>("Viewer")
+                                           .Root<Editor>("Editor");
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Viewer);
+                                       Console.WriteLine(composition.Editor);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Viewer(null, null)", "Editor(options, settings)"], result);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ShouldInjectBoundTypesInsteadOfDefaultValues(bool hasEditor)
+    {
+        // Given
+        var editorRoot = hasEditor ? ".Root<Editor>(\"Editor\")" : "";
+        var editorOutput = hasEditor ? "Console.WriteLine(composition.Editor);" : "";
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               {{OptionalViewerTypes}}
+
+                               public sealed class Editor
+                               {
+                                   private readonly string _description;
+
+                                   public Editor(Options? options, Settings settings) =>
+                                       _description = $"Editor({(options is null ? "null" : "options")}, {(settings is null ? "null" : "settings")})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<Settings>().To<Settings>()
+                                           .Root<Viewer>("Viewer")
+                                           {{editorRoot}};
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Viewer);
+                                       {{editorOutput}}
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(hasEditor ? ["Viewer(null, settings)", "Editor(options, settings)"] : ["Viewer(null, settings)"], result);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ShouldKeepDefaultValueOfGenericTypeWhenOtherConsumerRequiresSameType(bool isEditorFirst)
+    {
+        // Given
+        var roots = isEditorFirst
+            ? ".Root<Editor>(\"Editor\").Root<Viewer>(\"Viewer\")"
+            : ".Root<Viewer>(\"Viewer\").Root<Editor>(\"Editor\")";
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public sealed class Box<T> { }
+
+                               public sealed class Viewer
+                               {
+                                   private readonly string _description;
+
+                                   public Viewer(Box<int>? box = null) =>
+                                       _description = $"Viewer({(box is null ? "null" : "box")})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               public sealed class Editor
+                               {
+                                   private readonly string _description;
+
+                                   public Editor(Box<int> box) =>
+                                       _description = $"Editor({(box is null ? "null" : "box")})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           {{roots}};
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Viewer);
+                                       Console.WriteLine(composition.Editor);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["Viewer(null)", "Editor(box)"], result);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task ShouldInjectGenericBindingInsteadOfDefaultValue(bool hasEditor)
+    {
+        // Given
+        var editorRoot = hasEditor ? ".Root<Editor>(\"Editor\")" : "";
+        var editorOutput = hasEditor ? "Console.WriteLine(composition.Editor);" : "";
+
+        // When
+        var result = await $$"""
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               public interface IBox<T> { }
+
+                               public sealed class Box<T> : IBox<T> { }
+
+                               public sealed class Viewer
+                               {
+                                   private readonly string _description;
+
+                                   public Viewer(IBox<int>? box = null) =>
+                                       _description = $"Viewer({(box is null ? "null" : "box")})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               public sealed class Editor
+                               {
+                                   private readonly string _description;
+
+                                   public Editor(IBox<int> box) =>
+                                       _description = $"Editor({(box is null ? "null" : "box")})";
+
+                                   public override string ToString() => _description;
+                               }
+
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup(nameof(Composition))
+                                           .Bind<IBox<TT>>().To<Box<TT>>()
+                                           .Root<Viewer>("Viewer")
+                                           {{editorRoot}};
+                                   }
+                               }
+
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Viewer);
+                                       {{editorOutput}}
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(hasEditor ? ["Viewer(box)", "Editor(box)"] : ["Viewer(box)"], result);
+    }
 }

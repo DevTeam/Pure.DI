@@ -145,7 +145,8 @@ class BindingsFactory(
             newTags,
             actualLifetime,
             Implementation: new MdImplementation(semanticModel, setup.Source, sourceType),
-            TypeConstructor: typeConstructor);
+            TypeConstructor: typeConstructor,
+            IsAutoBinding: true);
     }
 
     public MdBinding CreateConstructBinding(

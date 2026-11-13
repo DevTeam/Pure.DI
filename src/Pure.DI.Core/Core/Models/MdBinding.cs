@@ -13,7 +13,10 @@ record MdBinding(
     in MdArg? Arg = null,
     in MdConstruct? Construct = null,
     ITypeConstructor? TypeConstructor = null,
-    ImmutableArray<int> OriginalIds = default)
+    ImmutableArray<int> OriginalIds = default,
+    // The binding was created automatically for a consumer that has no other source of the dependency,
+    // so it does not replace the default value of an optional parameter of another consumer.
+    bool IsAutoBinding = false)
 {
     // The bindings made after the bindings of the setups are numbered, such as the bindings of exported members,
     // get special ids that count down from this value.
