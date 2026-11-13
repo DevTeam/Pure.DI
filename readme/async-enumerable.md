@@ -94,6 +94,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      return new HealthService(EnumerationOf_perBlockIAsyncEnumerableIHealthCheck());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       async IAsyncEnumerable<IHealthCheck> EnumerationOf_perBlockIAsyncEnumerableIHealthCheck()
       {
@@ -101,8 +102,6 @@ partial class Composition
         yield return new ExternalServiceCheck();
         await Task.CompletedTask;
       }
-
-      return new HealthService(EnumerationOf_perBlockIAsyncEnumerableIHealthCheck());
     }
   }
 }

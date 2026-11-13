@@ -85,14 +85,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      return new NotificationService<string>(EnumerationOf_perBlockIEnumerableINotificationChannelString());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<INotificationChannel<string>> EnumerationOf_perBlockIEnumerableINotificationChannelString()
       {
         yield return new EmailChannel<string>();
         yield return new SmsChannel<string>();
       }
-
-      return new NotificationService<string>(EnumerationOf_perBlockIEnumerableINotificationChannelString());
     }
   }
 }

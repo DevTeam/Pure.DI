@@ -114,14 +114,13 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      return new NotificationService(EnumerationOf_perBlockIEnumerableIMessageSender());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IMessageSender> EnumerationOf_perBlockIEnumerableIMessageSender()
       {
         yield return new EmailSender();
         yield return new SmsSender();
       }
-
-      return new NotificationService(EnumerationOf_perBlockIEnumerableIMessageSender());
     }
   }
 }

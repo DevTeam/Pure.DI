@@ -178,6 +178,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      return new FailedPaymentReporter(EnumerationOf_perBlockIEnumerableIPaymentAuditSink());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IPaymentAuditSink> EnumerationOf_perBlockIEnumerableIPaymentAuditSink()
       {
@@ -190,8 +191,6 @@ partial class Composition
 
         yield return new PaymentAuditAdapter(_singletonEventStore);
       }
-
-      return new FailedPaymentReporter(EnumerationOf_perBlockIEnumerableIPaymentAuditSink());
     }
   }
 
@@ -200,6 +199,7 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      return new OrderCheckout(EnumerationOf_perBlockIEnumerableIPaymentProcessor());
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IPaymentProcessor> EnumerationOf_perBlockIEnumerableIPaymentProcessor()
       {
@@ -218,8 +218,6 @@ partial class Composition
         yield return _singletonPaymentAuditAdapter;
         yield return new CardPaymentGateway();
       }
-
-      return new OrderCheckout(EnumerationOf_perBlockIEnumerableIPaymentProcessor());
     }
   }
 }
