@@ -126,7 +126,8 @@ class VarsMap(
     /// <inheritdoc />
     public IDisposable LocalFunction(Var var, Lines lines, ImmutableArray<VarInjection> parameters = default)
     {
-        var scope = EnterScope(var.AbstractNode.BindingId);
+        var scope = EnterScope(var.AbstractNode.BindingId, var.AbstractNode.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped);
+        ForgetSharedVarsInCreation(var, lines, nameof(LocalFunction));
         var removed = RemovePerBlockVars(lines, nameof(LocalFunction));
         // A parameter can replace a variable of the caller, such as an accumulator, which the caller still sees after the function.
         List<KeyValuePair<int, Var>>? replaced = null;
@@ -174,6 +175,41 @@ class VarsMap(
                 ExitScope(scope);
             }
         });
+    }
+
+    // A local function is shared by all its use sites, so its code can run outside the creation of the instance
+    // it was generated under, for example, when a lambda in the code of a singleton leads to it, see #202.
+    // A singleton or scoped instance whose local function is being generated counts as created only in its own code,
+    // so the code of the function calls that local function, and the state before the function is restored after it.
+    private void ForgetSharedVarsInCreation(Var var, Lines lines, string reason)
+    {
+        List<Var>? forgotten = null;
+        foreach (var activeScope in _activeScopes)
+        {
+            if (!activeScope.IsSharedLocalFunction
+                || activeScope.ExcludeBindingId == var.AbstractNode.BindingId
+                || !_map.TryGetValue(activeScope.ExcludeBindingId, out var sharedVar)
+                || !sharedVar.IsCreated)
+            {
+                continue;
+            }
+
+            (forgotten ??= []).Add(sharedVar);
+        }
+
+        if (forgotten is null)
+        {
+            return;
+        }
+
+        foreach (var forgottenVar in forgotten)
+        {
+#if DEBUG
+            lines.AppendLine($"// {forgottenVar.Declaration.Name}: forget ({reason})");
+#endif
+            ((IVarStateTracker)this).OnStateChanging(forgottenVar.AbstractNode.BindingId);
+            forgottenVar.ResetStateToDefaults(true);
+        }
     }
 
     /// <inheritdoc />
@@ -440,9 +476,9 @@ class VarsMap(
         && node.Arg is not { Source.Kind: ArgKind.Root }
         && node.Construct is not { Source.Kind: MdConstructKind.Override };
 
-    private ScopeState EnterScope(int excludeBindingId)
+    private ScopeState EnterScope(int excludeBindingId, bool isSharedLocalFunction = false)
     {
-        var scope = new ScopeState(excludeBindingId);
+        var scope = new ScopeState(excludeBindingId, isSharedLocalFunction);
         _activeScopes.Add(scope);
         return scope;
     }
@@ -620,13 +656,16 @@ class VarsMap(
         public readonly string? RawCodeExpression = variable.RawCodeExpression;
     }
 
-    private sealed class ScopeState(int excludeBindingId)
+    private sealed class ScopeState(int excludeBindingId, bool isSharedLocalFunction)
     {
         private Dictionary<int, VarState>? _changedStates;
         private HashSet<int>? _addedBindingIds;
         private HashSet<(int BindingId, int VariableId)>? _addedVariables;
 
         public int ExcludeBindingId { get; } = excludeBindingId;
+
+        // The scope of the local function that creates a singleton or scoped instance.
+        public bool IsSharedLocalFunction { get; } = isSharedLocalFunction;
 
         public bool HasChangedStates => _changedStates is { Count: > 0 };
 

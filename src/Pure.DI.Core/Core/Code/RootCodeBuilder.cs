@@ -226,6 +226,14 @@ sealed class RootCodeBuilder(
             localFunctionScope.Reserve(localFunctionKey, reservedLocalFunctionName);
         }
 
+        // The local functions generated in the code of a shared instance do not count it as created, since they can run
+        // before it is created, so the function of the instance is registered before its code is built for them to call, see #202.
+        if (isLocalFunction && isBlock && var.AbstractNode.ActualLifetime is Singleton or Scoped)
+        {
+            reservedLocalFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{nameFormatter.Format("{type}{tag}", var.InstanceType, currentTag)}Exists{Names.Salt}");
+            localFunctionScope.Reserve(localFunctionKey, reservedLocalFunctionName);
+        }
+
         var mapToken =
             isLocalFunction
                 ? varsMap.LocalFunction(var, lines, perBlockParameters.AddRange(accumulatorParameters.Select(i => i.VarInjection)))
@@ -412,7 +420,7 @@ sealed class RootCodeBuilder(
                 buildTools.AddAggressiveInlining(localFunction);
             }
 
-            localFunctionName = uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
+            localFunctionName = reservedLocalFunctionName ?? uniqueNameProvider.GetUniqueName($"Ensure{baseName}Exists{Names.Salt}");
             localFunction.AppendLine($"void {localFunctionName}()");
             using (localFunction.CreateBlock())
             {
