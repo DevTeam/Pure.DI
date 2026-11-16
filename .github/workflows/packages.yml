@@ -1,46 +1,144 @@
-name: Build NuGet packages
+name: Publish NuGet packages
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Package version (leave empty for the next release version)'
-        required: false
+      tag:
+        description: 'Existing version tag (2.5.8 or 2.5.8-preview.1)'
+        required: true
         type: string
+      publish:
+        description: 'Publish the built packages to NuGet.org'
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
+concurrency:
+  group: nuget-release
+  cancel-in-progress: false
+
 jobs:
   pack:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+      commit: ${{ steps.release.outputs.commit }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Resolve version tag
+        id: release
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          PUBLISH_PACKAGES: ${{ inputs.publish }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = $env:RELEASE_TAG
+          # Canonical SemVer without a v prefix or build metadata.
+          if ($version -cnotmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?$') {
+            throw 'Tag must be a canonical version such as 2.5.8 or 2.5.8-preview.1.'
+          }
+          git fetch --no-tags origin "refs/tags/${version}:refs/tags/${version}"
+          if ($LASTEXITCODE -ne 0) { throw 'Version tag was not found.' }
+          $commit = git rev-parse --verify "refs/tags/${version}^{commit}"
+          if ($LASTEXITCODE -ne 0) { throw 'Tag does not point to a commit.' }
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "commit=$commit" >> $env:GITHUB_OUTPUT
+          "Tag: $version`n`nCommit: $commit`n`nPublish: $env:PUBLISH_PACKAGES" >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Checkout release sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.release.outputs.commit }}
+          path: source
+          persist-credentials: false
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '11.0.x'
+          global-json-file: source/global.json
 
       - name: Build and check packages
+        working-directory: source
+        shell: pwsh
         env:
-          PACKAGE_VERSION: ${{ inputs.version }}
+          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
         run: |
-          if [[ -n "$PACKAGE_VERSION" ]]; then
-            dotnet run --project ./build -- "-p:version=$PACKAGE_VERSION" pack
-          else
-            dotnet run --project ./build -- pack
-          fi
+          dotnet run --project ./build -- "-p:version=$env:PACKAGE_VERSION" pack
+          if ($LASTEXITCODE -ne 0) { throw 'Package build or compatibility checks failed.' }
+          dotnet run --project ./build -- "-p:version=$env:PACKAGE_VERSION" "-p:templatePackageSource=$PWD/.packages" template
+          if ($LASTEXITCODE -ne 0) { throw 'Template build or smoke tests failed.' }
 
       - name: Smoke test agent installer
+        working-directory: source
         shell: pwsh
         run: ./tests/Pure.DI.Agent.ToolSmoke.ps1 -ToolDll ./src/Pure.DI.Agent/bin/Release/net8.0/Pure.DI.Agent.dll
+
+      - name: Validate release packages
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+        run: ./.github/scripts/Validate-NuGetPackages.ps1 -Directory source/.packages -Version $env:PACKAGE_VERSION
 
       - name: Save NuGet packages
         uses: actions/upload-artifact@v4
         with:
           name: nuget-packages
-          path: .packages/*.nupkg
+          path: source/.packages/*.nupkg
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 30
+
+  publish:
+    if: ${{ inputs.publish }}
+    needs: pack
+    runs-on: ubuntu-latest
+    environment: nuget
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: packages
+
+      - name: Validate release packages
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.pack.outputs.version }}
+        run: ./.github/scripts/Validate-NuGetPackages.ps1 -Directory packages -Version $env:PACKAGE_VERSION
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish packages
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+          PACKAGE_VERSION: ${{ needs.pack.outputs.version }}
+          RELEASE_COMMIT: ${{ needs.pack.outputs.commit }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          foreach ($id in @('Pure.DI', 'Pure.DI.MS', 'Pure.DI.Abstractions', 'Pure.DI.Agent', 'Pure.DI.Templates')) {
+            dotnet nuget push "packages/$id.$env:PACKAGE_VERSION.nupkg" --source https://api.nuget.org/v3/index.json --api-key $env:NUGET_API_KEY --skip-duplicate
+            if ($LASTEXITCODE -ne 0) { throw "Publishing $id failed. Already pushed packages remain published; rerun this job to resume." }
+            "Processed $id $env:PACKAGE_VERSION (existing versions skipped)." >> $env:GITHUB_STEP_SUMMARY
+          }
+          "`nRelease commit: $env:RELEASE_COMMIT" >> $env:GITHUB_STEP_SUMMARY

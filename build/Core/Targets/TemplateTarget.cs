@@ -4,6 +4,7 @@
 namespace Build.Core.Targets;
 
 using System.IO.Compression;
+using System.Xml.Linq;
 using NuGet.Versioning;
 
 class TemplateTarget(
@@ -20,7 +21,9 @@ class TemplateTarget(
 
     public async Task<Package> RunAsync(CancellationToken cancellationToken)
     {
-        var packageVersion = settings.CurrentVersion;
+        var packageVersion = string.IsNullOrWhiteSpace(settings.RequestedVersion)
+            ? settings.CurrentVersion
+            : settings.NextVersion;
         var packageVersionStr = packageVersion.ToString();
         var maxPackageVersionStr = GetMaxPackageVersion(packageVersion).ToString();
         var templatesPath = Path.Combine("src", ProjectName, "Templates");
@@ -119,6 +122,26 @@ class TemplateTarget(
         {
             Directory.CreateDirectory(hiveDirectory);
             Directory.CreateDirectory(outputDirectory);
+
+            // Release smoke tests must consume the newly built generator, including prereleases,
+            // without reusing a previously cached package with the same version.
+            if (!string.IsNullOrWhiteSpace(settings.TemplatePackageSource))
+            {
+                var packageSource = Path.GetFullPath(settings.TemplatePackageSource);
+                var config = new XDocument(new XElement("configuration",
+                    new XElement("config", new XElement("add",
+                        new XAttribute("key", "globalPackagesFolder"),
+                        new XAttribute("value", Path.Combine(tempDirectory, "packages")))),
+                    new XElement("packageSources", new XElement("clear"),
+                        new XElement("add", new XAttribute("key", "release"), new XAttribute("value", packageSource)),
+                        new XElement("add", new XAttribute("key", "nuget.org"), new XAttribute("value", "https://api.nuget.org/v3/index.json"))),
+                    new XElement("packageSourceMapping", new XElement("clear"),
+                        new XElement("packageSource", new XAttribute("key", "release"),
+                            new XElement("package", new XAttribute("pattern", "Pure.DI"))),
+                        new XElement("packageSource", new XAttribute("key", "nuget.org"),
+                            new XElement("package", new XAttribute("pattern", "*"))))));
+                config.Save(Path.Combine(outputDirectory, "NuGet.Config"));
+            }
 
             await new DotNetNewInstall()
                 .WithPackage(Path.GetFullPath(packagePath))

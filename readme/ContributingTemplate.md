@@ -57,22 +57,30 @@ or to run benchmarks:
 ./build.cmd benchmarks
 ```
 
-### Build NuGet packages on GitHub
+### Build and publish NuGet packages on GitHub
 
-Open **Actions → Build NuGet packages → Run workflow**. Leave **Package version** empty to use the next release version in the `VersionRange` from `Directory.Build.props`, calculated from the published `Pure.DI` versions on NuGet.org. Enter a NuGet version (for example, `2.5.5` or `2.5.5-beta1`) to override it for this run.
+Create and push a version tag, such as `2.5.8` or `2.5.8-preview.1`, pointing to the release commit. Use canonical SemVer without a `v` prefix or build metadata. The tagged commit must contain the release build changes described here; old tags are not upgraded by the workflow.
 
-The workflow runs the `pack` target, including its compatibility checks. It saves the resulting `Pure.DI`, `Pure.DI.MS`, and `Pure.DI.Abstractions` `.nupkg` files under the run's **Artifacts** section for 30 days. It does not publish them to a package registry. The template package has a separate `template` target.
+Open **Actions → Publish NuGet packages → Run workflow** on the default branch. Enter the existing tag in **tag**. Leave **publish** unchecked to build and download packages without publishing, or check it to publish to NuGet.org. Pushing a tag or creating a GitHub release does not trigger publication.
 
-Locally, use `./build.sh pack` (or `./build.cmd pack` on Windows). To override the version, pass `-p:version=2.5.5` before `pack`.
+The workflow checks out the tag's resolved commit, runs `pack` (including tests and compatibility checks), builds and smoke-tests templates against the local generator package, and smoke-tests the agent installer. All five packages (`Pure.DI`, `Pure.DI.MS`, `Pure.DI.Abstractions`, `Pure.DI.Agent`, and `Pure.DI.Templates`) use the tag version. Package IDs and versions are validated from their nuspec files. The run summary records the commit and package SHA256 hashes.
+
+After a successful build, open the run's **Artifacts** section and download **nuget-packages**. The ZIP contains the five `.nupkg` files and is retained for 30 days, including runs with **publish** unchecked. Download it before retention expires if you need a longer-lived copy.
+
+Publication is a separate job that downloads the same artifacts without rebuilding. Releases are serialized. Existing package versions are skipped, so after a partial publication you can use **Re-run failed jobs** to resume with the same artifacts. NuGet publication is not atomic; already published packages remain published if a later push fails. Skipping an existing version does not verify that its contents match the current artifact. Never move release tags or reuse a version for different contents.
+
+Before the first publication:
+
+1. Create the GitHub environment **nuget**. Set environment secret **NUGET_USER** to the NuGet.org profile name (not an email address). Restrict deployment to your default branch; add required reviewers only if you want a separate approval step.
+2. On NuGet.org, create a [Trusted Publishing policy](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) for repository owner **DevTeam**, repository **Pure.DI**, workflow file **packages.yml**, and environment **nuget**. Select the package owner and scopes covering all five exact package IDs, including permission to create `Pure.DI.Agent` if it has not been published yet.
+3. Merge the workflow and build changes into the default branch before creating the release tag. Run once with **publish** unchecked to inspect the artifacts, then run with **publish** checked when ready. A new run rebuilds; rerunning only a failed publication job reuses its original artifacts.
+
+`NuGet/login@v1` obtains a short-lived key using GitHub OIDC just before publication. No long-lived NuGet API key is required. Build-only runs do not require the NuGet environment or secret.
+
+Locally, use `dotnet run --project ./build -- "-p:version=2.5.8" pack`, then `dotnet run --project ./build -- "-p:version=2.5.8" "-p:templatePackageSource=<absolute path to .packages>" template` to build all five packages without publishing. Do not supply `NuGetKey` when building templates only.
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands. This project uses [C# interactive](https://github.com/DevTeam/csharp-interactive) build automation system for .NET. This tool helps to make .NET builds more efficient.
 
 ![](https://raw.githubusercontent.com/DevTeam/csharp-interactive/master/docs/CSharpInteractive.gif)
-
-### State of build
-
-| Tests                                                                                                                                                                                                                                                                  | Examples                                                                                                                                                                                                                                                | Performance                                                                                                                                                                                                                                                        |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [![Tests](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType&guest=1) | [![Examples](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_TestExamples)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_TestExamples&guest=1) | [![Performance](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_PerformanceTests)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_PerformanceTests&guest=1) |
 
 Thanks!

@@ -48,6 +48,10 @@ partial class Settings
 
     public string NuGetKey { get; }
 
+    public string RequestedVersion => _properties["version"];
+
+    public string TemplatePackageSource => _properties["templatePackageSource"];
+
     public ImmutableArray<CodeAnalysis> CodeAnalysis { get; } =
     [
         new(new Version(5, 6, 0)),
