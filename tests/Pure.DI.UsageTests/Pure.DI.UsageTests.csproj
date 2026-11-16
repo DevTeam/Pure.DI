@@ -16,7 +16,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Update="Castle.Core" Version="5.2.1" />
-        <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="10.0.14" />
+        <PackageReference Update="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
         <PackageReference Update="AutoMapper" Version="16.3.0" />
         <PackageReference Update="Serilog" Version="4.4.0" />
         <PackageReference Update="Microsoft.Net.Compilers.Toolset" Version="5.12.0" />
