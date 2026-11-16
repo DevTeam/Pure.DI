@@ -29,8 +29,8 @@
         <RolsynVersions Condition="'$(RolsynVersions)'==''">ROSLYN4_3_OR_GREATER</RolsynVersions>
         -->
 
-        <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">5.9</AnalyzerRoslynVersion>
-        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">5.9.0</AnalyzerRoslynPackageVersion>
+        <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">5.12</AnalyzerRoslynVersion>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">5.12.0</AnalyzerRoslynPackageVersion>
         <RolsynVersions Condition="'$(RolsynVersions)'==''">ROSLYN5_10_OR_GREATER;ROSLYN4_8_OR_GREATER;ROSLYN4_3_OR_GREATER</RolsynVersions>
 
         <DefineConstants>$(DefineConstants);$(RolsynVersions)</DefineConstants>
