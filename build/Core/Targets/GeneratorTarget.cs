@@ -26,11 +26,71 @@ class GeneratorTarget(
 
     private async IAsyncEnumerable<string> CreateGeneratorPackagesAsync(string generatorProjectDirectory, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        var selection = GetRoslynSelection();
         foreach (var codeAnalysis in settings.CodeAnalysis)
         {
-            yield return await CreateGeneratorPackageAsync(codeAnalysis, generatorProjectDirectory, cancellationToken);
+            if (selection.Build(codeAnalysis))
+            {
+                yield return await CreateGeneratorPackageAsync(codeAnalysis, generatorProjectDirectory, cancellationToken);
+                continue;
+            }
+
+            if (selection.Prebuilt)
+            {
+                yield return GetPrebuiltGeneratorPackage(codeAnalysis);
+                continue;
+            }
+
+            Warning($"The package for Roslyn {GetRoslynVersion(codeAnalysis)} is skipped, the merged package {PackageName} is incomplete.");
         }
     }
+
+    // The "roslyn" property lets CI build and test each Roslyn version in its own job and then merge the packages these jobs created.
+    private RoslynSelection GetRoslynSelection()
+    {
+        var roslyn = settings.Roslyn.Trim();
+        if (roslyn.Length == 0)
+        {
+            return new RoslynSelection(_ => true, false);
+        }
+
+        if (string.Equals(roslyn, "prebuilt", StringComparison.OrdinalIgnoreCase))
+        {
+            return new RoslynSelection(_ => false, true);
+        }
+
+        var supported = settings.CodeAnalysis.Select(GetRoslynVersion).ToList();
+        var versions = roslyn
+            .Split([';', ',', ' '], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(i => Version.TryParse(i, out var version) ? new Version(version.Major, version.Minor) : throw new ArgumentException($"Invalid Roslyn version: '{i}'."))
+            .ToHashSet();
+
+        var unknown = versions.Except(supported).ToList();
+        if (unknown.Count > 0)
+        {
+            throw new ArgumentException($"Unknown Roslyn versions: {string.Join(", ", unknown)}. Supported versions: {string.Join(", ", supported)}.");
+        }
+
+        return new RoslynSelection(codeAnalysis => versions.Contains(GetRoslynVersion(codeAnalysis)), false);
+    }
+
+    private string GetPrebuiltGeneratorPackage(CodeAnalysis codeAnalysis)
+    {
+        var roslynVersion = GetRoslynVersion(codeAnalysis);
+        var packagePath = Path.Combine(env.GetPath(PathType.PackagesDirectory), roslynVersion.ToString(), PackageName);
+        if (!File.Exists(packagePath))
+        {
+            throw new InvalidOperationException($"The prebuilt package for Roslyn {roslynVersion} was not found: {packagePath}");
+        }
+
+        Summary("Use prebuilt package for Roslyn ", roslynVersion.WithColor(Color.Details));
+        return packagePath;
+    }
+
+    private static Version GetRoslynVersion(CodeAnalysis codeAnalysis) =>
+        new(codeAnalysis.AnalyzerRoslynPackageVersion.Major, codeAnalysis.AnalyzerRoslynPackageVersion.Minor);
+
+    private record RoslynSelection(Func<CodeAnalysis, bool> Build, bool Prebuilt);
 
     private async Task<string> CreateGeneratorPackageAsync(CodeAnalysis codeAnalysis, string projectDirectory, CancellationToken cancellationToken)
     {
@@ -85,12 +145,19 @@ class GeneratorTarget(
 
         if (settings.Tests)
         {
-            await new DotNetTest()
+            var test = new DotNetTest()
                 .WithShortName($"testing {codeAnalysis.AnalyzerRoslynPackageVersion}")
                 .WithProps(props)
                 .WithConfiguration(settings.Configuration)
-                .WithNoBuild(true).WithNoLogo(true)
-                .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
+                .WithNoBuild(true).WithNoLogo(true);
+
+            // The size of the generated code does not depend on the Roslyn version, so these slow tests run only with the newest one.
+            if (codeAnalysis.AnalyzerRoslynPackageVersion < settings.CodeAnalysis.Max(i => i.AnalyzerRoslynPackageVersion)!)
+            {
+                test = test.WithFilter("Category!=CodeSize");
+            }
+
+            await test.BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
         }
 
         var packagePath = Path.Combine(env.GetPath(PathType.PackagesDirectory), analyzerRoslynVersion.ToString());

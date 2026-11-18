@@ -50,7 +50,7 @@ class LibrariesTarget(
                 .WithProps(
                     ("configuration", settings.Configuration),
                     ("version", settings.NextVersion.ToString()))
-                .WithConfiguration(settings.Configuration).WithNoBuild(true).WithNoLogo(true)
+                .WithConfiguration(settings.Configuration).WithNoLogo(true)
                 .WithProject(Path.Combine(Path.GetFullPath(Path.Combine("src", library.Name)), $"{library.Name}.csproj"))
                 .WithOutput(Path.GetDirectoryName(library.Package.Path) ?? "")
                 .WithShortName($"packing {library.Name}")

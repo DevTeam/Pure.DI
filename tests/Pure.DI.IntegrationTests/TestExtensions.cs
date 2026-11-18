@@ -338,7 +338,11 @@ public static class TestExtensions
     private static CSharpCompilation CreateCompilation() =>
         CSharpCompilation
             .Create("Sample")
-            .AddReferences(
+            .AddReferences(References.Value);
+
+    // Shared by all tests: Roslyn reads and binds the metadata of a reference once per reference instance.
+    private static readonly Lazy<MetadataReference[]> References = new(() =>
+            [
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("netstandard.dll")),
                 MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("System.Runtime.dll")),
@@ -354,7 +358,8 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(System.Text.Json.JsonSerializerOptions).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(TimeProvider).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location));
+                MetadataReference.CreateFromFile(typeof(INotifyPropertyChanged).Assembly.Location)
+            ]);
 
     private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options)
     {

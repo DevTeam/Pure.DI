@@ -1,22 +1,108 @@
 name: Pure.DI check
 
-on: [ push, pull_request ]
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: &docs
+      - 'README.md'
+      - 'CONTRIBUTING.md'
+      - 'SECURITY.md'
+      - 'DIAGNOSTICS.md'
+      - 'LICENSE'
+      - 'docs/**/*.md'
+      - 'readme/**'
+      - 'release-notes/**'
+      - '.github/ISSUE_TEMPLATE/**'
+  pull_request:
+    paths-ignore: *docs
+  workflow_dispatch:
+
+# A newer push to a branch or a pull request cancels its older run; every master commit is checked.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
-  build:
+  # Builds and tests the generator for each Roslyn version in parallel.
+  # The versions must match Settings.CodeAnalysis in build/Core/Settings.cs:
+  # an unknown version fails its job, and a missing one fails the "check" job.
+  generator:
+    name: generator (Roslyn ${{ matrix.roslyn }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        roslyn: [ '5.6', '4.8', '4.3' ]
 
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-roslyn-${{ matrix.roslyn }}-${{ hashFiles('global.json', '**/Directory.Build.props', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-roslyn-${{ matrix.roslyn }}-
+
+      - name: Build and test
+        run: dotnet run --project ./build -- "-p:roslyn=${{ matrix.roslyn }}" generator
+
+      - name: Save generator package
+        uses: actions/upload-artifact@v4
+        with:
+          name: generator-${{ matrix.roslyn }}
+          path: .packages/${{ matrix.roslyn }}/Pure.DI.*.nupkg
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  # Merges the generator packages and runs the compatibility checks.
+  check:
+    needs: generator
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '11.0.x'
+          global-json-file: global.json
 
-      - name: Build and test
-        run: dotnet run --project ./build -- check
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-check-${{ hashFiles('global.json', '**/Directory.Build.props', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-check-
+
+      - name: Load generator packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: generator-*
+          path: .packages
+
+      - name: Arrange generator packages by Roslyn version
+        run: |
+          for dir in .packages/generator-*; do
+            mv "$dir" ".packages/${dir#.packages/generator-}"
+          done
+          ls -R .packages
+
+      - name: Compatibility checks
+        run: dotnet run --project ./build -- "-p:roslyn=prebuilt" check
 
       - name: Smoke test Pure.DI.Agent
         shell: pwsh
@@ -25,20 +111,26 @@ jobs:
           ./tests/Pure.DI.Agent.ToolSmoke.ps1 -ToolDll ./src/Pure.DI.Agent/bin/Release/net8.0/Pure.DI.Agent.dll
 
   test-examples:
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '11.0.x'
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-examples-${{ hashFiles('global.json', '**/Directory.Build.props', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-examples-
 
       - name: Test examples
         run: dotnet run --project ./build -- te
-        
+
 #  benchmarks:
 
 #    runs-on: ubuntu-latest
@@ -47,16 +139,16 @@ jobs:
 #      - uses: actions/checkout@v4
 
 #      - name: Setup dotnet
-#        uses: actions/setup-dotnet@v3
+#        uses: actions/setup-dotnet@v4
 #        with:
-#          dotnet-version: '11.0.x'
-          
-#      - name: Clean 
+#          global-json-file: global.json
+
+#      - name: Clean
 #        run: rm -rf benchmarks/data
 
 #      - name: Benchmarks
 #        run: dotnet run --project ./build -- benchmarks
-        
+
 #      - name: Archive production artifacts
 #        uses: actions/upload-artifact@v4
 #        with:
@@ -65,25 +157,23 @@ jobs:
 #            .logs/*.html
 
   deploy-examples:
-
-    if: ${{ github.event_name != 'pull_request' }}
-
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '11.0.x'
+          global-json-file: global.json
 
       - name: Publish Blazor example
-        if: ${{ github.ref == 'refs/heads/master' }}
         run: dotnet run --project ./build -- publish
 
       - name: Commit wwwroot to GitHub Pages
-        if: ${{ github.ref == 'refs/heads/master' }}
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

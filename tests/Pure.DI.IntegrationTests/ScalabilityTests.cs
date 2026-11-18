@@ -10,6 +10,7 @@ using Core;
 /// so for a linear growth the code added by the last step is about twice as large as the code added by the first one,
 /// while for a growth with the number of dependency paths it is many times larger.
 /// </summary>
+[Trait("Category", "CodeSize")]
 public class ScalabilityTests
 {
     private static readonly int[] Sizes = [4, 6, 10];

@@ -52,6 +52,10 @@ partial class Settings
 
     public string TemplatePackageSource => _properties["templatePackageSource"];
 
+    // Which Roslyn builds of the generator to build and test: all when empty, none when "prebuilt",
+    // otherwise a list of versions such as "4.8" or "5.6;4.3". See GeneratorTarget.
+    public string Roslyn => _properties["roslyn"];
+
     public ImmutableArray<CodeAnalysis> CodeAnalysis { get; } =
     [
         new(new Version(5, 6, 0)),
