@@ -20,7 +20,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  pack:
+  # Resolves the version tag to the commit that all other jobs build.
+  release:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.release.outputs.version }}
@@ -51,10 +52,69 @@ jobs:
           "commit=$commit" >> $env:GITHUB_OUTPUT
           "Tag: $version`n`nCommit: $commit`n`nPublish: $env:PUBLISH_PACKAGES" >> $env:GITHUB_STEP_SUMMARY
 
+  # Builds and tests the generator for each Roslyn version in parallel, as the "Pure.DI check" workflow does.
+  # The versions must match Settings.CodeAnalysis in build/Core/Settings.cs:
+  # an unknown version fails its job, and a missing one fails the "pack" job.
+  generator:
+    name: generator (Roslyn ${{ matrix.roslyn }}${{ matrix.codeSize == 'only' && ', code size' || '' }})
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        roslyn: [ '5.6', '4.8', '4.3' ]
+        codeSize: [ 'skip' ]
+        include:
+          - roslyn: newest
+            codeSize: only
+    steps:
       - name: Checkout release sources
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.release.outputs.commit }}
+          ref: ${{ needs.release.outputs.commit }}
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build and test
+        shell: pwsh
+        env:
+          PACKAGE_VERSION: ${{ needs.release.outputs.version }}
+          ROSLYN: ${{ matrix.roslyn }}
+          CODE_SIZE: ${{ matrix.codeSize }}
+        run: |
+          dotnet run --project ./build -- "-p:version=$env:PACKAGE_VERSION" "-p:roslyn=$env:ROSLYN" "-p:codeSize=$env:CODE_SIZE" generator
+          if ($LASTEXITCODE -ne 0) { throw 'Generator build or tests failed.' }
+
+      - name: Save generator package
+        if: ${{ matrix.codeSize != 'only' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: generator-${{ matrix.roslyn }}
+          path: .packages/${{ matrix.roslyn }}/Pure.DI.${{ needs.release.outputs.version }}.nupkg
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  # Merges the generator packages, creates the other packages and checks them.
+  pack:
+    needs: [ release, generator ]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ needs.release.outputs.version }}
+      commit: ${{ needs.release.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout release sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.commit }}
           path: source
           persist-credentials: false
 
@@ -63,13 +123,28 @@ jobs:
         with:
           global-json-file: source/global.json
 
+      - name: Load generator packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: generator-*
+          path: source/.packages
+
+      - name: Arrange generator packages by Roslyn version
+        working-directory: source
+        shell: bash
+        run: |
+          for dir in .packages/generator-*; do
+            mv "$dir" ".packages/${dir#.packages/generator-}"
+          done
+          ls -R .packages
+
       - name: Build and check packages
         working-directory: source
         shell: pwsh
         env:
-          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+          PACKAGE_VERSION: ${{ needs.release.outputs.version }}
         run: |
-          dotnet run --project ./build -- "-p:version=$env:PACKAGE_VERSION" pack
+          dotnet run --project ./build -- "-p:version=$env:PACKAGE_VERSION" "-p:roslyn=prebuilt" pack
           if ($LASTEXITCODE -ne 0) { throw 'Package build or compatibility checks failed.' }
           dotnet run --project ./build -- "-p:version=$env:PACKAGE_VERSION" "-p:templatePackageSource=$PWD/.packages" template
           if ($LASTEXITCODE -ne 0) { throw 'Template build or smoke tests failed.' }
