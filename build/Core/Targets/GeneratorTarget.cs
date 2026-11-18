@@ -62,7 +62,12 @@ class GeneratorTarget(
         var supported = settings.CodeAnalysis.Select(GetRoslynVersion).ToList();
         var versions = roslyn
             .Split([';', ',', ' '], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(i => Version.TryParse(i, out var version) ? new Version(version.Major, version.Minor) : throw new ArgumentException($"Invalid Roslyn version: '{i}'."))
+            .Select(i => i switch
+            {
+                _ when string.Equals(i, "newest", StringComparison.OrdinalIgnoreCase) => supported.Max()!,
+                _ when Version.TryParse(i, out var version) => new Version(version.Major, version.Minor),
+                _ => throw new ArgumentException($"Invalid Roslyn version: '{i}'.")
+            })
             .ToHashSet();
 
         var unknown = versions.Except(supported).ToList();
@@ -152,9 +157,20 @@ class GeneratorTarget(
                 .WithNoBuild(true).WithNoLogo(true);
 
             // The size of the generated code does not depend on the Roslyn version, so these slow tests run only with the newest one.
-            if (codeAnalysis.AnalyzerRoslynPackageVersion < settings.CodeAnalysis.Max(i => i.AnalyzerRoslynPackageVersion)!)
+            // CI runs them in a separate job: "codeSize" is "skip" in the regular jobs and "only" in that job.
+            var isNewest = codeAnalysis.AnalyzerRoslynPackageVersion == settings.CodeAnalysis.Max(i => i.AnalyzerRoslynPackageVersion);
+            var codeSize = settings.CodeSize.Trim().ToLowerInvariant();
+            var filter = codeSize switch
             {
-                test = test.WithFilter("Category!=CodeSize");
+                "" => isNewest ? null : "Category!=CodeSize",
+                "skip" => "Category!=CodeSize",
+                "only" => "Category=CodeSize",
+                _ => throw new ArgumentException($"Invalid codeSize value: '{settings.CodeSize}'. Use \"skip\" or \"only\".")
+            };
+
+            if (filter is not null)
+            {
+                test = test.WithFilter(filter);
             }
 
             await test.BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();

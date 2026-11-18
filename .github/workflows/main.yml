@@ -33,13 +33,18 @@ jobs:
   # Builds and tests the generator for each Roslyn version in parallel.
   # The versions must match Settings.CodeAnalysis in build/Core/Settings.cs:
   # an unknown version fails its job, and a missing one fails the "check" job.
+  # The slow code size tests run in their own job with the newest Roslyn version, which the build tool finds itself.
   generator:
-    name: generator (Roslyn ${{ matrix.roslyn }})
+    name: generator (Roslyn ${{ matrix.roslyn }}${{ matrix.codeSize == 'only' && ', code size' || '' }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         roslyn: [ '5.6', '4.8', '4.3' ]
+        codeSize: [ 'skip' ]
+        include:
+          - roslyn: newest
+            codeSize: only
 
     steps:
       - uses: actions/checkout@v4
@@ -57,9 +62,10 @@ jobs:
           restore-keys: nuget-${{ runner.os }}-roslyn-${{ matrix.roslyn }}-
 
       - name: Build and test
-        run: dotnet run --project ./build -- "-p:roslyn=${{ matrix.roslyn }}" generator
+        run: dotnet run --project ./build -- "-p:roslyn=${{ matrix.roslyn }}" "-p:codeSize=${{ matrix.codeSize }}" generator
 
       - name: Save generator package
+        if: ${{ matrix.codeSize != 'only' }}
         uses: actions/upload-artifact@v4
         with:
           name: generator-${{ matrix.roslyn }}
