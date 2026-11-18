@@ -157,7 +157,7 @@ jobs:
       - name: Validate release packages
         shell: pwsh
         env:
-          PACKAGE_VERSION: ${{ steps.release.outputs.version }}
+          PACKAGE_VERSION: ${{ needs.release.outputs.version }}
         run: ./.github/scripts/Validate-NuGetPackages.ps1 -Directory source/.packages -Version $env:PACKAGE_VERSION
 
       - name: Save NuGet packages
