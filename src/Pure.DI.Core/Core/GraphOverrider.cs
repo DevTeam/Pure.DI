@@ -549,7 +549,83 @@ class GraphOverrider(
             }
         }
 
+        RemoveUncreatableMarkers(graph, cyclicOverrides);
         return cyclicOverrides;
+    }
+
+    // A node on a cycle may also be reached by a path that does not pass through the lambda that overrides a value,
+    // for example, from a root. The code there cannot check whether the value is overridden, if nothing else creates it.
+    // So such a value is not put in the scope of the nodes on the cycle, and they are rewritten for the scopes
+    // they are reached in. A path without the value then keeps the unresolved dependency, which is reported, see #204.
+    // Each node that reads such a value in a valid composition is reached with it, so its rewrites do not multiply.
+    private static void RemoveUncreatableMarkers(IGraph<DependencyNode, Dependency> graph, CyclicOverrides cyclicOverrides)
+    {
+        if (cyclicOverrides.Markers.Count == 0)
+        {
+            return;
+        }
+
+        var injections = new HashSet<Injection>();
+        foreach (var markers in cyclicOverrides.Markers.Values)
+        {
+            injections.UnionWith(markers.Keys);
+        }
+
+        var uncreatable = new HashSet<Injection>();
+        foreach (var entry in graph.Entries)
+        {
+            foreach (var dependency in entry.Edges)
+            {
+                var injection = dependency.Injection;
+                if (!injections.Contains(injection))
+                {
+                    if (injection.Type is not { IsReferenceType: true, NullableAnnotation: NullableAnnotation.Annotated })
+                    {
+                        continue;
+                    }
+
+                    injection = injection with { Type = injection.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated) };
+                    if (!injections.Contains(injection))
+                    {
+                        continue;
+                    }
+                }
+
+                if (!uncreatable.Contains(injection)
+                    && !(dependency.IsResolved && cyclicOverrides.CanCreate(graph, dependency.Source)))
+                {
+                    uncreatable.Add(injection);
+                }
+            }
+        }
+
+        if (uncreatable.Count == 0)
+        {
+            return;
+        }
+
+        // The nodes of a component share its markers, so they share the markers that remain too.
+        var creatableMarkersMap = new Dictionary<Dictionary<Injection, DependencyNode>, Dictionary<Injection, DependencyNode>>();
+        foreach (var bindingId in cyclicOverrides.Markers.Keys.ToList())
+        {
+            var markers = cyclicOverrides.Markers[bindingId];
+            if (!creatableMarkersMap.TryGetValue(markers, out var creatableMarkers))
+            {
+                creatableMarkers = markers.Keys.Any(uncreatable.Contains)
+                    ? markers.Where(i => !uncreatable.Contains(i.Key)).ToDictionary(i => i.Key, i => i.Value)
+                    : markers;
+                creatableMarkersMap.Add(markers, creatableMarkers);
+            }
+
+            if (creatableMarkers.Count == 0)
+            {
+                cyclicOverrides.Markers.Remove(bindingId);
+            }
+            else
+            {
+                cyclicOverrides.Markers[bindingId] = creatableMarkers;
+            }
+        }
     }
 
     // A node is rewritten for each set of the values overridden on the paths to it. A node reached both under a lambda
