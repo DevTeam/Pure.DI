@@ -1,6 +1,13 @@
 name: Publish NuGet packages
 
 on:
+  # Pushing a version tag such as 2.5.8 or 2.5.8-preview.1 builds and publishes the packages.
+  # These filters only preselect tags; the "release" job validates the exact version format.
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
+  # A manual run rebuilds an existing tag and publishes only when asked.
   workflow_dispatch:
     inputs:
       tag:
@@ -26,6 +33,7 @@ jobs:
     outputs:
       version: ${{ steps.release.outputs.version }}
       commit: ${{ steps.release.outputs.commit }}
+      publish: ${{ steps.release.outputs.publish }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,8 +43,8 @@ jobs:
         id: release
         shell: pwsh
         env:
-          RELEASE_TAG: ${{ inputs.tag }}
-          PUBLISH_PACKAGES: ${{ inputs.publish }}
+          RELEASE_TAG: ${{ github.event_name == 'push' && github.ref_name || inputs.tag }}
+          PUBLISH_PACKAGES: ${{ github.event_name == 'push' || inputs.publish }}
         run: |
           $ErrorActionPreference = 'Stop'
           $version = $env:RELEASE_TAG
@@ -50,6 +58,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Tag does not point to a commit.' }
           "version=$version" >> $env:GITHUB_OUTPUT
           "commit=$commit" >> $env:GITHUB_OUTPUT
+          "publish=$($env:PUBLISH_PACKAGES -eq 'true')".ToLowerInvariant() >> $env:GITHUB_OUTPUT
           "Tag: $version`n`nCommit: $commit`n`nPublish: $env:PUBLISH_PACKAGES" >> $env:GITHUB_STEP_SUMMARY
 
   # Builds and tests the generator for each Roslyn version in parallel, as the "Pure.DI check" workflow does.
@@ -106,6 +115,7 @@ jobs:
     outputs:
       version: ${{ needs.release.outputs.version }}
       commit: ${{ needs.release.outputs.commit }}
+      publish: ${{ needs.release.outputs.publish }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -170,7 +180,7 @@ jobs:
           retention-days: 30
 
   publish:
-    if: ${{ inputs.publish }}
+    if: ${{ needs.pack.outputs.publish == 'true' }}
     needs: pack
     runs-on: ubuntu-latest
     environment: nuget

@@ -2745,7 +2745,9 @@ or to run benchmarks:
 
 Create and push a version tag, such as `2.5.8` or `2.5.8-preview.1`, pointing to the release commit. Use canonical SemVer without a `v` prefix or build metadata. The tagged commit must contain the release build changes described here; old tags are not upgraded by the workflow.
 
-Open **Actions → Publish NuGet packages → Run workflow** on the default branch. Enter the existing tag in **tag**. Leave **publish** unchecked to build and download packages without publishing, or check it to publish to NuGet.org. Pushing a tag or creating a GitHub release does not trigger publication.
+Pushing such a tag starts **Publish NuGet packages**, which builds, tests and publishes the packages to NuGet.org. Tags that are not canonical versions do not start it or fail its first job, and creating a GitHub release from an existing tag does not start it either.
+
+To build an existing tag without publishing it, or to publish it again, open **Actions → Publish NuGet packages → Run workflow** on the default branch. Enter the existing tag in **tag**. Leave **publish** unchecked to build and download packages without publishing, or check it to publish to NuGet.org.
 
 The workflow checks out the tag's resolved commit, runs `pack` (including tests and compatibility checks), builds and smoke-tests templates against the local generator package, and smoke-tests the agent installer. All five packages (`Pure.DI`, `Pure.DI.MS`, `Pure.DI.Abstractions`, `Pure.DI.Agent`, and `Pure.DI.Templates`) use the tag version. Package IDs and versions are validated from their nuspec files. The run summary records the commit and package SHA256 hashes.
 
@@ -2755,9 +2757,9 @@ Publication is a separate job that downloads the same artifacts without rebuildi
 
 Before the first publication:
 
-1. Create the GitHub environment **nuget**. Set environment secret **NUGET_USER** to the NuGet.org profile name (not an email address). Restrict deployment to your default branch; add required reviewers only if you want a separate approval step.
+1. Create the GitHub environment **nuget**. Set environment secret **NUGET_USER** to the NuGet.org profile name (not an email address). Restrict deployment to your default branch and to version tags (tag pattern `*.*.*`), because a tag push deploys from the tag; add required reviewers only if you want a separate approval step before a tag is published.
 2. On NuGet.org, create a [Trusted Publishing policy](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) for repository owner **DevTeam**, repository **Pure.DI**, workflow file **packages.yml**, and environment **nuget**. Select the package owner and scopes covering all five exact package IDs, including permission to create `Pure.DI.Agent` if it has not been published yet.
-3. Merge the workflow and build changes into the default branch before creating the release tag. Run once with **publish** unchecked to inspect the artifacts, then run with **publish** checked when ready. A new run rebuilds; rerunning only a failed publication job reuses its original artifacts.
+3. Merge the workflow and build changes into the default branch before creating the release tag. Pushing the tag publishes as soon as the build succeeds. To inspect the artifacts first, add required reviewers to the **nuget** environment: the publication job then waits for approval while **nuget-packages** is already downloadable. A new run rebuilds; rerunning only a failed publication job reuses its original artifacts.
 
 `NuGet/login@v1` obtains a short-lived key using GitHub OIDC just before publication. No long-lived NuGet API key is required. Build-only runs do not require the NuGet environment or secret.
 
