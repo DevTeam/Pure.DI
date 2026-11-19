@@ -2664,7 +2664,7 @@ alt="DotNext Pure.DI" width="640" border="10"/></a>
 <table>
 <tr>
 <td width="33%" valign="top" align="center">
-  <img src="https://raw.githubusercontent.com/DevTeam/Immutype/master/Docs/Images/icon.png" width="72" height="72" alt="Immutype logo">
+  <img src="https://raw.githubusercontent.com/DevTeam/Immutype/febed92edaa05dfe195c37c27a317a3dc996e15c/Docs/Images/icon.png" width="72" height="72" alt="Immutype logo">
   <h3><a href="https://github.com/DevTeam/Immutype">Immutype</a></h3>
   <p align="left">Generates immutable update methods for benchmark data in the build tool.</p>
   <p><a href="https://www.nuget.org/packages/Immutype">NuGet</a></p>
