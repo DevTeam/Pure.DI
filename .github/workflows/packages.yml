@@ -53,30 +53,38 @@ jobs:
           $publish = $env:PUBLISH_PACKAGES -eq 'true'
           # Canonical SemVer without a v prefix or build metadata.
           if ($version -cnotmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?$') {
-            throw 'Version must be canonical, such as 2.5.8 or 2.5.8-preview.1.'
+            throw "Version must be canonical, such as 2.5.8 or 2.5.8-preview.1, but it is '$version'."
           }
-          # Exit code 2 means that the remote has no such tag.
-          git ls-remote --exit-code --tags origin "refs/tags/${version}" | Out-Null
-          $tagStatus = $LASTEXITCODE
-          # The runner ends a pwsh step with "exit $LASTEXITCODE", so a missing tag must not fail it.
-          $global:LASTEXITCODE = 0
-          if ($tagStatus -eq 0) {
-            git fetch --no-tags origin "refs/tags/${version}:refs/tags/${version}"
-            if ($LASTEXITCODE -ne 0) { throw 'Version tag could not be fetched.' }
-            $commit = git rev-parse --verify "refs/tags/${version}^{commit}"
-            if ($LASTEXITCODE -ne 0) { throw 'Tag does not point to a commit.' }
+          # actions/checkout already has the tag that started a tag push run,
+          # and fetching it again can fail with "would clobber existing tag".
+          $commit = git rev-parse --verify --quiet "refs/tags/${version}^{commit}"
+          if ($LASTEXITCODE -eq 0) {
             $source = "tag $version"
           }
-          elseif ($tagStatus -eq 2 -and -not $publish) {
-            $commit = $env:GITHUB_SHA
-            $source = "branch $env:GITHUB_REF_NAME (tag $version does not exist)"
-          }
-          elseif ($tagStatus -eq 2) {
-            throw "Tag $version was not found. Publishing requires an existing version tag; push the tag to build and publish it."
-          }
           else {
-            throw 'Remote tags could not be listed.'
+            # Exit code 2 means that the remote has no such tag.
+            git ls-remote --exit-code --tags origin "refs/tags/${version}" | Out-Null
+            $tagStatus = $LASTEXITCODE
+            if ($tagStatus -eq 0) {
+              git fetch --no-tags origin "+refs/tags/${version}:refs/tags/${version}"
+              if ($LASTEXITCODE -ne 0) { throw 'Version tag could not be fetched.' }
+              $commit = git rev-parse --verify "refs/tags/${version}^{commit}"
+              if ($LASTEXITCODE -ne 0) { throw 'Tag does not point to a commit.' }
+              $source = "tag $version"
+            }
+            elseif ($tagStatus -eq 2 -and -not $publish) {
+              $commit = $env:GITHUB_SHA
+              $source = "branch $env:GITHUB_REF_NAME (tag $version does not exist)"
+            }
+            elseif ($tagStatus -eq 2) {
+              throw "Tag $version was not found. Publishing requires an existing version tag; push the tag to build and publish it."
+            }
+            else {
+              throw 'Remote tags could not be listed.'
+            }
           }
+          # The runner ends a pwsh step with "exit $LASTEXITCODE", so a missing tag must not fail it.
+          $global:LASTEXITCODE = 0
           "version=$version" >> $env:GITHUB_OUTPUT
           "commit=$commit" >> $env:GITHUB_OUTPUT
           "publish=$($publish.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
