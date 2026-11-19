@@ -58,6 +58,8 @@ jobs:
           # Exit code 2 means that the remote has no such tag.
           git ls-remote --exit-code --tags origin "refs/tags/${version}" | Out-Null
           $tagStatus = $LASTEXITCODE
+          # The runner ends a pwsh step with "exit $LASTEXITCODE", so a missing tag must not fail it.
+          $global:LASTEXITCODE = 0
           if ($tagStatus -eq 0) {
             git fetch --no-tags origin "refs/tags/${version}:refs/tags/${version}"
             if ($LASTEXITCODE -ne 0) { throw 'Version tag could not be fetched.' }
