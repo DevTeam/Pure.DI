@@ -2747,7 +2747,7 @@ Create and push a version tag, such as `2.5.8` or `2.5.8-preview.1`, pointing to
 
 Pushing such a tag starts **Publish NuGet packages**, which builds, tests and publishes the packages to NuGet.org. Tags that are not canonical versions do not start it or fail its first job, and creating a GitHub release from an existing tag does not start it either.
 
-To build an existing tag without publishing it, or to publish it again, open **Actions → Publish NuGet packages → Run workflow** on the default branch. Enter the existing tag in **tag**. Leave **publish** unchecked to build and download packages without publishing, or check it to publish to NuGet.org.
+To build packages without publishing them, open **Actions → Publish NuGet packages → Run workflow**, select a branch, enter the version in **tag** and leave **publish** unchecked. If the version's tag exists, the workflow builds the tagged commit; otherwise it builds the selected branch with that version, so you can check a release before tagging it. To publish an existing tag again, run the workflow with **publish** checked; publication always requires the tag.
 
 The workflow checks out the tag's resolved commit, runs `pack` (including tests and compatibility checks), builds and smoke-tests templates against the local generator package, and smoke-tests the agent installer. All five packages (`Pure.DI`, `Pure.DI.MS`, `Pure.DI.Abstractions`, `Pure.DI.Agent`, and `Pure.DI.Templates`) use the tag version. Package IDs and versions are validated from their nuspec files. The run summary records the commit and package SHA256 hashes.
 

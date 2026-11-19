@@ -7,11 +7,12 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
       - '[0-9]+.[0-9]+.[0-9]+-*'
-  # A manual run rebuilds an existing tag and publishes only when asked.
+  # A manual run builds the version's tag, or the selected branch when the tag does not exist yet,
+  # and publishes only when asked. Publishing requires an existing tag.
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing version tag (2.5.8 or 2.5.8-preview.1)'
+        description: 'Version (2.5.8 or 2.5.8-preview.1); without its tag, builds the selected branch and cannot publish'
         required: true
         type: string
       publish:
@@ -27,7 +28,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Resolves the version tag to the commit that all other jobs build.
+  # Resolves the version to the commit that all other jobs build:
+  # the version tag's commit, or the selected branch's commit for a manual build without publication.
   release:
     runs-on: ubuntu-latest
     outputs:
@@ -39,7 +41,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Resolve version tag
+      - name: Resolve version
         id: release
         shell: pwsh
         env:
@@ -48,18 +50,35 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $version = $env:RELEASE_TAG
+          $publish = $env:PUBLISH_PACKAGES -eq 'true'
           # Canonical SemVer without a v prefix or build metadata.
           if ($version -cnotmatch '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?$') {
-            throw 'Tag must be a canonical version such as 2.5.8 or 2.5.8-preview.1.'
+            throw 'Version must be canonical, such as 2.5.8 or 2.5.8-preview.1.'
           }
-          git fetch --no-tags origin "refs/tags/${version}:refs/tags/${version}"
-          if ($LASTEXITCODE -ne 0) { throw 'Version tag was not found.' }
-          $commit = git rev-parse --verify "refs/tags/${version}^{commit}"
-          if ($LASTEXITCODE -ne 0) { throw 'Tag does not point to a commit.' }
+          # Exit code 2 means that the remote has no such tag.
+          git ls-remote --exit-code --tags origin "refs/tags/${version}" | Out-Null
+          $tagStatus = $LASTEXITCODE
+          if ($tagStatus -eq 0) {
+            git fetch --no-tags origin "refs/tags/${version}:refs/tags/${version}"
+            if ($LASTEXITCODE -ne 0) { throw 'Version tag could not be fetched.' }
+            $commit = git rev-parse --verify "refs/tags/${version}^{commit}"
+            if ($LASTEXITCODE -ne 0) { throw 'Tag does not point to a commit.' }
+            $source = "tag $version"
+          }
+          elseif ($tagStatus -eq 2 -and -not $publish) {
+            $commit = $env:GITHUB_SHA
+            $source = "branch $env:GITHUB_REF_NAME (tag $version does not exist)"
+          }
+          elseif ($tagStatus -eq 2) {
+            throw "Tag $version was not found. Publishing requires an existing version tag; push the tag to build and publish it."
+          }
+          else {
+            throw 'Remote tags could not be listed.'
+          }
           "version=$version" >> $env:GITHUB_OUTPUT
           "commit=$commit" >> $env:GITHUB_OUTPUT
-          "publish=$($env:PUBLISH_PACKAGES -eq 'true')".ToLowerInvariant() >> $env:GITHUB_OUTPUT
-          "Tag: $version`n`nCommit: $commit`n`nPublish: $env:PUBLISH_PACKAGES" >> $env:GITHUB_STEP_SUMMARY
+          "publish=$($publish.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          "Version: $version`n`nSource: $source`n`nCommit: $commit`n`nPublish: $publish" >> $env:GITHUB_STEP_SUMMARY
 
   # Builds and tests the generator for each Roslyn version in parallel, as the "Pure.DI check" workflow does.
   # The versions must match Settings.CodeAnalysis in build/Core/Settings.cs:
