@@ -2659,6 +2659,31 @@ alt="DotNext Pure.DI" width="640" border="10"/></a>
 - [Dependency Injection in .NET Matrix](https://matrix.dev-team.org/?category=dependency-injection)
 - [.NET Matrix](https://github.com/DevTeam/dotnet-matrix) project.
 
+## Built with
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+  <img src="https://raw.githubusercontent.com/DevTeam/Immutype/master/Docs/Images/icon.png" width="72" height="72" alt="Immutype logo">
+  <h3><a href="https://github.com/DevTeam/Immutype">Immutype</a></h3>
+  <p align="left">Generates immutable update methods for benchmark data in the build tool.</p>
+  <p><a href="https://www.nuget.org/packages/Immutype">NuGet</a></p>
+</td>
+<td width="33%" valign="top" align="center">
+  <img src="readme/dotnet-matrix.svg" width="72" height="72" alt=".NET Matrix logo">
+  <h3><a href="https://github.com/DevTeam/dotnet-matrix">.NET Matrix</a></h3>
+  <p align="left">Compares Pure.DI with other DI libraries across features, execution time, and memory allocations.</p>
+  <p><a href="https://matrix.dev-team.org/?category=dependency-injection&amp;library=Pure.DI">Compare Pure.DI</a></p>
+</td>
+<td width="33%" valign="top" align="center">
+  <img src="https://raw.githubusercontent.com/DevTeam/dotnet-matrix/afa683e8565b16e24b26b6df277d3244c4d50672/readme/built-with/ai-client.svg" width="72" height="72" alt="AI Client logo">
+  <h3><a href="https://github.com/DevTeam/AI.Client">AI Client</a></h3>
+  <p align="left">Supports development with AI chat and MCP tools.</p>
+  <p><a href="https://ai.dev-team.org/">Website</a></p>
+</td>
+</tr>
+</table>
+
 ## Coding agents
 
 The Pure.DI project templates include compact instructions and a `pure-di` skill for Codex and Claude Code. The skill guides changes to bindings, roots, lifetimes, and generator diagnostics without loading the complete examples into every conversation.
