@@ -178,7 +178,7 @@ The [project file](/samples/UnoApp/UnoApp.csproj) uses the current single-projec
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.5.9">
+        <PackageReference Include="Pure.DI" Version="2.5.10">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

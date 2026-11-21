@@ -138,11 +138,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
-    #if NETCOREAPP3_0_OR_GREATER
-    var index = (int)(_bucketSize * (((uint)type.TypeHandle.GetHashCode()) % 1));
-    #else
     var index = (int)(_bucketSize * (((uint)RuntimeHelpers.GetHashCode(type)) % 1));
-    #endif
     ref var pair = ref _buckets[index];
     return Object.ReferenceEquals(pair.Key, type) ? pair.Value.Resolve(this) : Resolve(type, index);
   }
@@ -166,11 +162,7 @@ partial class Composition
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
-    #if NETCOREAPP3_0_OR_GREATER
-    var index = (int)(_bucketSize * (((uint)type.TypeHandle.GetHashCode()) % 1));
-    #else
     var index = (int)(_bucketSize * (((uint)RuntimeHelpers.GetHashCode(type)) % 1));
-    #endif
     ref var pair = ref _buckets[index];
     return Object.ReferenceEquals(pair.Key, type) ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
