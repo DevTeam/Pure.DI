@@ -21,18 +21,26 @@ using Interfaces = InterfaceGeneration;
 // @formatter:off
 public sealed partial class Generator
 {
-    public void Generate(
-        ParseOptions parseOptions,
-        AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
+    /// <summary>
+    /// Generates the code for the setups of a compilation snapshot.
+    /// </summary>
+    /// <returns><c>true</c> if a diagnostic was reported outside the syntax trees with setups.</returns>
+    public bool Generate(
+        CompilationSnapshot snapshot,
         in SourceProductionContext sourceProductionContext,
-        in ImmutableArray<GeneratorSyntaxContext> changes,
-        CancellationToken cancellationToken) => 
+        CancellationToken cancellationToken)
+    {
+        var diagnostic = new GeneratorDiagnostic(sourceProductionContext, snapshot.SetupTrees);
+        var compilation = snapshot.Compilation;
         Generate(
-            new GeneratorOptions(parseOptions, analyzerConfigOptionsProvider),
+            new GeneratorOptions(snapshot.ParseOptions, snapshot.AnalyzerConfigOptionsProvider),
             new ProductionContextToSourcesAdapter(sourceProductionContext),
-            new GeneratorDiagnostic(sourceProductionContext),
-            changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel)),
+            diagnostic,
+            snapshot.SetupTrees.Select(tree => new SyntaxUpdate(tree.GetRoot(cancellationToken), compilation.GetSemanticModel(tree))),
             cancellationToken);
+
+        return diagnostic.HasDiagnosticsOutsideSetups;
+    }
 
     [Conditional("DI")]
     private void Setup() => DI.Setup()

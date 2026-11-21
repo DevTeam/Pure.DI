@@ -10,6 +10,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1036:Specify analyzer banned API enforcement setting")]
 public class SourceGenerator : IIncrementalGenerator
 {
+    // The names of the pipeline steps, to check the incremental generation in tests.
+    internal const string CompilationSnapshotStep = "Pure.DI.CompilationSnapshot";
+    internal const string InterfacesStep = "Pure.DI.Interfaces";
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // ReSharper disable once InvocationIsSkipped
@@ -25,40 +29,38 @@ public class SourceGenerator : IIncrementalGenerator
             }
         });
 
-        var setupContexts = context.SyntaxProvider
-            .CreateSyntaxProvider(
-                static (node, _) => node is CompilationUnitSyntax,
-                static (syntaxContext, _) => syntaxContext)
-            .Collect();
+        // The compilation changes with every edit, so the snapshot is compared with the previous one
+        // to skip the generation after edits that cannot change the generated code, like edits of method bodies.
+        var snapshotComparer = new CompilationSnapshotComparer();
+        var snapshots = context.CompilationProvider
+            .Combine(context.ParseOptionsProvider)
+            .Combine(context.AnalyzerConfigOptionsProvider)
+            .Select(static (inputs, cancellationToken) => {
+                var ((compilation, parseOptions), config) = inputs;
+                return CompilationSnapshot.Create(compilation, parseOptions, config, cancellationToken);
+            })
+            .WithComparer(snapshotComparer)
+            .WithTrackingName(CompilationSnapshotStep);
 
-        var optionsProvider = context.AnalyzerConfigOptionsProvider
-            .Combine(context.ParseOptionsProvider);
-
-        var valuesProvider = optionsProvider
-            .Combine(context.CompilationProvider)
-            .Combine(setupContexts);
-
-        context.RegisterSourceOutput(valuesProvider, (sourceProductionContext, options) =>
-        {
-            var ((configAndParse, _), updates) = options;
-            var (config, parseOptions) = configAndParse;
-            generator.Generate(
-                parseOptions,
-                config,
+        context.RegisterSourceOutput(snapshots, (sourceProductionContext, snapshot) => {
+            var hasDiagnosticsOutsideSetups = generator.Generate(
+                snapshot,
                 sourceProductionContext,
-                updates,
                 sourceProductionContext.CancellationToken);
+
+            snapshotComparer.OnGenerated(hasDiagnosticsOutsideSetups);
         });
 
-        var interfaceUpdates = context.SyntaxProvider
+        // Each annotated class is generated separately, and its sources are added again only when they change.
+        var interfaces = context.SyntaxProvider
             .CreateSyntaxProvider(
-                static (node, _) => node is ClassDeclarationSyntax classSyntax
+                (node, _) => node is ClassDeclarationSyntax classSyntax
                     && (classSyntax.AttributeLists.Count > 0
-                        || classSyntax.Members.Any(member => member.AttributeLists.Count > 0)),
-                (syntaxContext, _) => syntaxContext)
-            .Where(syntaxContext => interfaceGenerator.HasGenerateInterfaceAttribute((ClassDeclarationSyntax)syntaxContext.Node))
-            .Collect();
+                        || classSyntax.Members.Any(member => member.AttributeLists.Count > 0))
+                    && interfaceGenerator.HasGenerateInterfaceAttribute(classSyntax),
+                interfaceGenerator.Build)
+            .WithTrackingName(InterfacesStep);
 
-        context.RegisterSourceOutput(interfaceUpdates, interfaceGenerator.Generate);
+        context.RegisterSourceOutput(interfaces, interfaceGenerator.Generate);
     }
 }

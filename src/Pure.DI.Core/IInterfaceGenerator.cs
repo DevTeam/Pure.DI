@@ -1,9 +1,13 @@
 ﻿// ReSharper disable UnusedMember.Global
 namespace Pure.DI;
 
+using InterfaceGeneration;
+
 public interface IInterfaceGenerator
 {
     bool HasGenerateInterfaceAttribute(ClassDeclarationSyntax classSyntax);
 
-    void Generate(SourceProductionContext context, ImmutableArray<GeneratorSyntaxContext> syntaxContexts);
+    InterfaceGenerationOutput Build(GeneratorSyntaxContext syntaxContext, CancellationToken cancellationToken);
+
+    void Generate(SourceProductionContext context, InterfaceGenerationOutput output);
 }

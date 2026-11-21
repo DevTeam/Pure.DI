@@ -18,39 +18,30 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
                 .SelectMany(list => list.Attributes))
         .Any(attribute => IsGenerateInterfaceAttributeName(attribute.Name.ToString()));
 
-    public void Generate(SourceProductionContext context, ImmutableArray<GeneratorSyntaxContext> syntaxContexts)
+    // Roslyn runs this for every annotated class after each change of the compilation,
+    // and compares the result with the previous one, so the sources are added again only when they change.
+    public InterfaceGenerationOutput Build(GeneratorSyntaxContext syntaxContext, CancellationToken cancellationToken)
     {
-        if (syntaxContexts.IsDefaultOrEmpty)
+        if (syntaxContext.Node is not ClassDeclarationSyntax classSyntax)
         {
-            return;
+            return InterfaceGenerationOutput.Empty;
         }
 
-        foreach (var syntaxContext in syntaxContexts)
+        if (syntaxContext.SemanticModel.GetDeclaredSymbol(classSyntax, cancellationToken) is not INamedTypeSymbol typeSymbol)
         {
-            if (syntaxContext.Node is not ClassDeclarationSyntax classSyntax)
-            {
-                continue;
-            }
+            return InterfaceGenerationOutput.Empty;
+        }
 
-            if (syntaxContext.SemanticModel.GetDeclaredSymbol(classSyntax) is not INamedTypeSymbol typeSymbol)
-            {
-                continue;
-            }
+        var generatedInterfacesResult = interfaceBuilder.BuildInterfacesFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
+        var warnings = generatedInterfacesResult.Warnings
+            .Select(warning => new InterfaceGenerationWarning(warning.Id, warning.Message, warning.MessageKey, warning.Location))
+            .ToImmutableArray();
 
-            var generatedInterfacesResult = interfaceBuilder.BuildInterfacesFor(syntaxContext.SemanticModel, typeSymbol, classSyntax);
-            foreach (var warning in generatedInterfacesResult.Warnings)
-            {
-                ReportWarning(context, warning);
-            }
-
-            var generatedInterfaces = generatedInterfacesResult.Sources;
-            if (generatedInterfaces.IsDefaultOrEmpty)
-            {
-                continue;
-            }
-
+        var sources = ImmutableArray.CreateBuilder<InterfaceGenerationSource>();
+        if (!generatedInterfacesResult.Sources.IsDefaultOrEmpty)
+        {
             // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var generatedInterface in generatedInterfaces)
+            foreach (var generatedInterface in generatedInterfacesResult.Sources)
             {
                 if (generatedInterface.Code.Count == 0)
                 {
@@ -58,10 +49,27 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
                 }
 
                 using var rent = generatedInterface.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
-                context.AddSource(
+                sources.Add(new InterfaceGenerationSource(
                     GetHintName(typeSymbol, generatedInterface.NamespaceName, generatedInterface.InterfaceName),
-                    SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
+                    Encoding.UTF8.GetString(buffer, 0, size)));
             }
+        }
+
+        return sources.Count == 0 && warnings.IsEmpty
+            ? InterfaceGenerationOutput.Empty
+            : new InterfaceGenerationOutput(sources.ToImmutable(), warnings);
+    }
+
+    public void Generate(SourceProductionContext context, InterfaceGenerationOutput output)
+    {
+        foreach (var warning in output.Warnings)
+        {
+            ReportWarning(context, warning);
+        }
+
+        foreach (var source in output.Sources)
+        {
+            context.AddSource(source.HintName, SourceText.From(source.Code, Encoding.UTF8, SourceHashAlgorithm.Sha1));
         }
     }
 
@@ -109,7 +117,7 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
             .Replace(' ', '_')
             .Replace(':', '_');
 
-    private static void ReportWarning(SourceProductionContext context, GeneratedInterfaceWarning warning)
+    private static void ReportWarning(SourceProductionContext context, InterfaceGenerationWarning warning)
     {
         var descriptor = new DiagnosticDescriptor(
             warning.Id,

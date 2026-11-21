@@ -341,7 +341,7 @@ public static class TestExtensions
             .AddReferences(References.Value);
 
     // Shared by all tests: Roslyn reads and binds the metadata of a reference once per reference instance.
-    private static readonly Lazy<MetadataReference[]> References = new(() =>
+    internal static readonly Lazy<MetadataReference[]> References = new(() =>
             [
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("netstandard.dll")),
