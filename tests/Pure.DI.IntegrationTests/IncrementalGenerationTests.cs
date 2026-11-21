@@ -15,7 +15,7 @@ public class IncrementalGenerationTests
     private const string ProgramFile = "Program.cs";
     private const string InterfacesFile = "Interfaces.cs";
 
-    private static readonly CSharpParseOptions ParseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp12);
+    private static readonly CSharpParseOptions ParseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp10);
 
     private static readonly Dictionary<string, string> Sources = new()
     {
