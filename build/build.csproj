@@ -1,13 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
         <TargetFramework>$(BaseTargetFramework)</TargetFramework>
+        <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <OutputType>Exe</OutputType>
         <RootNamespace>Build</RootNamespace>
         <ApplicationIcon>../docs/icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="CSharpInteractive" Version="1.2.3" />
         <PackageReference Include="JetBrains.dotTrace.CommandLineTools.windows-x64" Version="2026.3.0.1" GeneratePathProperty="true" PrivateAssets="all" />
         <PackageReference Include="Pure.DI" Version="$(InternalVersion)">

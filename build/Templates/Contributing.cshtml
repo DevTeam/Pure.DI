@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.Html
+@model Build.Core.ReadmeCommand[]
 ## How to contribute to Pure.DI
 
 Thank you for your interest in contributing to the Pure.DI project! If you are planning a big change or feature, please open an issue first. That way, we can coordinate and understand whether the change fits current priorities and whether we can commit to reviewing and merging it within a reasonable timeframe. We do not want you to spend your valuable time on something that may not align with the direction of Pure.DI.
@@ -43,7 +45,10 @@ The build logic is a regular [.NET console application](/build). You can use [bu
 
 | Commands | Description |
 |----------|-------------|
-$(commands)
+@foreach (var command in Model)
+{
+@:| @(new HtmlString(command.Aliases)) | @(new HtmlString(command.Description)) |
+}
 
 For example, to build and test the source code generator: 
 
@@ -77,7 +82,7 @@ Before the first publication:
 2. On NuGet.org, create a [Trusted Publishing policy](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) for repository owner **DevTeam**, repository **Pure.DI**, workflow file **packages.yml**, and environment **nuget**. Select the package owner and scopes covering all five exact package IDs, including permission to create `Pure.DI.Agent` if it has not been published yet.
 3. Merge the workflow and build changes into the default branch before creating the release tag. Pushing the tag publishes as soon as the build succeeds. To inspect the artifacts first, add required reviewers to the **nuget** environment: the publication job then waits for approval while **nuget-packages** is already downloadable. A new run rebuilds; rerunning only a failed publication job reuses its original artifacts.
 
-`NuGet/login@v1` obtains a short-lived key using GitHub OIDC just before publication. No long-lived NuGet API key is required. Build-only runs do not require the NuGet environment or secret.
+`NuGet/login@@v1` obtains a short-lived key using GitHub OIDC just before publication. No long-lived NuGet API key is required. Build-only runs do not require the NuGet environment or secret.
 
 Locally, use `dotnet run --project ./build -- "-p:version=2.5.8" pack`, then `dotnet run --project ./build -- "-p:version=2.5.8" "-p:templatePackageSource=<absolute path to .packages>" template` to build all five packages without publishing. Do not supply `NuGetKey` when building templates only.
 

@@ -1,0 +1,29 @@
+@using Microsoft.AspNetCore.Html
+@model Build.Core.ReadmeModel
+@(new HtmlString(Model.Header))@(new HtmlString(Model.Introduction))@(new HtmlString(Model.QuickStart))
+## Examples
+
+@foreach (var group in Model.Groups)
+{
+@:### @(new HtmlString(group.Title))
+    if (group.Description is { } description)
+    {
+<text>
+@(new HtmlString(description))
+
+</text>
+    }
+    foreach (var example in group.Examples)
+    {
+@:- [@(new HtmlString(example.Title))](readme/@(new HtmlString(example.File)))
+    }
+}
+@(new HtmlString(Model.Footer))
+## Coding agents
+
+The Pure.DI project templates include compact instructions and a `pure-di` skill for Codex and Claude Code. The skill guides changes to bindings, roots, lifetimes, and generator diagnostics without loading the complete examples into every conversation.
+
+For an existing project, after [Pure.DI.Agent](https://www.nuget.org/packages/Pure.DI.Agent) is published, install the .NET tool and run `dotnet puredi-agent init` at the repository root after adding a `Pure.DI` package reference. The command preserves existing project instructions, can preview changes with `--dry-run`, and can remove its own guidance with `dotnet puredi-agent remove`.
+
+To install the published tool: `dotnet tool install --global Pure.DI.Agent`. Restart an already-open agent session after adding project instructions so it discovers them.
+@{ WriteLiteral(Model.Contributing); }

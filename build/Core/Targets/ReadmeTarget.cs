@@ -11,17 +11,11 @@ class ReadmeTarget(
     Settings settings,
     RootCommand rootCommand,
     ReadmeTools readmeTools,
+    RazorTemplateEngine templateEngine,
     [Tag(typeof(CreateExamplesTarget))] ITarget<IReadOnlyCollection<ExampleGroup>> createExamplesTarget)
     : IInitializable, ITarget<int>
 {
     private const string ReadmeDir = "readme";
-    private const string CommonReadmeFile = "README.md";
-    private const string HeaderTemplateFile = "HeaderTemplate.md";
-    private const string ReadmeTemplateFile = "ReadmeTemplate.md";
-    private const string FooterTemplateFile = "FooterTemplate.md";
-    private const string ContributingTemplateFile = "ContributingTemplate.md";
-    private const string ReadmeFile = "README.md";
-    private const string ContributingFile = "CONTRIBUTING.md";
     private static readonly string Salt = $"{DateTime.Now.DayOfYear}d";
     private static readonly Dictionary<string, string> GroupDescriptions = new(StringComparer.Ordinal)
     {
@@ -41,285 +35,168 @@ class ReadmeTarget(
     };
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
-        this, $"Generate {CommonReadmeFile}", "readme", "r");
+        this, "Generate README.md", "readme", "r");
 
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
-
-        // Delete generated files
-        var generatedFiles = Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator");
-        if (Directory.Exists(generatedFiles))
+        var readmeDirectory = Path.Combine(solutionDirectory, ReadmeDir);
+        var generatedCodeDirectory = Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator");
+        if (Directory.Exists(generatedCodeDirectory))
         {
-            Directory.Delete(generatedFiles, true);
+            Directory.Delete(generatedCodeDirectory, true);
         }
 
         var examples = await createExamplesTarget.RunAsync(cancellationToken);
-
-        await using var readmeWriter = File.CreateText(ReadmeFile);
-
-        await AddContentAsync(HeaderTemplateFile, readmeWriter);
-
-        await AddContentAsync(CommonReadmeFile, readmeWriter, "docs");
-
-        await AddContentAsync(ReadmeTemplateFile, readmeWriter);
-
-        await GenerateExamplesAsync(examples, readmeWriter, logsDirectory);
-
-        await AddContentAsync(FooterTemplateFile, readmeWriter);
-
-        await AddAgentGuidanceAsync(readmeWriter);
-
-        await AddContributingAsync(readmeWriter);
-
-        await readmeWriter.FlushAsync(cancellationToken);
-
-        await using var contributingWriter = File.CreateText(ContributingFile);
-
-        await AddContributingAsync(contributingWriter);
-
-        await contributingWriter.FlushAsync(cancellationToken);
-
-        return 0;
-    }
-
-    private static async Task AddAgentGuidanceAsync(StreamWriter writer)
-    {
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("## Coding agents");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("The Pure.DI project templates include compact instructions and a `pure-di` skill for Codex and Claude Code. The skill guides changes to bindings, roots, lifetimes, and generator diagnostics without loading the complete examples into every conversation.");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("For an existing project, after [Pure.DI.Agent](https://www.nuget.org/packages/Pure.DI.Agent) is published, install the .NET tool and run `dotnet puredi-agent init` at the repository root after adding a `Pure.DI` package reference. The command preserves existing project instructions, can preview changes with `--dry-run`, and can remove its own guidance with `dotnet puredi-agent remove`.");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("To install the published tool: `dotnet tool install --global Pure.DI.Agent`. Restart an already-open agent session after adding project instructions so it discovers them.");
-    }
-
-    private async Task AddContributingAsync(StreamWriter writer)
-    {
-        await AddContentAsync(ContributingTemplateFile, writer, onLine: async line => {
-            switch (line.ToLowerInvariant().Trim())
-            {
-                case "$(commands)":
-                    foreach (var command in rootCommand.Subcommands.OrderBy(i => i.Name))
-                    {
-                        await writer.WriteLineAsync($"| {string.Join(", ", command.Aliases.OrderBy(i => i.Length).ThenBy(i => i))} | {command.Description} |");
-                    }
-
-                    return true;
-
-                default:
-                    return false;
-            }
-        });
-    }
-
-    private static async Task AddContentAsync(string sourceFile, TextWriter writer, string readmeDir = ReadmeDir, Func<string, Task<bool>>? onLine = null)
-    {
-        Info($"Adding a content from \"{sourceFile}\"");
-        foreach (var line in await File.ReadAllLinesAsync(Path.Combine(readmeDir, sourceFile)))
-        {
-            if (onLine == null || !await onLine(line))
-            {
-                await writer.WriteLineAsync(line);
-            }
-        }
-    }
-
-    private async Task GenerateExamplesAsync(IReadOnlyCollection<ExampleGroup> examples, TextWriter writer, string logsDirectory)
-    {
-        await writer.WriteLineAsync();
-        var packageVersion = settings.CurrentVersion.ToString();
-        foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
-        {
-            if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (readmeFile.EndsWith("PageTemplate.md"))
-                {
-                    var content = await File.ReadAllTextAsync(readmeFile);
-                    content = content
-                        .Replace("$(version)", packageVersion)
-                        .Replace("$(ms.version)", packageVersion)
-                        .Replace("$(targetFrameworkVersion)", $"net{settings.BaseDotNetFrameworkVersion}");
-                    await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
-                }
-
-                continue;
-            }
-
-            File.Delete(readmeFile);
-        }
-
-        await writer.WriteLineAsync("## Examples");
-        await writer.WriteLineAsync();
-
-        var exampleFilesByDescription = examples
+        var filesByDescription = examples
             .SelectMany(group => group.Examples)
             .Select(example => example[CreateExamplesTarget.DescriptionKey])
             .Distinct()
             .ToDictionary(description => description, description => $"{CreateExampleFileName(description)}.md");
 
-        foreach (var (groupName, exampleItems) in examples)
+        var groups = new List<ReadmeGroup>();
+        var pages = new Dictionary<string, ExamplePage>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (groupName, items) in examples)
         {
-            var groupTitle = new string(readmeTools.FormatTitle(groupName).ToArray());
-            Info($"Processing examples group \"{groupTitle}\"");
-            await writer.WriteLineAsync($"### {groupTitle}");
-            if (GroupDescriptions.TryGetValue(groupName, out var groupDescription))
-            {
-                await writer.WriteLineAsync();
-                await writer.WriteLineAsync(groupDescription);
-                await writer.WriteLineAsync();
-            }
-
-            foreach (var example in exampleItems)
+            var title = new string(readmeTools.FormatTitle(groupName).ToArray());
+            var links = new List<ReadmeLink>();
+            foreach (var example in items)
             {
                 var description = example[CreateExamplesTarget.DescriptionKey];
-                var code = example[CreateExamplesTarget.BodyKey];
-                var file = CreateExampleFileName(description);
-                var exampleFile = $"{file}.md";
-                await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, exampleFile));
-                WriteLine(description, Color.Details);
-                await writer.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
-                await examplesWriter.WriteLineAsync($"#### {description}");
-                await examplesWriter.WriteLineAsync();
-                var header = example[CreateExamplesTarget.HeaderKey];
-                if (!string.IsNullOrWhiteSpace(header))
-                {
-                    await examplesWriter.WriteLineAsync(header);
-                    await examplesWriter.WriteLineAsync();
-                }
+                var file = filesByDescription[description];
+                var link = new ReadmeLink(description, file);
+                links.Add(link);
+                pages[file] = await CreateExamplePageAsync(example, link, filesByDescription, logsDirectory, generatedCodeDirectory, cancellationToken);
+            }
 
-                await examplesWriter.WriteLineAsync();
-                await examplesWriter.WriteLineAsync("```c#");
-                await examplesWriter.WriteLineAsync(code);
-                await examplesWriter.WriteLineAsync("```");
-                await examplesWriter.WriteLineAsync();
-                await examplesWriter.WriteLineAsync("<details>");
-                await examplesWriter.WriteLineAsync("<summary>Running this code sample locally</summary>");
-                await examplesWriter.WriteLineAsync();
-                var dotNetFrameworkVersion = example[CreateExamplesTarget.DotNetFrameworkVersionKey];
-                if (string.IsNullOrWhiteSpace(dotNetFrameworkVersion))
-                {
-                    dotNetFrameworkVersion = settings.BaseDotNetFrameworkVersion;
-                }
+            groups.Add(new ReadmeGroup(title, GroupDescriptions.GetValueOrDefault(groupName), links));
+        }
 
-                await examplesWriter.WriteLineAsync($"- Make sure you have the [.NET SDK {dotNetFrameworkVersion}](https://dotnet.microsoft.com/en-us/download/dotnet/{dotNetFrameworkVersion}) or later installed");
-                await examplesWriter.WriteLineAsync("```bash");
-                await examplesWriter.WriteLineAsync("dotnet --list-sdk");
-                await examplesWriter.WriteLineAsync("```");
-                await examplesWriter.WriteLineAsync($"- Create a net{dotNetFrameworkVersion} (or later) console application");
-                await examplesWriter.WriteLineAsync("```bash");
-                await examplesWriter.WriteLineAsync("dotnet new console -n Sample");
-                await examplesWriter.WriteLineAsync("```");
-                var references = example[CreateExamplesTarget.ReferencesKey].Split(";", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                var refs = references.Length > 0 ? "s" : "";
-                var art = references.Length > 0 ? "" : "a ";
-                await examplesWriter.WriteLineAsync($"- Add {art}reference{refs} to the NuGet package{refs}");
-                await examplesWriter.WriteLineAsync("  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)");
-                foreach (var reference in references)
-                {
-                    await examplesWriter.WriteLineAsync($"  - [{reference}](https://www.nuget.org/packages/{reference})");
-                }
-                await examplesWriter.WriteLineAsync("```bash");
-                await examplesWriter.WriteLineAsync("dotnet add package Pure.DI");
-                foreach (var reference in references)
-                {
-                    await examplesWriter.WriteLineAsync($"dotnet add package {reference}");
-                }
-                await examplesWriter.WriteLineAsync("```");
-                await examplesWriter.WriteLineAsync("- Copy the example code into the _Program.cs_ file");
-                await examplesWriter.WriteLineAsync();
-                await examplesWriter.WriteLineAsync("You are ready to run the example 🚀");
-                await examplesWriter.WriteLineAsync("```bash");
-                await examplesWriter.WriteLineAsync("dotnet run");
-                await examplesWriter.WriteLineAsync("```");
-                await examplesWriter.WriteLineAsync();
-                await examplesWriter.WriteLineAsync("</details>");
-                await examplesWriter.WriteLineAsync();
+        var commandsModel = rootCommand.Subcommands
+            .OrderBy(command => command.Name)
+            .Select(command => new ReadmeCommand(
+                string.Join(", ", command.Aliases.OrderBy(alias => alias.Length).ThenBy(alias => alias)),
+                command.Description))
+            .ToArray();
+        var contributing = await templateEngine.RenderAsync("/Templates/Contributing.cshtml", commandsModel, cancellationToken);
+        var readme = new ReadmeModel(
+            await ReadMarkdownAsync(Path.Combine(readmeDirectory, "HeaderTemplate.md"), cancellationToken),
+            await ReadMarkdownAsync(Path.Combine(solutionDirectory, "docs", "README.md"), cancellationToken),
+            await ReadMarkdownAsync(Path.Combine(readmeDirectory, "ReadmeTemplate.md"), cancellationToken),
+            groups,
+            await ReadMarkdownAsync(Path.Combine(readmeDirectory, "FooterTemplate.md"), cancellationToken),
+            contributing);
 
-                var footer = example[CreateExamplesTarget.FooterKey];
-                if (!string.IsNullOrWhiteSpace(footer))
-                {
-                    await examplesWriter.WriteLineAsync(footer);
-                    await examplesWriter.WriteLineAsync();
-                }
+        var output = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            [Path.Combine(solutionDirectory, "README.md")] =
+                await templateEngine.RenderAsync("/Templates/Readme.cshtml", readme, cancellationToken),
+            [Path.Combine(solutionDirectory, "CONTRIBUTING.md")] = contributing
+        };
+        foreach (var (file, page) in pages)
+        {
+            output[Path.Combine(readmeDirectory, file)] =
+                await templateEngine.RenderAsync("/Templates/Example.cshtml", page, cancellationToken);
+        }
 
-                var exampleName = Path.GetFileNameWithoutExtension(example[CreateExamplesTarget.SourceKey]);
+        const string pageTemplateSuffix = "PageTemplate.md";
+        var packageVersion = settings.CurrentVersion.ToString();
+        foreach (var path in Directory.EnumerateFiles(readmeDirectory, $"*{pageTemplateSuffix}"))
+        {
+            var file = Path.GetFileName(path)[..^pageTemplateSuffix.Length] + ".md";
+            var content = await File.ReadAllTextAsync(path, cancellationToken);
+            output[Path.Combine(readmeDirectory, file)] = content
+                .Replace("$(version)", packageVersion)
+                .Replace("$(ms.version)", packageVersion)
+                .Replace("$(targetFrameworkVersion)", $"net{settings.BaseDotNetFrameworkVersion}");
+        }
 
-                await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
-                await examplesWriter.WriteLineAsync();
+        foreach (var (path, content) in output)
+        {
+            await File.WriteAllTextAsync(path, content, cancellationToken);
+            Info($"Generated: {path}");
+        }
 
-                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
-                await examplesWriter.WriteLineAsync();
-
-                await AddSeeAlso(example, exampleFilesByDescription, examplesWriter);
-
-                await examplesWriter.FlushAsync();
+        foreach (var path in Directory.EnumerateFiles(readmeDirectory, "*.md"))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!path.EndsWith("Template.md", StringComparison.OrdinalIgnoreCase) && !output.ContainsKey(path))
+            {
+                File.Delete(path);
             }
         }
+
+        return 0;
     }
 
-    private static async Task AddSeeAlso(Example example, Dictionary<string, string> exampleFilesByDescription, TextWriter writer)
-    {
-        var references = example[CreateExamplesTarget.SeeAlsoKey]
-            .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (references.Length == 0)
-        {
-            return;
-        }
+    private static async Task<string> ReadMarkdownAsync(string path, CancellationToken cancellationToken) =>
+        string.Concat((await File.ReadAllLinesAsync(path, cancellationToken)).Select(line => line + Environment.NewLine));
 
-        await writer.WriteLineAsync("See also:");
-        await writer.WriteLineAsync();
-        foreach (var reference in references)
+    private async Task<ExamplePage> CreateExamplePageAsync(
+        Example example,
+        ReadmeLink link,
+        IReadOnlyDictionary<string, string> filesByDescription,
+        string logsDirectory,
+        string generatedCodeDirectory,
+        CancellationToken cancellationToken)
+    {
+        var exampleName = Path.GetFileNameWithoutExtension(example[CreateExamplesTarget.SourceKey]);
+        var frameworkVersion = example[CreateExamplesTarget.DotNetFrameworkVersionKey];
+        var relatedExamples = new List<ReadmeLink>();
+        foreach (var title in example[CreateExamplesTarget.SeeAlsoKey]
+                     .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            if (exampleFilesByDescription.TryGetValue(reference, out var referenceFile))
+            if (filesByDescription.TryGetValue(title, out var file))
             {
-                await writer.WriteLineAsync($"- [{reference}]({referenceFile})");
+                relatedExamples.Add(new ReadmeLink(title, file));
             }
             else
             {
-                Warning($"The example \"{example[CreateExamplesTarget.DescriptionKey]}\" has an unknown \"see also\" reference \"{reference}\"");
+                Warning($"The example \"{link.Title}\" has an unknown \"see also\" reference \"{title}\"");
             }
         }
 
-        await writer.WriteLineAsync();
+        return new ExamplePage(
+            link.Title,
+            example[CreateExamplesTarget.HeaderKey],
+            example[CreateExamplesTarget.BodyKey],
+            example[CreateExamplesTarget.FooterKey],
+            string.IsNullOrWhiteSpace(frameworkVersion) ? settings.BaseDotNetFrameworkVersion : frameworkVersion,
+            example[CreateExamplesTarget.ReferencesKey].Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+            await ReadGeneratedCodeAsync(generatedCodeDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", cancellationToken),
+            await ReadClassDiagramAsync(logsDirectory, exampleName, cancellationToken),
+            relatedExamples);
     }
 
-    private static async Task AddClassDiagram(string logsDirectory, string exampleName, TextWriter writer)
+    private static async Task<string?> ReadClassDiagramAsync(string logsDirectory, string exampleName, CancellationToken cancellationToken)
     {
         var classDiagramFile = Path.Combine(logsDirectory, exampleName + ".Mermaid");
         if (!File.Exists(classDiagramFile))
         {
-            return;
+            return null;
         }
 
-        var classDiagram = await File.ReadAllTextAsync(classDiagramFile);
+        var classDiagram = await File.ReadAllTextAsync(classDiagramFile, cancellationToken);
         var trimmed = classDiagram.TrimStart();
         if (trimmed.Length == 0 || (!trimmed.StartsWith("---") && !trimmed.StartsWith("classDiagram")))
         {
-            return;
+            return null;
         }
 
-        classDiagram = classDiagram.Replace(Salt, "");
-
-        await writer.WriteLineAsync("Class diagram:");
-        await writer.WriteLineAsync();
-        await writer.WriteLineAsync("```mermaid");
-        await writer.WriteLineAsync(classDiagram);
-        await writer.WriteLineAsync("```");
+        return classDiagram.Replace(Salt, "");
     }
 
-    private static async Task AddExample(string logsDirectory, string exampleSearchPattern, TextWriter writer)
+    private static async Task<IReadOnlyList<string>> ReadGeneratedCodeAsync(
+        string generatedCodeDirectory,
+        string exampleSearchPattern,
+        CancellationToken cancellationToken)
     {
-        foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
+        var code = new List<string>();
+        foreach (var generatedCodeFile in Directory.GetFiles(generatedCodeDirectory, exampleSearchPattern).OrderBy(path => path))
         {
             var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').AsEnumerable().Reverse().Skip(3).Reverse()) + ".";
-            await writer.WriteLineAsync("<details>");
-            await writer.WriteLineAsync("<summary>The following partial class will be generated</summary>");
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync("```c#");
-            var generatedCode = await File.ReadAllTextAsync(generatedCodeFile);
+            var generatedCode = await File.ReadAllTextAsync(generatedCodeFile, cancellationToken);
             generatedCode = string.Join(
                 Environment.NewLine,
                 generatedCode
@@ -360,11 +237,10 @@ class ReadmeTarget(
                         .Replace("(MethodImplOptions)8", "MethodImplOptions.NoInlining")
                         .Replace("[NonSerializedAttribute] ", "")));
 
-            await writer.WriteLineAsync(generatedCode);
-            await writer.WriteLineAsync("```");
-            await writer.WriteLineAsync();
-            await writer.WriteLineAsync("</details>");
+            code.Add(generatedCode);
         }
+
+        return code;
     }
 
     // Characters, that are not allowed in a file name on any supported OS.

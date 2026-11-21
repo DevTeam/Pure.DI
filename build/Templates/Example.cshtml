@@ -1,0 +1,93 @@
+@using Microsoft.AspNetCore.Html
+@model Build.Core.ExamplePage
+@{
+    var framework = Model.FrameworkVersion;
+    var packageLabel = Model.Packages.Count > 0 ? "references to the NuGet packages" : "a reference to the NuGet package";
+}
+#### @(new HtmlString(Model.Title))
+
+@if (!string.IsNullOrWhiteSpace(Model.Header))
+{
+<text>@(new HtmlString(Model.Header))
+
+</text>
+}
+
+```c#
+@(new HtmlString(Model.Code))
+```
+
+<details>
+<summary>Running this code sample locally</summary>
+
+- Make sure you have the [.NET SDK @framework](https://dotnet.microsoft.com/en-us/download/dotnet/@framework) or later installed
+```bash
+dotnet --list-sdk
+```
+- Create a net@(framework) (or later) console application
+```bash
+dotnet new console -n Sample
+```
+- Add @packageLabel
+  - [Pure.DI](https://www.nuget.org/packages/Pure.DI)
+@foreach (var package in Model.Packages)
+{
+<text>  - [@package](https://www.nuget.org/packages/@package)
+</text>
+}
+```bash
+dotnet add package Pure.DI
+@foreach (var package in Model.Packages)
+{
+@:dotnet add package @package
+}
+```
+- Copy the example code into the _Program.cs_ file
+
+You are ready to run the example 🚀
+```bash
+dotnet run
+```
+
+</details>
+
+@if (!string.IsNullOrWhiteSpace(Model.Footer))
+{
+<text>@(new HtmlString(Model.Footer))
+
+</text>
+}
+@foreach (var code in Model.GeneratedCode)
+{
+<details>
+<summary>The following partial class will be generated</summary>
+
+```c#
+@(new HtmlString(code))
+```
+
+</details>
+}
+
+@if (Model.ClassDiagram is { } diagram)
+{
+<text>Class diagram:
+
+```mermaid
+@(new HtmlString(diagram))
+```
+</text>
+}
+
+@if (Model.RelatedExamples.Count > 0)
+{
+<text>See also:
+
+</text>
+    foreach (var example in Model.RelatedExamples)
+    {
+@:- [@(new HtmlString(example.Title))](@(new HtmlString(example.File)))
+    }
+<text>
+</text>
+}

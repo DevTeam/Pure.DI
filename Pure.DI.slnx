@@ -22,7 +22,6 @@
     <File Path="readme/ConsoleNativeAOTPageTemplate.md" />
     <File Path="readme/ConsolePageTemplate.md" />
     <File Path="readme/ConsoleTopLevelStatementsPageTemplate.md" />
-    <File Path="readme/ContributingTemplate.md" />
     <File Path="readme/EntityFrameworkPageTemplate.md" />
     <File Path="readme/FooterTemplate.md" />
     <File Path="readme/GrpcServicePageTemplate.md" />
