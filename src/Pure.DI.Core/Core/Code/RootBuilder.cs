@@ -15,7 +15,8 @@ class RootBuilder(
     IBuildTools buildTools,
     ITypeResolver typeResolver,
     ISymbolNames symbolNames,
-    Func<IBuilder<CodeContext, IEnumerator>> variablesCodeBuilderFactory)
+    Func<IBuilder<CodeContext, IEnumerator>> variablesCodeBuilderFactory,
+    ILocks locks)
     : IFastBuilder<RootContext, VarInjection>
 {
     public static readonly ParameterSyntax DefaultCtxParameter = SyntaxFactory.Parameter(SyntaxFactory.Identifier("ctx_1182D127"));
@@ -95,7 +96,7 @@ class RootBuilder(
         }
 
         var setup = rootContext.Graph.Source;
-        AddPerResolveVars(rootContext.Lines, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve && i.Node.Arg is null), setup);
+        AddPerResolveVars(rootContext, rootVarsMap.Declarations.Where(i => i.Node.ActualLifetime is PerResolve && i.Node.Arg is null), setup);
         rootContext.Lines.AppendLines(lines);
         return rootVarInjection;
     }
@@ -164,8 +165,10 @@ class RootBuilder(
         || type is INamedTypeSymbol namedType
         && namedType.AllInterfaces.Any(i => symbolNames.GetGlobalName(i) == interfaceTypeName);
 
-    private void AddPerResolveVars(Lines lines, IEnumerable<VarDeclaration> perResolveVars, MdSetup setup)
+    private void AddPerResolveVars(RootContext rootContext, IEnumerable<VarDeclaration> perResolveVars, MdSetup setup)
     {
+        var lines = rootContext.Lines;
+        var isNullableEnabled = setup.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
         var vars = perResolveVars as List<VarDeclaration> ?? perResolveVars.ToList();
         vars.Sort(static (x, y) => x.Node.BindingId.CompareTo(y.Node.BindingId));
         foreach (var perResolve in vars)
@@ -174,6 +177,13 @@ class RootBuilder(
             if (perResolve.InstanceType.IsValueType)
             {
                 lines.AppendLine($"var {perResolve.Name}{Names.CreatedValueNameSuffix} = false;");
+            }
+
+            // A PerResolve instance created by lambdas on several threads has a lock of its own, see #206.
+            if (rootContext.PerResolveLocks.Contains(perResolve.Name))
+            {
+                locks.AddInstanceLockDeclaration(lines, "", locks.GetInstanceLockName(perResolve.Name), isNullableEnabled, true);
+                rootContext.InstanceLockIsInUse = true;
             }
         }
     }

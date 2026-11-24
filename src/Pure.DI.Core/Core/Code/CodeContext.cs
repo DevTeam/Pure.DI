@@ -15,12 +15,14 @@ record CodeContext(
     bool IsFactory = false,
     bool IsDeferred = false,
     // Per-resolve accumulators that a shared (Singleton/Scoped) instance under construction does not feed.
-    ImmutableArray<Accumulator> DetachedAccumulators = default)
+    ImmutableArray<Accumulator> DetachedAccumulators = default,
+    // The lock of the instance whose code is built, which ctx.Lock reads, see #206.
+    string? InstanceLock = null)
 {
     // The overridden values that the code sees, by the name of their variable. A value is null where the code sees it overridden,
     // or the name of the parameter that tells whether the caller of a local function overrides it, see MaybeOverrideCodeBuilder.
     public Dictionary<string, string?> VisibleOverrides { get; init; } = new(StringComparer.Ordinal);
 
     public CodeContext CreateChild(VarInjection injection) =>
-        this with { Parents = Parents.Add(VarInjection), VarInjection = injection };
+        this with { Parents = Parents.Add(VarInjection), VarInjection = injection, InstanceLock = null };
 }

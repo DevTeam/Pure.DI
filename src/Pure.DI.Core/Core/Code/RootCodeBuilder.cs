@@ -1,4 +1,4 @@
-// ReSharper disable UseCollectionExpression
+﻿// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 using System.Collections;
@@ -267,10 +267,22 @@ sealed class RootCodeBuilder(
         var isContextLockUsed = isBlock
                                 && var.AbstractNode.ActualLifetime is Singleton or Scoped
                                 && nodeTools.UsesContextLock(var.AbstractNode.Node);
+        // A single instance of a root that is not static is created under a lock of its own,
+        // so creating it waits only for the instances it depends on, see #206.
+        var isInstanceLock = isBlock && !varCtx.RootContext.Root.IsStatic;
+        var isInstanceLockRequired = isInstanceLock && (varCtx.RootContext.IsThreadSafeEnabled || isContextLockUsed);
+        string? instanceLock = null;
+        if (isInstanceLock && (isInstanceLockRequired || nodeTools.UsesContextLock(var.AbstractNode.Node)))
+        {
+            instanceLock = GetInstanceLock(varCtx, var);
+        }
+
         if (isBlock)
         {
-            StartSingleInstanceCheck(varCtx with { Lines = lines, IsLockRequired = varCtx.IsLockRequired || isContextLockUsed });
-            varCtx = varCtx with { IsLockRequired = false };
+            StartSingleInstanceCheck(
+                varCtx with { Lines = lines, IsLockRequired = isInstanceLock ? isInstanceLockRequired : varCtx.IsLockRequired || isContextLockUsed },
+                isInstanceLockRequired ? instanceLock : null);
+            varCtx = varCtx with { IsLockRequired = false, InstanceLock = instanceLock };
         }
 
         var ctx = varCtx;
@@ -365,7 +377,10 @@ sealed class RootCodeBuilder(
 
         if (isBlock)
         {
-            FinishSingleInstanceCheck(varCtx with { IsLockRequired = parentCtx.IsLockRequired || isContextLockUsed }, isContextLockUsed);
+            FinishSingleInstanceCheck(
+                varCtx with { IsLockRequired = isInstanceLock ? isInstanceLockRequired : parentCtx.IsLockRequired || isContextLockUsed },
+                isContextLockUsed,
+                isInstanceLockRequired);
         }
 
         accumulatorBoundaryToken.Dispose();
@@ -517,7 +532,21 @@ sealed class RootCodeBuilder(
         };
     }
 
-    private void StartSingleInstanceCheck(CodeContext ctx)
+    private string GetInstanceLock(CodeContext ctx, Var var)
+    {
+        if (var.AbstractNode.ActualLifetime == PerResolve)
+        {
+            ctx.RootContext.PerResolveLocks.Add(var.Name);
+        }
+        else
+        {
+            ctx.RootContext.InstanceLockIsInUse = true;
+        }
+
+        return locks.GetInstanceLock(var);
+    }
+
+    private void StartSingleInstanceCheck(CodeContext ctx, string? instanceLock)
     {
         var isLockRequired = ctx.IsLockRequired;
         var var = ctx.VarInjection.Var;
@@ -530,13 +559,21 @@ sealed class RootCodeBuilder(
         lines.AppendLine($"if ({checkExpression})");
         if (isLockRequired)
         {
-            if (!ctx.RootContext.Root.IsStatic)
+            if (instanceLock is null && !ctx.RootContext.Root.IsStatic)
             {
                 ctx.RootContext.LockIsInUse = true;
             }
 
             lines.IncIndent();
-            locks.AddLockStatements(ctx.RootContext.Root.IsStatic, lines, false);
+            if (instanceLock is not null)
+            {
+                locks.AddInstanceLockStatements(instanceLock, lines);
+            }
+            else
+            {
+                locks.AddLockStatements(ctx.RootContext.Root.IsStatic, lines, false);
+            }
+
             lines.IncIndent();
             lines.AppendLine($"if ({checkExpression})");
         }
@@ -545,7 +582,7 @@ sealed class RootCodeBuilder(
         lines.IncIndent();
     }
 
-    private void FinishSingleInstanceCheck(CodeContext ctx, bool isContextLockUsed)
+    private void FinishSingleInstanceCheck(CodeContext ctx, bool isContextLockUsed, bool isInstanceLockHeld)
     {
         var var = ctx.VarInjection.Var;
         var lines = ctx.Lines;
@@ -559,6 +596,15 @@ sealed class RootCodeBuilder(
                     : $"{Names.RootVarName}.";
             }
 
+            // The lock of the instance does not guard the disposables shared by the instances of the composition.
+            if (isInstanceLockHeld)
+            {
+                ctx.RootContext.LockIsInUse = true;
+                locks.AddLockStatements(false, lines, false);
+                lines.AppendLine(BlockStart);
+                lines.IncIndent();
+            }
+
             if (var.AbstractNode.ActualLifetime == Scoped)
             {
                 // A scope has no array of disposables until it creates its first scoped disposable instance.
@@ -566,6 +612,11 @@ sealed class RootCodeBuilder(
             }
 
             lines.AppendLine($"{parent}{Names.DisposablesFieldName}[{parent}{Names.DisposeIndexFieldName}++] = {var.Name};");
+            if (isInstanceLockHeld)
+            {
+                lines.DecIndent();
+                lines.AppendLine(BlockFinish);
+            }
         }
 
         if (var.InstanceType.IsValueType)

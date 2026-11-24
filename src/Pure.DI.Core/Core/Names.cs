@@ -1,4 +1,4 @@
-// ReSharper disable InconsistentNaming
+﻿// ReSharper disable InconsistentNaming
 
 namespace Pure.DI.Core;
 
@@ -117,6 +117,9 @@ static class Names
     public static readonly string ScopedDisposablesCountConstName = "ScopedDisposablesCount" + Salt;
     public static readonly string LockFieldName = "_lock" + Salt;
     public static readonly string PerResolveLockFieldName = "perResolveLock" + Salt;
+    // The lock of a single instance is next to the field or the variable of the instance, see #206.
+    public const string InstanceLockSuffix = "Lock";
+    public static readonly string EnsureLockMethodName = "EnsureLock" + Salt;
     public static readonly string RootFieldName = "_root" + Salt;
     public static readonly string RootVarName = "root" + Salt;
     public static readonly string SingletonsFieldName = "_singletons" + Salt;

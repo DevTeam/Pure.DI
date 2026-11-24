@@ -1,4 +1,4 @@
-namespace Pure.DI.Core.Models;
+﻿namespace Pure.DI.Core.Models;
 
 record CompositionCode(
     DependencyGraph Source,
@@ -19,6 +19,8 @@ record CompositionCode(
     string ScopeMethodName,
     bool IsScopeMethod,
     bool IsLockRequired,
+    // Whether the single instances stored in the fields are created under their own locks, see #206.
+    bool IsInstanceLockUsed,
     int MembersCount = 0)
 {
     public MdSetup Setup => Source.Source;

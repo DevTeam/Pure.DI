@@ -1,4 +1,4 @@
-// ReSharper disable ConvertIfStatementToReturnStatement
+﻿// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable InvertIf
 
 // ReSharper disable UseCollectionExpression
@@ -457,6 +457,12 @@ sealed class FactoryRewriter(
                     return SyntaxFactory.ParseExpression(consumer);
 
                 case nameof(IContext.Lock):
+                    // ctx.Lock is the lock of the instance that the factory creates, see #206.
+                    if (_ctx is { InstanceLock: {} instanceLock, RootContext.Root.IsStatic: false })
+                    {
+                        return SyntaxFactory.ParseExpression(instanceLock);
+                    }
+
                     if (_ctx is {} codeCtx)
                     {
                         codeCtx.RootContext.LockIsInUse = true;

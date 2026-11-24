@@ -1,13 +1,14 @@
-/*
+﻿/*
 $v=true
 $p=20
 $d=Factory with thread synchronization
 $sa=Factory
 $sa=Thread-safe overrides
-$h=In some cases, initialization of objects requires synchronization of the overall composition flow. This scenario demonstrates how to use factories with thread synchronization to ensure proper initialization order.
-$h=`ctx.Lock` is the object the generated code already uses for its own synchronization, so a custom factory locks the same object instead of introducing a second lock that could deadlock against it.
+$h=In some cases, initialization of an object requires synchronization. This scenario demonstrates how to use a factory with thread synchronization to ensure that an object is initialized once and completely.
+$h=`ctx.Lock` is the lock of the instance that the factory creates. A singleton, scoped or per-resolve instance is created under this lock, so a custom factory locks the same object instead of introducing a second lock that could deadlock against it.
 $f=This is for a service that must connect once during construction - a broker connection, a cache warm-up, a first handshake - while other threads may resolve the same graph at the same time.
 $f=The lock covers the injection and the initialization together, so no other resolve of the same composition can observe the object half-initialized.
+$f=`ctx.Lock` is not a lock of the whole composition: each single instance has its own lock, so creating it waits only for the instances it depends on, and compositions that create the singletons of each other do not deadlock. In a factory of a transient instance, `ctx.Lock` is a lock of that instance, shared by the lambdas the factory creates.
 $f=>[!NOTE]
 $f=>Thread synchronization in factories should be used carefully as it may impact performance. Only use when necessary for correct initialization behavior.
 $f=
@@ -39,10 +40,10 @@ public class Scenario
         // Resolve = Off
 // {
         DI.Setup(nameof(Composition))
-            .Bind<IMessageBus>().To<IMessageBus>(ctx => {
-                // Initialization logic requiring synchronization
-                // of the overall composition flow.
-                // For example, connecting to a message broker.
+            .Bind<IMessageBus>().As(Lifetime.Singleton).To<IMessageBus>(ctx => {
+                // Initialization logic requiring synchronization,
+                // for example, connecting to a message broker once.
+                // ctx.Lock is the lock of this singleton.
                 lock (ctx.Lock)
                 {
                     ctx.Inject(out MessageBus bus);

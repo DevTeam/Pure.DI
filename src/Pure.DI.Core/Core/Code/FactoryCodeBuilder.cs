@@ -1,4 +1,4 @@
-// ReSharper disable UseCollectionExpression
+﻿// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
 using System.Collections;
@@ -23,7 +23,8 @@ sealed class FactoryCodeBuilder(
     INameProvider nameProvider,
     IOverridesRegistry overridesRegistry,
     INodeTools nodeTools,
-    IRefSafety refSafety)
+    IRefSafety refSafety,
+    IUniqueNameProvider uniqueNameProvider)
     : IBuilder<CodeBuilderContext, IEnumerator>
 {
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
@@ -160,6 +161,17 @@ sealed class FactoryCodeBuilder(
             ctx = ctx with { IsFactory = true };
         }
 
+        // ctx.Lock is the lock of the instance that the factory creates. An instance that is not shared
+        // has a lock of its own, which the lambdas created by the factory share, see #206.
+        if (ctx.InstanceLock is null
+            && !ctx.RootContext.Root.IsStatic
+            && nodeTools.UsesContextLock(var.AbstractNode.Node))
+        {
+            var instanceLock = uniqueNameProvider.GetUniqueName($"{var.Declaration.Name}{Names.InstanceLockSuffix}");
+            locks.AddLocalLockDeclaration(lines, instanceLock);
+            ctx = ctx with { InstanceLock = instanceLock };
+        }
+
         // Rewrites syntax tree
         var finishLabel = $"{var.Declaration.Name}Finish";
         var localVariableRenamingRewriter = factory.Source.LocalVariableRenamingRewriter.Clone();
@@ -187,7 +199,8 @@ sealed class FactoryCodeBuilder(
         var linePrefixes = new List<LinePrefix>();
         var hasOverridesLock = false;
         var isLazy = nodeTools.IsLazy(var.AbstractNode.Node, ctx.RootContext.Graph);
-        if (hasOverrides && ctx.IsLockRequired && !isLazy)
+        // A root that is not static creates each single instance under its own lock, so the overrides need no lock, see #206.
+        if (hasOverrides && ctx.IsLockRequired && !isLazy && ctx.RootContext.Root.IsStatic)
         {
             if (!var.Declaration.IsDeclared)
             {

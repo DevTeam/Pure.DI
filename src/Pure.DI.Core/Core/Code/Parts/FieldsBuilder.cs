@@ -1,4 +1,4 @@
-// ReSharper disable ClassNeverInstantiated.Global
+﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
 
 namespace Pure.DI.Core.Code.Parts;
@@ -6,7 +6,9 @@ namespace Pure.DI.Core.Code.Parts;
 sealed class FieldsBuilder(
     ITypeResolver typeResolver,
     IConstructors constructors,
-    ISharedSingletons sharedSingletons)
+    ISharedSingletons sharedSingletons,
+    ILocks locks,
+    INodeTools nodeTools)
     : IClassPartBuilder
 {
     public ClassPart Part => ClassPart.Fields;
@@ -34,6 +36,12 @@ sealed class FieldsBuilder(
             code.AppendLine(new Line(int.MinValue, "#else"));
         code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private {(composition.IsScopeMethod ? "" : "readonly ")}{Names.ObjectTypeName} {Names.LockFieldName}{(skipFieldsInit ? "" : $" = new {Names.ObjectTypeName}()")};");
             code.AppendLine(new Line(int.MinValue, "#endif"));
+            membersCounter++;
+        }
+
+        if (composition.IsInstanceLockUsed)
+        {
+            locks.AddEnsureLockMethod(code, isNullableEnabled);
             membersCounter++;
         }
 
@@ -105,11 +113,29 @@ sealed class FieldsBuilder(
         {
             code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] {modifier} {type} {singletonField.Name};");
             code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] {modifier} bool {singletonField.Name}{Names.CreatedValueNameSuffix};");
-            return 2;
+            return 2 + AddInstanceLockField(composition, code, singletonField, modifier, isNullableEnabled);
         }
 
         var nullable = isNullableEnabled && singletonField.InstanceType.NullableAnnotation != NullableAnnotation.Annotated ? "?" : "";
         code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] {modifier} {type}{nullable} {singletonField.Name};");
+        return 1 + AddInstanceLockField(composition, code, singletonField, modifier, isNullableEnabled);
+    }
+
+    // The lock of a single instance is next to its field, so a scope shares the locks of the singletons with its root, see #206.
+    private int AddInstanceLockField(CompositionCode composition, Lines code, VarDeclaration singletonField, string modifier, bool isNullableEnabled)
+    {
+        if (!composition.IsInstanceLockUsed
+            || !composition.Hints.IsThreadSafeEnabled && !nodeTools.UsesContextLock(singletonField.Node.Node))
+        {
+            return 0;
+        }
+
+        locks.AddInstanceLockDeclaration(
+            code,
+            $"[{Names.NonSerializedAttributeTypeName}] {modifier} ",
+            locks.GetInstanceLockName(singletonField.Name),
+            isNullableEnabled,
+            false);
         return 1;
     }
 }

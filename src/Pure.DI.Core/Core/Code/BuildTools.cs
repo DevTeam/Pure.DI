@@ -68,7 +68,10 @@ sealed class BuildTools(
             .ToList();
 
         var code = new Lines();
-        if (ctx.IsLockRequired && accLines.Count > 0)
+        // A single instance of a root that is not static is created under its own lock,
+        // which does not guard the accumulators, see #206.
+        var isLockRequired = ctx.RootContext.Root.IsStatic ? ctx.IsLockRequired : ctx.RootContext.IsThreadSafeEnabled;
+        if (isLockRequired && accLines.Count > 0)
         {
             if (!ctx.RootContext.Root.IsStatic)
             {
@@ -82,7 +85,7 @@ sealed class BuildTools(
 
         code.AppendLines(accLines);
 
-        if (ctx.IsLockRequired && accLines.Count > 0)
+        if (isLockRequired && accLines.Count > 0)
         {
             code.DecIndent();
             code.AppendLine(BlockFinish);

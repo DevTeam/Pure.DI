@@ -34,6 +34,7 @@ class CompositionBuilder(
         // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         var isThreadSafe = false;
         var isInstanceLockUsed = false;
+        var isSingleInstanceLockUsed = false;
         var isAnyConstructorEnabled = constructors.IsEnabled(graph);
         foreach (var root in graph.Roots)
         {
@@ -103,6 +104,7 @@ class CompositionBuilder(
                 {
                     isThreadSafe |= isThreadSafeRoot;
                     isInstanceLockUsed |= ctx.LockIsInUse;
+                    isSingleInstanceLockUsed |= ctx.InstanceLockIsInUse;
                 }
 
                 if (!ctx.ReturnWasAdded)
@@ -251,7 +253,8 @@ class CompositionBuilder(
             setupContextMembersToCopy,
             scopeMethodName,
             isScopeMethod,
-            isLockRequired);
+            isLockRequired,
+            isSingleInstanceLockUsed);
 
         var diagram = classDiagramBuilder.Build(composition);
         return composition with { Diagram = diagram };
