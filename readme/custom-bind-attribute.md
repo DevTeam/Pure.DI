@@ -84,12 +84,21 @@ Positional mapping is brittle when the attribute constructor changes: reordering
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private ConsoleMessageWriter? _singletonConsoleMessageWriter1;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonConsoleMessageWriter1Lock;
+#else
+  private Object? _singletonConsoleMessageWriter1Lock;
+#endif
 
   public IMessageWriter Writer
   {
@@ -97,7 +106,7 @@ partial class Composition
     get
     {
       if (_singletonConsoleMessageWriter1 is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonConsoleMessageWriter1Lock))
           if (_singletonConsoleMessageWriter1 is null)
           {
             _singletonConsoleMessageWriter1 = new ConsoleMessageWriter();

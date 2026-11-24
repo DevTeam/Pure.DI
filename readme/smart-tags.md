@@ -122,12 +122,21 @@ See also: [Tags](tags.md), [Generics](generics.md).
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private SmsSender? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   public IMessageSender SmsSenderRoot
   {
@@ -135,7 +144,7 @@ partial class Composition
     get
     {
       if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
           if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
             _singletonCompositionWithGenericRootsAndArgsInOtherProject = new SmsSender();
@@ -151,7 +160,7 @@ partial class Composition
     get
     {
       if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
           if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
             _singletonCompositionWithGenericRootsAndArgsInOtherProject = new SmsSender();

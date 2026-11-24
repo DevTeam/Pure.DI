@@ -175,16 +175,35 @@ partial class Scope: IDisposable
 #else
   private Object _lock = new Object();
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables = new object[2];
   private int _disposeIndex;
   private const int ScopedDisposablesCount = 1;
   private Singletons _singletons;
 
   private ClockSession? _singletonValueTuple;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonValueTupleLock;
+#else
+  private Object? _singletonValueTupleLock;
+#endif
 
   private sealed class Singletons
   {
     internal ClockService? _singletonNetworkDataSource;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonNetworkDataSourceLock;
+#else
+    internal Object? _singletonNetworkDataSourceLock;
+#endif
   }
 
   internal static Scope SetupScope(Scope parentScope, Scope childScope)
@@ -208,23 +227,29 @@ partial class Scope: IDisposable
     Clock transientClock;
     Clock localBuildingInstance = buildingInstance;
     if (singletons._singletonNetworkDataSource is null)
-      lock (_lock)
+      lock (EnsureLock(ref singletons._singletonNetworkDataSourceLock))
         if (singletons._singletonNetworkDataSource is null)
         {
           ClockConfig transientClockConfig = clockConfig;
           singletons._singletonNetworkDataSource = new ClockService(transientClockConfig);
-          root._disposables[root._disposeIndex++] = singletons._singletonNetworkDataSource;
+          lock (_lock)
+          {
+            root._disposables[root._disposeIndex++] = singletons._singletonNetworkDataSource;
+          }
         }
 
     if (_singletonValueTuple is null)
-      lock (_lock)
+      lock (EnsureLock(ref _singletonValueTupleLock))
         if (_singletonValueTuple is null)
         {
           string transientString = sceneName;
           _singletonValueTuple = new ClockSession(transientString);
-          if (_disposables == null)
-            _disposables = new object[ScopedDisposablesCount];
-          _disposables[_disposeIndex++] = _singletonValueTuple;
+          lock (_lock)
+          {
+            if (_disposables == null)
+              _disposables = new object[ScopedDisposablesCount];
+            _disposables[_disposeIndex++] = _singletonValueTuple;
+          }
         }
 
     localBuildingInstance.ClockService = singletons._singletonNetworkDataSource;

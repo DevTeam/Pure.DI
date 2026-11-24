@@ -98,12 +98,21 @@ An exported member is only read when the binding is created: with a `Singleton` 
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private DeviceFeatureProvider? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
 
   public IPhotoService PhotoService
   {
@@ -130,7 +139,7 @@ partial class Composition
       void EnsureDeviceFeatureProviderExists()
       {
         if (_singletonWcfLikeChannel is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonWcfLikeChannelLock))
             if (_singletonWcfLikeChannel is null)
             {
               _singletonWcfLikeChannel = new DeviceFeatureProvider();

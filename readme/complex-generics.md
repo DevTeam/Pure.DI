@@ -105,13 +105,22 @@ Prefer this for contracts with two or more type parameters or with constrained c
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private StructConsumer<int> _singletonStructConsumer;
   private bool _singletonStructConsumerCreated;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonStructConsumerLock;
+#else
+  private Object? _singletonStructConsumerLock;
+#endif
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Program<T1> GetRoot<T1>(T1 name)
@@ -119,7 +128,7 @@ partial class Composition
   {
     if (name is null) throw new ArgumentNullException(nameof(name));
     if (!_singletonStructConsumerCreated)
-      lock (_lock)
+      lock (EnsureLock(ref _singletonStructConsumerLock))
         if (!_singletonStructConsumerCreated)
         {
           _singletonStructConsumer = new StructConsumer<int>();

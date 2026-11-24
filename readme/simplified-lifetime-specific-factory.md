@@ -104,12 +104,21 @@ Prefer `Transient<T>()` or `Singleton<T>()` without a lambda when there is nothi
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private IFileLogger? _singletonNetworkDataSource;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonNetworkDataSourceLock;
+#else
+  private Object? _singletonNetworkDataSourceLock;
+#endif
 
   public IOrderProcessingService OrderService
   {
@@ -117,7 +126,7 @@ partial class Composition
     get
     {
       if (_singletonNetworkDataSource is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonNetworkDataSourceLock))
           if (_singletonNetworkDataSource is null)
           {
             Func<Guid> perBlockFuncGuid = new Func<Guid>(

@@ -63,12 +63,21 @@ A lifetime on the class applies to every binding declared in that group. When on
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private SystemClock? _singletonSystemClock;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonSystemClockLock;
+#else
+  private Object? _singletonSystemClockLock;
+#endif
 
   public IClock Clock
   {
@@ -76,7 +85,7 @@ partial class Composition
     get
     {
       if (_singletonSystemClock is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonSystemClockLock))
           if (_singletonSystemClock is null)
           {
             _singletonSystemClock = new SystemClock();

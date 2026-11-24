@@ -143,12 +143,21 @@ Prefer a root argument when the value is the same for a whole root, and `Overrid
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private Clock? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   public IDashboard Dashboard
   {
@@ -172,7 +181,7 @@ partial class Composition
         // Creates the instance using the overridden values
         Drawing.Color overriddenColor = localColor;
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
             if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Clock();

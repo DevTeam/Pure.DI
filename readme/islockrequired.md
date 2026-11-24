@@ -79,7 +79,7 @@ dotnet run
 
 </details>
 
-It answers the same question the generated code asks itself: with `Hint.ThreadSafe = On` a root that must create shared state takes the composition lock, with `Off` it does not, so a factory that follows `IsLockRequired` takes exactly the locks the composition would take.
+It answers the same question the generated code asks itself: with `Hint.ThreadSafe = On` a root that must create shared state takes the lock of each single instance it creates, with `Off` it does not, so a factory that follows `IsLockRequired` takes exactly the locks the composition would take.
 The value differs per node - here the transient `Service` is built under a lock while the `Singleton` variant is not - so do not cache it outside the factory call.
 Limitations: avoid adding business logic inside lock-aware factories; use it only for synchronization concerns.
 Prefer an unconditional `lock (ctx.Lock)` ([factory with thread synchronization](factory-with-thread-synchronization.md)) when the factory must be safe regardless of the hint, and `Hint.ThreadSafe = Off` ([ThreadSafe hint](threadsafe-hint.md)) for single-threaded compositions.
@@ -92,24 +92,38 @@ See also: [ThreadSafe hint](threadsafe-hint.md), [Factory](factory.md).
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private IService? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   public IService Service
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      #if NET9_0_OR_GREATER
+      var transientServiceLock1 = new Lock();
+      #else
+      var transientServiceLock1 = new Object();
+      #endif
       Service transientService;
       // In a thread-safe context, IsLockRequired is true
       // Use it to conditionally lock the context
       if (true)
       {
-        lock (_lock)
+        lock (transientServiceLock1)
         {
           {
             transientService = new Service(true);
@@ -131,15 +145,20 @@ partial class Composition
     get
     {
       if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
           if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
+      #if NET9_0_OR_GREATER
+            var transientServiceLock = new Lock();
+      #else
+            var transientServiceLock = new Object();
+      #endif
             Service transientService;
             // In a thread-safe context, IsLockRequired is true
             // Use it to conditionally lock the context
             if (false)
             {
-              lock (_lock)
+              lock (transientServiceLock)
               {
                 {
                   transientService = new Service(false);

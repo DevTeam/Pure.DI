@@ -125,11 +125,30 @@ partial class Composition: IDisposable
 #else
   private readonly Object _lock = new Object();
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables = new object[2];
   private int _disposeIndex;
 
   private OrderDatabase? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
   private PaymentGatewayConnection? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   public IOrderProcessor OrderProcessor
   {
@@ -137,19 +156,25 @@ partial class Composition: IDisposable
     get
     {
       if (_singletonWcfLikeChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonWcfLikeChannelLock))
           if (_singletonWcfLikeChannel is null)
           {
             _singletonWcfLikeChannel = new OrderDatabase();
-            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            lock (_lock)
+            {
+              _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            }
           }
 
       if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
           if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
           {
             _singletonCompositionWithGenericRootsAndArgsInOtherProject = new PaymentGatewayConnection();
-            _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+            lock (_lock)
+            {
+              _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+            }
           }
 
       return new OrderProcessor(_singletonWcfLikeChannel, _singletonCompositionWithGenericRootsAndArgsInOtherProject);

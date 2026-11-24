@@ -135,16 +135,35 @@ partial class Composition: IDisposable
 #else
   private readonly Object _lock;
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables;
   private int _disposeIndex;
   private const int ScopedDisposablesCount = 1;
   private Singletons _singletons;
 
   private Session? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   private sealed class Singletons
   {
     internal Configuration? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonWcfLikeChannelLock;
+#else
+    internal Object? _singletonWcfLikeChannelLock;
+#endif
   }
 
   [OrdinalAttribute(256)]
@@ -188,14 +207,17 @@ partial class Composition: IDisposable
       {
         // Creates a deferred value
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
             if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               EnsureConfigurationExists();
               _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Session(singletons._singletonWcfLikeChannel);
-              if (_disposables == null)
-                _disposables = new object[ScopedDisposablesCount];
-              _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+              lock (_lock)
+              {
+                if (_disposables == null)
+                  _disposables = new object[ScopedDisposablesCount];
+                _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+              }
             }
 
         return _singletonCompositionWithGenericRootsAndArgsInOtherProject;
@@ -209,7 +231,7 @@ partial class Composition: IDisposable
       void EnsureConfigurationExists()
       {
         if (singletons._singletonWcfLikeChannel is null)
-          lock (_lock)
+          lock (EnsureLock(ref singletons._singletonWcfLikeChannelLock))
             if (singletons._singletonWcfLikeChannel is null)
             {
               singletons._singletonWcfLikeChannel = new Configuration();

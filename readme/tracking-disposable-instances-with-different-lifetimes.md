@@ -151,10 +151,24 @@ partial class Composition: IDisposable
 #else
   private readonly Object _lock = new Object();
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
   private Connection? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   public QueryHandler QueryHandler
   {
@@ -203,11 +217,14 @@ partial class Composition: IDisposable
         IOwned localOwned2 = transientOwned1;
         // Creates the owned value
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
             if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               _singletonCompositionWithGenericRootsAndArgsInOtherProject = new Connection();
-              _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+              lock (_lock)
+              {
+                _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+              }
             }
 
         IConnection localValue3 = _singletonCompositionWithGenericRootsAndArgsInOtherProject;

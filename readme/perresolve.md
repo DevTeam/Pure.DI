@@ -115,13 +115,22 @@ See [PerBlock](perblock.md) when reuse should stay inside one construction block
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private (IRoutePlanningSession s3, IRoutePlanningSession s4) _singletonValueTuple;
   private bool _singletonValueTupleCreated;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonValueTupleLock;
+#else
+  private Object? _singletonValueTupleLock;
+#endif
 
   public TrainTripPlanner Planner
   {
@@ -129,14 +138,21 @@ partial class Composition
     get
     {
       var perResolveRoutePlanningSession = default(RoutePlanningSession);
+      #if NET9_0_OR_GREATER
+      Lock? perResolveRoutePlanningSessionLock = null;
+      #else
+      Object? perResolveRoutePlanningSessionLock = null;
+      #endif
       if (!_singletonValueTupleCreated)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonValueTupleLock))
           if (!_singletonValueTupleCreated)
           {
             if (perResolveRoutePlanningSession is null)
-            {
-              perResolveRoutePlanningSession = new RoutePlanningSession();
-            }
+              lock (EnsureLock(ref perResolveRoutePlanningSessionLock))
+                if (perResolveRoutePlanningSession is null)
+                {
+                  perResolveRoutePlanningSession = new RoutePlanningSession();
+                }
 
             _singletonValueTuple = (perResolveRoutePlanningSession, perResolveRoutePlanningSession);
             Thread.MemoryBarrier();
@@ -144,7 +160,7 @@ partial class Composition
           }
 
       if (perResolveRoutePlanningSession is null)
-        lock (_lock)
+        lock (EnsureLock(ref perResolveRoutePlanningSessionLock))
           if (perResolveRoutePlanningSession is null)
           {
             perResolveRoutePlanningSession = new RoutePlanningSession();

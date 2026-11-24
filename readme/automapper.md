@@ -193,6 +193,15 @@ partial class Composition: IDisposable
 #else
   private readonly Object _lock;
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables;
   private int _disposeIndex;
   private Singletons _singletons;
@@ -201,10 +210,35 @@ partial class Composition: IDisposable
   private sealed class Singletons
   {
     internal Microsoft.Extensions.Logging.ILogger? _singletonILogger;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonILoggerLock;
+#else
+    internal Object? _singletonILoggerLock;
+#endif
     internal Func<Student, Person>? _singletonStructConsumer;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonStructConsumerLock;
+#else
+    internal Object? _singletonStructConsumerLock;
+#endif
     internal AutoMapper.Mapper? _singletonSingletonRoot;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonSingletonRootLock;
+#else
+    internal Object? _singletonSingletonRootLock;
+#endif
     internal PersonFormatter? _singletonNetworkDataSource;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonNetworkDataSourceLock;
+#else
+    internal Object? _singletonNetworkDataSourceLock;
+#endif
     internal LoggerFactory? _singletonValueTuple;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonValueTupleLock;
+#else
+    internal Object? _singletonValueTupleLock;
+#endif
   }
 
   private readonly ICollection<string> _argLogMessage;
@@ -230,33 +264,37 @@ partial class Composition: IDisposable
     {
       var singletons = _singletons;
       if (singletons._singletonStructConsumer is null)
-        lock (_lock)
+        lock (EnsureLock(ref singletons._singletonStructConsumerLock))
           if (singletons._singletonStructConsumer is null)
           {
             singletons._singletonStructConsumer = source =>
             {
               if (singletons._singletonSingletonRoot is null)
-              {
-                EnsureLoggerFactoryExists();
-                LoggerFactory localLoggerFactory = singletons._singletonValueTuple;
-                // Create the mapping configuration
-                var localConfiguration = new MapperConfiguration(cfg =>
-                {
-                  cfg.CreateMap<Student, Person>();
-                }, localLoggerFactory);
-                localConfiguration.CompileMappings();
-                // Create the mapper
-                singletons._singletonSingletonRoot = new Mapper(localConfiguration);
-              }
+                lock (EnsureLock(ref singletons._singletonSingletonRootLock))
+                  if (singletons._singletonSingletonRoot is null)
+                  {
+                    EnsureLoggerFactoryExists();
+                    LoggerFactory localLoggerFactory = singletons._singletonValueTuple;
+                    // Create the mapping configuration
+                    var localConfiguration = new MapperConfiguration(cfg =>
+                    {
+                      cfg.CreateMap<Student, Person>();
+                    }, localLoggerFactory);
+                    localConfiguration.CompileMappings();
+                    // Create the mapper
+                    singletons._singletonSingletonRoot = new Mapper(localConfiguration);
+                  }
 
               AutoMapper.IMapper localMapper = singletons._singletonSingletonRoot;
               // source -> target
               Person localTarget = localMapper.Map<Student, Person>(source);
               // Building-up a mapped value with dependencies
               if (singletons._singletonNetworkDataSource is null)
-              {
-                singletons._singletonNetworkDataSource = new PersonFormatter();
-              }
+                lock (EnsureLock(ref singletons._singletonNetworkDataSourceLock))
+                  if (singletons._singletonNetworkDataSource is null)
+                  {
+                    singletons._singletonNetworkDataSource = new PersonFormatter();
+                  }
 
               localTarget.Formatter = singletons._singletonNetworkDataSource;
               return localTarget;
@@ -264,7 +302,7 @@ partial class Composition: IDisposable
           }
 
       if (singletons._singletonILogger is null)
-        lock (_lock)
+        lock (EnsureLock(ref singletons._singletonILoggerLock))
           if (singletons._singletonILogger is null)
           {
             EnsureLoggerFactoryExists();
@@ -277,11 +315,14 @@ partial class Composition: IDisposable
       void EnsureLoggerFactoryExists()
       {
         if (singletons._singletonValueTuple is null)
-          lock (_lock)
+          lock (EnsureLock(ref singletons._singletonValueTupleLock))
             if (singletons._singletonValueTuple is null)
             {
               singletons._singletonValueTuple = new LoggerFactory(_argLogMessage);
-              _root._disposables[_root._disposeIndex++] = singletons._singletonValueTuple;
+              lock (_lock)
+              {
+                _root._disposables[_root._disposeIndex++] = singletons._singletonValueTuple;
+              }
             }
       }
     }

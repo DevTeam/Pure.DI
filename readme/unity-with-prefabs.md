@@ -188,10 +188,24 @@ partial class Scope: IDisposable
 #else
   private readonly Object _lock = new Object();
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
   private ClockService? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public Clock BuildUp(Clock buildingInstance)
@@ -200,12 +214,15 @@ partial class Scope: IDisposable
     Clock transientClock;
     Clock localBuildingInstance = buildingInstance;
     if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-      lock (_lock)
+      lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         {
           ClockConfig transientClockConfig = clockConfig;
           _singletonCompositionWithGenericRootsAndArgsInOtherProject = new ClockService(transientClockConfig);
-          _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+          lock (_lock)
+          {
+            _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+          }
         }
 
     localBuildingInstance.ClockService = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
@@ -220,12 +237,15 @@ partial class Scope: IDisposable
     ClockDigital transientClockDigital;
     ClockDigital localBuildingInstance = buildingInstance;
     if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-      lock (_lock)
+      lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
         {
           ClockConfig transientClockConfig = clockConfig;
           _singletonCompositionWithGenericRootsAndArgsInOtherProject = new ClockService(transientClockConfig);
-          _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+          lock (_lock)
+          {
+            _disposables[_disposeIndex++] = _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+          }
         }
 
     localBuildingInstance.ClockService = _singletonCompositionWithGenericRootsAndArgsInOtherProject;

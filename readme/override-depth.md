@@ -92,25 +92,15 @@ Prefer a tagged binding over an override when the different value is structural 
 ```c#
 partial class DeepComposition
 {
-#if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
-#else
-  private readonly Object _lock = new Object();
-#endif
-
   public Service Service
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Service transientService;
-      lock (_lock)
-      {
-        int overriddenInt32 = 42;
-        Service localService = new Service(overriddenInt32, new Dependency(overriddenInt32));
-        transientService = localService;
-      }
-
+      int overriddenInt32 = 42;
+      Service localService = new Service(overriddenInt32, new Dependency(overriddenInt32));
+      transientService = localService;
       return transientService;
     }
   }
@@ -238,26 +228,16 @@ partial class DeepComposition
 ```c#
 partial class ShallowComposition
 {
-#if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
-#else
-  private readonly Object _lock = new Object();
-#endif
-
   public Service Service
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Service transientService;
-      lock (_lock)
-      {
-        int overriddenInt32 = 42;
-        int transientInt32 = 7;
-        Service localService = new Service(overriddenInt32, new Dependency(transientInt32));
-        transientService = localService;
-      }
-
+      int overriddenInt32 = 42;
+      int transientInt32 = 7;
+      Service localService = new Service(overriddenInt32, new Dependency(transientInt32));
+      transientService = localService;
       return transientService;
     }
   }

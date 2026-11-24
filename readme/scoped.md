@@ -148,11 +148,25 @@ partial class Composition: IDisposable
 #else
   private readonly Object _lock;
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables;
   private int _disposeIndex;
   private const int ScopedDisposablesCount = 1;
 
   private RequestContext? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
 
   [OrdinalAttribute(256)]
   public Composition()
@@ -179,13 +193,16 @@ partial class Composition: IDisposable
     get
     {
       if (_singletonWcfLikeChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonWcfLikeChannelLock))
           if (_singletonWcfLikeChannel is null)
           {
             _singletonWcfLikeChannel = new RequestContext();
-            if (_disposables == null)
-              _disposables = new object[ScopedDisposablesCount];
-            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            lock (_lock)
+            {
+              if (_disposables == null)
+                _disposables = new object[ScopedDisposablesCount];
+              _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            }
           }
 
       return new CheckoutService(_singletonWcfLikeChannel);

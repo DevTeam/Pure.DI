@@ -106,8 +106,22 @@ partial class Composition
 #else
   private readonly Object _lock = new Object();
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
 
   private NetworkDataSource? _singletonNetworkDataSource;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonNetworkDataSourceLock;
+#else
+  private Object? _singletonNetworkDataSourceLock;
+#endif
 
   public (IDashboard dashboard, TelemetryRegistry registry) Root
   {
@@ -117,12 +131,16 @@ partial class Composition
       var perBlockTelemetryRegistry = new TelemetryRegistry();
       var perBlockSqlDataSource = new SqlDataSource();
       if (_singletonNetworkDataSource is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonNetworkDataSourceLock))
           if (_singletonNetworkDataSource is null)
           {
             NetworkDataSource _singletonNetworkDataSourceTemp;
             _singletonNetworkDataSourceTemp = new NetworkDataSource();
-            perBlockTelemetryRegistry.Add(_singletonNetworkDataSourceTemp);
+            lock (_lock)
+            {
+              perBlockTelemetryRegistry.Add(_singletonNetworkDataSourceTemp);
+            }
+
             Thread.MemoryBarrier();
             _singletonNetworkDataSource = _singletonNetworkDataSourceTemp;
           }

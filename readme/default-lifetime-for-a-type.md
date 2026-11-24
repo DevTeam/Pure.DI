@@ -121,12 +121,21 @@ Prefer `DefaultLifetime<T>(lifetime, tag)` (see [Default lifetime for a type and
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private GnssTimeSource? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
 
   public IBaseStationController Controller
   {
@@ -139,7 +148,7 @@ partial class Composition
       void EnsureGnssTimeSourceExists()
       {
         if (_singletonWcfLikeChannel is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonWcfLikeChannelLock))
             if (_singletonWcfLikeChannel is null)
             {
               _singletonWcfLikeChannel = new GnssTimeSource();

@@ -70,12 +70,21 @@ A second lifetime in the same group is a compilation error rather than a silent 
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private ConsoleChannel? _singletonConsoleChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonConsoleChannelLock;
+#else
+  private Object? _singletonConsoleChannelLock;
+#endif
 
   public IDiagnosticsSink ConsoleDiagnostics
   {
@@ -83,7 +92,7 @@ partial class Composition
     get
     {
       if (_singletonConsoleChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonConsoleChannelLock))
           if (_singletonConsoleChannel is null)
           {
             _singletonConsoleChannel = new ConsoleChannel();
@@ -99,7 +108,7 @@ partial class Composition
     get
     {
       if (_singletonConsoleChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonConsoleChannelLock))
           if (_singletonConsoleChannel is null)
           {
             _singletonConsoleChannel = new ConsoleChannel();
@@ -115,7 +124,7 @@ partial class Composition
     get
     {
       if (_singletonConsoleChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonConsoleChannelLock))
           if (_singletonConsoleChannel is null)
           {
             _singletonConsoleChannel = new ConsoleChannel();

@@ -133,29 +133,32 @@ partial class Composition
 {
   private Composition _root;
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock;
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock;
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private PlaybackQueue? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
 
   [OrdinalAttribute(256)]
   public Composition()
   {
     _root = this;
-#if NET9_0_OR_GREATER
-    _lock = new Lock();
-#else
-    _lock = new Object();
-#endif
   }
 
   internal Composition(Composition parentScope)
   {
     if (Object.ReferenceEquals(parentScope, null)) throw new ArgumentNullException(nameof(parentScope));
     _root = parentScope._root ?? parentScope;
-    _lock = parentScope._lock;
   }
 
   public MusicApp MusicAppRoot
@@ -185,7 +188,7 @@ partial class Composition
     get
     {
       if (_singletonWcfLikeChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonWcfLikeChannelLock))
           if (_singletonWcfLikeChannel is null)
           {
             _singletonWcfLikeChannel = new PlaybackQueue();

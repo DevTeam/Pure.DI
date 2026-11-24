@@ -112,12 +112,21 @@ The factory captures the composition, so it must not outlive it; a factory store
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private Clock? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
 
   public ITeam Team
   {
@@ -132,7 +141,7 @@ partial class Composition
         int overriddenInt32 = localArg11;
         string overriddenString = localArg2;
         if (_singletonWcfLikeChannel is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonWcfLikeChannelLock))
             if (_singletonWcfLikeChannel is null)
             {
               _singletonWcfLikeChannel = new Clock();

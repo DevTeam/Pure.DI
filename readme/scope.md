@@ -158,16 +158,35 @@ partial class Composition: IDisposable
 #else
   private Object _lock = new Object();
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables = new object[1];
   private int _disposeIndex;
   private const int ScopedDisposablesCount = 1;
   private Singletons _singletons;
 
   private RequestContext? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
 
   private sealed class Singletons
   {
     internal IdGenerator? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+    internal Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+    internal Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
   }
 
   internal static Composition SetupScope(Composition parentScope, Composition childScope)
@@ -190,18 +209,23 @@ partial class Composition: IDisposable
       var root = _root ?? this;
       var singletons = _singletons ?? Interlocked.CompareExchange(ref _singletons, new Singletons(), null) ?? _singletons;
       if (_singletonWcfLikeChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonWcfLikeChannelLock))
           if (_singletonWcfLikeChannel is null)
           {
             if (singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-            {
-              singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject = new IdGenerator();
-            }
+              lock (EnsureLock(ref singletons._singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
+                if (singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
+                {
+                  singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject = new IdGenerator();
+                }
 
             _singletonWcfLikeChannel = new RequestContext(singletons._singletonCompositionWithGenericRootsAndArgsInOtherProject);
-            if (_disposables == null)
-              _disposables = new object[ScopedDisposablesCount];
-            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            lock (_lock)
+            {
+              if (_disposables == null)
+                _disposables = new object[ScopedDisposablesCount];
+              _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            }
           }
 
       return new CheckoutService(_singletonWcfLikeChannel);

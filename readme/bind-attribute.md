@@ -73,12 +73,21 @@ Because the contract is given as `typeof(IMessageWriter)`, a mistyped contract i
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private ConsoleMessageWriter? _singletonConsoleMessageWriter;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonConsoleMessageWriterLock;
+#else
+  private Object? _singletonConsoleMessageWriterLock;
+#endif
 
   public IMessageWriter Writer
   {
@@ -86,7 +95,7 @@ partial class Composition
     get
     {
       if (_singletonConsoleMessageWriter is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonConsoleMessageWriterLock))
           if (_singletonConsoleMessageWriter is null)
           {
             _singletonConsoleMessageWriter = new ConsoleMessageWriter();

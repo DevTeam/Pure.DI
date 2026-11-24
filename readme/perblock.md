@@ -111,13 +111,22 @@ Because the instance is a local, it is freed with the root call and cannot be ca
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private (IDatabaseConnection conn3, IDatabaseConnection conn4) _singletonValueTuple;
   private bool _singletonValueTupleCreated;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonValueTupleLock;
+#else
+  private Object? _singletonValueTupleLock;
+#endif
 
   public OrderRepository Repository
   {
@@ -126,7 +135,7 @@ partial class Composition
     {
       var perBlockDatabaseConnection = new DatabaseConnection();
       if (!_singletonValueTupleCreated)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonValueTupleLock))
           if (!_singletonValueTupleCreated)
           {
             var perBlockDatabaseConnection1 = new DatabaseConnection();

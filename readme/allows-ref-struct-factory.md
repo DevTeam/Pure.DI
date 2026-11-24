@@ -85,20 +85,19 @@ This is the escape hatch for a hot path that must parse without allocating a `st
 ```c#
 partial class Composition
 {
-#if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
-#else
-  private readonly Object _lock = new Object();
-#endif
-
   public ParserFactory<ReadOnlySpan<char>> ParserFactory
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      #if NET9_0_OR_GREATER
+      var transientParserFactoryReadOnlySpanCharLock = new Lock();
+      #else
+      var transientParserFactoryReadOnlySpanCharLock = new Object();
+      #endif
       ParserFactory<ReadOnlySpan<char>> transientParserFactoryReadOnlySpanChar = new ParserFactory<ReadOnlySpan<char>>(localText =>
       {
-        lock (_lock)
+        lock (transientParserFactoryReadOnlySpanCharLock)
         {
           ReadOnlySpan<char> overriddenReadOnlySpanChar = localText;
           var transientParserReadOnlySpanChar = new Parser<ReadOnlySpan<char>>();

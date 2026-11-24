@@ -149,18 +149,32 @@ Prefer `Func<...>` factory bindings with arguments when you can, because the gen
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private TimeProvider? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   public IOrderBatchProcessor OrderProcessor
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
+      #if NET9_0_OR_GREATER
+      var transientFuncInt32Int32IOrderHandlerLock = new Lock();
+      #else
+      var transientFuncInt32Int32IOrderHandlerLock = new Object();
+      #endif
       Func<int, int, IOrderHandler> transientFuncInt32Int32IOrderHandler =
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       (localOrderId, localCustomerId) =>
@@ -170,7 +184,7 @@ partial class Composition
         ProcessingToken localToken = transientProcessingToken;
         // The factory is invoked in parallel, so we must lock
         // the context to safely perform overrides for the specific graph
-        lock (_lock)
+        lock (transientFuncInt32Int32IOrderHandlerLock)
         {
           // Overrides the 'int' dependency (OrderId)
           // Overrides the tagged 'int' dependency (CustomerId)
@@ -182,7 +196,7 @@ partial class Composition
           string overriddenString = $"Order:{localOrderId}-Cust:{localCustomerId}";
           ProcessingToken overriddenProcessingToken = localToken;
           if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-            lock (_lock)
+            lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
               if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
               {
                 _singletonCompositionWithGenericRootsAndArgsInOtherProject = new TimeProvider();

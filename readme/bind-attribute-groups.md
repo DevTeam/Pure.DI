@@ -149,13 +149,27 @@ Two groups for the same contract without distinct tags would turn `IEnumerable<T
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private EventStore? _singletonEventStore;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonEventStoreLock;
+#else
+  private Object? _singletonEventStoreLock;
+#endif
   private PaymentAuditAdapter? _singletonPaymentAuditAdapter;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonPaymentAuditAdapterLock;
+#else
+  private Object? _singletonPaymentAuditAdapterLock;
+#endif
 
   public IPaymentAuditSink AuditSink
   {
@@ -163,7 +177,7 @@ partial class Composition
     get
     {
       if (_singletonEventStore is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonEventStoreLock))
           if (_singletonEventStore is null)
           {
             _singletonEventStore = new EventStore();
@@ -183,7 +197,7 @@ partial class Composition
       IEnumerable<IPaymentAuditSink> EnumerationOf_perBlockIEnumerableIPaymentAuditSink()
       {
         if (_singletonEventStore is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonEventStoreLock))
             if (_singletonEventStore is null)
             {
               _singletonEventStore = new EventStore();
@@ -204,13 +218,15 @@ partial class Composition
       IEnumerable<IPaymentProcessor> EnumerationOf_perBlockIEnumerableIPaymentProcessor()
       {
         if (_singletonPaymentAuditAdapter is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonPaymentAuditAdapterLock))
             if (_singletonPaymentAuditAdapter is null)
             {
               if (_singletonEventStore is null)
-              {
-                _singletonEventStore = new EventStore();
-              }
+                lock (EnsureLock(ref _singletonEventStoreLock))
+                  if (_singletonEventStore is null)
+                  {
+                    _singletonEventStore = new EventStore();
+                  }
 
               _singletonPaymentAuditAdapter = new PaymentAuditAdapter(_singletonEventStore);
             }

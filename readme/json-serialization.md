@@ -127,15 +127,39 @@ Prefer injectable delegates over a static `JsonSerializer` call when the format 
 partial class Composition
 {
 #if NET9_0_OR_GREATER
-  private readonly Lock _lock = new Lock();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
 #else
-  private readonly Object _lock = new Object();
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
 #endif
 
   private Func<string, Settings?>? _singletonSingletonRoot;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonSingletonRootLock;
+#else
+  private Object? _singletonSingletonRootLock;
+#endif
   private Func<Settings, string>? _singletonFunc;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonFuncLock;
+#else
+  private Object? _singletonFuncLock;
+#endif
   private Storage? _singletonILogger;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonILoggerLock;
+#else
+  private Object? _singletonILoggerLock;
+#endif
   private Text.Json.JsonSerializerOptions? _singletonCompositionWithGenericRootsAndArgsInOtherProject;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#else
+  private Object? _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock;
+#endif
 
   public ISettingsService Settings
   {
@@ -143,14 +167,14 @@ partial class Composition
     get
     {
       if (_singletonILogger is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonILoggerLock))
           if (_singletonILogger is null)
           {
             _singletonILogger = new Storage();
           }
 
       if (_singletonFunc is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonFuncLock))
           if (_singletonFunc is null)
           {
             EnsureJsonSerializerOptionsExists();
@@ -159,7 +183,7 @@ partial class Composition
           }
 
       if (_singletonSingletonRoot is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonSingletonRootLock))
           if (_singletonSingletonRoot is null)
           {
             EnsureJsonSerializerOptionsExists();
@@ -172,7 +196,7 @@ partial class Composition
       void EnsureJsonSerializerOptionsExists()
       {
         if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
-          lock (_lock)
+          lock (EnsureLock(ref _singletonCompositionWithGenericRootsAndArgsInOtherProjectLock))
             if (_singletonCompositionWithGenericRootsAndArgsInOtherProject is null)
             {
               _singletonCompositionWithGenericRootsAndArgsInOtherProject = new JsonSerializerOptions

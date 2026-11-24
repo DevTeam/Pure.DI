@@ -123,10 +123,24 @@ partial class Composition: IDisposable, IAsyncDisposable
 #else
   private readonly Object _lock = new Object();
 #endif
+#if NET9_0_OR_GREATER
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Lock EnsureLock(ref Lock? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Lock(), null) ?? lockObject!;
+#else
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  private static Object EnsureLock(ref Object? lockObject) =>
+    lockObject ?? Interlocked.CompareExchange(ref lockObject, new Object(), null) ?? lockObject!;
+#endif
   private object[] _disposables = new object[1];
   private int _disposeIndex;
 
   private AuditLogWriter? _singletonWcfLikeChannel;
+#if NET9_0_OR_GREATER
+  private Lock? _singletonWcfLikeChannelLock;
+#else
+  private Object? _singletonWcfLikeChannelLock;
+#endif
 
   public ICheckoutService CheckoutService
   {
@@ -134,11 +148,14 @@ partial class Composition: IDisposable, IAsyncDisposable
     get
     {
       if (_singletonWcfLikeChannel is null)
-        lock (_lock)
+        lock (EnsureLock(ref _singletonWcfLikeChannelLock))
           if (_singletonWcfLikeChannel is null)
           {
             _singletonWcfLikeChannel = new AuditLogWriter();
-            _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            lock (_lock)
+            {
+              _disposables[_disposeIndex++] = _singletonWcfLikeChannel;
+            }
           }
 
       return new CheckoutService(_singletonWcfLikeChannel);
