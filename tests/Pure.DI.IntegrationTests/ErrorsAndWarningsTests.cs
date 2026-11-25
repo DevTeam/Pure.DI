@@ -983,7 +983,8 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
         result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
-        result.GeneratedCode.ShouldContain("lock (_lock");
+        // A factory of an instance that is not shared creates the lock with the instance, see #206.
+        result.GeneratedCode.ShouldContain("lock (transientParserFactoryTLock)", Case.Sensitive, result);
     }
 
     [Fact]
@@ -1244,7 +1245,8 @@ public class ErrorsAndWarningsTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True"], result);
         result.Warnings.Count(i => i.Id == LogId.WarningStackOnlyOverrideRequiresLock).ShouldBe(0, result);
-        result.GeneratedCode.ShouldContain("lock (_lock");
+        // A factory of an instance that is not shared creates the lock with the instance, see #206.
+        result.GeneratedCode.ShouldContain("lock (transientParserFactoryTLock)", Case.Sensitive, result);
     }
 
     [Fact]

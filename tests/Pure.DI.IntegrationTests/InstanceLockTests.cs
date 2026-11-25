@@ -115,7 +115,7 @@ public class InstanceLockTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -193,7 +193,7 @@ public class InstanceLockTests
                                    }
                                }
                            }
-                           """.Replace("#lifetime#", lifetime).RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.Replace("#lifetime#", lifetime).RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -227,9 +227,11 @@ public class InstanceLockTests
                                    }
                                }
 
-                               class Consumer(Service service)
+                               class Consumer
                                {
-                                   public Service Service { get; } = service;
+                                   public Consumer(Service service) => Service = service;
+
+                                   public Service Service { get; }
                                }
 
                                partial class Composition
@@ -254,7 +256,7 @@ public class InstanceLockTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -281,13 +283,18 @@ public class InstanceLockTests
                                    public Service() => Thread.Sleep(50);
                                }
 
-                               class Consumer(Func<Service> factory)
+                               class Consumer
                                {
-                                   public Service[] Services { get; } = Enumerable.Range(0, 8)
-                                       .Select(_ => Task.Run(factory))
-                                       .ToArray()
-                                       .Select(i => i.Result)
-                                       .ToArray();
+                                   public Consumer(Func<Service> factory)
+                                   {
+                                       Services = Enumerable.Range(0, 8)
+                                           .Select(_ => Task.Run(factory))
+                                           .ToArray()
+                                           .Select(i => i.Result)
+                                           .ToArray();
+                                   }
+
+                                   public Service[] Services { get; }
                                }
 
                                partial class Composition
@@ -307,7 +314,7 @@ public class InstanceLockTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -374,7 +381,7 @@ public class InstanceLockTests
                                    }
                                }
                            }
-                           """.RunAsync(new Options(LanguageVersion.CSharp12));
+                           """.RunAsync(new Options(Options.ModernLanguageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);
