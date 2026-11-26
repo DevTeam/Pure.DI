@@ -1,3 +1,5 @@
+// ReSharper disable RedundantExtendsListEntry
+// The XAML part already specifies the base type, but the Uno XAML compiler requires it in the code-behind too (UXAML0002).
 namespace UnoApp;
 
 using System.ComponentModel;
@@ -6,6 +8,7 @@ public partial class App : Application
 {
     public App() => InitializeComponent();
 
+    // Keeps the main window reachable after OnLaunched returns; the reference is released on close.
     private Window? MainWindow { get; set; }
 
     protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -40,9 +43,14 @@ public partial class App : Application
         // Releases disposable singleton and scoped dependencies owned by Pure.DI.
         window.Closed += (_, _) =>
         {
-            if (appViewModel is INotifyPropertyChanged propertyChanged && titleChanged is not null)
+            if (appViewModel is INotifyPropertyChanged closedPropertyChanged && titleChanged is not null)
             {
-                propertyChanged.PropertyChanged -= titleChanged;
+                closedPropertyChanged.PropertyChanged -= titleChanged;
+            }
+
+            if (ReferenceEquals(MainWindow, window))
+            {
+                MainWindow = null;
             }
 
             composition.Dispose();

@@ -266,14 +266,16 @@ sealed class VariationalDependencyGraphBuilder(
         var orderedOptions = new List<(Options Options, int BindingId)>();
         foreach (var options in setsOfOptions)
         {
-            if (options is { IsStarted: true, Current: {} current })
+            if (options is not { IsStarted: true, Current: {} current })
             {
-                var bindingId = current.Node.Binding.Id;
-                orderedOptions.Add((options, bindingId));
-                if (!optionsByBindingId.ContainsKey(bindingId))
-                {
-                    optionsByBindingId.Add(bindingId, options);
-                }
+                continue;
+            }
+
+            var bindingId = current.Node.Binding.Id;
+            orderedOptions.Add((options, bindingId));
+            if (!optionsByBindingId.ContainsKey(bindingId))
+            {
+                optionsByBindingId.Add(bindingId, options);
             }
         }
         var prioritizedBindingIds = new HashSet<int>();
@@ -307,7 +309,7 @@ sealed class VariationalDependencyGraphBuilder(
         // Keep the original mixed-radix order among the options that can affect the conflict.
         return orderedOptions
             .Where(i => prioritizedBindingIds.Contains(i.BindingId))
-            .Select(i => (ISetOfOptions<IProcessingNode>)i.Options)
+            .Select(i => i.Options)
             .ToList();
     }
 
@@ -386,7 +388,7 @@ sealed class VariationalDependencyGraphBuilder(
     }
 
     private static ImmutableArray<long> CreateVariationState(IEnumerable<IProcessingNode> nodes) =>
-        nodes.Select(i => ((long)i.Node.Binding.Id << 32) | (uint)i.Node.Variation).ToImmutableArray();
+        [.. nodes.Select(i => (long)i.Node.Binding.Id << 32 | (uint)i.Node.Variation)];
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
     private sealed class SymbolTypeComparer(ITypeSymbolComparer typeSymbolComparer) : IEqualityComparer<ISymbol>

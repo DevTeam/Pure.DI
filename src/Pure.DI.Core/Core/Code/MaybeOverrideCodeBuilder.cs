@@ -73,5 +73,5 @@ sealed class MaybeOverrideCodeBuilder(
 
     // The name of the parameter of a local function that tells whether its caller overrides the value.
     public static string GetPresenceName(string overrideName) =>
-        $"has{char.ToUpperInvariant(overrideName[0])}{overrideName.Substring(1)}";
+        $"has{char.ToUpperInvariant(overrideName[0])}{overrideName[1..]}";
 }

@@ -1,3 +1,6 @@
+// ReSharper disable MethodHasAsyncOverload
+// The test parses the generated code with the synchronous Roslyn API on purpose: it inspects
+// syntax, not compilation output.
 namespace Pure.DI.IntegrationTests;
 
 /// <summary>

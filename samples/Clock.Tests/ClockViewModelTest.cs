@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Clock.Tests;
 
 public class ClockViewModelTest
@@ -26,8 +28,9 @@ public class ClockViewModelTest
         var time = viewModel.Time;
 
         // Then
-        date.ShouldBe(now.ToString("d"));
-        time.ShouldBe(now.ToString("T"));
+        // Must match the invariant formats the view model uses, otherwise the test depends on the machine locale.
+        date.ShouldBe(now.ToString("d", CultureInfo.InvariantCulture));
+        time.ShouldBe(now.ToString("T", CultureInfo.InvariantCulture));
     }
 
     [Fact]

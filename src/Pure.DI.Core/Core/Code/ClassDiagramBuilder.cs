@@ -54,7 +54,7 @@ sealed class ClassDiagramBuilder(
                 using (lines.Indent())
                 {
                     compositionLines.AppendLine("<<partial>>");
-                    foreach (var root in composition.PublicRoots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
+                    foreach (var root in composition.PublicRoots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name, StringComparer.Ordinal))
                     {
                         compositionLines.AppendLine($"{Format(rootAccessModifierResolver.Resolve(root))}{FormatRoot(setup, root)}");
                     }
@@ -120,7 +120,7 @@ sealed class ClassDiagramBuilder(
                             .Select(c => c.Tag is null or MdTagOnSites ? "default" : EscapeTag(c.Tag))
                             .Distinct()
                             .OrderBy(s => s == "default" ? 1 : 0)
-                            .ThenBy(s => s)
+                            .ThenBy(s => s, StringComparer.Ordinal)
                             .ToList();
                         label = $" : {string.Join(", ", parts)}";
                     }
@@ -134,7 +134,7 @@ sealed class ClassDiagramBuilder(
 
             // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var type in typeSymbols.OrderBy(i => i.Name))
+            foreach (var type in typeSymbols.OrderBy(i => i.Name, StringComparer.Ordinal))
             {
                 if (!marker.IsMarker(setup, type))
                 {
@@ -194,7 +194,7 @@ sealed class ClassDiagramBuilder(
                 }
             }
 
-            foreach (var classByNamespace in classes.GroupBy(i => i.Namespace).OrderBy(i => i.Key))
+            foreach (var classByNamespace in classes.GroupBy(i => i.Namespace).OrderBy(i => i.Key, StringComparer.Ordinal))
             {
                 var actualNamespace = classByNamespace.Key;
                 var hasNamespace = !string.IsNullOrWhiteSpace(actualNamespace);
@@ -204,7 +204,7 @@ sealed class ClassDiagramBuilder(
                     lines.IncIndent();
                 }
 
-                foreach (var cls in classByNamespace.GroupBy(i => i.Name).Select(i => i.First()).OrderBy(i => i.Name))
+                foreach (var cls in classByNamespace.GroupBy(i => i.Name).Select(i => i.First()).OrderBy(i => i.Name, StringComparer.Ordinal))
                 {
                     var classLines = cls.Lines;
                     if (classLines.Count > 0)
@@ -296,7 +296,7 @@ sealed class ClassDiagramBuilder(
             .Replace(':', '﹕');
 
     private static string FormatTags(IEnumerable<object?> tags) =>
-        string.Join(", ", tags.Distinct().Select(FormatTag).Where(s => s.Length > 0).OrderBy(i => i));
+        string.Join(", ", tags.Distinct().Select(FormatTag).Where(s => s.Length > 0).OrderBy(i => i, StringComparer.Ordinal));
 
     private string FormatSymbol(MdSetup setup, ISymbol? symbol, FormatOptions options) =>
         symbol switch
@@ -473,7 +473,7 @@ sealed class ClassDiagramBuilder(
 
                 typeKind = Type.TypeKind switch
                 {
-                    TypeKind.Interface or TypeKind.Enum or TypeKind.Delegate or TypeKind.Struct => Type.TypeKind.ToString().ToLower(),
+                    TypeKind.Interface or TypeKind.Enum or TypeKind.Delegate or TypeKind.Struct => Type.TypeKind.ToString().ToLowerInvariant(),
                     _ => typeKind
                 };
 
@@ -497,7 +497,7 @@ sealed class ClassDiagramBuilder(
                     typeKind = "tuple";
                 }
 
-                return string.IsNullOrWhiteSpace(typeKind) ? Type.TypeKind.ToString().ToLower() : typeKind;
+                return string.IsNullOrWhiteSpace(typeKind) ? Type.TypeKind.ToString().ToLowerInvariant() : typeKind;
             }
         }
     }

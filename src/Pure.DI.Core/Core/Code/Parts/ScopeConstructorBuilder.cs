@@ -110,7 +110,7 @@ sealed class ScopeConstructorBuilder(
                 code.AppendLine($"{destination}{Names.LockFieldName} = {source}{Names.LockFieldName};");
             }
 
-            if (composition.IsScopeMethod && composition.TotalDisposablesCount > 0)
+            if (composition is { IsScopeMethod: true, TotalDisposablesCount: > 0 })
             {
                 // The child scope creates its array of disposables on the first scoped disposable instance.
                 code.AppendLine($"{destination}{Names.DisposablesFieldName} = null;");

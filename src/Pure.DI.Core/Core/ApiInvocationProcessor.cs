@@ -4,6 +4,7 @@
 // ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Operations;
 
@@ -653,7 +654,7 @@ sealed class ApiInvocationProcessor(
                         var rootsName = rootsArgs[0] is {} rootsNameArg ? semantic.GetConstantValue<object>(semanticModel, rootsNameArg.Expression, SmartTagKind.Name)?.ToString() ?? "" : "";
                         var rootsKind = rootsArgs[1] is {} rootsKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, rootsKindArg.Expression) : RootKinds.Default;
                         var rootsWildcardFilter = (rootsArgs[2] is {} rootsFilterArg ? semantic.GetConstantValue<string>(semanticModel, rootsFilterArg.Expression) : "*") ?? "*";
-                        var rootsSearchInCompilation = rootsArgs[3] is {} rootsSearchArg && semantic.GetConstantValue<bool>(semanticModel, rootsSearchArg.Expression) is true;
+                        var rootsSearchInCompilation = rootsArgs[3] is {} rootsSearchArg && semantic.GetConstantValue<bool>(semanticModel, rootsSearchArg.Expression);
                         var hasRootsType = false;
                         foreach (var rootType in GetRelatedTypes(invocation, semanticModel, invocation, rootsType, rootsWildcardFilter, rootsSearchInCompilation))
                         {
@@ -665,7 +666,7 @@ sealed class ApiInvocationProcessor(
                         if (!hasRootsType)
                         {
                             throw new CompileErrorException(
-                                string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter)
+                                string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(rootsType), rootsWildcardFilter)
                                 + GetWildcardSuggestion(semanticModel, rootsType, rootsWildcardFilter),
                                 ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                                 LogId.ErrorNoTypeForWildcard,
@@ -705,7 +706,7 @@ sealed class ApiInvocationProcessor(
                         var buildersName = buildersArgs[0] is {} buildersNameArg ? semantic.GetConstantValue<object>(semanticModel, buildersNameArg.Expression, SmartTagKind.Name)?.ToString() ?? Names.DefaultBuilderName : Names.DefaultBuilderName;
                         var buildersKind = buildersArgs[1] is {} buildersKindArg ? semantic.GetConstantValue<RootKinds>(semanticModel, buildersKindArg.Expression) : RootKinds.Default;
                         var buildersWildcardFilter = (buildersArgs[2] is {} buildersFilterArg ? semantic.GetConstantValue<string>(semanticModel, buildersFilterArg.Expression) : "*") ?? "*";
-                        var buildersSearchInCompilation = buildersArgs[3] is {} buildersSearchArg && semantic.GetConstantValue<bool>(semanticModel, buildersSearchArg.Expression) is true;
+                        var buildersSearchInCompilation = buildersArgs[3] is {} buildersSearchArg && semantic.GetConstantValue<bool>(semanticModel, buildersSearchArg.Expression);
                         var builderRoots = (
                             from buildersType in GetRelatedTypes(invocation, semanticModel, invocation, buildersRootType, buildersWildcardFilter, buildersSearchInCompilation)
                             let buildersItemName = GetName((SyntaxNode?)buildersArgs[0] ?? invocation, buildersName, buildersType) ?? Names.DefaultBuilderName
@@ -715,7 +716,7 @@ sealed class ApiInvocationProcessor(
                         if (builderRoots.Count == 0)
                         {
                             throw new CompileErrorException(
-                                string.Format(Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter)
+                                string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_NoTypeForWildcard, symbolNames.GetName(buildersRootType), buildersWildcardFilter)
                                 + GetWildcardSuggestion(semanticModel, buildersRootType, buildersWildcardFilter),
                                 ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                                 LogId.ErrorNoTypeForWildcard,
@@ -940,7 +941,7 @@ sealed class ApiInvocationProcessor(
         searchInCompilation
             ? semanticModel.LookupNamespacesAndTypes(invocation.Span.Start)
                 .Concat(GetDeclaredTypes(semanticModel.Compilation))
-                .Distinct<ISymbol>(SymbolEqualityComparer.Default)
+                .Distinct(SymbolEqualityComparer.Default)
             : semanticModel.LookupNamespacesAndTypes(invocation.Span.Start);
 
     // The whole-assembly walk is done at most once per compilation, because the opt-in search
@@ -1001,7 +1002,7 @@ sealed class ApiInvocationProcessor(
 
         var suffix = hiddenTypes.Count > MaxSuggestedTypes ? ", ..." : string.Empty;
         var typeNames = string.Join(", ", hiddenTypes.Take(MaxSuggestedTypes)) + suffix;
-        return string.Format(Strings.Error_Hint_NoTypeForWildcard, typeNames, symbolNames.GetName(baseType));
+        return string.Format(CultureInfo.InvariantCulture, Strings.Error_Hint_NoTypeForWildcard, typeNames, symbolNames.GetName(baseType));
     }
 
     private bool TypesMath(INamedTypeSymbol baseType, TypeInfo info)
@@ -1779,7 +1780,7 @@ sealed class ApiInvocationProcessor(
     // ReSharper disable once SuggestBaseTypeForParameter
     private void NotSupported(SyntaxNode source) =>
         throw new CompileErrorException(
-            string.Format(Strings.Error_Template_NotSupported, source),
+            string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_NotSupported, source),
             ImmutableArray.Create(locationProvider.GetLocation(source)),
             LogId.ErrorNotSupportedSyntax,
             nameof(Strings.Error_Template_NotSupported));
@@ -1803,7 +1804,7 @@ sealed class ApiInvocationProcessor(
                 if (value is null)
                 {
                     throw new CompileErrorException(
-                        string.Format(Strings.Error_Template_MustBeValueOfType, arg.Expression, typeof(T)),
+                        string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_MustBeValueOfType, arg.Expression, typeof(T)),
                         ImmutableArray.Create(locationProvider.GetLocation(arg.Expression)),
                         LogId.ErrorMustBeValueOfType,
                         nameof(Strings.Error_Template_MustBeValueOfType));
@@ -1902,7 +1903,7 @@ sealed class ApiInvocationProcessor(
         if (!SyntaxFacts.IsValidIdentifier(name))
         {
             throw new CompileErrorException(
-                string.Format(Strings.Error_Template_InvalidIdentifier, name),
+                string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_InvalidIdentifier, name),
                 ImmutableArray.Create(locationProvider.GetLocation(source)),
                 LogId.ErrorInvalidIdentifier,
                 nameof(Strings.Error_Template_InvalidIdentifier));

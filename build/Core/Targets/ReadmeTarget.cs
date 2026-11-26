@@ -74,9 +74,9 @@ class ReadmeTarget(
         }
 
         var commandsModel = rootCommand.Subcommands
-            .OrderBy(command => command.Name)
+            .OrderBy(command => command.Name, StringComparer.Ordinal)
             .Select(command => new ReadmeCommand(
-                string.Join(", ", command.Aliases.OrderBy(alias => alias.Length).ThenBy(alias => alias)),
+                string.Join(", ", command.Aliases.OrderBy(alias => alias.Length).ThenBy(alias => alias, StringComparer.Ordinal)),
                 command.Description))
             .ToArray();
         var contributing = await templateEngine.RenderAsync("/Templates/Contributing.cshtml", commandsModel, cancellationToken);
@@ -136,7 +136,7 @@ class ReadmeTarget(
     private async Task<ExamplePage> CreateExamplePageAsync(
         Example example,
         ReadmeLink link,
-        IReadOnlyDictionary<string, string> filesByDescription,
+        Dictionary<string, string> filesByDescription,
         string logsDirectory,
         string generatedCodeDirectory,
         CancellationToken cancellationToken)
@@ -193,7 +193,7 @@ class ReadmeTarget(
         CancellationToken cancellationToken)
     {
         var code = new List<string>();
-        foreach (var generatedCodeFile in Directory.GetFiles(generatedCodeDirectory, exampleSearchPattern).OrderBy(path => path))
+        foreach (var generatedCodeFile in Directory.GetFiles(generatedCodeDirectory, exampleSearchPattern).OrderBy(path => path, StringComparer.Ordinal))
         {
             var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').AsEnumerable().Reverse().Skip(3).Reverse()) + ".";
             var generatedCode = await File.ReadAllTextAsync(generatedCodeFile, cancellationToken);

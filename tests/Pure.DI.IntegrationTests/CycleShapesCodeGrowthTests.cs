@@ -16,15 +16,29 @@ using Xunit.Abstractions;
 public class CycleShapesCodeGrowthTests(ITestOutputHelper output)
 {
     private static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(30);
+    private static readonly Shape[] Shapes = [Shape.MixedEdges, Shape.TaskEdges, Shape.NestedRings, Shape.Generic, Shape.GenericWithContext];
+    private static readonly string[] Lifetimes = ["Transient", "PerBlock"];
+    private static readonly string[] Modes = ["Auto", "On"];
     private const int Steps = 11;
     // Equal steps in the number of screens must add approximately equal amounts of code.
     private const double MaxGrowthRatio = 1.35;
 
-    public static IEnumerable<object[]> Cases() =>
-        from shape in new[] { Shape.MixedEdges, Shape.TaskEdges, Shape.NestedRings, Shape.Generic, Shape.GenericWithContext }
-        from lifetime in new[] { "Transient", "PerBlock" }
-        from mode in new[] { "Auto", "On" }
-        select new object[] { shape, lifetime, mode };
+    public static TheoryData<Shape, string, string> Cases()
+    {
+        var cases = new TheoryData<Shape, string, string>();
+        foreach (var shape in Shapes)
+        {
+            foreach (var lifetime in Lifetimes)
+            {
+                foreach (var mode in Modes)
+                {
+                    cases.Add(shape, lifetime, mode);
+                }
+            }
+        }
+
+        return cases;
+    }
 
     [Theory]
     [MemberData(nameof(Cases))]
@@ -43,7 +57,7 @@ public class CycleShapesCodeGrowthTests(ITestOutputHelper output)
     [InlineData("PerBlock", "On")]
     [InlineData("Singleton", "Auto")]
     public Task ShouldGrowLinearlyForScreensGettingAllScreensAsynchronously(string lifetime, string mode) =>
-        CheckGrowth([4, 6, 8], size => new Graph(Enumerable.Range(0, size).Select(i => new Screen($"S{i}", [])).ToArray(), IsAsyncEnumerable: true), lifetime, mode, isQuadratic: true);
+        CheckGrowth([4, 6, 8], size => new Graph([.. Enumerable.Range(0, size).Select(i => new Screen($"S{i}", []))], IsAsyncEnumerable: true), lifetime, mode, isQuadratic: true);
 
     private async Task CheckGrowth(int[] sizes, Func<int, Graph> createGraph, string lifetime, string mode, bool isQuadratic)
     {
@@ -77,13 +91,13 @@ public class CycleShapesCodeGrowthTests(ITestOutputHelper output)
             }
         }
 
-        var tokensRatio = GrowthRatio(measurements.Select(i => isQuadratic ? i.Tokens / i.Screens : i.Tokens).ToArray());
+        var tokensRatio = GrowthRatio([.. measurements.Select(i => isQuadratic ? i.Tokens / i.Screens : i.Tokens)]);
         if (tokensRatio >= MaxGrowthRatio)
         {
             problems.Add($"Tokens grow by the ratio {tokensRatio:F2}");
         }
 
-        var constructionsRatio = GrowthRatio(measurements.Select(i => i.Constructions).ToArray());
+        var constructionsRatio = GrowthRatio([.. measurements.Select(i => i.Constructions)]);
         if (constructionsRatio >= MaxGrowthRatio)
         {
             problems.Add($"Constructions of screens grow by the ratio {constructionsRatio:F2}");
@@ -114,7 +128,7 @@ public class CycleShapesCodeGrowthTests(ITestOutputHelper output)
         return measurement;
     }
 
-    private static double GrowthRatio(IReadOnlyList<int> sizes)
+    private static double GrowthRatio(int[] sizes)
     {
         var firstStep = sizes[1] - sizes[0];
         var lastStep = sizes[2] - sizes[1];
@@ -123,20 +137,21 @@ public class CycleShapesCodeGrowthTests(ITestOutputHelper output)
 
     private static Graph CreateGraph(Shape shape, int size)
     {
-        Screen Ring(int screen, params Edge[] edges) => new($"S{screen}", edges.Select((edge, index) => edge with { Target = (screen + 1 + index) % size }).ToArray());
+        Screen Ring(int screen, params Edge[] edges) => new($"S{screen}", [.. edges.Select((edge, index) => edge with { Target = (screen + 1 + index) % size })]);
+        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
         switch (shape)
         {
             case Shape.MixedEdges:
-                return new Graph(Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.Lazy), new Edge(0, EdgeKind.FuncWithContext))).ToArray());
+                return new Graph([.. Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.Lazy), new Edge(0, EdgeKind.FuncWithContext)))]);
 
             case Shape.TaskEdges:
-                return new Graph(Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.FuncOfTask))).ToArray());
+                return new Graph([.. Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.FuncOfTask)))]);
 
             case Shape.Generic:
-                return new Graph(Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.Func))).ToArray(), IsGeneric: true);
+                return new Graph([.. Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.Func)))], IsGeneric: true);
 
             case Shape.GenericWithContext:
-                return new Graph(Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.FuncWithContext))).ToArray(), IsGeneric: true);
+                return new Graph([.. Enumerable.Range(0, size).Select(i => Ring(i, new Edge(0, EdgeKind.Func), new Edge(0, EdgeKind.FuncWithContext)))], IsGeneric: true);
 
             default:
                 // An outer screen opens the next outer screen and its inner ring of three screens, which leads back to it.
@@ -152,7 +167,7 @@ public class CycleShapesCodeGrowthTests(ITestOutputHelper output)
                     }
                 }
 
-                return new Graph(screens.ToArray());
+                return new Graph([.. screens]);
         }
     }
 

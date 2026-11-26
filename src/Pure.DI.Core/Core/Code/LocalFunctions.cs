@@ -34,6 +34,8 @@ class LocalFunctions(
                 || accumulators.InjectsAccumulator(
                     ctx.RootContext.Graph,
                     node,
+                    // The hash set is built straight from the sequence, so the collection expression would add an intermediate array.
+                    // ReSharper disable once UseCollectionExpression
                     nodeAccumulators.Select(i => i.VarInjection.Var.AbstractNode.BindingId).ToImmutableHashSet())))
         {
             return false;
@@ -47,11 +49,15 @@ class LocalFunctions(
         }
 
         var mode = ctx.RootContext.Graph.Source.Hints.LocalFunctions;
+        var isOff = mode is LocalFunctionsMode.Off;
 
         // A transient instance on a cycle through lambdas, such as screens that open each other by Func<T1, T>,
         // is created by one local function that the lambdas call. Otherwise, each lambda creates it again
         // with the lambdas of its own dependencies, and the code grows with the number of paths on the cycle, see #192.
-        if (!isBlock && mode != LocalFunctionsMode.Off && IsDeferredCycle(ctx))
+        // The guards are sequential steps of one decision: the first covers a transient instance on a deferred cycle,
+        // the next one covers a shared instance on a branching cycle. A switch over the flag combination reads worse.
+        // ReSharper disable once ConvertIfStatementToSwitchStatement
+        if (!isBlock && !isOff && IsDeferredCycle(ctx))
         {
             return true;
         }
@@ -59,7 +65,7 @@ class LocalFunctions(
         // A shared instance on a cycle with several paths through it is checked by each of the lambdas that lead to it.
         // It can have a single use site, for example, under Lazy<T> or Owned<T>, whose code is repeated in each of these lambdas,
         // so the code of the instance created in place grew with the number of paths on the cycle.
-        if (isBlock && mode != LocalFunctionsMode.Off && IsOnBranchingCycle(ctx, node.Node))
+        if (isBlock && !isOff && IsOnBranchingCycle(ctx, node.Node))
         {
             return true;
         }
@@ -73,13 +79,19 @@ class LocalFunctions(
 
         if (!isBlock)
         {
-            return mode switch
+            if (mode is LocalFunctionsMode.On)
             {
-                LocalFunctionsMode.On => true,
-                LocalFunctionsMode.Off => false,
-                _ => useSites.TransientCost.TryGetValue(bindingId, out var transientCost)
-                     && IsTransientCostTooHigh(count, transientCost)
-            };
+                return true;
+            }
+
+            if (isOff)
+            {
+                return false;
+            }
+
+            // The Auto mode estimates the cost of a transient instance below.
+            return useSites.TransientCost.TryGetValue(bindingId, out var transientCost)
+                   && IsTransientCostTooHigh(count, transientCost);
         }
 
         // A factory anywhere up the dependency chain may contain branching (if/else, switch),
@@ -90,13 +102,15 @@ class LocalFunctions(
             return true;
         }
 
-        switch (mode)
+        // Auto has to estimate the cost below, so only the explicit modes are decided by the hint.
+        if (mode is LocalFunctionsMode.On)
         {
-            case LocalFunctionsMode.On:
-                return true;
+            return true;
+        }
 
-            case LocalFunctionsMode.Off:
-                return false;
+        if (isOff)
+        {
+            return false;
         }
 
         if (useSites.InlineCost.TryGetValue(bindingId, out var inlineCost))
@@ -124,7 +138,7 @@ class LocalFunctions(
     // The accumulators that the local function of an instance on a cycle through lambdas gets as arguments.
     public ImmutableArray<Accumulator> GetAccumulatorArguments(CodeContext ctx) =>
         IsDeferredCycle(ctx)
-            ? GetAccumulators(ctx).ToImmutableArray()
+            ? [..GetAccumulators(ctx)]
             : ImmutableArray<Accumulator>.Empty;
 
     // The overridden values that the local function of a transient instance gets as arguments.
@@ -190,15 +204,18 @@ class LocalFunctions(
                 }
 
                 // A lambda that the code around this instance does not share with it is created by its local function too.
-                if (source.ActualLifetime is PerBlock
-                    && nodeTools.IsLazy(source, graph)
-                    && ctx.RootContext.UseSites.PrivateLambdas.TryGetValue(root.BindingId, out var privateLambdas)
-                    && privateLambdas.Contains(source.BindingId))
+                var isPrivateLambda = source.ActualLifetime is PerBlock
+                                      && nodeTools.IsLazy(source, graph)
+                                      && ctx.RootContext.UseSites.PrivateLambdas.TryGetValue(root.BindingId, out var privateLambdas)
+                                      && privateLambdas.Contains(source.BindingId);
+                if (isPrivateLambda)
                 {
                     continue;
                 }
 
                 // A PerBlock dependency that only this instance holds in each block is created by its local function too.
+                // The lifetime pattern is one of several conditions, so a switch on the lifetime alone would not fit here.
+                // ReSharper disable once ConvertIfStatementToSwitchStatement
                 if (source.ActualLifetime is PerBlock
                     && source.Arg is null
                     && !isUnderFactory
@@ -240,7 +257,7 @@ class LocalFunctions(
             }
         }
 
-        return arguments.OrderBy(i => i.Key).Select(i => i.Value).ToImmutableArray();
+        return [..arguments.OrderBy(i => i.Key).Select(i => i.Value)];
     }
 
     // An instance can be created under different accumulators in the same scope,
@@ -263,18 +280,19 @@ class LocalFunctions(
         // when a factory reads the tag. Otherwise, the injections of an instance by different tags share its local function.
         // A factory that only passes the tag to its injections, such as Lazy<T> or Owned<T>, is a node of its own for each tag,
         // and its code is the same for the tags that lead to the same dependencies, so their nodes share a local function.
-        if (!nodeTools.IsBlock(var.AbstractNode) && nodeTools.ReadsContextMember(var.AbstractNode.Node, nameof(IContext.Tag)))
+        if (nodeTools.IsBlock(var.AbstractNode) || !nodeTools.ReadsContextMember(var.AbstractNode.Node, nameof(IContext.Tag)))
         {
-            if (TryGetTagFreeKey(ctx.RootContext.Graph, var.AbstractNode.Node, [], out var tagFreeKey))
-            {
-                return $"{tagFreeKey}{key.Substring(var.AbstractNode.BindingId.ToString(System.Globalization.CultureInfo.InvariantCulture).Length)}";
-            }
-
-            var tag = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? ctx.ContextTag : injection.Tag;
-            key = $"{key}#{tag}";
+            return key;
         }
 
-        return key;
+        if (TryGetTagFreeKey(ctx.RootContext.Graph, var.AbstractNode.Node, [], out var tagFreeKey))
+        {
+            var bindingIdLength = var.AbstractNode.BindingId.ToString(System.Globalization.CultureInfo.InvariantCulture).Length;
+            return $"{tagFreeKey}{key[bindingIdLength..]}";
+        }
+
+        var tag = ReferenceEquals(injection.Tag, MdTag.ContextTag) ? ctx.ContextTag : injection.Tag;
+        return $"{key}#{tag}";
     }
 
     // The key of a factory that passes the tag of its injection only to its injections by ctx.Inject(ctx.Tag, ...):
@@ -328,10 +346,21 @@ class LocalFunctions(
                 continue;
             }
 
-            if (member.Parent is ArgumentSyntax { Parent: ArgumentListSyntax { Parent: InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax inject } } }
-                && inject.Expression is IdentifierNameSyntax injectContext
-                && injectContext.Identifier.ValueText == contextName
-                && inject.Name.Identifier.ValueText == nameof(IContext.Inject))
+            if (member.Parent is ArgumentSyntax
+                {
+                    Parent: ArgumentListSyntax
+                    {
+                        Parent: InvocationExpressionSyntax
+                        {
+                            Expression: MemberAccessExpressionSyntax
+                            {
+                                Expression: IdentifierNameSyntax injectContext,
+                                Name.Identifier.ValueText: nameof(IContext.Inject)
+                            }
+                        }
+                    }
+                }
+                && injectContext.Identifier.ValueText == contextName)
             {
                 continue;
             }
@@ -356,7 +385,7 @@ class LocalFunctions(
         var node = ctx.VarInjection.Var.AbstractNode;
         var graph = ctx.RootContext.Graph;
         var nodeAccumulators = nodeTools.IsSharedInstance(node.Node, graph) && !accumulators.GetBoundaryAccumulators(graph, node).Any()
-            ? ctx.Accumulators.Where(i => i.Lifetime is Singleton or Scoped).ToList()
+            ? [..ctx.Accumulators.Where(i => i.Lifetime is Singleton or Scoped)]
             : (IReadOnlyCollection<Accumulator>)ctx.Accumulators;
         if (nodeAccumulators.Count == 0 || UsesAccumulators(ctx, nodeAccumulators))
         {
@@ -595,13 +624,16 @@ class LocalFunctions(
                     declaredIds.Add(id);
                 }
 
-                if (nodeTools.IsLazy(source, ctx.RootContext.Graph)
-                    && freeOverrides.TryGetValue(source.BindingId, out var captured))
+                // A lambda that this instance captures is not lazy, so it has no overrides to collect.
+                if (!nodeTools.IsLazy(source, ctx.RootContext.Graph)
+                    || !freeOverrides.TryGetValue(source.BindingId, out var captured))
                 {
-                    foreach (var @override in captured)
-                    {
-                        capturedIds.Add(@override.Id);
-                    }
+                    continue;
+                }
+
+                foreach (var @override in captured)
+                {
+                    capturedIds.Add(@override.Id);
                 }
             }
         }

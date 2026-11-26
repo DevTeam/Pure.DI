@@ -2,6 +2,14 @@ namespace Pure.DI.IntegrationTests;
 
 using Core;
 
+// The test types below are not used from C# directly: the tests embed their full names into the generated source
+// as aliases, so the compiler and the generator use them while an IDE cannot see the usage.
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable RedundantTypeDeclarationBody
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable UnusedType.Global
+// ReSharper disable UseCollectionExpression
 public class SimplifiedBindingContractInferenceTests
 {
     public interface IMetadataBaseContract { }
@@ -205,35 +213,25 @@ public class SimplifiedBindingContractInferenceTests
 
     public static TheoryData<string> Bindings => new()
     {
-        {
-            """
-            .Bind().To<FirstService>()
-            .Bind().To<SecondService>()
-            .Bind().To<FirstConcreteService>()
-            .Bind().To<SecondConcreteService>()
-            """
-        },
-        {
-            """
-            .PerBlock<FirstService>()
-            .PerBlock<SecondService>()
-            .PerBlock<FirstConcreteService>()
-            .PerBlock<SecondConcreteService>()
-            """
-        },
-        {
-            """
-            .PerBlock<FirstService, SecondService, FirstConcreteService, SecondConcreteService>()
-            """
-        },
-        {
-            """
-            .PerBlock<Dependency, FirstService>(dependency => new FirstService(dependency))
-            .PerBlock<Dependency, SecondService>(dependency => new SecondService(dependency))
-            .PerBlock<Dependency, FirstConcreteService>(dependency => new FirstConcreteService(dependency))
-            .PerBlock<Dependency, SecondConcreteService>(dependency => new SecondConcreteService(dependency))
-            """
-        }
+        """
+        .Bind().To<FirstService>()
+        .Bind().To<SecondService>()
+        .Bind().To<FirstConcreteService>()
+        .Bind().To<SecondConcreteService>()
+        """,
+        """
+        .PerBlock<FirstService>()
+        .PerBlock<SecondService>()
+        .PerBlock<FirstConcreteService>()
+        .PerBlock<SecondConcreteService>()
+        """,
+        ".PerBlock<FirstService, SecondService, FirstConcreteService, SecondConcreteService>()",
+        """
+        .PerBlock<Dependency, FirstService>(dependency => new FirstService(dependency))
+        .PerBlock<Dependency, SecondService>(dependency => new SecondService(dependency))
+        .PerBlock<Dependency, FirstConcreteService>(dependency => new FirstConcreteService(dependency))
+        .PerBlock<Dependency, SecondConcreteService>(dependency => new SecondConcreteService(dependency))
+        """
     };
 
     [Theory]

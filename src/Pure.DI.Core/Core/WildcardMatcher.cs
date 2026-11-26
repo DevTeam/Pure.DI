@@ -1,4 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ConvertGotoToBreakOrContinue
+// The matcher is a close port of the documented [MS - FSA] 2.1.4.4 state machine, where each
+// transition is a label of a flat state switch; labeled breaks would make the states harder to follow.
 
 namespace Pure.DI.Core;
 

@@ -54,7 +54,7 @@ sealed class DefaultConstructorBuilder(
 
             if (composition.TotalDisposablesCount > 0)
             {
-                code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
+                code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount}];");
             }
         }
 

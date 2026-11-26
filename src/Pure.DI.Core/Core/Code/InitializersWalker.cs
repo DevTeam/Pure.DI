@@ -17,7 +17,7 @@ sealed class InitializersWalker(
             var curVariable = ctx.VarInjections.Current!;
             var curField = field;
             var curCtx = codeCtx;
-            _actions.Add(new(() => injections.FieldInjection(ctx.VariableName, curCtx, curField, curVariable), curField.Ordinal));
+            _actions.Add((() => injections.FieldInjection(ctx.VariableName, curCtx, curField, curVariable), curField.Ordinal));
         }
 
         foreach (var property in initializer.Properties.Where(_ => ctx.VarInjections.MoveNext()))
@@ -26,7 +26,7 @@ sealed class InitializersWalker(
             var curVariable = ctx.VarInjections.Current!;
             var curProperty = property;
             var curCtx = codeCtx;
-            _actions.Add(new(() => injections.PropertyInjection(ctx.VariableName, curCtx, curProperty, curVariable), curProperty.Ordinal));
+            _actions.Add((() => injections.PropertyInjection(ctx.VariableName, curCtx, curProperty, curVariable), curProperty.Ordinal));
         }
 
         foreach (var method in initializer.Methods)
@@ -40,7 +40,7 @@ sealed class InitializersWalker(
 
             var curMethod = method;
             var curCtx = codeCtx;
-            _actions.Add(new(() => injections.MethodInjection(ctx.VariableName, curCtx, curMethod, curVariables), curMethod.Ordinal));
+            _actions.Add((() => injections.MethodInjection(ctx.VariableName, curCtx, curMethod, curVariables), curMethod.Ordinal));
         }
 
         foreach (var action in _actions.OrderBy(i => i.Ordinal ?? int.MaxValue).Select(i => i.Run))

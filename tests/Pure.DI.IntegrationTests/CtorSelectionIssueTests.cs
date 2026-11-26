@@ -2,8 +2,6 @@
 
 namespace Pure.DI.IntegrationTests;
 
-using Core;
-
 /// <summary>
 ///     Reproduces the "Constructor selection needs an explicit factory" observation from
 ///     AI.Client: with several constructors the generator may pick one that cannot be resolved

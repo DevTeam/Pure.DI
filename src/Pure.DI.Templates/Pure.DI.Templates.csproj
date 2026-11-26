@@ -19,10 +19,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Templates\Pure.DI.Template.ClassLibrary\GlobalUsings.cs"/>
         <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**">
             <PackagePath>content</PackagePath>
         </Content>
+        <!-- The package ships templates as content only; its assembly has no code of its own. -->
         <Compile Remove="**\*"/>
         <None Remove="*.bat;.sh"/>
     </ItemGroup>

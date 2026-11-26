@@ -131,10 +131,10 @@ public class VariatorTests
         variator.TryGetNext(sets, out _).ShouldBeTrue();
 
         // When & Then
-        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second }, out var variants).ShouldBeTrue();
+        variator.TryGetNext(sets, [second], out var variants).ShouldBeTrue();
         variants.ShouldBe(["1_a", "2_b", "3_a"]);
 
-        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second }, out _).ShouldBeFalse();
+        variator.TryGetNext(sets, [second], out _).ShouldBeFalse();
     }
 
     [Fact]
@@ -149,10 +149,10 @@ public class VariatorTests
         variator.TryGetNext(sets, out _).ShouldBeTrue();
 
         // When & Then
-        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second, third }, out var variants).ShouldBeTrue();
+        variator.TryGetNext(sets, [second, third], out var variants).ShouldBeTrue();
         variants.ShouldBe(["1_a", "2_b", "3_a"]);
 
-        variator.TryGetNext(sets, new ISetOfOptions<string>[] { second, third }, out variants).ShouldBeTrue();
+        variator.TryGetNext(sets, [second, third], out variants).ShouldBeTrue();
         variants.ShouldBe(["1_a", "2_a", "3_b"]);
     }
 

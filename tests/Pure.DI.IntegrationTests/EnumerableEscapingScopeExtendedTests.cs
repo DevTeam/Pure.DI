@@ -2,8 +2,6 @@
 
 namespace Pure.DI.IntegrationTests;
 
-using Core;
-
 /// <summary>
 ///     Stronger reproductions of the "generated enumerable escapes its declaration scope" defect:
 ///     the per-block enumerable variable is needed both inside a deferred factory local function and

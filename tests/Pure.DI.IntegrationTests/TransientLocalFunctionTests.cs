@@ -358,7 +358,7 @@ public class TransientLocalFunctionTests
 
         // Then
         result.Success.ShouldBeTrue(result);
-        var count = LeafCount + LeafCount / 2;
+        const int count = LeafCount + LeafCount / 2;
         result.StdOut.ShouldBe([$"{count} {count}"], result);
     }
 

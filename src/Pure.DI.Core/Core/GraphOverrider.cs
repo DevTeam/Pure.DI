@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.Core;
+namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;
 
@@ -684,11 +684,13 @@ class GraphOverrider(
                         }
 
                         // The first override of a factory replaces the injection for its dependencies from that position.
-                        if (!optionalOverride.Positions.ContainsKey(node.Binding.Id))
+                        if (optionalOverride.Positions.ContainsKey(node.Binding.Id))
                         {
-                            optionalOverride.Positions.Add(node.Binding.Id, position);
-                            optionalOverride.Nodes.Add(node);
+                            continue;
                         }
+
+                        optionalOverride.Positions.Add(node.Binding.Id, position);
+                        optionalOverride.Nodes.Add(node);
                     }
                 }
             }
@@ -939,11 +941,13 @@ class GraphOverrider(
         Dictionary<Injection, DependencyNode>? consumedOverrides = null;
         foreach (var pair in overrides)
         {
-            if (!consumedInjections.IsConsumed(consumedIds, pair.Key))
+            if (consumedInjections.IsConsumed(consumedIds, pair.Key))
             {
-                consumedOverrides ??= new Dictionary<Injection, DependencyNode>(overrides);
-                consumedOverrides.Remove(pair.Key);
+                continue;
             }
+
+            consumedOverrides ??= new Dictionary<Injection, DependencyNode>(overrides);
+            consumedOverrides.Remove(pair.Key);
         }
 
         return consumedOverrides ?? overrides;
@@ -1077,8 +1081,8 @@ class GraphOverrider(
             // The scope is copied, because a caller keeps adding to it after the call.
             // It is kept in arrays, so that neither the copy nor the comparison hashes the injections, see #176.
             _bindingId = bindingId;
-            _nodes = nodes.ToArray();
-            _localOverrides = localOverrides?.ToArray();
+            _nodes = [..nodes];
+            _localOverrides = localOverrides is null ? null : [..localOverrides];
             unchecked
             {
                 var hashCode = bindingId;
@@ -1228,13 +1232,13 @@ class GraphOverrider(
 
         public HashSet<int> Get(DependencyNode node)
         {
-            if (!_sets.TryGetValue(node.Binding.Id, out var consumed))
+            if (_sets.TryGetValue(node.Binding.Id, out var consumed))
             {
-                Visit(node);
-                consumed = _sets[node.Binding.Id];
+                return consumed.Ids;
             }
 
-            return consumed.Ids;
+            Visit(node);
+            return _sets[node.Binding.Id].Ids;
         }
 
         // An injection that no override was expected to replace is kept as consumed.
@@ -1243,13 +1247,15 @@ class GraphOverrider(
 
         private bool TryGetId(ITypeSymbol type, out int id)
         {
-            if (!_idsByType.TryGetValue(type, out id))
+            if (_idsByType.TryGetValue(type, out id))
             {
-                id = _ids.TryGetValue(new Injection(InjectionKind.Override, RefKind.None, type, null, ImmutableArray<Location>.Empty), out var injectionId)
-                    ? injectionId
-                    : -1;
-                _idsByType.Add(type, id);
+                return id >= 0;
             }
+
+            id = _ids.TryGetValue(new Injection(InjectionKind.Override, RefKind.None, type, null, ImmutableArray<Location>.Empty), out var injectionId)
+                ? injectionId
+                : -1;
+            _idsByType.Add(type, id);
 
             return id >= 0;
         }

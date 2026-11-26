@@ -7,7 +7,7 @@ namespace Pure.DI.IntegrationTests;
 /// The instance is checked once more under the lock, so that it is created only once
 /// even when the thread safety is disabled, see #174.
 /// </summary>
-public class ContextLockTests
+public partial class ContextLockTests
 {
     [Theory]
     [InlineData("Singleton", "Off")]
@@ -86,7 +86,7 @@ public class ContextLockTests
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["7"], result);
-        Regex.Matches(result.GeneratedCode, @"if \(!_singletonValue\w*Created\)").Count.ShouldBe(2, result);
+        SingleInstanceCheckPattern().Count(result.GeneratedCode).ShouldBe(2, result);
         result.GeneratedCode.ShouldContain("Threading.Thread.MemoryBarrier();", Case.Sensitive, result);
     }
 
@@ -108,7 +108,7 @@ public class ContextLockTests
     }
 
     private static int CountOfChecks(Result result, string typeName) =>
-        Regex.Matches(result.GeneratedCode, $@"if \(_(singleton|scoped){typeName}\w* is null\)").Count;
+        Regex.Count(result.GeneratedCode, $@"if \(_(singleton|scoped){typeName}\w* is null\)");
 
     private static string CreateSource(string threadSafe, string binding) =>
         """
@@ -140,4 +140,8 @@ public class ContextLockTests
             }
         }
         """.Replace("#threadSafe#", threadSafe).Replace("#binding#", binding);
+
+    // The code checks a shared instance before it enters the lock.
+    [GeneratedRegex(@"if \(!_singletonValue\w*Created\)")]
+    private static partial Regex SingleInstanceCheckPattern();
 }

@@ -1,4 +1,6 @@
-﻿namespace Clock;
+﻿using System.Globalization;
+
+namespace Clock;
 
 public sealed class ClockViewModel
     : ViewModel, IAppViewModel, IClockViewModel, IDisposable
@@ -41,9 +43,10 @@ public sealed class ClockViewModel
     {
         _now = _clockModel.Now;
         _log.Info($"Updating by {_now}");
-        Title = $"Pure.DI Clock {_now:f}";
-        Date = $"{_now:d}";
-        Time = $"{_now:T}";
+        // The clock text is shown as-is, so the formats are pinned to the invariant culture instead of the machine locale.
+        Title = $"Pure.DI Clock {_now.ToString("f", CultureInfo.InvariantCulture)}";
+        Date = _now.ToString("d", CultureInfo.InvariantCulture);
+        Time = _now.ToString("T", CultureInfo.InvariantCulture);
     }
 
     public void Dispose()

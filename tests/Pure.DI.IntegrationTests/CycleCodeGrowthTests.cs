@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 using System.Diagnostics;
 using System.Text;
@@ -21,32 +21,78 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
     // The real application of #192 overrides 27 types in the scope of a screen.
     private static readonly int[] WideSizes = [9, 18, 27];
     private static readonly TimeSpan GenerationTimeout = TimeSpan.FromMinutes(2);
+    private static readonly CycleEdge[] EdgeKinds = [CycleEdge.FuncWithArguments, CycleEdge.FuncWithArgumentsByLet, CycleEdge.Func, CycleEdge.Lazy];
+    private static readonly CycleEdge[] ArgumentEdges = [CycleEdge.FuncWithArguments, CycleEdge.FuncWithArgumentsByLet];
+    private static readonly CycleEdge[] OwnedEdges = [CycleEdge.FuncWithArguments, CycleEdge.Func];
+    private static readonly int[] PreviousCounts = [1, 3];
+    private static readonly string[] Lifetimes = ["Transient", "PerBlock"];
+    private static readonly string[] Modes = ["Auto", "On"];
     private const int Steps = 9;
     // Equal steps in the number of screens must add approximately equal amounts of code.
     private const double MaxGrowthRatio = 1.35;
 
-    public static IEnumerable<object[]> EdgeCases() =>
-        from edge in new[] { CycleEdge.FuncWithArguments, CycleEdge.FuncWithArgumentsByLet, CycleEdge.Func, CycleEdge.Lazy }
-        from lifetime in new[] { "Transient", "PerBlock" }
-        from mode in new[] { "Auto", "On" }
-        select new object[] { edge, lifetime, mode };
+    public static TheoryData<CycleEdge, string, string> EdgeCases()
+    {
+        var cases = new TheoryData<CycleEdge, string, string>();
+        foreach (var edge in EdgeKinds)
+        {
+            foreach (var lifetime in Lifetimes)
+            {
+                foreach (var mode in Modes)
+                {
+                    cases.Add(edge, lifetime, mode);
+                }
+            }
+        }
 
-    public static IEnumerable<object[]> ArgumentCases() =>
-        from edge in new[] { CycleEdge.FuncWithArguments, CycleEdge.FuncWithArgumentsByLet }
-        from mode in new[] { "Auto", "On" }
-        select new object[] { edge, mode };
+        return cases;
+    }
+
+    public static TheoryData<CycleEdge, string> ArgumentCases()
+    {
+        var cases = new TheoryData<CycleEdge, string>();
+        foreach (var edge in ArgumentEdges)
+        {
+            foreach (var mode in Modes)
+            {
+                cases.Add(edge, mode);
+            }
+        }
+
+        return cases;
+    }
 
     // ctx.Let passes a value to the current level only, which is Owned<T> rather than the screen in it, see #191.
-    public static IEnumerable<object[]> OwnedCases() =>
-        from edge in new[] { CycleEdge.FuncWithArguments, CycleEdge.Func }
-        from mode in new[] { "Auto", "On" }
-        select new object[] { edge, mode };
+    public static TheoryData<CycleEdge, string> OwnedCases()
+    {
+        var cases = new TheoryData<CycleEdge, string>();
+        foreach (var edge in OwnedEdges)
+        {
+            foreach (var mode in Modes)
+            {
+                cases.Add(edge, mode);
+            }
+        }
 
-    public static IEnumerable<object[]> PreviousCases() =>
-        from edge in new[] { CycleEdge.FuncWithArguments, CycleEdge.FuncWithArgumentsByLet }
-        from previous in new[] { 1, 3 }
-        from mode in new[] { "Auto", "On" }
-        select new object[] { edge, previous, mode };
+        return cases;
+    }
+
+    public static TheoryData<CycleEdge, int, string> PreviousCases()
+    {
+        var cases = new TheoryData<CycleEdge, int, string>();
+        foreach (var edge in ArgumentEdges)
+        {
+            foreach (var previous in PreviousCounts)
+            {
+                foreach (var mode in Modes)
+                {
+                    cases.Add(edge, previous, mode);
+                }
+            }
+        }
+
+        return cases;
+    }
 
     // Each screen opens the next two screens through lambdas of the same kind.
     [Theory]
@@ -953,13 +999,13 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
             }
         }
 
-        var tokensRatio = GrowthRatio(measurements.Select(i => i.Tokens).ToArray());
+        var tokensRatio = GrowthRatio([.. measurements.Select(i => i.Tokens)]);
         if (tokensRatio >= MaxGrowthRatio)
         {
             problems.Add($"Tokens grow by the ratio {tokensRatio:F2}");
         }
 
-        var constructionsRatio = GrowthRatio(measurements.Select(i => i.Constructions).ToArray());
+        var constructionsRatio = GrowthRatio([.. measurements.Select(i => i.Constructions)]);
         if (constructionsRatio >= MaxGrowthRatio)
         {
             problems.Add($"Constructions of screens grow by the ratio {constructionsRatio:F2}");
@@ -985,7 +1031,7 @@ public class CycleCodeGrowthTests(ITestOutputHelper output)
         return measurement;
     }
 
-    private static double GrowthRatio(IReadOnlyList<int> sizes)
+    private static double GrowthRatio(int[] sizes)
     {
         var firstStep = sizes[1] - sizes[0];
         var lastStep = sizes[2] - sizes[1];

@@ -1,4 +1,4 @@
-﻿// ReSharper disable ConvertIfStatementToSwitchStatement
+// ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable InvertIf
 // ReSharper disable UseCollectionExpression
 namespace Build.Core.Targets;
@@ -227,11 +227,11 @@ class CreateExamplesTarget(
             .OrderBy(i => groups.GetValueOrDefault(i.Key, int.MaxValue))
             .Select(i => new ExampleGroup(
                 i.Key,
-                i.OrderBy(j => GetPriority(j, i.Key)).ThenBy(j => j[DescriptionKey]).Select(j => new Example(j)).ToList()))
+                i.OrderBy(j => GetPriority(j, i.Key)).ThenBy(j => j[DescriptionKey], StringComparer.InvariantCulture).Select(j => new Example(j)).ToList()))
             .ToList();
     }
 
-    public static int GetPriority(IReadOnlyDictionary<string, string> example, string groupName)
+    private static int GetPriority(Dictionary<string, string> example, string groupName)
     {
         var defaultPriority = int.MaxValue;
         foreach (var priority in example[PriorityKey].Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))

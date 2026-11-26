@@ -112,7 +112,7 @@ sealed class NodeTools(
         node.Construct is { Source.Kind: MdConstructKind.AsyncEnumerable };
 
     private bool IsAsyncDisposable(Compilation compilation, ISymbol type) =>
-        types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is {} asyncDisposableType
+        types.TryGet(Core.SpecialType.AsyncDisposable, compilation) is {} asyncDisposableType
         && types.TypeEquals(type, asyncDisposableType);
 
     private static bool IsDelegate(DependencyNode node) =>

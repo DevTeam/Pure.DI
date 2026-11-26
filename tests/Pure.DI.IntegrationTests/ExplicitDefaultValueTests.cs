@@ -1,11 +1,12 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
+using System.Text.RegularExpressions;
 using Core;
 
 /// <summary>
 /// Tests related to explicit default value handling.
 /// </summary>
-public class ExplicitDefaultValueTests
+public partial class ExplicitDefaultValueTests
 {
     [Fact]
     public async Task ShouldUseCtorWhenItHasDefaultValue()
@@ -905,7 +906,7 @@ public class ExplicitDefaultValueTests
         result.Success.ShouldBeTrue(result);
         result.DependencyGraphs.ShouldHaveSingleItem().BuildAttempts.ShouldBeLessThanOrEqualTo(2);
         // Every service gets the default value, rather than a variant of the constructor without the optional parameter.
-        System.Text.RegularExpressions.Regex.Matches(result.GeneratedCode, @"new global::Sample\.Service\d+\(null\)").Count.ShouldBe(20, result);
+        DefaultValueConstructionPattern().Count(result.GeneratedCode).ShouldBe(20, result);
     }
 
     [Fact]
@@ -985,7 +986,7 @@ public class ExplicitDefaultValueTests
     public async Task ShouldKeepDefaultValuesWhenOtherConsumerRequiresSameTypes(bool hasEditor, bool isEditorFirst)
     {
         // Given
-        var viewerRoot = ".Root<Viewer>(\"Viewer\")";
+        const string viewerRoot = ".Root<Viewer>(\"Viewer\")";
         var editorRoot = hasEditor ? ".Root<Editor>(\"Editor\")" : "";
         var roots = isEditorFirst ? editorRoot + viewerRoot : viewerRoot + editorRoot;
         var editorOutput = hasEditor ? "Console.WriteLine(composition.Editor);" : "";
@@ -1339,4 +1340,8 @@ public class ExplicitDefaultValueTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(hasEditor ? ["Viewer(box)", "Editor(box)"] : ["Viewer(box)"], result);
     }
+
+    // A constructor call with an explicit default value, rather than a variant without the optional parameter.
+    [GeneratedRegex(@"new global::Sample\.Service\d+\(null\)")]
+    private static partial Regex DefaultValueConstructionPattern();
 }

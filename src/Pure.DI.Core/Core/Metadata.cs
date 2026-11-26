@@ -7,7 +7,7 @@ sealed class Metadata(
     ITypeSymbolComparer typeSymbolComparer)
     : IMetadata
 {
-    private const string IConfigurationTypeName = $"{Names.GeneratorName}.{nameof(IConfiguration)}";
+    private const string ConfigurationTypeName = $"{Names.GeneratorName}.{nameof(IConfiguration)}";
     private readonly ConditionalWeakTable<Compilation, ITypeSymbol?> _configTypeSymbols = new();
 
     public bool IsMetadata(SyntaxNode node, SemanticModel semanticModel, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ sealed class Metadata(
 
                     var configType = _configTypeSymbols.GetValue(
                         semanticModel.Compilation,
-                        static compilation => compilation.GetTypeByMetadataName(IConfigurationTypeName));
+                        static compilation => compilation.GetTypeByMetadataName(ConfigurationTypeName));
 
                     return typeSymbolComparer.RuntimeEquals(returnType, configType);
             }

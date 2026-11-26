@@ -151,6 +151,8 @@ sealed class DependencyGraphBuilder(
                 // An explicit default value is an edge of the current consumer only and is not added to the map,
                 // so every consumer of an injection without a source needs its own default value,
                 // and a later consumer that requires the injection still has to find its source.
+                // The default value is an edge of the consumer only, so it is not deduplicated, see the comment above.
+                // ReSharper disable once ConvertIfStatementToSwitchStatement
                 if ((hasSourceNode || !hasExplicitDefaultValue) && !processedInjection.Add(injection))
                 {
                     continue;

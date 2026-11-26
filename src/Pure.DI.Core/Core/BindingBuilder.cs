@@ -215,8 +215,7 @@ sealed class BindingBuilder(
 
         // 'System.IAsyncDisposable' is not covered by the Roslyn special types, so it is excluded explicitly
         // to keep it in line with 'System.IDisposable'.
-        var isNotAsyncDisposable = types.TryGet(Core.SpecialType.IAsyncDisposable, compilation) is not {} asyncDisposableType
-            || !types.TypeEquals(type, asyncDisposableType);
+        var isNotAsyncDisposable = !types.TypeEquals(type, types.TryGet(SpecialType.AsyncDisposable, compilation));
 
         // Verifies that the type is not explicitly excluded via the 'SpecialTypes' setup configuration.
         var isNotMarkedAsSpecial = !specialTypes.Contains(type);

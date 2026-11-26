@@ -1,5 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 
+using System.Globalization;
 using System.Text.Json;
 // ReSharper disable UseCollectionExpression
 
@@ -39,14 +40,15 @@ class ReleasesTarget(
         DateTime? fromDate;
         if (!string.IsNullOrWhiteSpace(settings.ReleasesFromDate))
         {
-            if (DateTime.TryParse(settings.ReleasesFromDate, out var parsedDate))
+            if (DateTime.TryParse(settings.ReleasesFromDate, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
             {
                 fromDate = parsedDate;
                 filteredReleases = filteredReleases
                     .Where(release =>
                     {
                         var publishedAt = release.TryGetProperty("published_at", out var dateProp) ? dateProp.GetString() : null;
-                        if (!string.IsNullOrWhiteSpace(publishedAt) && DateTime.TryParse(publishedAt, out var publishDate))
+                        if (!string.IsNullOrWhiteSpace(publishedAt)
+                            && DateTime.TryParse(publishedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out var publishDate))
                         {
                             return publishDate >= fromDate;
                         }

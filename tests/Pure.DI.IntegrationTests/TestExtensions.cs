@@ -1,4 +1,4 @@
-﻿// ReSharper disable StringLiteralTypo
+// ReSharper disable StringLiteralTypo
 // ReSharper disable HeapView.ObjectAllocation
 // ReSharper disable HeapView.ImplicitCapture
 // ReSharper disable HeapView.ObjectAllocation.Evident
@@ -9,6 +9,9 @@
 
 // ReSharper disable UnusedMethodReturnValue.Local
 // ReSharper disable UseCollectionExpression
+// The helpers stay classic extension methods: the tests are compiled with the Roslyn versions the generator targets,
+// and only the newest of them supports extension blocks.
+// ReSharper disable ConvertToExtensionBlock
 namespace Pure.DI.IntegrationTests;
 
 using System.Collections.Concurrent;
@@ -19,13 +22,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.Loader;
 using Core;
+// ReSharper disable MethodHasAsyncOverload
+// ReSharper disable MethodSupportsCancellation
+// The helper waits for the generation task instead of awaiting it: the race against the timeout
+// must not depend on the token, and a cancellation passes through to the caller.
 using Core.Models;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Moq;
 using Generator=Generator;
 
-public static class TestExtensions
+public static partial class TestExtensions
 {
     private static readonly AsyncLocal<StringWriter?> OutputWriter = new();
 
@@ -39,7 +46,7 @@ public static class TestExtensions
 
     private class ThreadSafeConsoleWriter(TextWriter initialOut) : TextWriter
     {
-        public override System.Text.Encoding Encoding => initialOut.Encoding;
+        public override Encoding Encoding => initialOut.Encoding;
 
         public override void Write(char value)
         {
@@ -94,10 +101,21 @@ public static class TestExtensions
     internal static async Task<Result> RunAsync(this string setupCode, Options options, TimeSpan timeout)
     {
         using var cancellationTokenSource = new CancellationTokenSource();
-        var run = Task.Run(() => setupCode.RunAsync(options with { CancellationToken = cancellationTokenSource.Token }));
-        if (await Task.WhenAny(run, Task.Delay(timeout)) == run)
+        // Only the struct token is captured, so the closure cannot reach the canceled and disposed source.
+        var cancellationToken = cancellationTokenSource.Token;
+        var run = Task.Run(() => setupCode.RunAsync(options with { CancellationToken = cancellationToken }));
+        // The timer is canceled once the race is over, so that a finished test leaves no timer behind.
+        using var timeoutCancellationTokenSource = new CancellationTokenSource();
+        try
         {
-            return await run;
+            if (await Task.WhenAny(run, Task.Delay(timeout, timeoutCancellationTokenSource.Token)) == run)
+            {
+                return await run;
+            }
+        }
+        finally
+        {
+            timeoutCancellationTokenSource.Cancel();
         }
 
         cancellationTokenSource.Cancel();
@@ -290,6 +308,10 @@ public static class TestExtensions
     // is written there, so the generated code of two versions of the generator can be compared file by file.
     // A file is named after a hash of the test sources and options, which does not depend on line endings,
     // and the commit hashes in the generated code are replaced, so only the changes of the generator remain.
+    // A 40-character lowercase hex commit hash is replaced by a placeholder, so the dump does not depend on the commit.
+    [GeneratedRegex("[0-9a-f]{40}")]
+    private static partial Regex CommitHashPattern();
+
     private static void DumpGeneratedCode(IReadOnlyCollection<string> sources, Options options, IEnumerable<Source> generatedSources)
     {
         var dumpDirectory = Environment.GetEnvironmentVariable("PUREDI_DUMP_DIR");
@@ -303,7 +325,7 @@ public static class TestExtensions
                   + options.NullableContextOptions
                   + string.Join(",", options.PreprocessorSymbols.IsDefault ? [] : options.PreprocessorSymbols);
         var fileName = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(key)))[..16] + ".cs";
-        var code = Regex.Replace(string.Join(Environment.NewLine, generatedSources.Select(i => i.SourceText)), "[0-9a-f]{40}", "HASH");
+        var code = CommitHashPattern().Replace(string.Join(Environment.NewLine, generatedSources.Select(i => i.SourceText)), "HASH");
         try
         {
             Directory.CreateDirectory(dumpDirectory);

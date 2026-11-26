@@ -26,14 +26,21 @@
         <!--
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.3</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.3.1</AnalyzerRoslynPackageVersion>
-        <RolsynVersions Condition="'$(RolsynVersions)'==''">ROSLYN4_3_OR_GREATER</RolsynVersions>
+        <RoslynVersions Condition="'$(RoslynVersions)'==''">ROSLYN4_3_OR_GREATER</RoslynVersions>
         -->
 
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">5.12</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">5.12.0</AnalyzerRoslynPackageVersion>
-        <RolsynVersions Condition="'$(RolsynVersions)'==''">ROSLYN5_10_OR_GREATER;ROSLYN4_8_OR_GREATER;ROSLYN4_3_OR_GREATER</RolsynVersions>
+        <!--
+        The Roslyn API levels used by the '#if ROSLYN*_OR_GREATER' directives of the sources and tests.
+        Every supported gate must be listed here, otherwise the code behind it is never compiled, and for the
+        Roslyn 5.12 compiler all of them are supported. A level must be a Roslyn version that actually exists on
+        NuGet, otherwise the CI build of that version cannot define it. The build passes the levels of the Roslyn
+        version it builds, so keep this list in sync with GeneratorTarget.RoslynApiLevels.
+        -->
+        <RoslynVersions Condition="'$(RoslynVersions)'==''">ROSLYN5_9_OR_GREATER;ROSLYN5_6_OR_GREATER;ROSLYN4_8_OR_GREATER;ROSLYN4_3_OR_GREATER</RoslynVersions>
 
-        <DefineConstants>$(DefineConstants);$(RolsynVersions)</DefineConstants>
+        <DefineConstants>$(DefineConstants);$(RoslynVersions)</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>

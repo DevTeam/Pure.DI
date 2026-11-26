@@ -1,6 +1,9 @@
 // ReSharper disable RedundantUsingDirective
 // ReSharper disable UseNegatedPatternInIsExpression
 // ReSharper disable ArrangeObjectCreationWhenTypeEvident
+// ReSharper disable UnusedMember.Global
+// The ownership handle is a part of the public API of the package, so members such as
+// Add(IOwn) are called by generated code and by consumers rather than from this repository.
 namespace Pure.DI.Abstractions;
 
 using System;
@@ -13,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <remarks>
 ///     Resources are registered through <see cref="Add(object)" /> in creation order and released in reverse
-///     order when <see cref="Dispose" /> (or <see cref="DisposeAsync" /> on supporting frameworks) is called.
+///     order when <see cref="System.IDisposable.Dispose" /> (or DisposeAsync on supporting frameworks) is called.
 ///     Disposal is idempotent and swallows exceptions thrown by individual resources so that a single failing
 ///     resource cannot prevent the rest of the graph from being released. Once the owner has been disposed,
 ///     any further <see cref="Add(object)" /> immediately disposes the supplied resource and throws an
@@ -227,7 +230,8 @@ public sealed class Own : List<object>, IOwn
             case IAsyncDisposable asyncDisposableInstance:
                 try
                 {
-                    asyncDisposableInstance.DisposeAsync().GetAwaiter().GetResult();
+                    // The disposal is synchronous by contract, so the ValueTask has to be waited for here.
+                    asyncDisposableInstance.DisposeAsync().AsTask().GetAwaiter().GetResult();
                 }
                 catch (Exception)
                 {

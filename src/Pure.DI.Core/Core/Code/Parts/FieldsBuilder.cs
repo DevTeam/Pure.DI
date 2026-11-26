@@ -48,7 +48,7 @@ sealed class FieldsBuilder(
         if (composition.TotalDisposablesCount > 0)
         {
             // _disposables field
-            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private object[] {Names.DisposablesFieldName}{(skipFieldsInit ? "" : $" = new object[{composition.TotalDisposablesCount.ToString()}]")};");
+            code.AppendLine($"[{Names.NonSerializedAttributeTypeName}] private object[] {Names.DisposablesFieldName}{(skipFieldsInit ? "" : $" = new object[{composition.TotalDisposablesCount}]")};");
             membersCounter++;
 
             // _disposeIndex field

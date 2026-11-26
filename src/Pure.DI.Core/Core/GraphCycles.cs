@@ -1,4 +1,7 @@
-﻿namespace Pure.DI.Core;
+// ReSharper disable GenericEnumeratorNotDisposed
+// The enumerators of the in-edges are stored on the explicit path stack and disposed when their node
+// is popped (path.Pop(); dependencies.Dispose()), which the inspection cannot trace through the stack.
+namespace Pure.DI.Core;
 
 static class GraphCycles
 {
@@ -19,7 +22,7 @@ static class GraphCycles
 
             // The iterative version keeps the position in the dependencies of each node on the path.
             var path = new Stack<(DependencyNode Node, IEnumerator<Dependency> Dependencies)>();
-            Enter(vertex);
+            Enter(path, vertex);
             while (path.Count > 0)
             {
                 var (node, dependencies) = path.Peek();
@@ -33,7 +36,7 @@ static class GraphCycles
 
                     if (!indexes.TryGetValue(source.Binding.Id, out var sourceIndex))
                     {
-                        Enter(source);
+                        Enter(path, source);
                     }
                     else if (onStack.Contains(source.Binding.Id))
                     {
@@ -45,6 +48,7 @@ static class GraphCycles
                 }
 
                 path.Pop();
+                dependencies.Dispose();
                 var nodeIndex = indexes[node.Binding.Id];
                 if (path.Count > 0)
                 {
@@ -72,17 +76,21 @@ static class GraphCycles
                     cycles.Add(component);
                 }
             }
-
-            void Enter(DependencyNode node)
-            {
-                indexes[node.Binding.Id] = (index, index);
-                index++;
-                stack.Push(node);
-                onStack.Add(node.Binding.Id);
-                path.Push((node, graph.TryGetInEdges(node, out var nodeDependencies) ? nodeDependencies.GetEnumerator() : Enumerable.Empty<Dependency>().GetEnumerator()));
-            }
         }
 
         return cycles;
+
+        void Enter(Stack<(DependencyNode Node, IEnumerator<Dependency> Dependencies)> currentPath, DependencyNode node)
+        {
+            indexes[node.Binding.Id] = (index, index);
+            index++;
+            stack.Push(node);
+            onStack.Add(node.Binding.Id);
+            // The dependencies are read through an explicit enumerator kept on the path, so it is disposed
+            // when the node leaves the path.
+            currentPath.Push((node, graph.TryGetInEdges(node, out var nodeDependencies)
+                ? nodeDependencies.GetEnumerator()
+                : Enumerable.Empty<Dependency>().GetEnumerator()));
+        }
     }
 }

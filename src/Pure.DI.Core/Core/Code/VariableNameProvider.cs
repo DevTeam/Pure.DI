@@ -101,7 +101,7 @@ class NameProvider(IUniqueNameProvider uniqueNameProvider): INameProvider
         if (char.IsLower(firstChar))
         {
             var chars = title.ToArray();
-            chars[0] = char.ToUpper(firstChar);
+            chars[0] = char.ToUpperInvariant(firstChar);
             return new string(chars);
         }
 

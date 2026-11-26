@@ -11,12 +11,18 @@ struct Hasher()
     {
         for (var i = 0; i < 8; i++)
         {
-            Value = (Value ^ (value & 0xFF)) * Prime;
+            var lowByte = value & 0xFFUL;
+            Value = (Value ^ lowByte) * Prime;
             value >>= 8;
         }
     }
 
-    public void Add(int value) => Add((ulong)(uint)value);
+    // The unsigned conversion is intentional: a negative value must hash as the 32-bit pattern it has in memory.
+    public void Add(int value)
+    {
+        var unsigned = (uint)value;
+        Add(unsigned);
+    }
 
     public void Add(bool value) => Add(value ? 1UL : 0UL);
 
@@ -37,7 +43,7 @@ struct Hasher()
         Add(value.Length);
     }
 
-    public void Add(SourceText text)
+    private void Add(SourceText text)
     {
         var buffer = new char[4096];
         for (var position = 0; position < text.Length; position += buffer.Length)

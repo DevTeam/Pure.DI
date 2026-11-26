@@ -36,6 +36,12 @@ namespace Pure.DI.UsageTests.Advanced.CustomOwnedDisposeStrategyScenario
     using Shouldly;
     using Xunit;
 
+// ReSharper disable UnusedParameter.Global
+// ReSharper disable UnusedMember.Global
+// The timeout and the Abort member belong to the WCF shutdown contract that the scenario mirrors;
+// the fake records only the order of the calls.
+// CA1822: the partial hooks belong to the composition instance the generator declares them on.
+#pragma warning disable CA1822
 // {
 //# using Pure.DI;
 // }

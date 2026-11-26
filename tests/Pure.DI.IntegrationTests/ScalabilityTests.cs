@@ -14,19 +14,42 @@ using Core;
 public class ScalabilityTests
 {
     private static readonly int[] Sizes = [4, 6, 10];
+    private static readonly string[] DiamondLifetimes = ["Transient", "PerBlock", "PerResolve", "Singleton"];
+    private static readonly string[] BranchingLifetimes = ["Transient", "PerResolve", "Scoped", "Singleton"];
+    private static readonly string[] LocalFunctionsModes = ["On", "Auto"];
     // The size grows by 2 and then by 4, so a linear growth adds about twice as much code in the last step.
     private const double MaxGrowthRatio = 3;
 
-    public static IEnumerable<object[]> DiamondCases() =>
-        from lifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
-        from creation in new[] { Creation.Constructor, Creation.Factory }
-        from context in new[] { DiamondContext.Root, DiamondContext.Lazy, DiamondContext.FuncArgument, DiamondContext.FuncArgumentWithBackReference }
-        select new object[] { lifetime, creation, context };
+    public static TheoryData<string, Creation, DiamondContext> DiamondCases()
+    {
+        var cases = new TheoryData<string, Creation, DiamondContext>();
+        foreach (var lifetime in DiamondLifetimes)
+        {
+            foreach (var creation in new[] { Creation.Constructor, Creation.Factory })
+            {
+                foreach (var context in new[] { DiamondContext.Root, DiamondContext.Lazy, DiamondContext.FuncArgument, DiamondContext.FuncArgumentWithBackReference })
+                {
+                    cases.Add(lifetime, creation, context);
+                }
+            }
+        }
 
-    public static IEnumerable<object[]> NestedFuncCases() =>
-        from creation in new[] { Creation.Constructor, Creation.Factory }
-        from arguments in new[] { NestedFuncArguments.ConsumedByLast, NestedFuncArguments.ConsumedByEach, NestedFuncArguments.OnePerFunc }
-        select new object[] { creation, arguments };
+        return cases;
+    }
+
+    public static TheoryData<Creation, NestedFuncArguments> NestedFuncCases()
+    {
+        var cases = new TheoryData<Creation, NestedFuncArguments>();
+        foreach (var creation in new[] { Creation.Constructor, Creation.Factory })
+        {
+            foreach (var arguments in new[] { NestedFuncArguments.ConsumedByLast, NestedFuncArguments.ConsumedByEach, NestedFuncArguments.OnePerFunc })
+            {
+                cases.Add(creation, arguments);
+            }
+        }
+
+        return cases;
+    }
 
     [Theory]
     [MemberData(nameof(DiamondCases))]
@@ -74,23 +97,40 @@ public class ScalabilityTests
 #if ROSLYN4_8_OR_GREATER
     // Each level reaches the next one by two dependency paths, so the number of paths to the last level grows as the powers of 2.
     // The code that creates an instance must not be repeated on each of these paths, see #186.
-    public static IEnumerable<object[]> BranchingCases() =>
-        from lifetime in new[] { "Transient", "PerResolve", "Scoped", "Singleton" }
-        from edges in new[]
+    public static TheoryData<string, Edge, Edge, FuncBinding, string> BranchingCases()
+    {
+        var cases = new TheoryData<string, Edge, Edge, FuncBinding, string>();
+        foreach (var lifetime in BranchingLifetimes)
         {
-            (Edge.FuncArgumentConsumed, Edge.FuncArgumentConsumed),
-            (Edge.FuncArgumentConsumed, Edge.FuncArgumentNotConsumed),
-            (Edge.FuncArgumentNotConsumed, Edge.FuncArgumentNotConsumed),
-            (Edge.FuncArgumentConsumed, Edge.Func),
-            (Edge.FuncArgumentConsumed, Edge.Lazy),
-            (Edge.FuncArgumentConsumed, Edge.Direct),
-            (Edge.Func, Edge.Lazy)
+            foreach (var edges in new[]
+                     {
+                         (Edge.FuncArgumentConsumed, Edge.FuncArgumentConsumed),
+                         (Edge.FuncArgumentConsumed, Edge.FuncArgumentNotConsumed),
+                         (Edge.FuncArgumentNotConsumed, Edge.FuncArgumentNotConsumed),
+                         (Edge.FuncArgumentConsumed, Edge.Func),
+                         (Edge.FuncArgumentConsumed, Edge.Lazy),
+                         (Edge.FuncArgumentConsumed, Edge.Direct),
+                         (Edge.Func, Edge.Lazy)
+                     })
+            {
+                foreach (var funcBinding in new[] { FuncBinding.BuiltIn, FuncBinding.Let })
+                {
+                    // A delegate without arguments does not depend on the binding of Func<T1, T>.
+                    if (funcBinding != FuncBinding.BuiltIn && edges.Item1 is not (Edge.FuncArgumentConsumed or Edge.FuncArgumentNotConsumed))
+                    {
+                        continue;
+                    }
+
+                    foreach (var localFunctions in LocalFunctionsModes)
+                    {
+                        cases.Add(lifetime, edges.Item1, edges.Item2, funcBinding, localFunctions);
+                    }
+                }
+            }
         }
-        from funcBinding in new[] { FuncBinding.BuiltIn, FuncBinding.Let }
-        from localFunctions in new[] { "On", "Auto" }
-        // A delegate without arguments does not depend on the binding of Func<T1, T>.
-        where funcBinding == FuncBinding.BuiltIn || edges.Item1 is Edge.FuncArgumentConsumed or Edge.FuncArgumentNotConsumed
-        select new object[] { lifetime, edges.Item1, edges.Item2, funcBinding, localFunctions };
+
+        return cases;
+    }
 
     [Theory]
     [MemberData(nameof(BranchingCases))]
@@ -109,12 +149,14 @@ public class ScalabilityTests
             result.Errors.Count.ShouldBe(0, result);
             result.StdOut.ShouldBe([string.Concat(Enumerable.Range(0, size).Select(i => $"S{i}"))], result);
             lines.Add(CountGraphLines(result));
-            if (isShared && localFunctions == "On")
+            if (!isShared || localFunctions != "On")
             {
-                // A shared instance that does not read the arguments of the delegates it is reached from is created in one place.
-                var constructions = result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains($"new global::Sample.S{size - 1}("));
-                constructions.ShouldBe(1, $"Constructions of S{size - 1} of {size} levels");
+                continue;
             }
+
+            // A shared instance that does not read the arguments of the delegates it is reached from is created in one place.
+            var constructions = result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains($"new global::Sample.S{size - 1}("));
+            constructions.ShouldBe(1, $"Constructions of S{size - 1} of {size} levels");
         }
 
         ShouldGrowLinearly(lines);
@@ -259,13 +301,15 @@ public class ScalabilityTests
                   }
                   """);
 
-            if (creation == Creation.Factory)
+            if (creation != Creation.Factory)
             {
-                var names = parameters.Split(", ", StringSplitOptions.RemoveEmptyEntries).Select(i => i.Split(' ')).ToList();
-                var injections = string.Concat(names.Select(i => $"ctx.Inject(out {i[0]} {i[1]}); "));
-                var arguments2 = string.Concat(names.Select(i => $"{i[1]}, "));
-                bindings.AppendLine($".Bind<Vm{i}>().To(ctx => {{ {injections}ctx.Inject(out Service service); ctx.Inject(out Func<Nav, Vm{i + 1}> open); ctx.Inject(out {openWithBType} openWithB); return new Vm{i}({arguments2}service, open, openWithB); }})");
+                continue;
             }
+
+            var names = parameters.Split(", ", StringSplitOptions.RemoveEmptyEntries).Select(name => name.Split(' ')).ToList();
+            var injections = string.Concat(names.Select(parts => $"ctx.Inject(out {parts[0]} {parts[1]}); "));
+            var arguments2 = string.Concat(names.Select(parts => $"{parts[1]}, "));
+            bindings.AppendLine($".Bind<Vm{i}>().To(ctx => {{ {injections}ctx.Inject(out Service service); ctx.Inject(out Func<Nav, Vm{i + 1}> open); ctx.Inject(out {openWithBType} openWithB); return new Vm{i}({arguments2}service, open, openWithB); }})");
         }
 
         if (creation == Creation.Factory)

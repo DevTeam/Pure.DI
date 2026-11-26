@@ -14,7 +14,7 @@ using System.Diagnostics.CodeAnalysis;
 ///     deterministically dispose the object graph behind a value. Reading <see cref="Value" /> gives access to
 ///     the resolved instance, while disposing the <see cref="Own{T}" /> disposes every disposable object that
 ///     was accumulated while creating that value. The struct implements <see cref="IOwn" />, so it also
-///     supports asynchronous disposal on frameworks that provide <see cref="IAsyncDisposable" />.
+///     supports asynchronous disposal on frameworks that provide IAsyncDisposable.
 /// </remarks>
 /// <param name="value">The owned value.</param>
 /// <param name="own">The ownership handle that disposes the resources backing <paramref name="value" />.</param>

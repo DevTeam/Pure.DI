@@ -6,11 +6,6 @@
 interface IVarsMap
 {
     /// <summary>
-    /// Gets all variables in the map.
-    /// </summary>
-    IEnumerable<Var> Vars { get; }
-
-    /// <summary>
     /// Gets all variable declarations in the map.
     /// </summary>
     IEnumerable<VarDeclaration> Declarations { get; }

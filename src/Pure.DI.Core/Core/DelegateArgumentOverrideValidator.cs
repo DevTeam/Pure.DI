@@ -88,15 +88,17 @@ sealed class DelegateArgumentOverrideValidator(
 
     public static bool IsDelegateArgument(in MdOverride @override)
     {
-        if (@override.Source is not InvocationExpressionSyntax invocation
-            || invocation.ArgumentList.Arguments is not [{} valueArgument, ..]
-            || valueArgument.Expression is not IdentifierNameSyntax identifier)
+        if (@override.Source is not InvocationExpressionSyntax { ArgumentList.Arguments: [{} valueArgument, ..] })
         {
             return false;
         }
 
-        var parameterName = identifier.Identifier.ValueText;
-        var lambda = identifier.Ancestors().OfType<LambdaExpressionSyntax>().FirstOrDefault();
+        if (valueArgument.Expression is not IdentifierNameSyntax { Identifier.ValueText: var parameterName })
+        {
+            return false;
+        }
+
+        var lambda = valueArgument.Ancestors().OfType<LambdaExpressionSyntax>().FirstOrDefault();
         return lambda switch
         {
             SimpleLambdaExpressionSyntax simpleLambda => simpleLambda.Parameter.Identifier.ValueText == parameterName,

@@ -68,7 +68,7 @@ sealed class SyntaxTreeShape
             return new SyntaxTreeShape(
                 true,
                 Hasher.Hash(tree.GetText(cancellationToken)),
-                setupTypeNames.Distinct().ToImmutableArray(),
+                [..setupTypeNames.Distinct()],
                 ImmutableArray<(string, ulong)>.Empty);
         }
 

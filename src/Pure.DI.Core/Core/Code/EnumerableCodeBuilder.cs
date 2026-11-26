@@ -123,13 +123,15 @@ sealed class EnumerableCodeBuilder(
     {
         var var = ctx.VarInjection.Var;
         var onEnumCreated = buildTools.OnCreated(ctx, ctx.VarInjection);
-        if (onEnumCreated.Count > 0)
+        if (onEnumCreated.Count == 0)
         {
-            // The creation hook may replace the enumerable, so later injections must use the local.
-            var.CodeExpression = var.Name;
-            lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {newEnum};");
-            lines.AppendLines(onEnumCreated);
+            return;
         }
+
+        // The creation hook may replace the enumerable, so later injections must use the local.
+        var.CodeExpression = var.Name;
+        lines.AppendLine($"{buildTools.GetDeclaration(ctx, var.Declaration, useVar: true)}{var.Name} = {newEnum};");
+        lines.AppendLines(onEnumCreated);
     }
 
     // The code of the enumeration refers only to what the whole root sees: the fields, the arguments of the root,

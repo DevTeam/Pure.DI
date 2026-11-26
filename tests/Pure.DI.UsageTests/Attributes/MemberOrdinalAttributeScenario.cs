@@ -23,6 +23,9 @@ $r=Shouldly
 
 namespace Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario;
 
+// ReSharper disable InvocationIsCultureSensitive
+// The date is formatted with an explicit invariant pattern on purpose: the scenario shows the
+// injected value as a document date, independent of the culture of the machine.
 using System.Text;
 using Shouldly;
 using Xunit;

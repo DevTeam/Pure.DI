@@ -12,7 +12,9 @@ class RootSignatureProvider(
     private const string NotnullConstraint = "notnull";
     private const string StructConstraint = "struct";
     private const string NewConstraint = "new()";
+#if ROSLYN5_6_OR_GREATER
     private const string AllowsRefStructConstraint = "allows ref struct";
+#endif
 
     public string GetRootSignature(CompositionCode composition, Root root)
     {
@@ -88,10 +90,10 @@ class RootSignatureProvider(
             }
 
             var constraints = new List<string>();
-            constraints.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Setup, i).Name).OrderBy(i => i));
+            constraints.AddRange(curTypeParam.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Setup, i).Name).OrderBy(i => i, StringComparer.Ordinal));
             foreach (var typeParameter in typeParameters)
             {
-                constraints.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Setup, i).Name).OrderBy(i => i));
+                constraints.AddRange(typeParameter.ConstraintTypes.Select(i => typeResolver.Resolve(composition.Setup, i).Name).OrderBy(i => i, StringComparer.Ordinal));
             }
 
             FillConstraints(curTypeParam, constraints);

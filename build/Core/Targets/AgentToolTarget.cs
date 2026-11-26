@@ -11,10 +11,9 @@ class AgentToolTarget(Settings settings, Commands commands, Env env) : IInitiali
         var outputDirectory = env.GetPath(PathType.PackagesDirectory);
         await new DotNetPack()
             .WithProject(Path.Combine("src", "Pure.DI.Agent", "Pure.DI.Agent.csproj"))
-            .WithProps([
+            .WithProps(
                 ("configuration", settings.Configuration),
-                ("version", version.ToString())
-            ])
+                ("version", version.ToString()))
             .WithOutput(outputDirectory)
             .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
 

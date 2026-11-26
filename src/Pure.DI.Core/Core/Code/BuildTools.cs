@@ -63,7 +63,7 @@ sealed class BuildTools(
             .Where(acc => baseTypes.Value.Contains(acc.Type))
             .GroupBy(acc => acc.VarInjection.Var.Name)
             .Select(grouping => grouping.First())
-            .OrderBy(i => i.VarInjection.Var.Name)
+            .OrderBy(i => i.VarInjection.Var.Name, StringComparer.Ordinal)
             .Select(i => new Line(0, $"{i.VarInjection.Var.Name}.Add({varInjection.Var.Name});"))
             .ToList();
 

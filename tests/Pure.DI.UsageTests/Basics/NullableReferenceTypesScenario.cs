@@ -29,7 +29,6 @@ $f=See also: [Composition arguments](composition-arguments.md), [Root arguments]
 namespace Pure.DI.UsageTests.Basics.NullableReferenceTypesScenario;
 
 using System.Collections.Generic;
-using System.Linq;
 using Shouldly;
 using Xunit;
 
@@ -102,6 +101,6 @@ class ReportService(
 
     public IDatabase? OptionalDatabase { get; } = optionalDatabase;
 
-    public IReadOnlyList<IDatabase?> Databases { get; } = databases.ToList();
+    public IReadOnlyList<IDatabase?> Databases { get; } = [..databases];
 }
 // }

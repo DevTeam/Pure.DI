@@ -54,6 +54,7 @@ class CompatibilityCheckTarget(
             "net20"
         ];
 
+        // ReSharper disable once UseCollectionExpression
         var tasks = new List<Task>();
         tasks.AddRange(
             baseFrameworks

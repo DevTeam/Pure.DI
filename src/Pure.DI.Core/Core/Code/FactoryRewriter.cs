@@ -1,4 +1,4 @@
-﻿// ReSharper disable ConvertIfStatementToReturnStatement
+// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable InvertIf
 
 // ReSharper disable UseCollectionExpression
@@ -278,7 +278,7 @@ sealed class FactoryRewriter(
             }
 
             var firstStatement = visited.Statements[0];
-            var lastStatement = visited.Statements[visited.Statements.Count - 1];
+            var lastStatement = visited.Statements[^1];
             var mergedBlock = SyntaxFactory.Block(mergedStatements)
                 .WithLeadingTrivia(firstStatement.GetLeadingTrivia())
                 .WithTrailingTrivia(lastStatement.GetTrailingTrivia());
@@ -457,15 +457,15 @@ sealed class FactoryRewriter(
                     return SyntaxFactory.ParseExpression(consumer);
 
                 case nameof(IContext.Lock):
-                    // ctx.Lock is the lock of the instance that the factory creates, see #206.
-                    if (_ctx is { InstanceLock: {} instanceLock, RootContext.Root.IsStatic: false })
+                    switch (_ctx)
                     {
-                        return SyntaxFactory.ParseExpression(instanceLock);
-                    }
+                        // ctx.Lock is the lock of the instance that the factory creates, see #206.
+                        case { InstanceLock: {} instanceLock, RootContext.Root.IsStatic: false }:
+                            return SyntaxFactory.ParseExpression(instanceLock);
 
-                    if (_ctx is {} codeCtx)
-                    {
-                        codeCtx.RootContext.LockIsInUse = true;
+                        case {} codeCtx:
+                            codeCtx.RootContext.LockIsInUse = true;
+                            break;
                     }
 
                     var lockFieldName = _ctx?.RootContext.Root.IsStatic == true

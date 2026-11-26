@@ -2,14 +2,14 @@
 
 enum SpecialType
 {
-    IAsyncDisposable,
+    AsyncDisposable,
     CompositionKind,
     Lifetime,
     Tag,
-    IConfiguration,
+    Configuration,
     Func,
     LightweightRoot,
     OverloadResolutionPriorityAttribute,
-    IUnion,
+    Union,
     UnionAttribute
 }

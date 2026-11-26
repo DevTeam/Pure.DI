@@ -1,5 +1,8 @@
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable once CheckNamespace
+// The type is a part of the public generator API, so it lives in the root namespace while the files
+// that implement it are grouped by purpose; the loops avoid LINQ to keep the snapshot comparison allocation-free.
 namespace Pure.DI;
 
 using Core.Incremental;

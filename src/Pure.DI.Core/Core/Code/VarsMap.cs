@@ -22,9 +22,6 @@ class VarsMap(
     private int _suppressedTrackingCount;
 
     /// <inheritdoc />
-    public IEnumerable<Var> Vars => _map.Values;
-
-    /// <inheritdoc />
     public IEnumerable<VarDeclaration> Declarations => _map.Values.Select(i => i.Declaration);
 
     /// <inheritdoc />
@@ -131,18 +128,17 @@ class VarsMap(
         var removed = RemovePerBlockVars(lines, nameof(LocalFunction));
         // A parameter can replace a variable of the caller, such as an accumulator, which the caller still sees after the function.
         List<KeyValuePair<int, Var>>? replaced = null;
-        if (!parameters.IsDefaultOrEmpty)
+        // A default list is iterated as an empty one, so a call without parameters replaces nothing.
+        var effectiveParameters = parameters.IsDefault ? ImmutableArray<VarInjection>.Empty : parameters;
+        foreach (var parameter in effectiveParameters)
         {
-            foreach (var parameter in parameters)
+            var bindingId = parameter.Var.AbstractNode.BindingId;
+            if (_map.TryGetValue(bindingId, out var callerVar))
             {
-                var bindingId = parameter.Var.AbstractNode.BindingId;
-                if (_map.TryGetValue(bindingId, out var callerVar))
-                {
-                    (replaced ??= []).Add(new KeyValuePair<int, Var>(bindingId, callerVar));
-                }
-
-                _map[bindingId] = parameter.Var;
+                (replaced ??= []).Add(new KeyValuePair<int, Var>(bindingId, callerVar));
             }
+
+            _map[bindingId] = parameter.Var;
         }
 
         return Disposables.Create(() => {
@@ -151,12 +147,9 @@ class VarsMap(
             {
                 RemoveNewNonPersistentVars(var, scope, lines, nameof(LocalFunction));
                 RestoreState(scope, lines, nameof(LocalFunction), false);
-                if (!parameters.IsDefaultOrEmpty)
+                foreach (var parameter in effectiveParameters)
                 {
-                    foreach (var parameter in parameters)
-                    {
-                        _map.Remove(parameter.Var.AbstractNode.BindingId);
-                    }
+                    _map.Remove(parameter.Var.AbstractNode.BindingId);
                 }
 
                 if (replaced is not null)
@@ -251,7 +244,7 @@ class VarsMap(
             {
                 if (existingVar.IsCreated
                     && existingVar.AbstractNode.ActualLifetime is Lifetime.Singleton or Lifetime.Scoped
-                    && !_activeScopes.Any(active => active.ExcludeBindingId == existingVar.AbstractNode.BindingId))
+                    && !HasActiveScopeExcept(existingVar.AbstractNode.BindingId))
                 {
                     existingVar.ResetStateToDefaults(true);
                 }
@@ -397,8 +390,12 @@ class VarsMap(
     }
 
     private static bool ShouldForgetPerBlockVar(Var var) =>
-        var.AbstractNode is { ActualLifetime: Lifetime.PerBlock, Arg: null }
-        && var.AbstractNode.Construct is not { Source.Kind: MdConstructKind.Accumulator or MdConstructKind.Override };
+        var.AbstractNode is
+        {
+            ActualLifetime: Lifetime.PerBlock,
+            Arg: null,
+            Construct: not { Source.Kind: MdConstructKind.Accumulator or MdConstructKind.Override }
+        };
 
     private Var CreateVar(DependencyGraph graph, IDependencyNode node, ImmutableArray<string> trace)
     {
@@ -438,7 +435,7 @@ class VarsMap(
             if (bindingId == retainedBindingId
                 || !_map.TryGetValue(bindingId, out var perBlockVar)
                 || !ShouldIsolatePerBlockVar(perBlockVar)
-                || (preserveActiveVars && _activeScopes.Any(scope => scope.ExcludeBindingId == bindingId))
+                || preserveActiveVars && _activeScopes.Any(scope => scope.ExcludeBindingId == bindingId)
                 || isRemoved is not null && !isRemoved(perBlockVar))
             {
                 continue;
@@ -492,6 +489,20 @@ class VarsMap(
         }
 
         _activeScopes.Remove(scope);
+    }
+
+    // A loop keeps this hot path allocation-free: the predicate is inlined instead of being captured by a lambda.
+    private bool HasActiveScopeExcept(int bindingId)
+    {
+        foreach (var activeScope in _activeScopes)
+        {
+            if (activeScope.ExcludeBindingId == bindingId)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void RegisterAddedVar(int bindingId)

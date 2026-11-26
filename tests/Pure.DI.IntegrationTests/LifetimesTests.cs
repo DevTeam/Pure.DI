@@ -1,7 +1,7 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
+// LogId is reported by the generator and lives in the Pure.DI.Core namespace, so the using keeps the assertions short.
 using Core;
-
 /// <summary>
 /// Tests related to the support for various lifetimes (Transient, Singleton, Scoped, etc.).
 /// </summary>

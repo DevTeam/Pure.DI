@@ -22,7 +22,7 @@ $f=The case binding remains the owner of its lifetime and disposal behavior. `Si
 $f=Direct nested unions are supported when an inner union is the actual source contract, for example `Bind<CardPayment>().To<Visa>()` followed by a `Payment` root whose case is `CardPayment`. Pure.DI materializes `CardPayment` before converting it to `Payment`. C# deliberately forbids chaining `Visa -> CardPayment -> Payment` when only a `Visa` binding exists, and Pure.DI reports the unresolved outer contract.
 $f=Collections deliberately keep the normal Pure.DI multi-binding rules. Register case bindings with `Tag.Unique` and request `IEnumerable<PaymentGateway>`, `PaymentGateway[]`, `List<PaymentGateway>`, `IReadOnlyList<PaymentGateway>`, immutable collections, `ReadOnlySpan<PaymentGateway>`, or `IAsyncEnumerable<PaymentGateway>` to receive every registered case converted to the union. Generic union elements and their tags are handled in the same way. A tag on the collection injection selects that collection dependency but does not filter its elements, matching the established Pure.DI collection semantics. A single `PaymentGateway` request with several matching cases remains ambiguous and reports `DIE050`.
 $f=Pure.DI follows Roslyn's standard-conversion rules before a case-to-union conversion, including derived-to-base, interface, boxing, and nullable conversions. User-defined conversion operators still shadow union conversions, while union conversions are never chained.
-$f=The preview specification also defines custom union member providers through a nested public `IUnionMembers` interface with static `Create` methods. Pure.DI keeps provider handling compiler-driven: Roslyn 5.6 does not yet classify these provider conversions as union conversions, so Pure.DI does not emulate them. The integration suite contains pending positive scenarios for generic and `in`-parameter providers, plus an active compiler-level guard that will signal when Roslyn support becomes available.
+$f=The preview specification also defines custom union member providers through a nested public `IUnionMembers` interface with static `Create` methods. Pure.DI keeps provider handling compiler-driven: a Roslyn compiler that classifies these provider conversions as union conversions makes them work, and Pure.DI does not emulate them itself. Roslyn 5.9 and later classify them, so the generic and `in`-parameter provider scenarios of the integration suite run against such a compiler, while earlier compilers leave them out.
 $f=For `DIE050`, every candidate is shown with its case type, effective lifetime, and binding expression; related locations point to the ambiguous root or injection and to each candidate binding.
 $f=The generated code stays statically typed: the case instance is converted to the union by the C# compiler at the injection site, so lifetimes of case bindings remain visible to lifetime validation.
 $f=This scenario requires the preview language version and .NET 11 Preview 5 or later, where the union runtime types are available.
@@ -35,6 +35,8 @@ $r=Shouldly
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBeMadeStatic.Global
+// CA1822: the case types model vendor SDK clients and models, whose operations are instance members.
+#pragma warning disable CA1822
 namespace Pure.DI.UsageTests.Basics.UnionTypesScenario;
 
 using Shouldly;
@@ -88,6 +90,8 @@ class StripeGateway(StripeApiClient api)
 
 class BankAccount
 {
+    // The identifier is a human-readable value, so it is spelled as on a real document.
+    // ReSharper disable once InconsistentNaming
     public string IBAN => "DE00 1234 5678";
 }
 
@@ -100,6 +104,8 @@ class BankGateway(BankAccount account)
 // A union type: its case types are implicitly convertible
 // to the union, and Pure.DI uses this conversion
 // to satisfy the union contract
+// ReSharper disable once UnusedUnionCase.Global
+// The scenario binds one case and keeps both to show how the contract is declared.
 union PaymentGateway(StripeGateway, BankGateway);
 
 interface IReceiptService
