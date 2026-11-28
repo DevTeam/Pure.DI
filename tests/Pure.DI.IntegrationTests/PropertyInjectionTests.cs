@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 /// <summary>
 /// Tests related to the property injection.
@@ -447,7 +447,7 @@ public class PropertyInjectionTests
         result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
     }
 
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldSupportRequiredFieldBackedInitPropertyInjection()
     {

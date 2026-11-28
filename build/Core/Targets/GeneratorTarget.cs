@@ -15,7 +15,6 @@ class GeneratorTarget(
     private static readonly Version[] RoslynApiLevels =
     [
         new(5, 9),
-        new(5, 6),
         new(4, 8),
         new(4, 3)
     ];

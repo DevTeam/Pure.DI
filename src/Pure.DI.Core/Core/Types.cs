@@ -1,4 +1,4 @@
-﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ClassNeverInstantiated.Global
 
 // ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
@@ -80,7 +80,7 @@ sealed class Types(
 
     private bool ClassifyUnionConversion(Compilation compilation, ITypeSymbol sourceType, ITypeSymbol targetType)
     {
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
 #pragma warning disable RSEXPERIMENTAL006
         var conversion = compilation.ClassifyConversion(sourceType, targetType);
         return conversion.IsImplicit
@@ -146,7 +146,7 @@ sealed class Types(
 
     private static bool IsUnionConversion(Conversion conversion)
     {
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
 #pragma warning disable RSEXPERIMENTAL006
         return conversion.IsUnion;
 #pragma warning restore RSEXPERIMENTAL006

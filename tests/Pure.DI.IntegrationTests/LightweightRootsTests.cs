@@ -585,7 +585,7 @@ public class LightweightRootsTests
         result.StdOut.ShouldBe(["Int32"]);
     }
 
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldSupportAllowsRefStructGenericLightweightRootWithArgument()
     {
@@ -1093,7 +1093,7 @@ public class LightweightRootsTests
     }
 
 
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldSupportAllowsRefStructGenericStaticLightweightRootWithArgument()
     {
@@ -1235,7 +1235,7 @@ public class LightweightRootsTests
     }
 
 
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldSupportAllowsRefStructGenericExportedLightweightRootWithArgument()
     {

@@ -1,4 +1,4 @@
-﻿// ReSharper disable UseCollectionExpression
+// ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code.Parts;
 
 class RootSignatureProvider(
@@ -12,7 +12,7 @@ class RootSignatureProvider(
     private const string NotnullConstraint = "notnull";
     private const string StructConstraint = "struct";
     private const string NewConstraint = "new()";
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     private const string AllowsRefStructConstraint = "allows ref struct";
 #endif
 
@@ -161,7 +161,7 @@ class RootSignatureProvider(
             constrains.Add(NewConstraint);
         }
 
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
         if (typeParam.AllowsRefLikeType)
         {
             constrains.Add(AllowsRefStructConstraint);

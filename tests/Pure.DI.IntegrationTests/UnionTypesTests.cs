@@ -1,4 +1,4 @@
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
 namespace Pure.DI.IntegrationTests;
 
 using Core;

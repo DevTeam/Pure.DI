@@ -38,7 +38,7 @@
         NuGet, otherwise the CI build of that version cannot define it. The build passes the levels of the Roslyn
         version it builds, so keep this list in sync with GeneratorTarget.RoslynApiLevels.
         -->
-        <RoslynVersions Condition="'$(RoslynVersions)'==''">ROSLYN5_9_OR_GREATER;ROSLYN5_6_OR_GREATER;ROSLYN4_8_OR_GREATER;ROSLYN4_3_OR_GREATER</RoslynVersions>
+        <RoslynVersions Condition="'$(RoslynVersions)'==''">ROSLYN5_9_OR_GREATER;ROSLYN4_8_OR_GREATER;ROSLYN4_3_OR_GREATER</RoslynVersions>
 
         <DefineConstants>$(DefineConstants);$(RoslynVersions)</DefineConstants>
     </PropertyGroup>
