@@ -25,6 +25,8 @@ namespace Pure.DI.UsageTests.Advanced.TracingOwnedDisposalExceptionsScenario
     using Shouldly;
     using Xunit;
 
+// ReSharper disable UnusedMember.Global
+// The consumer members are public to mirror the documented API of the scenario.
 // {
 //# using Pure.DI;
 // }

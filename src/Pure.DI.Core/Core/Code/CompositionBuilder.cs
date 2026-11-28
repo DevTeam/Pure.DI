@@ -1,4 +1,4 @@
-﻿// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
+// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 // ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core.Code;
 
@@ -159,7 +159,7 @@ class CompositionBuilder(
         var publicRoots = roots
             .OrderByDescending(root => root.IsPublic)
             .ThenBy(root => root.Node.Binding.Id)
-            .ThenBy(root => root.DisplayName)
+            .ThenBy(root => root.DisplayName, StringComparer.Ordinal)
             .ToImmutableArray();
 
         var setupContextArgs = new List<SetupContextArg>();
@@ -315,11 +315,13 @@ class CompositionBuilder(
             foreach (var edge in edges)
             {
                 var source = edge.Source;
-                if (visited.Add(source.BindingId))
+                if (!visited.Add(source.BindingId))
                 {
-                    dependencies.Add(GetDependencyKey(source));
-                    stack.Push(source);
+                    continue;
                 }
+
+                dependencies.Add(GetDependencyKey(source));
+                stack.Push(source);
             }
         }
 

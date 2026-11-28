@@ -17,7 +17,7 @@ class RootTarget(
         }
 
         var parseResult = rootCommand.Parse(Args);
-        if (!parseResult.Errors.Any())
+        if (parseResult.Errors.Count == 0)
         {
             Summary(new Text("Configuration: "), new Text(settings.Configuration, Color.Details));
             Summary(new Text("Version range: "), new Text(settings.VersionRange.ToString(), Color.Details));

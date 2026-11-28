@@ -111,60 +111,58 @@ sealed class DisposeMethodBuilder(
         code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, {Names.ExceptionTypeName} exception) where T : {Names.IDisposableTypeName};");
         membersCounter++;
 
-        // ReSharper disable once InvertIf
-        if (hasAsyncDisposable)
+        if (!hasAsyncDisposable)
         {
-            code.AppendLine();
-            code.AppendLine("/// <summary>");
-            code.AppendLine("/// Implement this partial method to handle the exception on async disposing.");
-            code.AppendLine("/// </summary>");
-            code.AppendLine("/// <param name=\"asyncDisposableInstance\">The disposable instance.</param>");
-            code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
-            code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
-            code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, {Names.ExceptionTypeName} exception) where T : {Names.IAsyncDisposableTypeName};");
-            membersCounter++;
+            return composition with { MembersCount = membersCounter };
         }
 
-        if (hasAsyncDisposable)
-        {
-            if (isCommentsEnabled)
-            {
-                code.AppendLine("/// <summary>");
-                code.AppendLine("/// Asynchronously disposes tracked singleton and scoped instances created by this composition.");
-                code.AppendLine("/// </summary>");
-            }
+        code.AppendLine();
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// Implement this partial method to handle the exception on async disposing.");
+        code.AppendLine("/// </summary>");
+        code.AppendLine("/// <param name=\"asyncDisposableInstance\">The disposable instance.</param>");
+        code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
+        code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
+        code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, {Names.ExceptionTypeName} exception) where T : {Names.IAsyncDisposableTypeName};");
+        membersCounter++;
 
-            code.AppendLine($"{composition.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskTypeName} DisposeAsync()");
+        if (isCommentsEnabled)
+        {
+            code.AppendLine("/// <summary>");
+            code.AppendLine("/// Asynchronously disposes tracked singleton and scoped instances created by this composition.");
+            code.AppendLine("/// </summary>");
+        }
+
+        code.AppendLine($"{composition.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskTypeName} DisposeAsync()");
+        using (code.CreateBlock())
+        {
+            AddSyncPart(composition, code, true);
+            code.AppendLine();
+            code.AppendLine("while (disposeIndex-- > 0)");
             using (code.CreateBlock())
             {
-                AddSyncPart(composition, code, true);
-                code.AppendLine();
-                code.AppendLine("while (disposeIndex-- > 0)");
+                code.AppendLine("switch (disposables[disposeIndex])");
                 using (code.CreateBlock())
                 {
-                    code.AppendLine("switch (disposables[disposeIndex])");
-                    using (code.CreateBlock())
+                    if (hasAsyncDisposable)
+                    {
+                        AddDisposeAsyncPart(code, true, isOnDisposeAsyncEnabled);
+                    }
+
+                    if (hasDisposable)
                     {
                         if (hasAsyncDisposable)
                         {
-                            AddDisposeAsyncPart(code, true, isOnDisposeAsyncEnabled);
+                            code.AppendLine();
                         }
 
-                        if (hasDisposable)
-                        {
-                            if (hasAsyncDisposable)
-                            {
-                                code.AppendLine();
-                            }
-
-                            AddDisposePart(code, isOnDisposeEnabled);
-                        }
+                        AddDisposePart(code, isOnDisposeEnabled);
                     }
                 }
             }
-
-            membersCounter++;
         }
+
+        membersCounter++;
 
         return composition with { MembersCount = membersCounter };
     }
@@ -248,16 +246,12 @@ sealed class DisposeMethodBuilder(
         code.AppendLine($"disposeIndex = {Names.DisposeIndexFieldName};");
         code.AppendLine($"{Names.DisposeIndexFieldName} = 0;");
         code.AppendLine($"disposables = {Names.DisposablesFieldName};");
-        if (constructors.IsEnabled(composition, ConstructorKind.Scope))
-        {
-            // Only the root composition keeps an array of disposables after disposal.
-            // A scope creates a new one on its next scoped disposable instance.
-            code.AppendLine($"{Names.DisposablesFieldName} = {Names.RootFieldName} == null || {Names.ObjectTypeName}.ReferenceEquals({Names.RootFieldName}, this) ? new object[{composition.TotalDisposablesCount.ToString()}] : null;");
-        }
-        else
-        {
-            code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
-        }
+        // Only the root composition keeps an array of disposables after disposal.
+        // A scope creates a new one on its next scoped disposable instance.
+        var newDisposables = constructors.IsEnabled(composition, ConstructorKind.Scope)
+            ? $"{Names.RootFieldName} == null || {Names.ObjectTypeName}.ReferenceEquals({Names.RootFieldName}, this) ? new object[{composition.TotalDisposablesCount}] : null"
+            : $"new object[{composition.TotalDisposablesCount}]";
+        code.AppendLine($"{Names.DisposablesFieldName} = {newDisposables};");
         foreach (var singletonField in composition.Singletons)
         {
             if (!sharedSingletons.IsShared(composition, singletonField))

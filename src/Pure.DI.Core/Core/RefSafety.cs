@@ -7,7 +7,7 @@ sealed class RefSafety : IRefSafety
 
     public bool IsMaybeRefLike(ITypeSymbol type) =>
         IsRefLike(type)
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
         || type is ITypeParameterSymbol { AllowsRefLikeType: true }
 #endif
         ;

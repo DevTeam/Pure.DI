@@ -5837,7 +5837,7 @@ public class OwnedTests
     [Theory]
     [InlineData("", false)]
     [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", false)]
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [InlineData("", true)]
 #endif
     public async Task ShouldRetainOnlyResourcesInBuiltInOwnedAccumulator(
@@ -6394,7 +6394,7 @@ public class OwnedTests
 
     [Theory]
     [InlineData("", "True", false)]
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [InlineData("", "True", true)]
     [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", "False", true)]
 #else
@@ -6536,7 +6536,7 @@ public class OwnedTests
 
     [Theory]
     [InlineData("", "True", false)]
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [InlineData("", "True", true)]
     [InlineData(".Hint(Hint.ThreadSafe, \"Off\")", "False", true)]
 #else

@@ -442,7 +442,7 @@ public class CtorTests
         result.StdOut.ShouldBe(["two-injections"], result);
     }
 
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldPreferConstructorWithHigherOverloadResolutionPriority()
     {
@@ -3072,7 +3072,7 @@ public class CtorTests
     }
 #endif
 
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldSupportParamsReadOnlyListOfDependencies()
     {

@@ -1,4 +1,4 @@
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
 namespace Pure.DI.IntegrationTests;
 
 using Core;
@@ -2144,7 +2144,7 @@ public class UnionTypesTests
         result.StdOut.ShouldBe(["0", "1"], result);
     }
 
-#if ROSLYN5_10_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldResolveGenericCustomUnionWithMemberProvider()
     {
@@ -2195,7 +2195,7 @@ public class UnionTypesTests
     }
 #endif
 
-#if ROSLYN5_10_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldResolveCustomUnionThroughInMemberProviderFactory()
     {
@@ -2250,7 +2250,7 @@ public class UnionTypesTests
     }
 #endif
 
-#if ROSLYN5_10_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldShowAmbiguityForCustomUnionMemberProviderCases()
     {
@@ -2451,7 +2451,7 @@ public class UnionTypesTests
         result.StdOut.ShouldBe(["2", "Bank,Stripe"], result);
     }
 
-#if ROSLYN5_10_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public void ShouldKeepMemberProviderSupportCompilerDriven()
     {

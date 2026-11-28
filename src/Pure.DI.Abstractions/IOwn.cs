@@ -9,7 +9,7 @@ using System;
 ///     An <see cref="IOwn" /> handle groups the disposable objects created while resolving a composition root
 ///     and disposes them deterministically when the handle itself is disposed. Disposing the handle releases
 ///     every owned resource in reverse order of creation. On target frameworks that support it the handle also
-///     implements <see cref="IAsyncDisposable" /> for asynchronous release. See also <see cref="Own{T}" />,
+///     implements IAsyncDisposable for asynchronous release. See also <see cref="Own{T}" />,
 ///     which pairs a resolved value with its ownership handle.
 /// </remarks>
 /// <example>

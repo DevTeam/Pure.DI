@@ -9,7 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="[$(PureDIVersion), $(PureDIMaxVersion))">
+        <!-- By default the reference is a range that admits later patch releases of Pure.DI. Pass the version
+             option to pin one exact version. -->
+        <PackageReference Include="Pure.DI" Version="$(PureDIVersion)">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>compile; runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

@@ -117,7 +117,7 @@ sealed class RootMethodsBuilder(
         {
             using (code.Indent())
             {
-                foreach (var constraint in constraints.OrderBy(i => i.Key.Name))
+                foreach (var constraint in constraints.OrderBy(i => i.Key.Name, StringComparer.Ordinal))
                 {
                     code.AppendLine($"where {constraint.Key.Name}: {string.Join(", ", constraint.Value)}");
                 }
@@ -231,7 +231,7 @@ sealed class RootMethodsBuilder(
         {
             using (code.Indent())
             {
-                foreach (var constraint in constraints.OrderBy(i => i.Key.Name))
+                foreach (var constraint in constraints.OrderBy(i => i.Key.Name, StringComparer.Ordinal))
                 {
                     code.AppendLine($"where {constraint.Key.Name}: {string.Join(", ", constraint.Value)}");
                 }

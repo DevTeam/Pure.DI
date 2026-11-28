@@ -589,7 +589,7 @@ public class LocalFunctionCorrectnessTests
         var values = new List<string>();
         for (var level = depth; level >= 0; level--)
         {
-            var nearest = Enumerable.Range(level + 1, depth - level).Where(i => ((mask >> i) & 1) == 1).Select(i => $"{i}").FirstOrDefault();
+            var nearest = Enumerable.Range(level + 1, depth - level).Where(i => (mask >> i & 1) == 1).Select(i => $"{i}").FirstOrDefault();
             values.Add(nearest ?? "d");
         }
 

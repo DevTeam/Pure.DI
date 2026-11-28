@@ -9,10 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="[$(PureDIVersion), $(PureDIMaxVersion))">
+        <!-- By default the reference is a range that admits later patch releases of Pure.DI. Pass the version
+             option to pin one exact version. -->
+        <PackageReference Include="Pure.DI" Version="$(PureDIVersion)">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>compile; runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <!-- The composition is packed so that a consumer compiles it and can extend its bindings. Pure.DI itself
+             does not flow to the consumer, because the consumer compiles the composition and refers to Pure.DI. -->
         <Compile Update="$(CompositionName).cs">
             <Pack>true</Pack>
             <PackagePath>contentFiles/cs/any/_PureDIProjectName_</PackagePath>

@@ -80,7 +80,7 @@ sealed class TagClassBuilder(
 
             var tagToDependencies = tagToDependenciesMap.ToDictionary(
                 i => i.Key,
-                i => i.Value.Select(j => (j.Key, dependencies: j.Value.OrderBy(k => k))));
+                i => i.Value.Select(j => (j.Key, dependencies: j.Value.OrderBy(k => k, StringComparer.Ordinal))));
 
             if (TryBuildTagCode(SmartTagKind.Tag, tagTags, tagToDependencies, AddTagComments, out var tagCode))
             {

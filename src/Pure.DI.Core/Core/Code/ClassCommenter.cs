@@ -61,7 +61,7 @@ sealed class ClassCommenter(
 
             var orderedRoots = composition.PublicRoots
                 .OrderByDescending(root => root.IsPublic)
-                .ThenBy(root => root.DisplayName)
+                .ThenBy(root => root.DisplayName, StringComparer.Ordinal)
                 .ThenBy(root => root.Node.Binding.Id)
                 .ToList();
 

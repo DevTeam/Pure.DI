@@ -26,6 +26,10 @@ namespace Pure.DI.UsageTests.Advanced.TracingCompositionDisposalExceptionsScenar
 using Shouldly;
 using Xunit;
 
+// ReSharper disable UnusedMember.Global
+// The event log and Clear are read by the assertions of the scenario, which sit in this file.
+// ReSharper disable MemberCanBePrivate.Global
+// The members of the composition are public to mirror the documented API of the scenario.
 // {
 //# using Pure.DI;
 // }

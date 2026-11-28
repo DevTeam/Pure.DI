@@ -22,10 +22,14 @@ $r=Shouldly
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
 // ReSharper disable InconsistentNaming
-
 // ReSharper disable InvertIf
+// CA1822: the partial hooks belong to the composition instance the generator declares them on.
+#pragma warning disable CA1822
 namespace Pure.DI.UsageTests.Advanced.CustomDisposeStrategyScenario;
 
+// ReSharper disable UnusedParameter.Global
+// The timeout belongs to the WCF shutdown contract; the scenario keeps the signature of the
+// method it mirrors while it only records that the call happened.
 using Xunit;
 
 // {

@@ -36,6 +36,9 @@ $r=Shouldly
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 namespace Pure.DI.UsageTests.Unity.UnityWithPrefabsScenario;
 
+// ReSharper disable InvocationIsCultureSensitive
+// The clock is formatted with an explicit time pattern on purpose: the scenario shows the value
+// on a prefab label, and the test compares the output of the same culture.
 using UnityEngine;
 using Xunit;
 using static GC;

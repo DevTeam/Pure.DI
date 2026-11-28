@@ -41,6 +41,7 @@ class TemplateTarget(
             jsonConfigs,
             packageVersionStr,
             maxPackageVersionStr,
+            $"net{settings.BaseDotNetFrameworkVersion}",
             cancellationToken);
 
         try
@@ -108,7 +109,9 @@ class TemplateTarget(
         }
     }
 
-    private async Task SmokeTestTemplatePackageAsync(string packagePath, CancellationToken cancellationToken)
+    private async Task SmokeTestTemplatePackageAsync(
+        string packagePath,
+        CancellationToken cancellationToken)
     {
         Summary("Smoke testing template package ", packagePath.WithColor(Color.Details));
 
@@ -165,19 +168,37 @@ class TemplateTarget(
                 hiveDirectory,
                 cancellationToken,
                 "CustomComposition");
-            await CreateAndAssertBuildFailsAsync(
+            await CreateAndBuildTemplateProjectAsync(
+                "di",
+                "SmokeConsoleOldFramework",
+                Path.Combine(outputDirectory, "SmokeConsoleOldFramework"),
+                hiveDirectory,
+                cancellationToken,
+                framework: "net8.0");
+            await CreateAndAssertUsesExactVersionAsync(
+                "SmokeConsoleExactVersion",
+                Path.Combine(outputDirectory, "SmokeConsoleExactVersion"),
+                hiveDirectory,
+                cancellationToken);
+            await CreateAndBuildTemplateProjectAsync(
                 "di",
                 "SmokeConsoleBadComposition",
                 Path.Combine(outputDirectory, "SmokeConsoleBadComposition"),
                 hiveDirectory,
+                cancellationToken,
                 "123Bad",
-                cancellationToken);
-            await CreateAndAssertBuildFailsAsync(
+                expectBuildSuccess: false);
+            await CreateAndBuildTemplateProjectAsync(
                 "di",
                 "SmokeConsoleRootComposition",
                 Path.Combine(outputDirectory, "SmokeConsoleRootComposition"),
                 hiveDirectory,
+                cancellationToken,
                 "Root",
+                expectBuildSuccess: false);
+            await PackLibraryAndBuildConsumerAsync(
+                classLibraryDirectory,
+                outputDirectory,
                 cancellationToken);
         }
         finally
@@ -195,7 +216,9 @@ class TemplateTarget(
         string outputDirectory,
         string hiveDirectory,
         CancellationToken cancellationToken,
-        string? compositionName = null)
+        string? compositionName = null,
+        string? framework = null,
+        bool expectBuildSuccess = true)
     {
         var dotNetNew = new DotNetNew()
             .WithTemplateName(templateName)
@@ -208,6 +231,11 @@ class TemplateTarget(
         if (!string.IsNullOrWhiteSpace(compositionName))
         {
             dotNetNew = dotNetNew.AddArgs("--compositionName", compositionName);
+        }
+
+        if (!string.IsNullOrWhiteSpace(framework))
+        {
+            dotNetNew = dotNetNew.AddArgs("--framework", framework);
         }
 
         await dotNetNew.RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
@@ -226,33 +254,16 @@ class TemplateTarget(
             throw new InvalidOperationException($"The generated project is missing agent guidance: {guidancePath}");
         }
 
-        await new DotNetBuild()
-            .WithProject(Path.Combine(outputDirectory, $"{projectName}.csproj"))
-            .WithShortName($"building the project from the {templateName} template")
-            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
-    }
-
-    private static async Task CreateAndAssertBuildFailsAsync(
-        string templateName,
-        string projectName,
-        string outputDirectory,
-        string hiveDirectory,
-        string compositionName,
-        CancellationToken cancellationToken)
-    {
-        await new DotNetNew()
-            .WithTemplateName(templateName)
-            .WithName(projectName)
-            .WithOutput(outputDirectory)
-            .WithForce(true)
-            .AddArgs("--debug:custom-hive", hiveDirectory, "--compositionName", compositionName)
-            .WithShortName($"creating a project from the {templateName} template with invalid composition name {compositionName}")
-            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
-
         var result = await new DotNetBuild()
             .WithProject(Path.Combine(outputDirectory, $"{projectName}.csproj"))
-            .WithShortName($"building the project from the {templateName} template with invalid composition name {compositionName}")
+            .WithShortName($"building the project from the {templateName} template")
             .RunAsync(cancellationToken: cancellationToken);
+
+        if (expectBuildSuccess)
+        {
+            result.EnsureSuccess();
+            return;
+        }
 
         if (result.ExitCode == 0)
         {
@@ -261,12 +272,107 @@ class TemplateTarget(
         }
     }
 
+    private static async Task CreateAndAssertUsesExactVersionAsync(
+        string projectName,
+        string outputDirectory,
+        string hiveDirectory,
+        CancellationToken cancellationToken)
+    {
+        // An explicit --version must be pinned, because the default range is anchored at the version of the
+        // template package and would otherwise produce an unsatisfiable range for a version outside of it.
+        await new DotNetNew()
+            .WithTemplateName("di")
+            .WithName(projectName)
+            .WithOutput(outputDirectory)
+            .WithForce(true)
+            .AddArgs("--debug:custom-hive", hiveDirectory, "--version", "2.0.0")
+            .WithShortName("creating a project from the di template with an explicit Pure.DI version")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+        var projectPath = Path.Combine(outputDirectory, $"{projectName}.csproj");
+        var content = await File.ReadAllTextAsync(projectPath, cancellationToken);
+        if (!content.Contains("Version=\"2.0.0\"", StringComparison.Ordinal))
+        {
+            Error("The di template did not pin the Pure.DI version that was passed with --version.");
+            throw new InvalidOperationException("The di template did not pin the Pure.DI version that was passed with --version.");
+        }
+    }
+
+    private static async Task PackLibraryAndBuildConsumerAsync(
+        string classLibraryDirectory,
+        string outputDirectory,
+        CancellationToken cancellationToken)
+    {
+        // The class library template packs its composition as a source file and refers to Pure.DI with
+        // PrivateAssets=all, so the packed composition is compiled by the consumer together with its own Pure.DI.
+        // Without that reference the consumer fails with CS0122 on the internal Pure.DI API.
+        var packagesDirectory = Path.Combine(outputDirectory, "library-packages");
+        var consumerDirectory = Path.Combine(outputDirectory, "SmokeLibConsumer");
+        var projectName = Path.GetFileName(classLibraryDirectory);
+
+        await new DotNetPack()
+            .WithProject(Path.Combine(classLibraryDirectory, $"{projectName}.csproj"))
+            .WithOutput(packagesDirectory)
+            .WithShortName("packing the project from the dilib template")
+            .BuildAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+        await new DotNetNew()
+            .WithTemplateName("console")
+            .WithName("SmokeLibConsumer")
+            .WithOutput(consumerDirectory)
+            .WithForce(true)
+            .WithShortName("creating a consumer project for the dilib template package")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+        var consumerProject = Path.Combine(consumerDirectory, "SmokeLibConsumer.csproj");
+
+        await new DotNetAddPackage()
+            .WithProject(consumerProject)
+            .WithPackage(projectName)
+            .WithVersion("1.0.0")
+            .AddSources(packagesDirectory)
+            .WithShortName("adding the packed library to its consumer")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+        // The packed composition is compiled in the consumer project, where the private Pure.DI reference of the
+        // library does not apply, so the consumer refers to the same Pure.DI version itself.
+        var libraryProject = Path.Combine(classLibraryDirectory, $"{projectName}.csproj");
+        var libraryProjectContent = await File.ReadAllTextAsync(libraryProject, cancellationToken);
+        var pureDiVersion = XDocument.Parse(libraryProjectContent)
+            .Descendants("PackageReference")
+            .Where(i => string.Equals((string?)i.Attribute("Include"), "Pure.DI", StringComparison.Ordinal))
+            .Select(i => (string?)i.Attribute("Version"))
+            .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
+        if (string.IsNullOrWhiteSpace(pureDiVersion))
+        {
+            Error($"Could not find the Pure.DI version in {libraryProject}");
+            throw new InvalidOperationException($"Could not find the Pure.DI version in {libraryProject}");
+        }
+
+        // The generated project may refer to a version range, while `dotnet add package` accepts one exact version.
+        var pureDiMinVersion = (VersionRange.Parse(pureDiVersion).MinVersion
+            ?? throw new InvalidOperationException($"Could not determine the Pure.DI version from '{pureDiVersion}'.")).ToString();
+
+        await new DotNetAddPackage()
+            .WithProject(consumerProject)
+            .WithPackage("Pure.DI")
+            .WithVersion(pureDiMinVersion)
+            .WithShortName("adding Pure.DI to the consumer of the packed library")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+
+        await new DotNetBuild()
+            .WithProject(consumerProject)
+            .WithShortName("building the consumer of the packed library")
+            .RunAsync(cancellationToken: cancellationToken).EnsureSuccess();
+    }
+
     private static NuGetVersion GetMaxPackageVersion(NuGetVersion packageVersion) =>
         new(packageVersion.Major, packageVersion.Minor + 1, 0);
 
     private static bool HasUnresolvedVersionDefaults(string content) =>
         content.Contains("$(PureDIVersionDefault)", StringComparison.Ordinal)
-        || content.Contains("$(PureDIMaxVersionDefault)", StringComparison.Ordinal);
+        || content.Contains("$(PureDIMaxVersionDefault)", StringComparison.Ordinal)
+        || content.Contains("$(PureDIFrameworkDefault)", StringComparison.Ordinal);
 
     private static void EnsureTemplatePackageHasResolvedVersions(string packagePath)
     {
@@ -280,8 +386,8 @@ class TemplateTarget(
                 continue;
             }
 
-            Error($"The template package contains unresolved Pure.DI version placeholders: {entry.FullName}");
-            throw new InvalidOperationException($"The template package contains unresolved Pure.DI version placeholders: {entry.FullName}");
+            Error($"The template package contains unresolved placeholders: {entry.FullName}");
+            throw new InvalidOperationException($"The template package contains unresolved placeholders: {entry.FullName}");
         }
     }
 
@@ -289,6 +395,7 @@ class TemplateTarget(
         IEnumerable<string> jsonFiles,
         string packageVersionStr,
         string maxPackageVersionStr,
+        string frameworkStr,
         CancellationToken cancellationToken)
     {
         var originalJsonConfigs = new Dictionary<string, string>();
@@ -299,12 +406,13 @@ class TemplateTarget(
 
             content = content
                 .Replace("$(PureDIVersionDefault)", packageVersionStr)
-                .Replace("$(PureDIMaxVersionDefault)", maxPackageVersionStr);
+                .Replace("$(PureDIMaxVersionDefault)", maxPackageVersionStr)
+                .Replace("$(PureDIFrameworkDefault)", frameworkStr);
 
             if (HasUnresolvedVersionDefaults(content))
             {
-                Error($"Could not resolve Pure.DI version placeholders in {jsonFile}");
-                throw new InvalidOperationException($"Could not resolve Pure.DI version placeholders in {jsonFile}");
+                Error($"Could not resolve template placeholders in {jsonFile}");
+                throw new InvalidOperationException($"Could not resolve template placeholders in {jsonFile}");
             }
 
             await File.WriteAllTextAsync(jsonFile, content, cancellationToken);

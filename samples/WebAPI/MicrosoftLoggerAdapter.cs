@@ -1,4 +1,5 @@
 ﻿// ReSharper disable TemplateIsNotCompileTimeConstantProblem
+// ReSharper disable ContextualLoggerProblem
 #pragma warning disable CA2254
 namespace WebAPI;
 

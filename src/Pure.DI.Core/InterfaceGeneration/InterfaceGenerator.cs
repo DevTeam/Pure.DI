@@ -22,12 +22,8 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
     // and compares the result with the previous one, so the sources are added again only when they change.
     public InterfaceGenerationOutput Build(GeneratorSyntaxContext syntaxContext, CancellationToken cancellationToken)
     {
-        if (syntaxContext.Node is not ClassDeclarationSyntax classSyntax)
-        {
-            return InterfaceGenerationOutput.Empty;
-        }
-
-        if (syntaxContext.SemanticModel.GetDeclaredSymbol(classSyntax, cancellationToken) is not INamedTypeSymbol typeSymbol)
+        if (syntaxContext.Node is not ClassDeclarationSyntax classSyntax
+            || syntaxContext.SemanticModel.GetDeclaredSymbol(classSyntax, cancellationToken) is not INamedTypeSymbol typeSymbol)
         {
             return InterfaceGenerationOutput.Empty;
         }
@@ -38,21 +34,21 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
             .ToImmutableArray();
 
         var sources = ImmutableArray.CreateBuilder<InterfaceGenerationSource>();
-        if (!generatedInterfacesResult.Sources.IsDefaultOrEmpty)
+        // An empty or default list is iterated as an empty one, so the loop below is the only place that adds sources.
+        var generatedSources = generatedInterfacesResult.Sources.IsDefault
+            ? ImmutableArray<GeneratedInterfaceSource>.Empty
+            : generatedInterfacesResult.Sources;
+        foreach (var generatedInterface in generatedSources)
         {
-            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var generatedInterface in generatedInterfacesResult.Sources)
+            if (generatedInterface.Code.Count == 0)
             {
-                if (generatedInterface.Code.Count == 0)
-                {
-                    continue;
-                }
-
-                using var rent = generatedInterface.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
-                sources.Add(new InterfaceGenerationSource(
-                    GetHintName(typeSymbol, generatedInterface.NamespaceName, generatedInterface.InterfaceName),
-                    Encoding.UTF8.GetString(buffer, 0, size)));
+                continue;
             }
+
+            using var rent = generatedInterface.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
+            sources.Add(new InterfaceGenerationSource(
+                GetHintName(typeSymbol, generatedInterface.NamespaceName, generatedInterface.InterfaceName),
+                Encoding.UTF8.GetString(buffer, 0, size)));
         }
 
         return sources.Count == 0 && warnings.IsEmpty
@@ -69,7 +65,7 @@ sealed class InterfaceGenerator(IInterfaceBuilder interfaceBuilder) : IInterface
 
         foreach (var source in output.Sources)
         {
-            context.AddSource(source.HintName, SourceText.From(source.Code, Encoding.UTF8, SourceHashAlgorithm.Sha1));
+            context.AddSource(source.HintName, SourceText.From(source.Code, Encoding.UTF8));
         }
     }
 

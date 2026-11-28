@@ -1,4 +1,19 @@
-﻿namespace _PureDIProjectName_;
+#if (compositionName == 'Root')
+#error The composition name 'Root' is not usable: Pure.DI generates a root member with that name, so the member would clash with its enclosing type. Choose another name, for example 'Composition'.
+#endif
+#if (compositionName == 'Program')
+#error The composition name 'Program' is not usable: the template already declares a type with that name. Choose another name, for example 'Composition'.
+#endif
+#if (compositionName == 'IInput')
+#error The composition name 'IInput' is not usable: the template already declares a type with that name. Choose another name, for example 'Composition'.
+#endif
+#if (compositionName == 'IOutput')
+#error The composition name 'IOutput' is not usable: the template already declares a type with that name. Choose another name, for example 'Composition'.
+#endif
+#if (compositionName == 'ConsoleAdapter')
+#error The composition name 'ConsoleAdapter' is not usable: the template already declares a type with that name. Choose another name, for example 'Composition'.
+#endif
+namespace _PureDIProjectName_;
 
 /// <summary>
 /// The application composition root. Pure.DI generates the object graph from the bindings declared in

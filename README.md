@@ -589,6 +589,20 @@ Run it:
 dotnet run --project Sample
 ```
 
+Create a class library whose composition is shared with the project that consumes it, from the __dilib__ template:
+
+```shell
+dotnet new dilib -o ./SampleLib
+```
+
+Both templates accept the target framework and the Pure.DI version, for example `dotnet new di -o ./Sample --framework net9.0 --version 2.5.11`. Without `--version` the project refers to the version the template was released with and admits later patch releases of the same minor version; an explicit `--version` is pinned exactly.
+
+The __dilib__ template packs its composition into the library package as a source file, so a project that adds the package also gets the composition and can extend its bindings. Pure.DI is a compile-time generator and is not a dependency of that package, so the consuming project has to refer to Pure.DI itself:
+
+```shell
+dotnet add package Pure.DI
+```
+
 For more information about the template, please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates).
 
 </details>

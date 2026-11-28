@@ -6,10 +6,19 @@ namespace Pure.DI.IntegrationTests;
 /// </summary>
 public class SharedInstanceInCreationTests
 {
-    public static IEnumerable<object[]> Cases() =>
-        from lifetime in new[] { "Singleton", "Scoped" }
-        from localFunctions in new[] { "Auto", "On", "Off" }
-        select new object[] { lifetime, localFunctions };
+    public static TheoryData<string, string> Cases()
+    {
+        var cases = new TheoryData<string, string>();
+        foreach (var lifetime in new[] { "Singleton", "Scoped" })
+        {
+            foreach (var localFunctions in new[] { "Auto", "On", "Off" })
+            {
+                cases.Add(lifetime, localFunctions);
+            }
+        }
+
+        return cases;
+    }
 
     // The singleton that reads the exported member is created by a lambda of the root before the module exists.
     [Theory]

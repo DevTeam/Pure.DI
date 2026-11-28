@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.IntegrationTests;
+namespace Pure.DI.IntegrationTests;
 
 using static Path;
 
@@ -442,57 +442,7 @@ public class NamespaceTests
         // Given
 
         // When
-        var result = await new[]
-        {
-            """
-            using Pure.DI;
-            using Text = System.String;
-
-            partial class Composition
-            {
-                private static void SetupName() => DI.Setup(nameof(Composition))
-                    .Bind<Text>().To(_ => (Text)"widget");
-            }
-            """,
-            """
-            using Pure.DI;
-            using Text = System.String;
-
-            partial class Composition
-            {
-                private static void SetupCount() => DI.Setup(nameof(Composition))
-                    .Bind<int>().To(_ => ((Text)"123").Length)
-                    .Bind<Service>().To<Service>()
-                    .Root<Service>("Service");
-            }
-            """,
-            """
-            using System;
-
-            public sealed class Service
-            {
-                private readonly string _name;
-                private readonly int _count;
-
-                public Service(string name, int count)
-                {
-                    _name = name;
-                    _count = count;
-                }
-
-                public string Describe() => $"{_name} x{_count}";
-            }
-
-            public class Program
-            {
-                public static void Main()
-                {
-                    var composition = new Composition();
-                    Console.WriteLine(composition.Service.Describe());
-                }
-            }
-            """
-        }.RunAsync();
+        var result = await AliasSources.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1623,4 +1573,57 @@ public class NamespaceTests
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["Ns1"], result);
     }
+
+    // The sources are a field rather than an argument, so the array is created once instead of per test run.
+    private static readonly string[] AliasSources =
+    [
+        """
+        using Pure.DI;
+        using Text = System.String;
+
+        partial class Composition
+        {
+            private static void SetupName() => DI.Setup(nameof(Composition))
+                .Bind<Text>().To(_ => (Text)"widget");
+        }
+        """,
+        """
+        using Pure.DI;
+        using Text = System.String;
+
+        partial class Composition
+        {
+            private static void SetupCount() => DI.Setup(nameof(Composition))
+                .Bind<int>().To(_ => ((Text)"123").Length)
+                .Bind<Service>().To<Service>()
+                .Root<Service>("Service");
+        }
+        """,
+        """
+        using System;
+
+        public sealed class Service
+        {
+            private readonly string _name;
+            private readonly int _count;
+
+            public Service(string name, int count)
+            {
+                _name = name;
+                _count = count;
+            }
+
+            public string Describe() => $"{_name} x{_count}";
+        }
+
+        public class Program
+        {
+            public static void Main()
+            {
+                var composition = new Composition();
+                Console.WriteLine(composition.Service.Describe());
+            }
+        }
+        """
+    ];
 }

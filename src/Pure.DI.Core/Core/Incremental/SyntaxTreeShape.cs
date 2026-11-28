@@ -68,6 +68,8 @@ sealed class SyntaxTreeShape
             return new SyntaxTreeShape(
                 true,
                 Hasher.Hash(tree.GetText(cancellationToken)),
+                // A collection expression needs the newer System.Collections.Immutable that only the Roslyn 5.9 build references.
+                // ReSharper disable once UseCollectionExpression
                 setupTypeNames.Distinct().ToImmutableArray(),
                 ImmutableArray<(string, ulong)>.Empty);
         }

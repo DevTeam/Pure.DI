@@ -2,6 +2,11 @@
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ConvertClosureToMethodGroup
+// ReSharper disable InvocationIsCultureSensitive
+// The service provider is checked through Should.Throw, so the resolved service takes a lambda.
+// The strings are rendered in the current culture on purpose: the scenario shows the message
+// that the Microsoft DI scope validation produces, including its localized text.
 namespace Pure.DI.UsageTests.IntegrationTests.MicrosoftDependencyInjectionTests;
 
 using System.Linq;

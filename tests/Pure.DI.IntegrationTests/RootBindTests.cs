@@ -5,7 +5,7 @@
 /// </summary>
 public class RootBindTests
 {
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
     [Fact]
     public async Task ShouldSupportRefLikeRootBind()
     {

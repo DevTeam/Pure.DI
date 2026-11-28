@@ -4,6 +4,7 @@
 namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis.Operations;
 
@@ -201,7 +202,7 @@ sealed class Semantic(
                     if (ctor is null)
                     {
                         throw new CompileErrorException(
-                            string.Format(Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
+                            string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_NoAccessibleConstructor, typeArg, name),
                             ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                             LogId.ErrorNoAccessibleConstructorForTagOn,
                             nameof(Strings.Error_Template_NoAccessibleConstructor));
@@ -229,7 +230,7 @@ sealed class Semantic(
                     if (method is null)
                     {
                         throw new CompileErrorException(
-                            string.Format(Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
+                            string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_NoAccessibleMethod, typeArg, methodName, methodArg),
                             ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                             LogId.ErrorNoAccessibleMethodForTagOn,
                             nameof(Strings.Error_Template_NoAccessibleMethod));
@@ -258,7 +259,7 @@ sealed class Semantic(
                     if (member is null)
                     {
                         throw new CompileErrorException(
-                            string.Format(Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
+                            string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_NoAccessibleFieldOrProperty, name, typeArg),
                             ImmutableArray.Create(locationProvider.GetLocation(invocation)),
                             LogId.ErrorNoAccessibleFieldOrPropertyForTagOn,
                             nameof(Strings.Error_Template_NoAccessibleFieldOrProperty));

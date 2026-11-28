@@ -68,7 +68,8 @@ sealed class MetadataBuilder(
             })
             .ToDictionary(i => i.Name, i => i);
 
-        var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).OrderBy(i => i.Name.ClassName).ToList();
+        var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).OrderBy(i => i.Name.ClassName, StringComparer.Ordinal).ToList();
+        // CompositionName.CompareTo uses an invariant comparer, so the order does not depend on the current culture.
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public).OrderBy(i => i.Name))
         {
             if (exceptionHandler.SafeRun((setup, setupMap, globalSetups), BuildSetup) is { } finalizedSetup)

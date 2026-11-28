@@ -9,6 +9,16 @@ class GeneratorTarget(
     Env env)
     : IInitializable, ITarget<Package>
 {
+    // The Roslyn API levels used by the '#if ROSLYN*_OR_GREATER' directives of the sources and tests.
+    // A package defines every level its Roslyn version supports, so a newer compiler also compiles the code
+    // of the older levels. Add a level here when a gate has to tell it apart from a lower one.
+    private static readonly Version[] RoslynApiLevels =
+    [
+        new(5, 9),
+        new(4, 8),
+        new(4, 3)
+    ];
+
     private string PackageName => $"Pure.DI.{settings.NextVersion}.nupkg";
 
     public Task InitializeAsync(CancellationToken cancellationToken) => commands.RegisterAsync(
@@ -71,12 +81,9 @@ class GeneratorTarget(
             .ToHashSet();
 
         var unknown = versions.Except(supported).ToList();
-        if (unknown.Count > 0)
-        {
-            throw new ArgumentException($"Unknown Roslyn versions: {string.Join(", ", unknown)}. Supported versions: {string.Join(", ", supported)}.");
-        }
-
-        return new RoslynSelection(codeAnalysis => versions.Contains(GetRoslynVersion(codeAnalysis)), false);
+        return unknown.Count > 0
+            ? throw new ArgumentException($"Unknown Roslyn versions: {string.Join(", ", unknown)}. Supported versions: {string.Join(", ", supported)}.")
+            : new RoslynSelection(codeAnalysis => versions.Contains(GetRoslynVersion(codeAnalysis)), false);
     }
 
     private string GetPrebuiltGeneratorPackage(CodeAnalysis codeAnalysis)
@@ -103,11 +110,11 @@ class GeneratorTarget(
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
         Summary("Build package for Roslyn ", analyzerRoslynVersion.WithColor(Color.Details));
 
-        var rolsynVersions = string.Join(
+        var roslynVersions = string.Join(
             ';',
-            settings.CodeAnalysis
-                .Where(i => i.AnalyzerRoslynPackageVersion <= codeAnalysis.AnalyzerRoslynPackageVersion)
-                .Select(i => $"ROSLYN{i.AnalyzerRoslynPackageVersion.Major}_{i.AnalyzerRoslynPackageVersion.Minor}_OR_GREATER"));
+            RoslynApiLevels
+                .Where(level => level <= analyzerRoslynVersion)
+                .Select(level => $"ROSLYN{level.Major}_{level.Minor}_OR_GREATER"));
 
         List<(string, string)> props =
         [
@@ -115,7 +122,7 @@ class GeneratorTarget(
             ("version", settings.NextVersion.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString()),
-            ("RolsynVersions", $"\"{rolsynVersions}\"")
+            ("RoslynVersions", $"\"{roslynVersions}\"")
         ];
 
         if (settings.BuildServer)

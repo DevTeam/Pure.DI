@@ -4,6 +4,8 @@
 // ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
 
+using System.Globalization;
+
 sealed class Attributes(
     ISemantic semantic,
     ISymbolNames symbolNames,
@@ -57,7 +59,7 @@ sealed class Attributes(
                         {
                             AttributeKind.Ordinal when typeof(T).IsAssignableFrom(typeof(int)) => (T)(object)0,
                             _ => throw new CompileErrorException(
-                                string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
+                                string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Length),
                                 ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
                                 LogId.ErrorInvalidAttributeArgumentPosition,
                                 nameof(Strings.Error_Template_InvalidAttributeArgumentPosition))
@@ -110,7 +112,7 @@ sealed class Attributes(
                     {
                         AttributeKind.Ordinal when typeof(T).IsAssignableFrom(typeof(int)) => (T)(object)0,
                         _ => throw new CompileErrorException(
-                            string.Format(Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Count),
+                            string.Format(CultureInfo.InvariantCulture, Strings.Error_Template_InvalidAttributeArgumentPosition, attributeMetadata.ArgumentPosition, attributeMetadata.Source, args.Count),
                             ImmutableArray.Create(locationProvider.GetLocation(attributeMetadata.Source)),
                             LogId.ErrorInvalidAttributeArgumentPosition,
                             nameof(Strings.Error_Template_InvalidAttributeArgumentPosition))

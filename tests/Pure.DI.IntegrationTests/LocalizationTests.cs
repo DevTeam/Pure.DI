@@ -37,7 +37,7 @@ public partial class LocalizationTests
         var localizedKeys = ReadResources(Path.Combine(ResourcesDirectory, localizedFileName)).Keys.ToHashSet();
 
         // Then
-        var missingKeys = baseKeys.Except(localizedKeys).OrderBy(key => key).ToList();
+        var missingKeys = baseKeys.Except(localizedKeys).OrderBy(key => key, StringComparer.Ordinal).ToList();
         missingKeys.ShouldBeEmpty($"{localizedFileName} is missing keys: {string.Join(", ", missingKeys)}");
     }
 
@@ -52,7 +52,7 @@ public partial class LocalizationTests
         var localizedKeys = ReadResources(Path.Combine(ResourcesDirectory, localizedFileName)).Keys.ToHashSet();
 
         // Then
-        var extraKeys = localizedKeys.Except(baseKeys).OrderBy(key => key).ToList();
+        var extraKeys = localizedKeys.Except(baseKeys).OrderBy(key => key, StringComparer.Ordinal).ToList();
         extraKeys.ShouldBeEmpty($"{localizedFileName} contains keys absent in Strings.resx: {string.Join(", ", extraKeys)}");
     }
 
@@ -69,7 +69,7 @@ public partial class LocalizationTests
         var emptyKeys = localizedResources
             .Where(resource => string.IsNullOrWhiteSpace(resource.Value))
             .Select(resource => resource.Key)
-            .OrderBy(key => key)
+            .OrderBy(key => key, StringComparer.Ordinal)
             .ToList();
 
         emptyKeys.ShouldBeEmpty($"{localizedFileName} contains empty values for keys: {string.Join(", ", emptyKeys)}");
@@ -98,7 +98,7 @@ public partial class LocalizationTests
             var localizedPlaceholders = GetPlaceholders(localizedValue);
             if (!basePlaceholders.SetEquals(localizedPlaceholders))
             {
-                brokenKeys.Add($"{resource.Key} (expected: [{string.Join(", ", basePlaceholders.OrderBy(placeholder => placeholder))}], actual: [{string.Join(", ", localizedPlaceholders.OrderBy(placeholder => placeholder))}])");
+                brokenKeys.Add($"{resource.Key} (expected: [{string.Join(", ", basePlaceholders.OrderBy(placeholder => placeholder, StringComparer.Ordinal))}], actual: [{string.Join(", ", localizedPlaceholders.OrderBy(placeholder => placeholder, StringComparer.Ordinal))}])");
             }
         }
 

@@ -104,5 +104,5 @@ sealed class LifetimesValidatorVisitor(
     private record ScopedToSingletonErrorKey(DependencyNode TargetNode, DependencyNode SourceNode);
 
     [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
-    private record RootKindSpecificLifetimeErrorKey(Root root, DependencyNode SourceNode);
+    private record RootKindSpecificLifetimeErrorKey(Root Root, DependencyNode SourceNode);
 }

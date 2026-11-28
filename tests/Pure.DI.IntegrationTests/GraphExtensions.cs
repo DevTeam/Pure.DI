@@ -10,7 +10,11 @@ static class GraphExtensions
     public static string ConvertToString(this DependencyGraph graph)
     {
         var sb = new StringBuilder();
-        foreach (var node in graph.Graph.Vertices.OrderBy(i => i.Binding.Id).ThenBy(i => i.ToString()))
+        // The ordering is culture-invariant to make the rendering independent of the machine, but not ordinal:
+        // the expected output of the scenarios lists the edges in a word-like order, where 'int(99)' comes
+        // before 'Sample.IDependency'.
+        var edgeOrder = StringComparer.InvariantCulture;
+        foreach (var node in graph.Graph.Vertices.OrderBy(i => i.Binding.Id).ThenBy(i => i.ToString(), edgeOrder))
         {
             if (sb.Length > 0)
             {
@@ -23,7 +27,7 @@ static class GraphExtensions
                 continue;
             }
 
-            foreach (var dependency in dependencies.OrderBy(i => i.Injection.ToString()))
+            foreach (var dependency in dependencies.OrderBy(i => i.Injection.ToString(), edgeOrder))
             {
                 sb.AppendLine();
                 sb.Append($"  {(dependency.IsResolved ? '+' : '-')}{dependency}");

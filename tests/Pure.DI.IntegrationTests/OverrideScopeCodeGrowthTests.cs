@@ -1,3 +1,6 @@
+// ReSharper disable UnusedMember.Local
+// IsReadByLeaf describes a case of the enumeration that the matrix currently produces through
+// other combinations; it is kept next to the rest of the description of the cases.
 namespace Pure.DI.IntegrationTests;
 
 using System.Text;
@@ -19,17 +22,38 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
     // A local function is created when the code repeated in place is large enough, which happens once per several levels,
     // so the depths are multiples of the number of these levels.
     private static readonly int[] Depths = [8, 16, 24];
+    private static readonly Arguments[] ArgumentKinds =
+    [
+        Arguments.OnePerLevelReadByLeaf,
+        Arguments.OnePerLevelReadByNextLevel,
+        Arguments.SameReadByLeaf,
+        Arguments.SameReadByEachLevel,
+        Arguments.SameReadByEachLevelThroughPerBlock
+    ];
+    private static readonly string[] Lifetimes = ["Transient", "PerBlock"];
+    private static readonly string[] Modes = ["Auto", "On"];
     private static readonly TimeSpan GenerationTimeout = TimeSpan.FromSeconds(30);
     // Equal steps in the number of levels must add approximately equal amounts of code.
     private const double MaxGrowthRatio = 1.35;
     // The code that grows with the square of the number of levels adds 5/3 times as much in the last of two equal steps.
     private const double MaxQuadraticGrowthRatio = MaxGrowthRatio * 5 / 3;
 
-    public static IEnumerable<object[]> Cases() =>
-        from arguments in new[] { Arguments.OnePerLevelReadByLeaf, Arguments.OnePerLevelReadByNextLevel, Arguments.SameReadByLeaf, Arguments.SameReadByEachLevel, Arguments.SameReadByEachLevelThroughPerBlock }
-        from lifetime in new[] { "Transient", "PerBlock" }
-        from mode in new[] { "Auto", "On" }
-        select new object[] { arguments, lifetime, mode };
+    public static TheoryData<Arguments, string, string> Cases()
+    {
+        var cases = new TheoryData<Arguments, string, string>();
+        foreach (var arguments in ArgumentKinds)
+        {
+            foreach (var lifetime in Lifetimes)
+            {
+                foreach (var mode in Modes)
+                {
+                    cases.Add(arguments, lifetime, mode);
+                }
+            }
+        }
+
+        return cases;
+    }
 
     [Theory]
     [MemberData(nameof(Cases))]
@@ -69,13 +93,13 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
 
         // The last node that reads a value of each level gets them through each level, so the code grows with the square
         // of the number of levels, while the number of the nodes it creates grows linearly.
-        var tokensRatio = GrowthRatio(measurements.Select(i => i.Tokens).ToArray());
+        var tokensRatio = GrowthRatio([.. measurements.Select(i => i.Tokens)]);
         if (tokensRatio >= (arguments == Arguments.OnePerLevelReadByLeaf ? MaxQuadraticGrowthRatio : MaxGrowthRatio))
         {
             problems.Add($"Tokens grow by the ratio {tokensRatio:F2}");
         }
 
-        var constructionsRatio = GrowthRatio(measurements.Select(i => i.Constructions).ToArray());
+        var constructionsRatio = GrowthRatio([.. measurements.Select(i => i.Constructions)]);
         if (constructionsRatio >= MaxGrowthRatio)
         {
             problems.Add($"Constructions of nodes grow by the ratio {constructionsRatio:F2}");
@@ -105,7 +129,7 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
         return measurement;
     }
 
-    private static double GrowthRatio(IReadOnlyList<int> sizes)
+    private static double GrowthRatio(int[] sizes)
     {
         var firstStep = sizes[1] - sizes[0];
         var lastStep = sizes[2] - sizes[1];
@@ -230,6 +254,9 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
         var walk = new StringBuilder();
         for (var level = depth; level >= 0; level--)
         {
+            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+            // The cases above cover every value of Arguments, so a default arm would only restate
+            // that a level which reads no values contributes nothing to the walk.
             switch (arguments)
             {
                 case Arguments.OnePerLevelReadByLeaf when level == 0:
@@ -255,7 +282,7 @@ public class OverrideScopeCodeGrowthTests(ITestOutputHelper output)
 
         return walk.ToString();
 
-        bool IsSet(int level) => ((mask >> level) & 1) == 1;
+        bool IsSet(int level) => (mask >> level & 1) == 1;
     }
 
     private sealed record Measurement(int Depth, int Tokens, int Constructions, int SizeWarnings)

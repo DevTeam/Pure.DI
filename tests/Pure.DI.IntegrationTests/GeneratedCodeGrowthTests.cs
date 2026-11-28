@@ -1,3 +1,6 @@
+// ReSharper disable NotAccessedPositionalProperty.Local
+// Depth is written into the diagnostic record to make a failing growth assertion readable;
+// the checks themselves only read the measured sizes.
 namespace Pure.DI.IntegrationTests;
 
 using System.Text;
@@ -15,21 +18,52 @@ using Xunit.Abstractions;
 public class GeneratedCodeGrowthTests(ITestOutputHelper output)
 {
     private static readonly int[] Depths = [3, 6, 9];
+    private static readonly Edge[] MemberEdges = [Edge.Property, Edge.Field, Edge.Method, Edge.BuildUp];
+    private static readonly Edge[] CollectionEdges = [Edge.Array, Edge.Span, Edge.ReadOnlySpan, Edge.Memory, Edge.ReadOnlyMemory, Edge.Enumerable, Edge.AsyncEnumerable];
+    private static readonly string[] Lifetimes = ["Transient", "PerBlock", "PerResolve", "Scoped", "Singleton"];
+    private static readonly string[] CollectionLifetimes = ["Transient", "PerResolve", "Singleton"];
+    private static readonly string[] Modes = ["Auto", "On"];
 
-    public static IEnumerable<object[]> MemberCases() =>
-        from edge in new[] { Edge.Property, Edge.Field, Edge.Method, Edge.BuildUp }
-        from lifetime in new[] { "Transient", "PerBlock", "PerResolve", "Scoped", "Singleton" }
-        from mode in new[] { "Auto", "On" }
-        select new object[] { edge, lifetime, mode };
+    public static TheoryData<Edge, string, string> MemberCases()
+    {
+        var cases = new TheoryData<Edge, string, string>();
+        foreach (var edge in MemberEdges)
+        {
+            foreach (var lifetime in Lifetimes)
+            {
+                foreach (var mode in Modes)
+                {
+                    cases.Add(edge, lifetime, mode);
+                }
+            }
+        }
 
-    public static IEnumerable<object[]> CollectionCases() =>
-        from edge in new[] { Edge.Array, Edge.Span, Edge.ReadOnlySpan, Edge.Memory, Edge.ReadOnlyMemory, Edge.Enumerable, Edge.AsyncEnumerable }
-        from lifetime in new[] { "Transient", "PerResolve", "Singleton" }
-        from mode in new[] { "Auto", "On" }
-        // Stored consumers of spans are rejected by ref-safety validation (DIE046).
-        // Exercise supported graphs here; diagnostic coverage belongs to BclInjectionTests.
-        where edge is not (Edge.Span or Edge.ReadOnlySpan) || lifetime == "Transient"
-        select new object[] { edge, lifetime, mode };
+        return cases;
+    }
+
+    public static TheoryData<Edge, string, string> CollectionCases()
+    {
+        var cases = new TheoryData<Edge, string, string>();
+        foreach (var edge in CollectionEdges)
+        {
+            foreach (var lifetime in CollectionLifetimes)
+            {
+                // Stored consumers of spans are rejected by ref-safety validation (DIE046).
+                // Exercise supported graphs here; diagnostic coverage belongs to BclInjectionTests.
+                if (edge is Edge.Span or Edge.ReadOnlySpan && lifetime != "Transient")
+                {
+                    continue;
+                }
+
+                foreach (var mode in Modes)
+                {
+                    cases.Add(edge, lifetime, mode);
+                }
+            }
+        }
+
+        return cases;
+    }
 
     [Theory]
     [MemberData(nameof(MemberCases))]
@@ -215,11 +249,11 @@ public class GeneratedCodeGrowthTests(ITestOutputHelper output)
             CheckGeneration(result);
             result.StdOut.ShouldBe([$"{1 << depth} {1 << depth} True"], result);
             var measurement = Measure(depth, result);
-            measurement.Constructions.ShouldBe((1 << (depth + 1)) - 1, result);
+            measurement.Constructions.ShouldBe((1 << depth + 1) - 1, result);
             measurements.Add(measurement);
         }
 
-        GrowthRatio(measurements.Select(i => i.Tokens).ToArray()).ShouldBeGreaterThan(4);
+        GrowthRatio([.. measurements.Select(i => i.Tokens)]).ShouldBeGreaterThan(4);
     }
 
     private async Task CheckGrowth(Func<int, string> createSource, string lifetime)
@@ -279,12 +313,12 @@ public class GeneratedCodeGrowthTests(ITestOutputHelper output)
         var details = string.Join(Environment.NewLine, measurements);
         // Equal steps in graph size must add approximately equal amounts of code. A 35% margin
         // permits extraction thresholds and exposes superlinear growth at these depths.
-        GrowthRatio(measurements.Select(i => i.Tokens).ToArray()).ShouldBeLessThan(1.35, details);
-        GrowthRatio(measurements.Select(i => i.Constructions).ToArray()).ShouldBeLessThan(1.35, details);
+        GrowthRatio([.. measurements.Select(i => i.Tokens)]).ShouldBeLessThan(1.35, details);
+        GrowthRatio([.. measurements.Select(i => i.Constructions)]).ShouldBeLessThan(1.35, details);
         measurements.Select(i => i.SizeWarnings).ShouldAllBe(i => i == 0, details);
     }
 
-    private static double GrowthRatio(IReadOnlyList<int> sizes)
+    private static double GrowthRatio(int[] sizes)
     {
         var firstStep = sizes[1] - sizes[0];
         var lastStep = sizes[2] - sizes[1];
@@ -324,6 +358,7 @@ public class GeneratedCodeGrowthTests(ITestOutputHelper output)
             var assign = $"Left = left; Right = right;{(hasDependency ? " Token = token;" : "")}";
             var members = $"public {previous} Left {{ get; private set; }} = null!; public {previous} Right {{ get; private set; }} = null!;";
             var constructor = $"public N{level}({parameters}) {{ {assign} }}";
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (edge)
             {
                 case Edge.Property:
@@ -380,6 +415,7 @@ public class GeneratedCodeGrowthTests(ITestOutputHelper output)
                 }
                 """);
             // A builder receives the top object from the caller; do not bind that top object.
+            // ReSharper disable once InvertIf
             if (!builder || level < depth)
             {
                 bindings.Append($".Bind<N{level}>().As(Lifetime.{lifetime})");

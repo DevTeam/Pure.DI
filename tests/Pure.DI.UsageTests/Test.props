@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <SolutionDir Condition="'$(SolutionDir)'==''">../..</SolutionDir>
-        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">5.6.0</AnalyzerRoslynPackageVersion>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">5.9.0</AnalyzerRoslynPackageVersion>
         <LangVersion>preview</LangVersion>
     </PropertyGroup>
 

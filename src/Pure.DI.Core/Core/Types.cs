@@ -1,4 +1,4 @@
-﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ClassNeverInstantiated.Global
 
 // ReSharper disable UseCollectionExpression
 namespace Pure.DI.Core;
@@ -14,15 +14,15 @@ sealed class Types(
 {
     private static readonly Dictionary<SpecialType, string> TypeShortNames = new()
     {
-        { SpecialType.IAsyncDisposable, $"{nameof(System)}.IAsyncDisposable" },
+        { SpecialType.AsyncDisposable, $"{nameof(System)}.IAsyncDisposable" },
         { SpecialType.CompositionKind, $"{Names.GeneratorName}.{nameof(CompositionKind)}" },
         { SpecialType.Lifetime, $"{Names.GeneratorName}.{nameof(Lifetime)}" },
         { SpecialType.Tag, $"{Names.GeneratorName}.{nameof(Tag)}" },
-        { SpecialType.IConfiguration, $"{Names.GeneratorName}.{nameof(IConfiguration)}" },
+        { SpecialType.Configuration, $"{Names.GeneratorName}.{nameof(IConfiguration)}" },
         { SpecialType.Func, "System.Func`1" },
         { SpecialType.LightweightRoot, Names.LightweightRootBaseClassName },
         { SpecialType.OverloadResolutionPriorityAttribute, "System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute" },
-        { SpecialType.IUnion, "System.Runtime.CompilerServices.IUnion" },
+        { SpecialType.Union, "System.Runtime.CompilerServices.IUnion" },
         { SpecialType.UnionAttribute, "System.Runtime.CompilerServices.UnionAttribute" }
     };
 
@@ -60,7 +60,7 @@ sealed class Types(
             return false;
         }
 
-        if (TryGet(SpecialType.IUnion, compilation) is {} unionInterface
+        if (TryGet(SpecialType.Union, compilation) is {} unionInterface
             && namedType.AllInterfaces.Any(i => typeSymbolComparer.RuntimeEquals(i, unionInterface)))
         {
             return true;
@@ -80,7 +80,7 @@ sealed class Types(
 
     private bool ClassifyUnionConversion(Compilation compilation, ITypeSymbol sourceType, ITypeSymbol targetType)
     {
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
 #pragma warning disable RSEXPERIMENTAL006
         var conversion = compilation.ClassifyConversion(sourceType, targetType);
         return conversion.IsImplicit
@@ -146,11 +146,12 @@ sealed class Types(
 
     private static bool IsUnionConversion(Conversion conversion)
     {
-#if ROSLYN5_6_OR_GREATER
+#if ROSLYN5_9_OR_GREATER
 #pragma warning disable RSEXPERIMENTAL006
         return conversion.IsUnion;
 #pragma warning restore RSEXPERIMENTAL006
 #else
+        _ = conversion;
         return false;
 #endif
     }

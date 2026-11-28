@@ -43,7 +43,7 @@
         "cases": [
           {
             "condition": "(framework == '')",
-            "value": "net11.0"
+            "value": "$(PureDIFrameworkDefault)"
           },
           {
             "condition": "(framework != '')",
@@ -73,18 +73,9 @@
     "version": {
       "type": "parameter",
       "datatype": "string",
-      "description": "Version of Pure.DI that will be referenced.",
-      "defaultValue": "$(PureDIVersionDefault)",
+      "description": "Version of Pure.DI that will be referenced. A version range is allowed, for example [2.5.11, 2.6.0).",
+      "defaultValue": "[$(PureDIVersionDefault), $(PureDIMaxVersionDefault))",
       "replaces": "$(PureDIVersion)"
-    },
-    "pureDiMaxVersion": {
-      "type": "generated",
-      "generator": "constant",
-      "description": "Maximum exclusive version of Pure.DI that will be referenced.",
-      "parameters": {
-        "value": "$(PureDIMaxVersionDefault)"
-      },
-      "replaces": "$(PureDIMaxVersion)"
     },
     "skipRestore": {
       "type": "parameter",

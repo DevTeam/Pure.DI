@@ -1,3 +1,6 @@
+// ReSharper disable MethodHasAsyncOverload
+// The graph helpers parse the generated code synchronously, so there is no asynchronous overload
+// to await here; the calls return syntax nodes, not tasks.
 namespace Pure.DI.IntegrationTests;
 
 using System.Diagnostics;
@@ -27,73 +30,86 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
 
     private static readonly Edge[] Edges = [Edge.Func, Edge.Lazy, Edge.FuncWithArgument, Edge.FuncOfOwned];
     private static readonly string[] Modes = ["Auto", "On"];
+    private static readonly string[] Lifetimes = ["Transient", "PerBlock"];
+    private static readonly string[] AllLifetimes = ["Transient", "PerBlock", "PerResolve", "Singleton"];
+    private static readonly string[] SharedLifetimes = ["PerResolve", "Singleton", "Scoped"];
 
-    private static IEnumerable<object[]> Cases(IEnumerable<Scenario> scenarios) =>
-        from scenario in scenarios
-        from mode in Modes
-        select new object[] { scenario with { Mode = mode } };
+    private static TheoryData<Scenario> CreateCases(IEnumerable<Scenario> scenarios)
+    {
+        // A scenario is followed by its modes, in the order of the queried scenarios.
+        var cases = new TheoryData<Scenario>();
+        foreach (var scenario in scenarios)
+        {
+            foreach (var mode in Modes)
+            {
+                cases.Add(scenario with { Mode = mode });
+            }
+        }
+
+        return cases;
+    }
 
     // Each screen opens the next screen and the previous one, so each pair of neighbors is a cycle of its own.
-    public static IEnumerable<object[]> BackCases() => Cases(
+    public static TheoryData<Scenario> BackCases() => CreateCases(
         from edge in Edges
-        from lifetime in new[] { "Transient", "PerBlock" }
+        from lifetime in Lifetimes
         select new Scenario { Topology = Topology.Back, Edge = edge, Lifetime = lifetime });
 
     // Each screen gets a router that opens each screen, so all the cycles pass through one node that is not a lambda.
-    public static IEnumerable<object[]> RouterCases() => Cases(
+    public static TheoryData<Scenario> RouterCases() => CreateCases(
         from edge in Edges
-        from routerLifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
+        from routerLifetime in AllLifetimes
         select new Scenario { Topology = Topology.Router, Edge = edge, RouterLifetime = routerLifetime });
 
     // Each screen gets the lazy collection of all the other screens. Each collection has an element for each of them,
     // so the code grows with the square of the number of screens, and the code for a screen must grow linearly.
-    public static IEnumerable<object[]> EnumerableCases() => Cases(
-        from lifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
+    public static TheoryData<Scenario> EnumerableCases() => CreateCases(
+        from lifetime in AllLifetimes
         from creation in new[] { Creation.Constructor, Creation.Factory }
         select new Scenario { Topology = Topology.Enumerable, Lifetime = lifetime, Creation = creation });
 
     // The screens are shared, so a lambda returns the instance created by the code of another lambda.
-    public static IEnumerable<object[]> SharedCases() => Cases(
+    public static TheoryData<Scenario> SharedCases() => CreateCases(
         from edge in new[] { Edge.Func, Edge.Lazy, Edge.FuncOfOwned }
-        from lifetime in new[] { "PerResolve", "Singleton", "Scoped" }
+        from lifetime in SharedLifetimes
         select new Scenario { Edge = edge, Lifetime = lifetime });
 
     // The screens are created by factories or get the lambdas by their members.
-    public static IEnumerable<object[]> CreationCases() => Cases(
+    public static TheoryData<Scenario> CreationCases() => CreateCases(
         from creation in new[] { Creation.Constructor, Creation.Property, Creation.Method, Creation.Factory, Creation.FactoryWithOverride }
         from edge in Edges
-        from lifetime in new[] { "Transient", "PerBlock" }
+        from lifetime in Lifetimes
         // CycleCodeGrowthTests covers the other screens created by their constructors.
         where creation != Creation.Constructor || edge == Edge.FuncOfOwned && lifetime == "PerBlock"
         select new Scenario { Edge = edge, Lifetime = lifetime, Creation = creation });
 
     // The root delegate overrides a session outside the cycle, and each screen reads it, directly and through a service.
-    public static IEnumerable<object[]> SessionCases() => Cases(
+    public static TheoryData<Scenario> SessionCases() => CreateCases(
         from topology in new[] { Topology.Ring, Topology.Router }
         from edge in Edges
         from serviceLifetime in new[] { null, "Transient", "PerBlock" }
         select new Scenario { Topology = topology, Edge = edge, HasSession = true, ServiceLifetime = serviceLifetime });
 
     // Each screen gets a service that does not depend on the cycle.
-    public static IEnumerable<object[]> ServiceCases() => Cases(
+    public static TheoryData<Scenario> ServiceCases() => CreateCases(
         from edge in Edges
-        from serviceLifetime in new[] { "Transient", "PerBlock", "PerResolve", "Singleton" }
+        from serviceLifetime in AllLifetimes
         select new Scenario { Edge = edge, ServiceLifetime = serviceLifetime });
 
     // Each screen opens the next screens by different tags, and the code of a transient instance depends on its tag.
-    public static IEnumerable<object[]> TagCases() => Cases(
+    public static TheoryData<Scenario> TagCases() => CreateCases(
         from edge in Edges
-        from lifetime in new[] { "Transient", "PerBlock" }
+        from lifetime in Lifetimes
         select new Scenario { Edge = edge, Lifetime = lifetime, HasTags = true });
 
     // Several roots enter the same ring, and each root has the code of its own.
-    public static IEnumerable<object[]> RootCases() => Cases(
+    public static TheoryData<Scenario> RootCases() => CreateCases(
         from edge in Edges
         select new Scenario { Edge = edge, Roots = 3 });
 
     // As many screens as the overridden types of the real application of #192. Each screen reads the session
     // that the root delegate overrides and the context that the delegate opening it overrides.
-    public static IEnumerable<object[]> WideCases() => Cases(
+    public static TheoryData<Scenario> WideCases() => CreateCases(
         from topology in new[] { Topology.Ring, Topology.Back, Topology.Router }
         from serviceLifetime in new[] { null, "PerBlock" }
         select new Scenario { Topology = topology, Edge = Edge.FuncWithArgument, HasSession = true, ServiceLifetime = serviceLifetime, IsWide = true });
@@ -338,13 +354,13 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
             }
         }
 
-        var tokensRatio = GrowthRatio(measurements.Select(i => scenario.IsQuadratic ? i.Tokens / i.Size : i.Tokens).ToArray());
+        var tokensRatio = GrowthRatio([.. measurements.Select(i => scenario.IsQuadratic ? i.Tokens / i.Size : i.Tokens)]);
         if (tokensRatio >= MaxGrowthRatio)
         {
             problems.Add($"Tokens grow by the ratio {tokensRatio:F2}");
         }
 
-        var constructionsRatio = GrowthRatio(measurements.Select(i => i.Constructions).ToArray());
+        var constructionsRatio = GrowthRatio([.. measurements.Select(i => i.Constructions)]);
         if (constructionsRatio >= MaxGrowthRatio)
         {
             problems.Add($"Constructions of screens grow by the ratio {constructionsRatio:F2}");
@@ -375,7 +391,7 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
         return measurement;
     }
 
-    private static double GrowthRatio(IReadOnlyList<int> sizes)
+    private static double GrowthRatio(int[] sizes)
     {
         var firstStep = sizes[1] - sizes[0];
         var lastStep = sizes[2] - sizes[1];
@@ -513,7 +529,7 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
         {
             Topology.Back => [(screen + 1) % size, (screen - 1 + size) % size],
             // A screen does not get itself as an element of its collection.
-            Topology.Enumerable => Enumerable.Range(0, size).Where(i => i != screen).Take(2).ToArray(),
+            Topology.Enumerable => [.. Enumerable.Range(0, size).Where(i => i != screen).Take(2)],
             _ => [(screen + 1) % size, (screen + 2) % size]
         };
 
@@ -683,7 +699,8 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
                     next = "Screens.Skip(step % 2).First()";
                     break;
 
-                default:
+                case Topology.Ring:
+                case Topology.Back:
                     var targets = Targets(size, screen);
                     var expression = new StringBuilder();
                     for (var index = 0; index < targets.Length; index++)
@@ -695,6 +712,9 @@ public class NavigationCodeGrowthTests(ITestOutputHelper output)
                     expression.Append("null!");
                     next = expression.ToString();
                     break;
+
+                default:
+                    throw new InvalidOperationException($"The topology {Topology} is not supported.");
             }
 
             var members = new StringBuilder();

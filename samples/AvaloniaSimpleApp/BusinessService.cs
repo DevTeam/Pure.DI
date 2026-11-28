@@ -1,4 +1,6 @@
-﻿namespace AvaloniaSimpleApp;
+﻿// ReSharper disable ConvertToPrimaryConstructor
+// This sample teaches how Pure.DI resolves a constructor dependency, so the constructor stays explicit.
+namespace AvaloniaSimpleApp;
 
 public class BusinessService : IBusinessService
 {

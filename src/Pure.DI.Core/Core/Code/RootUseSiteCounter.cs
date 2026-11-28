@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.Core.Code;
+namespace Pure.DI.Core.Code;
 
 sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
 {
@@ -333,16 +333,18 @@ sealed class RootUseSiteCounter(INodeTools nodeTools) : IRootUseSiteCounter
                 continue;
             }
 
-            if (isLazy && node.ActualLifetime is Lifetime.PerBlock && !CapturesPerBlockInstances(graph, node, freeOverrides))
+            if (!isLazy || node.ActualLifetime is not Lifetime.PerBlock || CapturesPerBlockInstances(graph, node, freeOverrides))
             {
-                if (!privateLambdas.TryGetValue(bindingId, out var lambdas))
-                {
-                    lambdas = [];
-                    privateLambdas.Add(bindingId, lambdas);
-                }
-
-                lambdas.Add(node.BindingId);
+                continue;
             }
+
+            if (!privateLambdas.TryGetValue(bindingId, out var lambdas))
+            {
+                lambdas = [];
+                privateLambdas.Add(bindingId, lambdas);
+            }
+
+            lambdas.Add(node.BindingId);
         }
 
         return isAlone;

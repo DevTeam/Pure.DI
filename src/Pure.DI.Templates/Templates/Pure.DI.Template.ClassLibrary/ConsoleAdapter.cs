@@ -2,13 +2,18 @@ namespace _PureDIProjectName_;
 
 /// <summary>
 /// The default <see cref="IInput"/> and <see cref="IOutput"/> implementation backed by the system
-/// <see cref="Console"/>. Swap this binding in the composition to redirect input and output, for example in tests.
+/// <see cref="global::System.Console"/>. Swap this binding in the composition to redirect input and output,
+/// for example in tests.
 /// </summary>
-public class ConsoleAdapter: IInput, IOutput
+/// <remarks>
+/// The type is public because the composition is packed into the library package and compiled in the consumer
+/// project, which can only refer to public members of the library.
+/// </remarks>
+public class ConsoleAdapter : IInput, IOutput
 {
     /// <inheritdoc />
-    public string? ReadLine() => Console.ReadLine();
+    public string? ReadLine() => global::System.Console.ReadLine();
 
     /// <inheritdoc />
-    public void WriteLine(string? line) => Console.WriteLine(line);
+    public void WriteLine(string? line) => global::System.Console.WriteLine(line);
 }

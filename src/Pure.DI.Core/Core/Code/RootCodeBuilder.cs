@@ -1,4 +1,7 @@
-﻿// ReSharper disable UseCollectionExpression
+// ReSharper disable UseCollectionExpression
+// ReSharper disable ConvertClosureToMethodGroup
+// The lambdas pass an index to the name provider on purpose: a method group would need a cast to
+// a delegate type whose signature differs, so the allocations are the same while the intent is clearer.
 namespace Pure.DI.Core.Code;
 
 using System.Collections;
@@ -41,6 +44,9 @@ sealed class RootCodeBuilder(
             yield break;
         }
 
+        // The call order of the branches is the order of the generated code, so a switch over the pair of flags
+        // would restate the same sequence in a harder to read form.
+        // ReSharper disable once ConvertIfStatementToSwitchStatement
         if (hasLocalFunction && !nodeTools.IsBlock(var.AbstractNode))
         {
             var arguments = GetPerBlockArguments(parentCtx);
@@ -201,12 +207,13 @@ sealed class RootCodeBuilder(
         if (!overrideArguments.IsEmpty)
         {
             // The overridden values are the parameters of the local function, so its code declares only the values it overrides itself.
+            var ctxForOverrides = varCtx;
             varCtx = varCtx with
             {
                 Overrides = [..overrideArguments.Select(i => nameProvider.GetOverrideVariableName(i))],
                 VisibleOverrides = overrideArguments.ToDictionary(
                     i => nameProvider.GetOverrideVariableName(i),
-                    i => IsMaybeOverride(varCtx, i) ? MaybeOverrideCodeBuilder.GetPresenceName(nameProvider.GetOverrideVariableName(i)) : null,
+                    i => IsMaybeOverride(ctxForOverrides, i) ? MaybeOverrideCodeBuilder.GetPresenceName(nameProvider.GetOverrideVariableName(i)) : null,
                     StringComparer.Ordinal)
             };
         }
@@ -395,6 +402,9 @@ sealed class RootCodeBuilder(
             }
         }
 
+        // A transient instance and a shared one are emitted by two different shapes of a local function,
+        // so the two branches stay guards in the order of the generated declarations.
+        // ReSharper disable once ConvertIfStatementToSwitchStatement
         if (isLocalFunction && !isBlock)
         {
             // A transient instance is returned by a local function. The JIT can still inline it,
@@ -495,12 +505,9 @@ sealed class RootCodeBuilder(
             return name;
         }
 
-        if (!ctx.VisibleOverrides.TryGetValue(name, out var presence))
-        {
-            return $"default({typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.ContractType)}), false";
-        }
-
-        return $"{name}, {presence ?? "true"}";
+        return ctx.VisibleOverrides.TryGetValue(name, out var presence)
+            ? $"{name}, {presence ?? "true"}"
+            : $"default({typeResolver.Resolve(ctx.RootContext.Graph.Source, @override.ContractType)}), false";
     }
 
     private string GetParameter(CodeContext ctx, MdOverride @override)

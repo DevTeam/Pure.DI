@@ -124,7 +124,7 @@ public class DependencyDiamondTests
         // Then
         // The local functions add to the accumulators of the Owned they are declared under.
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(output.Split(',').ToImmutableArray(), result);
+        result.StdOut.ShouldBe([.. output.Split(',')], result);
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains("new global::Sample.S0(")).ShouldBeLessThan(Count, result);
     }
 

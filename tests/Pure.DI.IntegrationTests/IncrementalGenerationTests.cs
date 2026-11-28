@@ -189,7 +189,7 @@ public class IncrementalGenerationTests
         return (driver, compilation);
     }
 
-    private static GeneratorDriver CreateGeneratorDriver() =>
+    private static CSharpGeneratorDriver CreateGeneratorDriver() =>
         CSharpGeneratorDriver.Create(
             [new SourceGenerator().AsSourceGenerator()],
             parseOptions: ParseOptions,

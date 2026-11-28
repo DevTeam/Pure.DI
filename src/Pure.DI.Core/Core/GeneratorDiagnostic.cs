@@ -3,11 +3,6 @@ namespace Pure.DI.Core;
 sealed class GeneratorDiagnostic(SourceProductionContext sourceProductionContext, ImmutableArray<SyntaxTree> setupTrees)
     : IGeneratorDiagnostic
 {
-    public GeneratorDiagnostic(SourceProductionContext sourceProductionContext)
-        : this(sourceProductionContext, ImmutableArray<SyntaxTree>.Empty)
-    {
-    }
-
     // Whether a diagnostic refers to a file without setups, see CompilationSnapshotComparer.
     public bool HasDiagnosticsOutsideSetups { get; private set; }
 

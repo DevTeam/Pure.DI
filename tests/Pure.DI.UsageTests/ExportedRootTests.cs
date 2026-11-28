@@ -3,6 +3,10 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable once ConvertToPrimaryConstructor
+// The root type is a plain documented class, so its constructor stays explicit next to the members
+// that the generator fills in; the scenario is embedded into the documentation as is.
+
 namespace Pure.DI.UsageTests.IntegrationTests.ExportedRootTests;
 
 using Pure.DI;
@@ -55,6 +59,8 @@ public class Root
 {
     public IMyService Service { get; }
 
+    // ReSharper disable once ConvertToPrimaryConstructor
+    // The root is a plain documented class, so the constructor stays explicit next to the members.
     public Root(IMyService service)
     {
         Service = service;

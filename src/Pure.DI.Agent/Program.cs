@@ -7,6 +7,7 @@ using System.Xml.Linq;
 const string startMarker = "<!-- Pure.DI agent instructions: begin -->";
 const string endMarker = "<!-- Pure.DI agent instructions: end -->";
 const string manifestName = ".pure-di-agent.json";
+string[] instructionFiles = ["AGENTS.md", "CLAUDE.md"];
 
 try
 {
@@ -82,7 +83,7 @@ try
     {
         if (!File.Exists(manifestPath))
         {
-            var hasManagedInstructions = new[] { "AGENTS.md", "CLAUDE.md" }
+            var hasManagedInstructions = instructionFiles
                 .Select(SafePath)
                 .Any(path => File.Exists(path) && File.ReadAllText(path).Contains(startMarker, StringComparison.Ordinal));
             if (!hasManagedInstructions)
@@ -144,7 +145,9 @@ try
         var existing = File.ReadAllText(path);
         var start = existing.IndexOf(startMarker, StringComparison.Ordinal);
         var end = existing.IndexOf(endMarker, StringComparison.Ordinal);
-        if ((start >= 0) != (end >= 0) || end >= 0 && end < start)
+        var hasStart = start >= 0;
+        var hasEnd = end >= 0;
+        if (hasStart != hasEnd || hasEnd && end < start)
             throw new InvalidOperationException($"Malformed Pure.DI section in {relative}");
     }
 
@@ -178,13 +181,15 @@ try
         var existing = File.Exists(path) ? File.ReadAllText(path) : "";
         var start = existing.IndexOf(startMarker, StringComparison.Ordinal);
         var end = existing.IndexOf(endMarker, StringComparison.Ordinal);
-        if ((start >= 0) != (end >= 0) || end >= 0 && end < start)
+        var hasStart = start >= 0;
+        var hasEnd = end >= 0;
+        if (hasStart != hasEnd || hasEnd && end < start)
             throw new InvalidOperationException($"Malformed Pure.DI section in {relative}");
         var newline = existing.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
         var normalizedBlock = block.TrimEnd().Replace("\r\n", "\n", StringComparison.Ordinal).Replace("\n", newline, StringComparison.Ordinal);
         var updated = start >= 0
             ? existing[..start] + normalizedBlock + existing[(end + endMarker.Length)..]
-            : existing + (existing.Length == 0 ? "" : (existing.EndsWith('\n') ? newline : newline + newline)) + normalizedBlock + newline;
+            : existing + (existing.Length == 0 ? "" : existing.EndsWith('\n') ? newline : newline + newline) + normalizedBlock + newline;
         if (updated == existing) return;
         Console.WriteLine($"Update {relative}");
         if (!dryRun) File.WriteAllText(path, updated, new UTF8Encoding(false));
@@ -201,11 +206,13 @@ try
         if (end < 0) throw new InvalidOperationException($"Malformed Pure.DI section in {relative}");
         var updated = (existing[..start].TrimEnd() + existing[(end + endMarker.Length)..]).Trim();
         Console.WriteLine($"Update {relative}");
-        if (!dryRun)
+        if (dryRun)
         {
-            if (updated.Length == 0) File.Delete(path);
-            else File.WriteAllText(path, updated + "\n", new UTF8Encoding(false));
+            return;
         }
+
+        if (updated.Length == 0) File.Delete(path);
+        else File.WriteAllText(path, updated + "\n", new UTF8Encoding(false));
     }
 
     string SafePath(string relative)

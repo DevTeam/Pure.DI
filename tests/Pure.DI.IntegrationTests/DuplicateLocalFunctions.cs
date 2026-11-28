@@ -37,7 +37,7 @@ static class DuplicateLocalFunctions
 
     private static bool ReadsOuterVariables(SemanticModel semanticModel, LocalFunctionStatementSyntax function)
     {
-        SyntaxNode? body = (SyntaxNode?)function.Body ?? function.ExpressionBody?.Expression;
+        var body = (SyntaxNode?)function.Body ?? function.ExpressionBody?.Expression;
         if (body is null)
         {
             return false;

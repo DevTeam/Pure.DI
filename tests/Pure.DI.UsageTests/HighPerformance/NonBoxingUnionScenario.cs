@@ -25,6 +25,11 @@ $r=Shouldly
 
 namespace Pure.DI.UsageTests.HighPerformance.NonBoxingUnionScenario;
 
+// ReSharper disable UnusedMember.Global
+// ReSharper disable NotAccessedPositionalProperty.Global
+// ReSharper disable MemberCanBePrivate.Global
+// The union cases are read by the generated composition and by the consumer of the scenario,
+// so their positional properties and constructors are used outside this file.
 using Shouldly;
 using Xunit;
 
