@@ -1,4 +1,4 @@
-// ReSharper disable StringLiteralTypo
+﻿// ReSharper disable StringLiteralTypo
 
 namespace Pure.DI.IntegrationTests;
 
