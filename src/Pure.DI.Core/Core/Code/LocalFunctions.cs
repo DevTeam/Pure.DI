@@ -138,7 +138,9 @@ class LocalFunctions(
     // The accumulators that the local function of an instance on a cycle through lambdas gets as arguments.
     public ImmutableArray<Accumulator> GetAccumulatorArguments(CodeContext ctx) =>
         IsDeferredCycle(ctx)
-            ? [..GetAccumulators(ctx)]
+            // A collection expression needs the newer System.Collections.Immutable that only the Roslyn 5.9 build references.
+            // ReSharper disable once UseCollectionExpression
+            ? GetAccumulators(ctx).ToImmutableArray()
             : ImmutableArray<Accumulator>.Empty;
 
     // The overridden values that the local function of a transient instance gets as arguments.
@@ -257,7 +259,9 @@ class LocalFunctions(
             }
         }
 
-        return [..arguments.OrderBy(i => i.Key).Select(i => i.Value)];
+        // A collection expression needs the newer System.Collections.Immutable that only the Roslyn 5.9 build references.
+        // ReSharper disable once UseCollectionExpression
+        return arguments.OrderBy(i => i.Key).Select(i => i.Value).ToImmutableArray();
     }
 
     // An instance can be created under different accumulators in the same scope,

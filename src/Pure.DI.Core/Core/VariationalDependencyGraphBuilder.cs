@@ -387,8 +387,10 @@ sealed class VariationalDependencyGraphBuilder(
             && !accumulators.ContainsKey(type);
     }
 
+    // A collection expression needs the newer System.Collections.Immutable that only the Roslyn 5.9 build references.
+    // ReSharper disable once UseCollectionExpression
     private static ImmutableArray<long> CreateVariationState(IEnumerable<IProcessingNode> nodes) =>
-        [.. nodes.Select(i => (long)i.Node.Binding.Id << 32 | (uint)i.Node.Variation)];
+        nodes.Select(i => ((long)i.Node.Binding.Id << 32) | (uint)i.Node.Variation).ToImmutableArray();
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
     private sealed class SymbolTypeComparer(ITypeSymbolComparer typeSymbolComparer) : IEqualityComparer<ISymbol>
